@@ -98,7 +98,27 @@ Box&lt;T> 就是那个帮你租储物柜、再把玩具放进去的“万能箱�
 于是，Rc&lt;T>（Reference Counting，引用计数）闪亮登场！它像一个“图书管理员”。
 Rc&lt;T>会把你的漫画书放在一个公共阅览室（还是在堆上），然后给每个想看的朋友发一张“借书卡”（克隆一个Rc指针）。它内部有一个计数器，记录着现在有多少张“借书卡”被发出去了。
 use std::rc::Rc; // 把漫画书《Rust从入门到放弃》用 Rc 管理起来 let book = Rc::new(String::from("Rust从入门到放弃")); println!("当前借阅人数: {}", Rc::strong_count(&amp;book)); // 输出 1，只有你自己 // 朋友A借走了 let friend_a = Rc::clone(&amp;book); println!("当前借阅人数: {}", Rc::strong_count(&amp;book)); // 输出 2 // 朋友B也借走了 let friend_b = Rc::clone(&amp;book); println!("当前借阅人数: {}", Rc::strong_count(&amp;book)); // 输出 3 当一个朋友看完，把“借书卡”销毁时（变量离开作用域），计数器就减一。当计数器归零，说明没人再看这本漫画书了，图书管理员Rc就会把书处理掉，回收内存。
-...</p></div><footer class=entry-footer><span title='2024-01-15 10:00:00 +0800 +0800'>January 15, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;172 words&nbsp;·&nbsp;梦兽编程</footer><a class=entry-link aria-label="post link to Rust智能指针详解：Box、Rc与RefCell的实用指南" href=https://rexai.top/zh-cn/tutorials/rust/rust-smart-pointers-explained-fun-way/></a></article><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>Rust并发编程指南：精通Arc、Mutex与Channel，实现线程安全</h2></header><div class=entry-content><p>征服Rust并发：Arc、Mutex、Channel三大护法，让你的代码从此刀枪不入！ 关注梦兽编程微信公众号，幽默学习Rust。
+...</p></div><footer class=entry-footer><span title='2024-01-15 10:00:00 +0800 +0800'>January 15, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;172 words&nbsp;·&nbsp;梦兽编程</footer><a class=entry-link aria-label="post link to Rust智能指针详解：Box、Rc与RefCell的实用指南" href=https://rexai.top/zh-cn/tutorials/rust/rust-smart-pointers-explained-fun-way/></a></article><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>Rust Async内幕：让代码学会摸鱼，效率还能翻倍的秘密！</h2></header><div class=entry-content><p>Rust Async内幕：让代码学会"摸鱼"，效率还能翻倍的秘密！
+关注梦兽编程微信公众号，幽默学习Rust。
+你好，未来的Rust大师！今天我们来聊一个神奇的话题：异步编程（Async）。
+你可能在JavaScript或Python里和它打过照面，觉得它就像个幕后英雄，默默处理着一切。但在Rust里，这位“英雄”的行事风格可完全不一样。它不玩“魔法”，一切都摆在明面上，既明确又高效，而且编译后几乎是“零成本”的！
+准备好脑洞大开了吗？我们这就发车！
+第一站：async 关键字，一个“稍后处理”的承诺 想象一下，你让一个机器人帮你倒水。你对它说：“去倒杯水。”
+在普通的同步世界里，这个机器人会立刻放下手头所有事，跑到厨房，找到杯子，打开水龙头，等水满，然后端回来给你。在这整个过程中，它（以及你）都在原地“阻塞”着，啥也干不了。
+但如果这是一个 async 机器人呢？
+async fn pour_water() { println!("💧 好的，马上去倒水！"); } 当你调用 pour_water() 时，最奇妙的事情发生了：它什么都没做！
+没错，它没有去倒水。它只是给了你一张“欠条”，专业点说，这叫 Future（未来）。这张欠条上写着：“我承诺，未来会去倒一杯水。”
+这个 async 关键字，就像是在给任务打上一个“稍后处理”的标签。它本身不执行任何操作，只是打包了一个“未来会发生的事”。在Rust里，所有的 Future 都是天生的“懒虫”，你不催它，它绝不动弹。
+第二站：Future，一张需要兑现的“未来”欠条 所以，这个 Future 到底是个啥？
+你可以把它想象成一张详细的菜谱。比如一个计算 21 + 21 的 async 函数：
+async fn compute() -> u32 { 21 + 21 } 调用 compute() 得到的 Future，就是一张写着“把21和21加起来”的菜谱。菜谱本身并不能填饱肚子，它只是一个待完成的计算。
+在编译器眼中，这个 Future 其实是一个实现了特定 trait（可以理解为接口或能力）的复杂结构体。它内部有一个核心方法叫 poll，像个不知疲倦的检查员，不断地问：“喂，菜做好了吗？能上菜了吗？”
+不过别担心，你暂时不需要亲手去写这么底层的代码，Rust已经帮你把这一切都漂亮地隐藏在 async/await 语法糖之下了。
+第三站：.await，兑现承诺的“催收电话” 既然 Future 这么懒，我们怎么才能让它动起来，真正地去“倒水”或“计算”呢？
+答案就是拨打一个“催收电话”——使用 .await 关键字。
+但是，光有催收员还不行，我们还需要一个“项目经理”来统筹全局。在Rust的世界里，这个项目经理就是 Runtime（运行时）。Rust标准库本身不带这玩意儿，你需要从社区“聘请”一个，其中最著名的就是 tokio。
+use tokio; #[tokio::main] async fn main() { println!("我想要杯水..."); pour_water().await; // 喂，是倒水机器人吗？我现在就要水！ println!("啊，水来了，真好！"); } 看到那个 #[tokio::main] 了吗？它就像是给你的 main 函数配备了一个全能的 tokio 项目经理。
+...</p></div><footer class=entry-footer><span title='2024-01-15 00:00:00 +0000 UTC'>January 15, 2024</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;185 words&nbsp;·&nbsp;梦兽编程</footer><a class=entry-link aria-label="post link to Rust Async内幕：让代码学会摸鱼，效率还能翻倍的秘密！" href=https://rexai.top/zh-cn/tutorials/rust/rust-async-like-a-pro-explained/></a></article><article class="post-entry tag-entry"><header class=entry-header><h2 class=entry-hint-parent>Rust并发编程指南：精通Arc、Mutex与Channel，实现线程安全</h2></header><div class=entry-content><p>征服Rust并发：Arc、Mutex、Channel三大护法，让你的代码从此刀枪不入！ 关注梦兽编程微信公众号，幽默学习Rust。
 个人网站：rexai.top
 你是否曾在深夜，为了一个多线程的bug而捶胸顿足？
 想象一个混乱的厨房，几个厨师（线程）同时在做菜。他们抢着用同一把刀，同时去修改同一个菜单，甚至有人刚把菜谱扔进垃圾桶，另一个人就跑过去想照着做菜。结果呢？不是手指被切到，就是菜谱被弄得乱七八糟，最终端上一盘“薛定谔的菜”——味道全凭运气。
