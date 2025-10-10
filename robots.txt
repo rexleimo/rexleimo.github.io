@@ -1,3 +1,15 @@
+# Google 和 Bing 爬虫规则
+User-agent: Googlebot
+User-agent: Bingbot
+Allow: /
+
+# 其他爬虫
 User-agent: *
-Disallow:
+Allow: /
+
+# 不需要索引的路径
+Disallow: /admin/
+Disallow: /private/
+
+# 站点地图
 Sitemap: https://rexai.top/sitemap.xml
