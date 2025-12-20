@@ -44,7 +44,7 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;5 + 3 = </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, result);
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><blockquote><p>Observation: macro invocations use <code>!</code>, patterns use <code>$a:expr</code>-style matchers, and the body is plain Rust.</p></blockquote><h3 id=step-2-move-to-modular-exports-stable>Step 2: move to modular exports (stable)<a hidden class=anchor aria-hidden=true href=#step-2-move-to-modular-exports-stable>#</a></h3><p>Macro 2.0’s headline feature is “macros import like functions.” Put the macro into its own module and re-export it:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// src/macros.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span>macro_rules! add_two {
+</span></span></span><span style=display:flex><span>macro_rules! add_two {
 </span></span><span style=display:flex><span>    (<span style=color:#00f>$a</span>:<span style=color:#2b91af>expr</span>, <span style=color:#00f>$b</span>:<span style=color:#2b91af>expr</span>) =&gt; {
 </span></span><span style=display:flex><span>        <span style=color:#00f>$a</span> + <span style=color:#00f>$b</span>
 </span></span><span style=display:flex><span>    };
@@ -52,10 +52,10 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span>(<span style=color:#00f>crate</span>) <span style=color:#00f>use</span> add_two; <span style=color:green>// Macro 2.0: expose macros via `use`
 </span></span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// src/lib.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>pub</span> <span style=color:#00f>mod</span> macros;
+</span></span></span><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>mod</span> macros;
 </span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// src/main.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> macro2_playground::macros::add_two; <span style=color:green>// Import like any item
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> macro2_playground::macros::add_two; <span style=color:green>// Import like any item
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;9 + 23 = </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, add_two!(9, 23));
 </span></span><span style=display:flex><span>}
@@ -76,9 +76,9 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> x = 42<span style=color:#00f>u32</span>;
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> y = 10<span style=color:#00f>u32</span>;
 </span></span><span style=display:flex><span>    assert_same_type!(x, y); <span style=color:green>// Passes
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p><code>pub macro</code> obeys normal visibility and automatically plugs into the shared TokenStream pipeline. IDEs can jump straight to definitions.</p><h3 id=step-4-build-a-macro-20-style-struct-dsl>Step 4: build a macro 2.0-style struct DSL<a hidden class=anchor aria-hidden=true href=#step-4-build-a-macro-20-style-struct-dsl>#</a></h3><p>Now let’s rebuild the <code>make_struct</code> macro with the modular export pattern, generating a struct plus a constructor:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// src/macros.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span>macro_rules! make_struct {
+</span></span></span><span style=display:flex><span>macro_rules! make_struct {
 </span></span><span style=display:flex><span>    (<span style=color:#00f>$name</span>:<span style=color:#2b91af>ident</span> { <span style=color:#00f>$($field</span>:<span style=color:#2b91af>ident</span>: <span style=color:#00f>$ty</span>:<span style=color:#2b91af>ty</span>),* <span style=color:#00f>$(,</span>)? }) =&gt; {
 </span></span><span style=display:flex><span>        <span style=color:#00f>#[derive(Debug, Clone)]</span>
 </span></span><span style=display:flex><span>        <span style=color:#00f>pub</span> <span style=color:#00f>struct</span> <span style=color:#00f>$name</span> {
@@ -95,7 +95,7 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span>(<span style=color:#00f>crate</span>) <span style=color:#00f>use</span> make_struct;
 </span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// src/main.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> macro2_playground::macros::make_struct;
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> macro2_playground::macros::make_struct;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>make_struct!(
 </span></span><span style=display:flex><span>    Person {
@@ -114,26 +114,26 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{:?}</span><span style=color:#a31515>&#34;</span>, person);
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Now the IDE knows exactly where <code>make_struct!</code> lives, <code>rust-analyzer</code> can jump to it, and tweaking <code>macros.rs</code> updates every call site—precisely the maintainable workflow macro 2.0 aims for.</p><h2 id=macro-20-module-model-side-by-side-comparison>Macro 2.0 module model: side-by-side comparison<a hidden class=anchor aria-hidden=true href=#macro-20-module-model-side-by-side-comparison>#</a></h2><p>Put the old and new approaches together and the contrast becomes obvious.</p><h3 id=legacy-style-macro_use-global-injection>Legacy style: <code>#[macro_use]</code> global injection<a hidden class=anchor aria-hidden=true href=#legacy-style-macro_use-global-injection>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// lib.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>#[macro_use]</span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>#[macro_use]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>mod</span> macros;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, add_two!(1, 2)); <span style=color:green>// IDE has no idea where add_two came from
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Problems:</p><ul><li>Macros leak across the entire crate, so naming conflicts run rampant.</li><li>IDEs struggle to locate definitions.</li><li>You end up relying on tribal knowledge to maintain macro collections.</li></ul><h3 id=modular-export-stable>Modular export (stable)<a hidden class=anchor aria-hidden=true href=#modular-export-stable>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// macros.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span>macro_rules! add_two {
+</span></span></span><span style=display:flex><span>macro_rules! add_two {
 </span></span><span style=display:flex><span>    (<span style=color:#00f>$a</span>:<span style=color:#2b91af>expr</span>, <span style=color:#00f>$b</span>:<span style=color:#2b91af>expr</span>) =&gt; {
 </span></span><span style=display:flex><span>        <span style=color:#00f>$a</span> + <span style=color:#00f>$b</span>
 </span></span><span style=display:flex><span>    };
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span>(<span style=color:#00f>crate</span>) <span style=color:#00f>use</span> add_two; <span style=color:green>// Since Rust 1.54
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// lib.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>pub</span> <span style=color:#00f>mod</span> macros;
+</span></span></span><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>mod</span> macros;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// main.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> <span style=color:#00f>crate</span>::macros::add_two;
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> <span style=color:#00f>crate</span>::macros::add_two;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, add_two!(1, 2));
@@ -156,17 +156,17 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span></code></pre></div><p>The output is the exact Rust the compiler sees. Perfect for debugging matching logic or deciphering an error.</p><h2 id=macro-hygiene-how-rust-avoids-accidental-capture>Macro hygiene: how Rust avoids accidental capture<a hidden class=anchor aria-hidden=true href=#macro-hygiene-how-rust-avoids-accidental-capture>#</a></h2><p>Macro 2.0 takes hygiene seriously. Every token carries a scope ID so the compiler can tell whether identifiers belong to the macro or the caller:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span>macro_rules! shadow_play {
 </span></span><span style=display:flex><span>    () =&gt; {{
 </span></span><span style=display:flex><span>        <span style=color:#00f>let</span> x = 10; <span style=color:green>// macro-local x
-</span></span></span><span style=display:flex><span><span style=color:green></span>        x
+</span></span></span><span style=display:flex><span>        x
 </span></span><span style=display:flex><span>    }};
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> x = 5;       <span style=color:green>// call-site x
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> y = shadow_play!();
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> y = shadow_play!();
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;x = </span><span style=color:#a31515>{}</span><span style=color:#a31515>, y = </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, x, y);
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>The output is <code>x = 5, y = 10</code>. The macro’s <code>x</code> never tramples the outer <code>x</code>. If you need outside data, pass it explicitly or use helper macros like <code>concat_idents!</code>. Hygiene keeps compile-time generation predictable.</p><h2 id=declarative--procedural-macros-in-harmony>Declarative & procedural macros in harmony<a hidden class=anchor aria-hidden=true href=#declarative--procedural-macros-in-harmony>#</a></h2><p>Macro 2.0 unifies declarative and procedural macros under the same namespace so they can tag-team advanced DSLs. Here’s a simplified “compile-time SQL guard” example:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// dsl/src/lib.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> proc_macro::TokenStream;
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> proc_macro::TokenStream;
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> syn::{spanned::Spanned, LitStr};
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>#[proc_macro]</span>
@@ -181,7 +181,7 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>    quote::quote!(#lit).into()
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><blockquote><p>Dependencies: in <code>dsl/Cargo.toml</code> add <code>syn = { version = "2", features = ["full"] }</code> and <code>quote = "1"</code>. Mark the crate as <code>proc-macro = true</code>.</p></blockquote><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// app/src/macros.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span>macro_rules! select_user_by_id {
+</span></span></span><span style=display:flex><span>macro_rules! select_user_by_id {
 </span></span><span style=display:flex><span>    (<span style=color:#00f>$id</span>:<span style=color:#2b91af>expr</span>) =&gt; {{
 </span></span><span style=display:flex><span>        <span style=color:#00f>const</span> QUERY: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span> = sql!(<span style=color:#a31515>&#34;SELECT * FROM users WHERE id = ?&#34;</span>);
 </span></span><span style=display:flex><span>        (QUERY, <span style=color:#00f>$id</span>)
@@ -190,12 +190,12 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span>(<span style=color:#00f>crate</span>) <span style=color:#00f>use</span> select_user_by_id;
 </span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// app/src/main.rs
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> app::macros::select_user_by_id;
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> app::macros::select_user_by_id;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> (query, id) = select_user_by_id!(42);
 </span></span><span style=display:flex><span>    <span style=color:green>// Compile-time validation: only SELECT statements pass
-</span></span></span><span style=display:flex><span><span style=color:green></span>    println!(<span style=color:#a31515>&#34;SQL: </span><span style=color:#a31515>{}</span><span style=color:#a31515> with id </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, query, id);
+</span></span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;SQL: </span><span style=color:#a31515>{}</span><span style=color:#a31515> with id </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, query, id);
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Declarative macros provide the sugary syntax, procedural macros enforce compile-time guards. Thanks to macro 2.0’s unified namespace they reference each other like ordinary functions, delivering DSLs that are both ergonomic and safe.</p><h2 id=macros-vs-functions-when-to-reach-for-which>Macros vs functions: when to reach for which?<a hidden class=anchor aria-hidden=true href=#macros-vs-functions-when-to-reach-for-which>#</a></h2><p><strong>Functions</strong> generate machine code and incur call overhead:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>fn</span> add(a: <span style=color:#2b91af>i32</span>, b: <span style=color:#2b91af>i32</span>) -&gt; <span style=color:#2b91af>i32</span> {
 </span></span><span style=display:flex><span>    a + b
@@ -209,13 +209,13 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>    (<span style=color:#00f>$x</span>:<span style=color:#2b91af>expr</span>) =&gt; {
 </span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, <span style=color:#00f>$x</span>);
 </span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, <span style=color:#00f>$x</span>);  <span style=color:green>// $x is evaluated twice!
-</span></span></span><span style=display:flex><span><span style=color:green></span>    };
+</span></span></span><span style=display:flex><span>    };
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> i = 0;
 </span></span><span style=display:flex><span>    bad_example!(i += 1);  <span style=color:green>// Prints twice, i becomes 2
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p><strong>Fix</strong>: capture the expression once.</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span>macro_rules! good_example {
 </span></span><span style=display:flex><span>    (<span style=color:#00f>$x</span>:<span style=color:#2b91af>expr</span>) =&gt; {
 </span></span><span style=display:flex><span>        <span style=color:#00f>let</span> value = <span style=color:#00f>$x</span>;
@@ -233,7 +233,7 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> x = 5;
 </span></span><span style=display:flex><span>    make_var!();
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, x);  <span style=color:green>// Prints 5, not 10—macro x is local
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>Rust binds the macro-generated <code>x</code> to a hygienic scope, so it never pollutes the caller. To pass a value out, return it explicitly:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span>macro_rules! make_var {
 </span></span><span style=display:flex><span>    () =&gt; {{
 </span></span><span style=display:flex><span>        <span style=color:#00f>let</span> x = 10;
@@ -244,7 +244,7 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> x = make_var!();
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, x); <span style=color:green>// 10
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span></code></pre></div><h3 id=pitfall-3-type-system-blind-spots>Pitfall 3: type-system blind spots<a hidden class=anchor aria-hidden=true href=#pitfall-3-type-system-blind-spots>#</a></h3><p>Macros don’t perform type checking—they just emit code:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span>macro_rules! multiply {
 </span></span><span style=display:flex><span>    (<span style=color:#00f>$a</span>:<span style=color:#2b91af>expr</span>, <span style=color:#00f>$b</span>:<span style=color:#2b91af>expr</span>) =&gt; {
 </span></span><span style=display:flex><span>        <span style=color:#00f>$a</span> * <span style=color:#00f>$b</span>
@@ -255,7 +255,7 @@ and the <a href=https://doc.rust-lang.org/reference/macros-by-example.html targe
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> s = <span style=color:#a31515>&#34;hello&#34;</span>;
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> n = 5;
 </span></span><span style=display:flex><span>    multiply!(s, n);  <span style=color:green>// The type error shows up after expansion
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p><strong>Solution</strong>: rely on the expanded code’s type checks, or add compile-time guards such as <code>assert_same_type!</code> so mismatches fail earlier with clearer messages.</p><h2 id=performance-and-trade-offs>Performance and trade-offs<a hidden class=anchor aria-hidden=true href=#performance-and-trade-offs>#</a></h2><h3 id=advantages>Advantages<a hidden class=anchor aria-hidden=true href=#advantages>#</a></h3><ul><li><strong>Zero runtime overhead</strong>: expansions become plain Rust</li><li><strong>Less duplication</strong>: DRY, enforced at compile time</li><li><strong>Expressive syntax</strong>: craft DSLs and fluent APIs</li></ul><h3 id=disadvantages>Disadvantages<a hidden class=anchor aria-hidden=true href=#disadvantages>#</a></h3><ul><li><strong>Longer compile times</strong>: expansion + recompilation takes work</li><li><strong>Debugging friction</strong>: error messages point to expanded code</li><li><strong>Learning curve</strong>: you must reason about syntax trees</li></ul><p><strong>Real-world test</strong>: projects with and without macros run at similar speeds—the difference lives in compile time.</p><h2 id=where-macros-shine-in-real-projects>Where macros shine in real projects<a hidden class=anchor aria-hidden=true href=#where-macros-shine-in-real-projects>#</a></h2><h3 id=scenario-1-serialization--deserialization-serde>Scenario 1: serialization / deserialization (Serde)<a hidden class=anchor aria-hidden=true href=#scenario-1-serialization--deserialization-serde>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>#[derive(Serialize, Deserialize)]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>Config</span> {
 </span></span><span style=display:flex><span>    host: String,

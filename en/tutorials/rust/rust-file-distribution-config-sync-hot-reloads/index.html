@@ -20,7 +20,7 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> simple_file_distribution(source: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>, destination: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>) -&gt; Result&lt;(), std::io::Error&gt; {
 </span></span><span style=display:flex><span>    <span style=color:green>// Like moving packages from warehouse to truck
-</span></span></span><span style=display:flex><span><span style=color:green></span>    fs::copy(source, destination)?;
+</span></span></span><span style=display:flex><span>    fs::copy(source, destination)?;
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;File </span><span style=color:#a31515>{}</span><span style=color:#a31515> successfully distributed to </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, source, destination);
 </span></span><span style=display:flex><span>    Ok(())
 </span></span><span style=display:flex><span>}
@@ -30,16 +30,16 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> distribute_to_node(filename: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>, node_address: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>) -&gt; Result&lt;(), Box&lt;<span style=color:#00f>dyn</span> std::error::Error&gt;&gt; {
 </span></span><span style=display:flex><span>    <span style=color:green>// Connect to target node
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> stream = TcpStream::connect(node_address).<span style=color:#00f>await</span>?;
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> stream = TcpStream::connect(node_address).<span style=color:#00f>await</span>?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// Read file content
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> content = fs::read(filename).<span style=color:#00f>await</span>?;
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> content = fs::read(filename).<span style=color:#00f>await</span>?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// Send file size info
-</span></span></span><span style=display:flex><span><span style=color:green></span>    stream.write_all(&amp;(content.len() <span style=color:#00f>as</span> <span style=color:#2b91af>u64</span>).to_be_bytes()).<span style=color:#00f>await</span>?;
+</span></span></span><span style=display:flex><span>    stream.write_all(&amp;(content.len() <span style=color:#00f>as</span> <span style=color:#2b91af>u64</span>).to_be_bytes()).<span style=color:#00f>await</span>?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// Send file content
-</span></span></span><span style=display:flex><span><span style=color:green></span>    stream.write_all(&amp;content).<span style=color:#00f>await</span>?;
+</span></span></span><span style=display:flex><span>    stream.write_all(&amp;content).<span style=color:#00f>await</span>?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;File </span><span style=color:#a31515>{}</span><span style=color:#a31515> sent to node </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, filename, node_address);
 </span></span><span style=display:flex><span>    Ok(())
@@ -50,7 +50,7 @@
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> tasks = JoinSet::new();
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// Create distribution tasks for each node
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>for</span> node <span style=color:#00f>in</span> nodes {
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>for</span> node <span style=color:#00f>in</span> nodes {
 </span></span><span style=display:flex><span>        <span style=color:#00f>let</span> files_clone = files.clone();
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        tasks.spawn(<span style=color:#00f>async</span> <span style=color:#00f>move</span> {
@@ -64,7 +64,7 @@
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// Wait for all tasks to complete
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>while</span> <span style=color:#00f>let</span> Some(result) = tasks.join_next().<span style=color:#00f>await</span> {
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>while</span> <span style=color:#00f>let</span> Some(result) = tasks.join_next().<span style=color:#00f>await</span> {
 </span></span><span style=display:flex><span>        result?;
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>
@@ -128,10 +128,10 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#00f>pub</span> <span style=color:#00f>async</span> <span style=color:#00f>fn</span> publish_config_update(&amp;self, config: <span style=color:#2b91af>ServiceConfig</span>) -&gt; Result&lt;(), Box&lt;<span style=color:#00f>dyn</span> std::error::Error&gt;&gt; {
 </span></span><span style=display:flex><span>        <span style=color:green>// Update config center
-</span></span></span><span style=display:flex><span><span style=color:green></span>        self.config_center.update_config(config.name.clone(), config.clone()).<span style=color:#00f>await</span>;
+</span></span></span><span style=display:flex><span>        self.config_center.update_config(config.name.clone(), config.clone()).<span style=color:#00f>await</span>;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Broadcast config update
-</span></span></span><span style=display:flex><span><span style=color:green></span>        self.config_updates.send(config)?;
+</span></span></span><span style=display:flex><span>        self.config_updates.send(config)?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;Config update published to all subscribers&#34;</span>);
 </span></span><span style=display:flex><span>        Ok(())
@@ -201,23 +201,23 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#00f>pub</span> <span style=color:#00f>async</span> <span style=color:#00f>fn</span> perform_graceful_reload(&amp;self, new_library_path: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>) -&gt; Result&lt;(), Box&lt;<span style=color:#00f>dyn</span> std::error::Error&gt;&gt; {
 </span></span><span style=display:flex><span>        <span style=color:green>// Mark transition start
-</span></span></span><span style=display:flex><span><span style=color:green></span>        *self.is_transitioning.lock().<span style=color:#00f>await</span> = <span style=color:#00f>true</span>;
+</span></span></span><span style=display:flex><span>        *self.is_transitioning.lock().<span style=color:#00f>await</span> = <span style=color:#00f>true</span>;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;Starting graceful reload...&#34;</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Load new version first
-</span></span></span><span style=display:flex><span><span style=color:green></span>        self.new_service.load_library(new_library_path).<span style=color:#00f>await</span>?;
+</span></span></span><span style=display:flex><span>        self.new_service.load_library(new_library_path).<span style=color:#00f>await</span>?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Wait for all ongoing requests to complete
-</span></span></span><span style=display:flex><span><span style=color:green></span>        tokio::time::sleep(Duration::from_secs(2)).<span style=color:#00f>await</span>;
+</span></span></span><span style=display:flex><span>        tokio::time::sleep(Duration::from_secs(2)).<span style=color:#00f>await</span>;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Switch to new version
-</span></span></span><span style=display:flex><span><span style=color:green></span>        <span style=color:#00f>let</span> temp = self.old_service.clone();
+</span></span></span><span style=display:flex><span>        <span style=color:#00f>let</span> temp = self.old_service.clone();
 </span></span><span style=display:flex><span>        <span style=color:#00f>let</span> old_service = std::mem::replace(&amp;<span style=color:#00f>mut</span> *self.old_service.lock().<span style=color:#00f>await</span>, self.new_service.clone());
 </span></span><span style=display:flex><span>        *self.new_service.lock().<span style=color:#00f>await</span> = temp;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Mark transition complete
-</span></span></span><span style=display:flex><span><span style=color:green></span>        *self.is_transitioning.lock().<span style=color:#00f>await</span> = <span style=color:#00f>false</span>;
+</span></span></span><span style=display:flex><span>        *self.is_transitioning.lock().<span style=color:#00f>await</span> = <span style=color:#00f>false</span>;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;Graceful reload completed!&#34;</span>);
 </span></span><span style=display:flex><span>        Ok(())

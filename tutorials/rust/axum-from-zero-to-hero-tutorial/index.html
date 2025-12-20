@@ -28,60 +28,60 @@
 </span></span><span style=display:flex><span><span style=color:#00f>#[tokio::main]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:green>// 我们的“路由总管”，负责管理所有的URL和对应的处理函数
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> app = Router::new().route(<span style=color:#a31515>&#34;/&#34;</span>, get(root_handler));
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> app = Router::new().route(<span style=color:#a31515>&#34;/&#34;</span>, get(root_handler));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 定义服务器的监听地址，127.0.0.1:3000，很经典，对吧？
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;🚀 服务启动，监听在 </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, addr);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 启动服务器，让它开始工作！
-</span></span></span><span style=display:flex><span><span style=color:green></span>    axum::Server::bind(&amp;addr)
+</span></span></span><span style=display:flex><span>    axum::Server::bind(&amp;addr)
 </span></span><span style=display:flex><span>        .serve(app.into_make_service())
 </span></span><span style=display:flex><span>        .<span style=color:#00f>await</span>
 </span></span><span style=display:flex><span>        .unwrap();
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 这是一个“处理函数”（handler），负责处理发往根路径&#34;/&#34;的GET请求
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> root_handler() -&gt; <span style=color:#00f>&amp;</span>&#39;static <span style=color:#2b91af>str</span> {
+</span></span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> root_handler() -&gt; <span style=color:#00f>&amp;</span>&#39;static <span style=color:#2b91af>str</span> {
 </span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;你好，来自Axum的世界！🌍&#34;</span>
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>看到没？这就是一个完整的Web服务器了！我们来庖丁解牛一下：</p><ul><li><code>#[tokio::main]</code>: 这是一个魔法宏，它把我们的<code>main</code>函数变成了一个异步函数，让它能在Tokio的“宇宙”里运行。</li><li><code>Router::new()</code>: 创建一个路由器实例。你可以把它想象成一个<strong>智能交通枢纽</strong>，所有进来的网络请求都要先到这里报到。</li><li><code>.route("/", get(root_handler))</code>: 这就是定义一条交通规则。它告诉路由器：“嘿，如果有人用GET方法访问网站的根目录（<code>/</code>），你就把请求交给<code>root_handler</code>这个家伙去处理。”</li><li><code>axum::Server::bind(&amp;addr).serve(...)</code>: 这就是启动服务器引擎，让它在指定的地址和端口上开始监听，随时准备迎接请求。</li></ul><p>现在，运行<code>cargo run</code>，你就会看到终端打印出 <code>🚀 服务启动，监听在 127.0.0.1:3000</code>。</p><p>打开浏览器，访问 <code>http://localhost:3000</code>，你就能看到那句亲切的问候了。</p><p>感觉怎么样？是不是比想象中简单得多？这只是个开始，真正好玩的还在后头。</p><hr><p>好的，我们的服务器已经能像个迎宾机器人一样，对每个来访者说一句固定的欢迎词了。但这显然不够“智能”。一个真正的Web服务，需要能听懂人话，能根据不同的指令做出不同的反应。</p><p>现在，让我们给这个机器人装上耳朵和大脑。</p><h2 id=第三步让服务器学会指名道姓玩转路径参数><strong>第三步：让服务器学会“指名道姓”——玩转路径参数</strong><a hidden class=anchor aria-hidden=true href=#第三步让服务器学会指名道姓玩转路径参数>#</a></h2><p>想象一下，你不想只说“你好”，而是想亲切地喊出访客的名字，比如“你好，张三！”。这就需要服务器能从URL里“抠”出名字来。</p><p>在Axum里，这简单到令人发指。</p><p>修改一下你的<code>main.rs</code>，加入一个新的路由和处理函数：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> axum::{
 </span></span><span style=display:flex><span>    extract::Path, <span style=color:green>// 👈 新增这个“提取器”
-</span></span></span><span style=display:flex><span><span style=color:green></span>    routing::get,
+</span></span></span><span style=display:flex><span>    routing::get,
 </span></span><span style=display:flex><span>    Router,
 </span></span><span style=display:flex><span>};
 </span></span><span style=display:flex><span><span style=color:green>// ... main函数和其他部分保持不变 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 在main函数里，给Router加一条新规矩
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>let</span> app = Router::new()
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> app = Router::new()
 </span></span><span style=display:flex><span>    .route(<span style=color:#a31515>&#34;/&#34;</span>, get(root_handler))
 </span></span><span style=display:flex><span>    <span style=color:green>// 👇 新增的路由规则
-</span></span></span><span style=display:flex><span><span style=color:green></span>    .route(<span style=color:#a31515>&#34;/hello/:name&#34;</span>, get(greet)); 
+</span></span></span><span style=display:flex><span>    .route(<span style=color:#a31515>&#34;/hello/:name&#34;</span>, get(greet)); 
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// ... main函数结尾部分 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 👇 新增的处理函数
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> greet(Path(name): <span style=color:#2b91af>Path</span>&lt;String&gt;) -&gt; String {
+</span></span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> greet(Path(name): <span style=color:#2b91af>Path</span>&lt;String&gt;) -&gt; String {
 </span></span><span style=display:flex><span>    format!(<span style=color:#a31515>&#34;👋 你好，</span><span style=color:#a31515>{}</span><span style=color:#a31515>！很高兴认识你。&#34;</span>, name)
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>看重点：</p><ul><li><code>/hello/:name</code>: URL里的这个冒号 <code>:</code> 是个占位符，像是在模板上挖了个空。它告诉Axum：“嘿，冒号后面的这部分是动态的，是个变量，名字叫<code>name</code>。”</li><li><code>Path(name): Path&lt;String></code>: 这是Axum的“魔法提取器”。它会自动把URL里 <code>:name</code> 位置的字符串（比如 <code>/hello/张三</code> 里的“张三”）提取出来，并且转换成一个<code>String</code>类型，放进<code>name</code>这个变量里。</li></ul><p>这就是<strong>类型安全</strong>的魅力！你根本不用去操心类型转换或者参数是否存在，Axum在编译阶段就帮你搞定了一切。如果URL不匹配，它根本就不会调用这个函数。</p><p>现在，<code>cargo run</code>重启你的服务。</p><p>去浏览器访问 <code>http://localhost:3000/hello/梦兽编程</code> 试试看。</p><p>是不是感觉服务器一下就变得“耳聪目明”了？</p><h2 id=第四步处理那些七嘴八舌的附加条件查询参数><strong>第四步：处理那些“七嘴八舌”的附加条件——查询参数</strong><a hidden class=anchor aria-hidden=true href=#第四步处理那些七嘴八舌的附加条件查询参数>#</a></h2><p>路径参数好比是门牌号，是地址的一部分，很固定。但有时候，我们的请求会带一些“附加条件”，比如搜索的时候，你可能会想指定关键词、语言、排序方式等等。</p><p>这些附加条件，通常就放在URL的问号<code>?</code>后面，我们称之为“查询参数”（Query Parameters）。就像这样：<code>/search?q=rust&amp;lang=en</code>。</p><p>这就像你点外卖，地址（路径）是固定的，但你在备注（查询参数）里写上“多放辣，不要香菜”。</p><p>Axum处理这种“备注”也同样优雅。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> axum::extract::{Query, Path}; <span style=color:green>// 👈 引入Query提取器
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> serde::Deserialize; <span style=color:green>// 👈 引入serde来帮助解析
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> serde::Deserialize; <span style=color:green>// 👈 引入serde来帮助解析
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 👇 定义一个结构体，用来接收查询参数
 </span></span></span><span style=display:flex><span><span style=color:green>// 这里的`Deserialize`宏是关键，它让这个结构体能从URL参数中创建
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>#[derive(Deserialize)]</span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>#[derive(Deserialize)]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>SearchParams</span> {
 </span></span><span style=display:flex><span>    q: String, <span style=color:green>// 搜索关键词
-</span></span></span><span style=display:flex><span><span style=color:green></span>    lang: Option&lt;String&gt;, <span style=color:green>// 语言，用Option表示这是个可选参数
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>    lang: Option&lt;String&gt;, <span style=color:green>// 语言，用Option表示这是个可选参数
+</span></span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// ... 在main函数里，再加一条路由 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>let</span> app = Router::new()
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> app = Router::new()
 </span></span><span style=display:flex><span>    <span style=color:green>// ... 其他路由 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span>    .route(<span style=color:#a31515>&#34;/search&#34;</span>, get(search));
+</span></span></span><span style=display:flex><span>    .route(<span style=color:#a31515>&#34;/search&#34;</span>, get(search));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 👇 新增的search处理函数
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> search(Query(params): <span style=color:#2b91af>Query</span>&lt;SearchParams&gt;) -&gt; String {
+</span></span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> search(Query(params): <span style=color:#2b91af>Query</span>&lt;SearchParams&gt;) -&gt; String {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> language = params.lang.unwrap_or_else(|| <span style=color:#a31515>&#34;未知&#34;</span>.to_string());
 </span></span><span style=display:flex><span>    format!(
 </span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;🔍 收到搜索请求！关键词：&#39;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#39;，语言：&#39;</span><span style=color:#a31515>{}</span><span style=color:#a31515>&#39;&#34;</span>,
@@ -89,11 +89,11 @@
 </span></span><span style=display:flex><span>    )
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>这里的“骚操作”是：</p><ol><li>我们定义了一个<code>SearchParams</code>结构体，它的字段名（<code>q</code>, <code>lang</code>）和URL中的查询参数名完全对应。</li><li><code>Query(params): Query&lt;SearchParams></code>这个提取器，会像一个智能的表格填写机器人，自动把URL里的查询参数填到<code>SearchParams</code>这个结构体的实例中。</li><li>我们用了<code>Option&lt;String></code>来处理可选参数<code>lang</code>。如果URL里没有提供<code>lang</code>，它就是<code>None</code>，我们的程序也不会崩溃，优雅地处理了这种情况。</li></ol><p><code>cargo run</code>重启服务，然后访问 <code>http://localhost:3000/search?q=Axum太强了&amp;lang=中文</code>。</p><p>再试试不带<code>lang</code>参数的：<code>http://localhost:3000/search?q=Rust无敌</code>。</p><p>看到没？Axum就像一个训练有素的管家，总能精确地理解你那些“七嘴八舌”的附加要求。</p><h2 id=第五步现代api的通用语优雅地处理json><strong>第五步：现代API的通用语——优雅地处理JSON</strong><a hidden class=anchor aria-hidden=true href=#第五步现代api的通用语优雅地处理json>#</a></h2><p>好了，前面都是开胃小菜。在现代Web开发中，我们打交道最多的，其实是JSON。前端发来一个JSON，后端返回一个JSON，这已经成了标配。</p><p>这就像去一家高级餐厅，你（客户端）给服务员一张写着菜名的点菜单（JSON请求），厨师（服务器）做好菜后，给你端上一盘色香味俱全的菜肴（JSON响应）。</p><p>Axum处理JSON，简直就是艺术。这得益于Rust生态的另一个大神器：<code>serde</code>。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> axum::{extract::{Query, Path, Json}, response::IntoResponse}; <span style=color:green>// 👈 引入Json和IntoResponse
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> serde::{Deserialize, Serialize}; <span style=color:green>// 👈 引入Serialize和Deserialize
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> serde::{Deserialize, Serialize}; <span style=color:green>// 👈 引入Serialize和Deserialize
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 👇 定义输入结构体（客户端发来的点菜单）
 </span></span></span><span style=display:flex><span><span style=color:green>// `Deserialize`让它能从JSON字符串变成Rust结构体
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>#[derive(Deserialize)]</span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>#[derive(Deserialize)]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>CreateUser</span> {
 </span></span><span style=display:flex><span>    username: String,
 </span></span><span style=display:flex><span>    email: String,
@@ -101,7 +101,7 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 👇 定义输出结构体（我们返回给客户端的菜肴）
 </span></span></span><span style=display:flex><span><span style=color:green>// `Serialize`让它能从Rust结构体变成JSON字符串
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>#[derive(Serialize)]</span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>#[derive(Serialize)]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>User</span> {
 </span></span><span style=display:flex><span>    id: <span style=color:#2b91af>u64</span>,
 </span></span><span style=display:flex><span>    username: String,
@@ -109,84 +109,84 @@
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// ... 在main函数里，添加一个处理POST请求的路由 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>let</span> app = Router::new()
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> app = Router::new()
 </span></span><span style=display:flex><span>    <span style=color:green>// ... 其他路由 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span>    .route(<span style=color:#a31515>&#34;/users&#34;</span>, post(create_user)); <span style=color:green>// 👈 注意这里是post()
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>    .route(<span style=color:#a31515>&#34;/users&#34;</span>, post(create_user)); <span style=color:green>// 👈 注意这里是post()
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 👇 新增的create_user处理函数
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> create_user(Json(payload): <span style=color:#2b91af>Json</span>&lt;CreateUser&gt;) -&gt; <span style=color:#2b91af>impl</span> IntoResponse {
+</span></span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> create_user(Json(payload): <span style=color:#2b91af>Json</span>&lt;CreateUser&gt;) -&gt; <span style=color:#2b91af>impl</span> IntoResponse {
 </span></span><span style=display:flex><span>    <span style=color:green>// 这里的Json(payload)提取器，直接把请求体里的JSON解析成了CreateUser结构体
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:green>// 是不是很神奇？
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>    <span style=color:green>// 是不是很神奇？
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 实际上，这里你会把用户信息存入数据库，然后生成一个ID
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:green>// 我们这里为了演示，就随便给一个ID
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> user = User {
+</span></span></span><span style=display:flex><span>    <span style=color:green>// 我们这里为了演示，就随便给一个ID
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> user = User {
 </span></span><span style=display:flex><span>        id: 1337,
 </span></span><span style=display:flex><span>        username: <span style=color:#2b91af>payload</span>.username,
 </span></span><span style=display:flex><span>        email: <span style=color:#2b91af>payload</span>.email,
 </span></span><span style=display:flex><span>    };
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 把user这个结构体包装成Json格式返回
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:green>// Axum会自动设置HTTP头 Content-Type: application/json
-</span></span></span><span style=display:flex><span><span style=color:green></span>    (axum::http::StatusCode::CREATED, Json(user))
+</span></span></span><span style=display:flex><span>    <span style=color:green>// Axum会自动设置HTTP头 Content-Type: application/json
+</span></span></span><span style=display:flex><span>    (axum::http::StatusCode::CREATED, Json(user))
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>这段代码的精华在于：</p><ul><li><code>#[derive(Deserialize, Serialize)]</code>: 这两个宏是<code>serde</code>库提供的“魔法棒”。一点，你的结构体就立刻获得了“序列化”（变身JSON）和“反序列化”（从JSON变回来）的超能力。</li><li><code>Json(payload): Json&lt;CreateUser></code>: 这个提取器负责把HTTP请求体（Request Body）里的JSON数据，直接转换成一个<code>CreateUser</code>实例。你完全不用手动解析字符串，告别了在其他语言里可能遇到的<code>JSON.parse()</code>和各种繁琐的验证。</li><li><code>-> impl IntoResponse</code>: 这表示我们的函数会返回一个可以被转换成HTTP响应的东西。</li><li><code>(StatusCode::CREATED, Json(user))</code>: 我们不仅返回了<code>Json(user)</code>作为响应体，还顺便指定了HTTP状态码为<code>201 CREATED</code>，非常符合RESTful规范。Axum会自动帮你把<code>user</code>这个Rust对象转换成JSON字符串，并设置好正确的<code>Content-Type</code>头。</li></ul><p>因为浏览器不方便发送POST请求，你需要用<code>curl</code>或者Postman这样的工具来测试它。打开你的终端，试试这个命令：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>curl -X POST <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span><span style=color:#a31515></span>  http://localhost:3000/users <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span><span style=color:#a31515></span>  -H <span style=color:#a31515>&#39;Content-Type: application/json&#39;</span> <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span><span style=color:#a31515></span>  -d <span style=color:#a31515>&#39;{
+</span></span></span><span style=display:flex><span>  http://localhost:3000/users <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>  -H <span style=color:#a31515>&#39;Content-Type: application/json&#39;</span> <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>  -d <span style=color:#a31515>&#39;{
 </span></span></span><span style=display:flex><span><span style=color:#a31515>    &#34;username&#34;: &#34;梦兽编程&#34;,
 </span></span></span><span style=display:flex><span><span style=color:#a31515>    &#34;email&#34;: &#34;ai@example.com&#34;
 </span></span></span><span style=display:flex><span><span style=color:#a31515>  }&#39;</span>
 </span></span></code></pre></div><p>你会收到一个漂亮的JSON响应，告诉你用户已创建成功。</p><p>至此，我们的服务器已经从一个只会说“你好”的机器人，进化成了一个能听懂指令、会填表、还能按订单做菜的五星大厨了。</p><p>但一个真正的生产级应用，还需要处理共享状态（比如数据库连接池）、日志、认证等更复杂的问题。这就要请出Axum的另外两个大杀器：<strong>State</strong>和<strong>Middleware</strong>。</p><p>准备好了吗？下一章，我们将进入更深层的领域，探索如何让我们的“乐高”服务器拥有记忆和保安。</p><hr><p>我们已经打造了一个聪明的“厨师”，他能看懂菜单（路径参数）、听懂备注（查询参数）、还能烹饪标准的JSON大餐。</p><p>但现在，我们的餐厅有一个致命问题：<strong>厨师没有记忆</strong>。</p><p>他不知道今天来了多少客人，也不知道哪些是VIP客户。每个订单对他来说都是全新的，做完就忘。而且，餐厅门口连个迎宾和保安都没有，谁都能随便进。</p><p>这可不行。一家高级餐厅，必须有记忆（共享状态）和流程（中间件）。</p><h2 id=第六步给服务器一颗大脑共享状态的艺术><strong>第六步：给服务器一颗“大脑”——共享状态的艺术</strong><a hidden class=anchor aria-hidden=true href=#第六步给服务器一颗大脑共享状态的艺术>#</a></h2><p>在Web开发中，“状态”是个核心概念。它可以是数据库连接池、应用的配置信息，或者一个简单的网站访问计数器。它需要在不同的请求之间共享和维护。</p><p>在Axum中，我们要实现这个，需要请出两个Rust并发编程的“守护神”：<code>Arc</code>和<code>Mutex</code>。</p><p>别怕，这两个词看着吓人，我用一个比喻你就懂了。</p><p>想象一下，我们餐厅的厨房中央，有一本**《今日客流量》**的记事本，所有厨师（请求处理线程）都需要在上面登记。</p><ul><li><p><code>Mutex</code> (互斥锁): 这就是给这本<strong>记事本配的一把锁和一把钥匙</strong>。为了防止两个厨师同时在上面写字导致内容混乱，规定同一时间只能有一个厨师拿到钥匙，打开本子写字。写完后，必须把钥匙还回来，下一个厨师才能用。这个过程就叫“加锁”和“解锁”。</p></li><li><p><code>Arc</code> (原子引用计数): 现在问题来了，我们有很多厨师，但钥匙只有一把。怎么管理这把钥匙的“所有权”呢？<code>Arc</code>就像一个<strong>高度智能的钥匙管理员</strong>。它会复制出很多“凭证”，安全地分发给每个需要用钥匙的厨师。它内部会默默地记着“我发了多少凭证出去”。当一个厨师用完钥匙，他的凭证就作废了。当所有凭证都作废后，<code>Arc</code>就知道这把钥匙没用了，可以安全地销毁了。</p></li></ul><p><code>Arc&lt;Mutex&lt;T>></code> 这个组合，就是Rust里实现线程安全共享数据的“黄金搭档”。它保证了数据在多线程环境下既能被共享，又不会被同时修改而出错。</p><p>好了，理论课结束，上代码！我们要实现一个简单的“访问计数器”。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> axum::{
 </span></span><span style=display:flex><span>    extract::Extension, <span style=color:green>// 👈 注意，这里我们用Extension层来注入状态
-</span></span></span><span style=display:flex><span><span style=color:green></span>    routing::get,
+</span></span></span><span style=display:flex><span>    routing::get,
 </span></span><span style=display:flex><span>    Router,
 </span></span><span style=display:flex><span>};
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> std::sync::{Arc, Mutex}; <span style=color:green>// 👈 引入我们的两位“守护神”
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 定义一个类型别名，让代码更清晰
 </span></span></span><span style=display:flex><span><span style=color:green>// 这就是我们的“带锁的、可被多线程共享的计数器”
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>type</span> <span style=color:#2b91af>SharedState</span> = Arc&lt;Mutex&lt;<span style=color:#2b91af>u32</span>&gt;&gt;;
+</span></span></span><span style=display:flex><span><span style=color:#00f>type</span> <span style=color:#2b91af>SharedState</span> = Arc&lt;Mutex&lt;<span style=color:#2b91af>u32</span>&gt;&gt;;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>#[tokio::main]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:green>// 👇 初始化我们的共享状态
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:green>// 创建一个被Arc和Mutex包裹的计数器，初始值为0
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> shared_state = SharedState::new(Mutex::new(0));
+</span></span></span><span style=display:flex><span>    <span style=color:green>// 创建一个被Arc和Mutex包裹的计数器，初始值为0
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> shared_state = SharedState::new(Mutex::new(0));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> app = Router::new()
 </span></span><span style=display:flex><span>        .route(<span style=color:#a31515>&#34;/&#34;</span>, get(root_handler))
 </span></span><span style=display:flex><span>        <span style=color:green>// 👇 新增一个路由，用来显示和增加计数
-</span></span></span><span style=display:flex><span><span style=color:green></span>        .route(<span style=color:#a31515>&#34;/hits&#34;</span>, get(hit_counter))
+</span></span></span><span style=display:flex><span>        .route(<span style=color:#a31515>&#34;/hits&#34;</span>, get(hit_counter))
 </span></span><span style=display:flex><span>        <span style=color:green>// 👇 这是关键！使用.layer()方法，把我们的共享状态“注入”到应用中
-</span></span></span><span style=display:flex><span><span style=color:green></span>        <span style=color:green>// 现在，所有处理函数都能从这一层里拿到状态了
-</span></span></span><span style=display:flex><span><span style=color:green></span>        .layer(Extension(shared_state));
+</span></span></span><span style=display:flex><span>        <span style=color:green>// 现在，所有处理函数都能从这一层里拿到状态了
+</span></span></span><span style=display:flex><span>        .layer(Extension(shared_state));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// ... 启动服务器的代码不变 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// ... root_handler 不变 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 👇 新增的计数器处理函数
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> hit_counter(Extension(state): <span style=color:#2b91af>Extension</span>&lt;SharedState&gt;) -&gt; String {
+</span></span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> hit_counter(Extension(state): <span style=color:#2b91af>Extension</span>&lt;SharedState&gt;) -&gt; String {
 </span></span><span style=display:flex><span>    <span style=color:green>// 1. 从Extension中拿到我们的共享状态
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:green>// 2. .lock() - 厨师拿到了记事本的钥匙
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:green>// 3. .unwrap() - 打开了锁（这里我们假设锁总能打开）
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> count = state.lock().unwrap();
+</span></span></span><span style=display:flex><span>    <span style=color:green>// 2. .lock() - 厨师拿到了记事本的钥匙
+</span></span></span><span style=display:flex><span>    <span style=color:green>// 3. .unwrap() - 打开了锁（这里我们假设锁总能打开）
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> count = state.lock().unwrap();
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 4. *count += 1 - 在记事本上把数字加1
-</span></span></span><span style=display:flex><span><span style=color:green></span>    *count += 1;
+</span></span></span><span style=display:flex><span>    *count += 1;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 5. 返回一句话，把当前的客流量告诉访客
-</span></span></span><span style=display:flex><span><span style=color:green></span>    format!(<span style=color:#a31515>&#34;你是第 </span><span style=color:#a31515>{}</span><span style=color:#a31515> 位访客！感谢光临！&#34;</span>, count)
+</span></span></span><span style=display:flex><span>    format!(<span style=color:#a31515>&#34;你是第 </span><span style=color:#a31515>{}</span><span style=color:#a31515> 位访客！感谢光临！&#34;</span>, count)
 </span></span><span style=display:flex><span>    <span style=color:green>// 当函数结束时，`count`这个变量被销毁，锁会自动释放，钥匙就还回去了
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>现在，<code>cargo run</code>重启服务。</p><p>你第一次访问 <code>http://localhost:3000/hits</code>，会看到“你是第 1 位访客！”。
 刷新一下，就变成了“你是第 2 位访客！”。
 再打开一个无痕窗口访问，计数会继续增加到3。</p><p>看到了吗？我们的服务器拥有了记忆！它不再是那个健忘的厨师了。通过<code>Extension</code>层，我们像安装了一个“中央数据架”，任何一个处理流程都能按需取用。</p><h2 id=第七步建立安检通道无所不能的中间件><strong>第七步：建立“安检通道”——无所不能的中间件</strong><a hidden class=anchor aria-hidden=true href=#第七步建立安检通道无所不能的中间件>#</a></h2><p>中间件（Middleware）是现代Web框架的精髓。它像一个<strong>可插拔的安检通道</strong>，所有进入餐厅的请求，都必须先经过它。</p><p>你可以在这个通道里做任何事：</p><ul><li><strong>记录日志</strong>：每个请求进来，先记下一笔：什么时间，访问了哪个URL。</li><li><strong>身份验证</strong>：检查请求是否带有合法的“会员卡”（Token），没有就直接拦下。</li><li><strong>数据压缩</strong>：把返回给客户端的内容打包一下，节省流量。</li><li><strong>CORS处理</strong>：处理跨域请求，决定是否要接待来自“隔壁商业街”的客人。</li></ul><p>Axum的中间件系统构建在<code>tower</code>这个强大的库之上，生态非常丰富。我们来加一个最常用的——<strong>日志中间件</strong>。</p><p>首先，你需要添加一个新的依赖：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>cargo add tower-http --features <span style=color:#a31515>&#34;trace&#34;</span>
 </span></span></code></pre></div><p>然后，在代码里把它“安装”到我们的应用上：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> tower_http::trace::TraceLayer; <span style=color:green>// 👈 引入日志层
-</span></span></span><span style=display:flex><span><span style=color:green></span><span style=color:#00f>use</span> axum::{Extension, Router, routing::get}; <span style=color:green>// ...其他use语句...
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>use</span> axum::{Extension, Router, routing::get}; <span style=color:green>// ...其他use语句...
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>#[tokio::main]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> shared_state = <span style=color:green>/* ... */</span>;
@@ -196,10 +196,10 @@
 </span></span><span style=display:flex><span>        .route(<span style=color:#a31515>&#34;/hits&#34;</span>, get(hit_counter))
 </span></span><span style=display:flex><span>        .layer(Extension(shared_state))
 </span></span><span style=display:flex><span>        <span style=color:green>// 👇 在所有路由定义之后，再加一个全局的日志层
-</span></span></span><span style=display:flex><span><span style=color:green></span>        .layer(TraceLayer::new_for_http()); <span style=color:green>// 👈 就是这一行！
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>        .layer(TraceLayer::new_for_http()); <span style=color:green>// 👈 就是这一行！
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// ... 启动服务器 ...
-</span></span></span><span style=display:flex><span><span style=color:green></span>}
+</span></span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// ... 其他处理函数 ...
 </span></span></span></code></pre></div><p>就这么简单！只需要一行<code>.layer(TraceLayer::new_for_http())</code>，我们的服务器就拥有了完整的HTTP请求日志功能。</p><p>现在<code>cargo run</code>，然后随便访问几个你之前创建的URL，比如<code>/</code>、<code>/hits</code>、<code>/hello/somebody</code>。</p><p>再回头看看你的终端，你会发现它打印出了类似这样的详细日志：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>INFO  tower_http::trace::on_request: started processing request

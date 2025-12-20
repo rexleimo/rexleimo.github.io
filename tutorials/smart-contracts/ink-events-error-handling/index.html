@@ -130,17 +130,17 @@
 </span></span><span style=display:flex><span>            assert!(token.mint(bob, 100).is_ok());
 </span></span><span style=display:flex><span>            <span style=color:#00f>let</span> events: Vec&lt;_&gt; = test::recorded_events().collect();
 </span></span><span style=display:flex><span>            assert_eq!(events.len(), 1); <span style=color:green>// 简单断言：确实有事件记录
-</span></span></span><span style=display:flex><span><span style=color:green></span>        }
+</span></span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:#00f>#[ink::test]</span>
 </span></span><span style=display:flex><span>        <span style=color:#00f>fn</span> transfer_checks_balance() {
 </span></span><span style=display:flex><span>            <span style=color:#00f>let</span> <span style=color:#00f>mut</span> token = MiniToken::new();
 </span></span><span style=display:flex><span>            <span style=color:#00f>let</span> accounts = test::default_accounts::&lt;ink::env::DefaultEnvironment&gt;();
 </span></span><span style=display:flex><span>            <span style=color:green>// owner -&gt; bob 铸 100
-</span></span></span><span style=display:flex><span><span style=color:green></span>            assert!(token.mint(accounts.bob, 100).is_ok());
+</span></span></span><span style=display:flex><span>            assert!(token.mint(accounts.bob, 100).is_ok());
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>            <span style=color:green>// 以 bob 身份发送交易
-</span></span></span><span style=display:flex><span><span style=color:green></span>            test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.bob);
+</span></span></span><span style=display:flex><span>            test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.bob);
 </span></span><span style=display:flex><span>            assert!(matches!(token.transfer(accounts.alice, 150), Err(Error::InsufficientBalance)));
 </span></span><span style=display:flex><span>            assert!(token.transfer(accounts.alice, 40).is_ok());
 </span></span><span style=display:flex><span>            assert_eq!(token.balance_of(accounts.alice), 40);

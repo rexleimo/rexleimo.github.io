@@ -27,29 +27,29 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() -&gt; <span style=color:#2b91af>std</span>::io::Result&lt;()&gt; {
 </span></span><span style=display:flex><span>    <span style=color:green>// 创建一个能容纳 256 个请求的环
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> ring = IoUring::new(256)?;
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> ring = IoUring::new(256)?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> file = File::open(<span style=color:#a31515>&#34;test.txt&#34;</span>)?;
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> fd = types::Fd(file.as_raw_fd());
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 准备一个读操作
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> buf = vec![0<span style=color:#00f>u8</span>; 1024];
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> buf = vec![0<span style=color:#00f>u8</span>; 1024];
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> read_op = opcode::Read::new(fd, buf.as_mut_ptr(), buf.len() <span style=color:#00f>as</span> _)
 </span></span><span style=display:flex><span>        .build()
 </span></span><span style=display:flex><span>        .user_data(0x42);  <span style=color:green>// 给这个操作打个标记
-</span></span></span><span style=display:flex><span><span style=color:green></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 把操作放入提交队列
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>unsafe</span> {
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>unsafe</span> {
 </span></span><span style=display:flex><span>        ring.submission()
 </span></span><span style=display:flex><span>            .push(&amp;read_op)
 </span></span><span style=display:flex><span>            .expect(<span style=color:#a31515>&#34;提交队列满了&#34;</span>);
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 提交并等待完成
-</span></span></span><span style=display:flex><span><span style=color:green></span>    ring.submit_and_wait(1)?;
+</span></span></span><span style=display:flex><span>    ring.submit_and_wait(1)?;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 从完成队列取结果
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> cqe = ring.completion().next().expect(<span style=color:#a31515>&#34;没有完成的操作&#34;</span>);
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> cqe = ring.completion().next().expect(<span style=color:#a31515>&#34;没有完成的操作&#34;</span>);
 </span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;读取完成，返回值: </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, cqe.result());
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    Ok(())
@@ -94,7 +94,7 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:#00f>match</span> result {
 </span></span><span style=display:flex><span>            Ok(0) =&gt; <span style=color:#00f>break</span>,  <span style=color:green>// 连接关闭
-</span></span></span><span style=display:flex><span><span style=color:green></span>            Ok(n) =&gt; {
+</span></span></span><span style=display:flex><span>            Ok(n) =&gt; {
 </span></span><span style=display:flex><span>                <span style=color:#00f>let</span> (result, b) = stream.write_all(buf[..n].to_vec()).<span style=color:#00f>await</span>;
 </span></span><span style=display:flex><span>                buf = vec![0<span style=color:#00f>u8</span>; 1024];
 </span></span><span style=display:flex><span>                <span style=color:#00f>if</span> result.is_err() {

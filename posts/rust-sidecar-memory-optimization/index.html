@@ -39,14 +39,14 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> normalize(Json(input): <span style=color:#2b91af>Json</span>&lt;Input&gt;) -&gt; <span style=color:#2b91af>Json</span>&lt;Output&gt; {
 </span></span><span style=display:flex><span>    <span style=color:green>// 简单的格式化：去空格、转小写
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> clean = input.text.trim().to_lowercase();
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> clean = input.text.trim().to_lowercase();
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#00f>if</span> clean.is_empty() {
 </span></span><span style=display:flex><span>        <span style=color:#00f>return</span> Json(Output { ok: <span style=color:#2b91af>false</span>, bytes: 0, compressed: <span style=color:#2b91af>vec</span>![] })
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 压缩
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> encoder = GzEncoder::new(Vec::new(), Compression::fast());
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> <span style=color:#00f>mut</span> encoder = GzEncoder::new(Vec::new(), Compression::fast());
 </span></span><span style=display:flex><span>    encoder.write_all(clean.as_bytes()).ok();
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> body = encoder.finish().unwrap_or_default();
 </span></span><span style=display:flex><span>

@@ -24,17 +24,17 @@
 </span></span></code></pre></div><h2 id=实战代码6行html实现网页秒开><strong>实战代码：6行HTML实现网页秒开</strong><a hidden class=anchor aria-hidden=true href=#实战代码6行html实现网页秒开>#</a></h2><p>这段代码就是实现网页秒开的核心配置，支持<strong>prefetch预加载</strong>和<strong>prerender预渲染</strong>两种模式：</p><h3 id=1-prefetch预加载模式><strong>1. Prefetch预加载模式</strong><a hidden class=anchor aria-hidden=true href=#1-prefetch预加载模式>#</a></h3><p><strong>作用机制</strong>：当用户鼠标悬停在链接上超过200毫秒时，浏览器会提前下载目标页面的HTML文档，但不执行任何脚本或样式渲染。</p><p><strong>性能提升</strong>：可减少页面加载时间30-50%，特别适用于内容型网站和博客。</p><p><strong>使用场景</strong>：新闻网站、博客、文档站点等以内容为主的页面。</p><p><img loading=lazy src=/js-news/html-speculation-rules-instant-page-load/2025-08-01-14-06-50.png></p><h3 id=2-prerender预渲染模式><strong>2. Prerender预渲染模式</strong><a hidden class=anchor aria-hidden=true href=#2-prerender预渲染模式>#</a></h3><p><strong>作用机制</strong>：不仅下载HTML文档，还会完全渲染整个页面，包括CSS样式执行、JavaScript脚本运行和图片资源加载。</p><p><strong>性能提升</strong>：可实现<strong>零延迟</strong>页面跳转，用户体验接近原生应用。</p><p><strong>使用场景</strong>：电商网站、Web应用、需要极致用户体验的场景。</p><p><strong>配置说明</strong>：代码中的 <code>"eagerness": "moderate"</code> 参数设置了200毫秒的触发延迟，避免误触发造成资源浪费。</p><h2 id=浏览器兼容性分析chrome-121专属技术><strong>浏览器兼容性分析：Chrome 121+专属技术</strong><a hidden class=anchor aria-hidden=true href=#浏览器兼容性分析chrome-121专属技术>#</a></h2><p><strong>支持情况</strong>：</p><ul><li>✅ <strong>Chrome 121+</strong>: 完全支持推测规则API</li><li>✅ <strong>Edge 121+</strong>: 基于Chromium，完全支持</li><li>❌ <strong>Firefox</strong>: 暂不支持，需使用polyfill方案</li><li>❌ <strong>Safari</strong>: 暂不支持，需使用传统预加载</li></ul><p><strong>版本支持统计</strong>：目前全球约有65%的用户可以使用这项技术，主要集中在桌面端Chrome用户。</p><p><img loading=lazy src=/js-news/html-speculation-rules-instant-page-load/2025-08-01-14-08-04.png></p><h2 id=给麻瓜的安慰奖><strong>给“麻瓜”的安慰奖</strong><a hidden class=anchor aria-hidden=true href=#给麻瓜的安慰奖>#</a></h2><p>那是不是意味着其他浏览器的用户就只能继续忍受“龟速”加载呢？当然不。虽然他们用不了 <code>prerender</code> 这个神级魔法，但我们可以用一段小小的 JavaScript，教会他们 <code>prefetch</code> 这个“基础把式”。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span><span style=color:green>&lt;!-- 跨浏览器预加载兼容方案 --&gt;</span>
 </span></span><span style=display:flex><span>&lt;script&gt;
 </span></span><span style=display:flex><span>  <span style=color:green>// 检测浏览器是否支持Speculation Rules API
-</span></span></span><span style=display:flex><span><span style=color:green></span>  <span style=color:#00f>if</span> (!HTMLScriptElement.supports || !HTMLScriptElement.supports(<span style=color:#a31515>&#39;speculationrules&#39;</span>)) {
+</span></span></span><span style=display:flex><span>  <span style=color:#00f>if</span> (!HTMLScriptElement.supports || !HTMLScriptElement.supports(<span style=color:#a31515>&#39;speculationrules&#39;</span>)) {
 </span></span><span style=display:flex><span>    <span style=color:#00f>const</span> preloadedUrls = {};
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 鼠标悬停预加载处理函数
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>function</span> pointerenterHandler () {
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>function</span> pointerenterHandler () {
 </span></span><span style=display:flex><span>      <span style=color:#00f>if</span> (!preloadedUrls[<span style=color:#00f>this</span>.href]) {
 </span></span><span style=display:flex><span>        preloadedUrls[<span style=color:#00f>this</span>.href] = <span style=color:#00f>true</span>;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:#00f>const</span> prefetcher = document.createElement(<span style=color:#a31515>&#39;link&#39;</span>);
 </span></span><span style=display:flex><span>        <span style=color:green>// 智能选择预加载方式
-</span></span></span><span style=display:flex><span><span style=color:green></span>        prefetcher.as = prefetcher.relList.supports(<span style=color:#a31515>&#39;prefetch&#39;</span>) ? <span style=color:#a31515>&#39;document&#39;</span> : <span style=color:#a31515>&#39;fetch&#39;</span>;
+</span></span></span><span style=display:flex><span>        prefetcher.as = prefetcher.relList.supports(<span style=color:#a31515>&#39;prefetch&#39;</span>) ? <span style=color:#a31515>&#39;document&#39;</span> : <span style=color:#a31515>&#39;fetch&#39;</span>;
 </span></span><span style=display:flex><span>        prefetcher.rel = prefetcher.relList.supports(<span style=color:#a31515>&#39;prefetch&#39;</span>) ? <span style=color:#a31515>&#39;prefetch&#39;</span> : <span style=color:#a31515>&#39;preload&#39;</span>;
 </span></span><span style=display:flex><span>        prefetcher.href = <span style=color:#00f>this</span>.href;
 </span></span><span style=display:flex><span>
@@ -43,7 +43,7 @@
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:green>// 为所有内部链接添加预加载
-</span></span></span><span style=display:flex><span><span style=color:green></span>    document.querySelectorAll(<span style=color:#a31515>&#39;a[href^=&#34;/&#34;]&#39;</span>).forEach(item =&gt; {
+</span></span></span><span style=display:flex><span>    document.querySelectorAll(<span style=color:#a31515>&#39;a[href^=&#34;/&#34;]&#39;</span>).forEach(item =&gt; {
 </span></span><span style=display:flex><span>      item.addEventListener(<span style=color:#a31515>&#39;pointerenter&#39;</span>, pointerenterHandler);
 </span></span><span style=display:flex><span>    });
 </span></span><span style=display:flex><span>  }
@@ -58,9 +58,9 @@
 </span></span></code></pre></div><h3 id=步骤2兼容性处理><strong>步骤2：兼容性处理</strong><a hidden class=anchor aria-hidden=true href=#步骤2兼容性处理>#</a></h3><p>添加跨浏览器支持代码：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span><span style=color:green>&lt;!-- 兼容性解决方案 --&gt;</span>
 </span></span><span style=display:flex><span>&lt;script&gt;
 </span></span><span style=display:flex><span>  <span style=color:green>// 检测浏览器支持情况
-</span></span></span><span style=display:flex><span><span style=color:green></span>  <span style=color:#00f>if</span> (!HTMLScriptElement.supports || !HTMLScriptElement.supports(<span style=color:#a31515>&#39;speculationrules&#39;</span>)) {
+</span></span></span><span style=display:flex><span>  <span style=color:#00f>if</span> (!HTMLScriptElement.supports || !HTMLScriptElement.supports(<span style=color:#a31515>&#39;speculationrules&#39;</span>)) {
 </span></span><span style=display:flex><span>    <span style=color:green>// 传统预加载方案
-</span></span></span><span style=display:flex><span><span style=color:green></span>    <span style=color:#00f>const</span> preloadedUrls = {};
+</span></span></span><span style=display:flex><span>    <span style=color:#00f>const</span> preloadedUrls = {};
 </span></span><span style=display:flex><span>    <span style=color:#00f>function</span> pointerenterHandler () {
 </span></span><span style=display:flex><span>      <span style=color:#00f>if</span> (!preloadedUrls[<span style=color:#00f>this</span>.href]) {
 </span></span><span style=display:flex><span>        preloadedUrls[<span style=color:#00f>this</span>.href] = <span style=color:#00f>true</span>;

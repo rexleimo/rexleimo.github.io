@@ -104,18 +104,18 @@
 </span></span><span style=display:flex><span>        <span style=color:#00f>let</span> <span style=color:#00f>mut</span> contract = AccessGuard::new();
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// 默认 caller 是 Alice
-</span></span></span><span style=display:flex><span><span style=color:green></span>        assert_eq!(contract.set_value(42), Ok(()));
+</span></span></span><span style=display:flex><span>        assert_eq!(contract.set_value(42), Ok(()));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Bob 被拒绝
-</span></span></span><span style=display:flex><span><span style=color:green></span>        ink::env::test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.bob);
+</span></span></span><span style=display:flex><span>        ink::env::test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.bob);
 </span></span><span style=display:flex><span>        assert_eq!(contract.set_value(7), Err(AccessError::NotOwner));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Alice 授权 Bob 成为 minter
-</span></span></span><span style=display:flex><span><span style=color:green></span>        ink::env::test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.alice);
+</span></span></span><span style=display:flex><span>        ink::env::test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.alice);
 </span></span><span style=display:flex><span>        assert_eq!(contract.add_minter(accounts.bob), Ok(()));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:green>// Bob 现在可以 mint
-</span></span></span><span style=display:flex><span><span style=color:green></span>        ink::env::test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.bob);
+</span></span></span><span style=display:flex><span>        ink::env::test::set_caller::&lt;ink::env::DefaultEnvironment&gt;(accounts.bob);
 </span></span><span style=display:flex><span>        assert!(contract.mint(accounts.charlie, 5).is_ok());
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
