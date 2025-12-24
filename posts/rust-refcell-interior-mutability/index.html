@@ -1,0 +1,253 @@
+<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Rust的RefCell：那个让我抓狂又让我顿悟的特性 | 梦兽编程</title><meta name=keywords content="Rust,RefCell,内部可变性,所有权,内存安全"><meta name=description content="第一次看到RefCell时，我以为Rust疯了。后来才明白，这不是打破规则，而是给规则开了扇后门。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/posts/rust-refcell-interior-mutability/><link crossorigin=anonymous href=/assets/css/stylesheet.f06e69b47c779b3fd16f3246533c21cb47551e48da53db7bbe392693a646beca.css integrity="sha256-8G5ptHx3mz/RbzJGUzwhy0dVHkjaU9t7vjkmk6ZGvso=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/posts/rust-refcell-interior-mutability/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preload href=/css/extended/bundle.min.c30e2e9522d4ca82625231dd71c37e036aa09d16e5721141bf4a9313a67911e6.css as=style integrity="sha256-ww4ulSLUyoJiUjHdccN+A2qgnRblchFBv0qTE6Z5EeY="><link rel=stylesheet href=/css/extended/bundle.min.c30e2e9522d4ca82625231dd71c37e036aa09d16e5721141bf4a9313a67911e6.css integrity="sha256-ww4ulSLUyoJiUjHdccN+A2qgnRblchFBv0qTE6Z5EeY="><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/posts/rust-refcell-interior-mutability/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Rust的RefCell：那个让我抓狂又让我顿悟的特性"><meta property="og:description" content="第一次看到RefCell时，我以为Rust疯了。后来才明白，这不是打破规则，而是给规则开了扇后门。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-12-24T00:00:00+00:00"><meta property="article:modified_time" content="2025-12-24T00:00:00+00:00"><meta property="article:tag" content="Rust"><meta property="article:tag" content="RefCell"><meta property="article:tag" content="内部可变性"><meta property="article:tag" content="所有权"><meta property="article:tag" content="内存安全"><meta property="og:image" content="https://rexai.top/images/refcell-rust.jpg"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://rexai.top/images/refcell-rust.jpg"><meta name=twitter:title content="Rust的RefCell：那个让我抓狂又让我顿悟的特性"><meta name=twitter:description content="第一次看到RefCell时，我以为Rust疯了。后来才明白，这不是打破规则，而是给规则开了扇后门。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://rexai.top/posts/"},{"@type":"ListItem","position":2,"name":"Rust的RefCell：那个让我抓狂又让我顿悟的特性","item":"https://rexai.top/posts/rust-refcell-interior-mutability/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Rust的RefCell：那个让我抓狂又让我顿悟的特性","name":"Rust的RefCell：那个让我抓狂又让我顿悟的特性","description":"第一次看到RefCell时，我以为Rust疯了。后来才明白，这不是打破规则，而是给规则开了扇后门。","keywords":["Rust","RefCell","内部可变性","所有权","内存安全"],"articleBody":"说实话，第一次看到RefCell的时候，我差点把电脑关了。\nRust不是号称\"安全第一\"吗？不是默认不可变吗？现在突然冒出个东西，告诉你\"嘿，我们可以通过不可变引用来修改数据\"，这不是自己打自己脸吗？\n我的脑子里全是问号：这不就是Rust花那么大力气要防止的事情吗？\n但后来，当我真正理解它在解决什么问题的时候，才发现这个设计有多精妙。\n今天咱们就来聊聊这个让我抓狂又让我顿悟的特性。\nRefCell是什么？带门禁的可变房间 把RefCell想象成一个带门禁系统的房间。这个房间有个特殊的规定：表面上看起来，这个房间是\"只读\"的，任何人都可以进去参观。但如果你有门禁卡，你进去后可以改变房间里的东西。\n这个\"门禁系统\"就是RefCell的运行时借用检查。用个图来说明：\n正常Rust（编译期检查）： ┌─────────┐ ┌─────────────┐ │ 变量 x │────▶│ 值：10 │ ← 不可变引用 \u0026x └─────────┘ └─────────────┘ ▲ │ 想改成20？❌ 编译器直接拦住你！ 用RefCell（运行时检查）： ┌─────────┐ ┌─────────────────────────┐ │ 变量 x │────▶│ RefCell │ 值：10 │ ← borrow_mut()可以改 └─────────┘ └─────────────────────────┘ ▲ │ 门禁卡 ✓ 运行时检查通过→改成20 正常情况下，Rust的借用规则是在编译期检查的：\n// 这是行不通的 let x = 10; let y = \u0026x; // 不可变引用 *y = 20; // 编译器直接报错：不能通过不可变引用修改数据 但RefCell把这个检查推迟到了运行时：\nuse std::cell::RefCell; fn main() { let value = RefCell::new(10); *value.borrow_mut() = 20; // 运行时检查，通过了就能改 println!(\"Value: {}\", value.borrow()); } 这意味着什么？意味着Rust在运行的时候会盯着你，确保你没有同时拿着可变引用和不可变引用。如果你违规了，程序会直接panic，但这panic发生在运行时而不是编译时。\n为什么需要这种东西？ 我遇到RefCell是在做一个插件系统的时候。每个插件可能依赖其他插件，这就形成了一个依赖图。问题来了，每个插件需要引用其他插件，但同时又要能修改自己的状态。\n用最朴素的方式写，大概是这样：\nstruct Plugin { name: String, dependencies: Vec\u003c\u0026Plugin\u003e, // 引用其他插件 active: bool, } 编译器直接给你甩一个错误：“借用值活得不够长”。\n这就是Rust借用检查器的局限性。它没法在编译期表达\"共享所有权同时还需要可变内部状态\"这种关系。\n这时候，Rc","wordCount":"609","inLanguage":"zh-cn","image":"https://rexai.top/images/refcell-rust.jpg","datePublished":"2025-12-24T00:00:00Z","dateModified":"2025-12-24T00:00:00Z","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/posts/rust-refcell-interior-mutability/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
+<span class=logo-text-short>梦兽编程</span></span></a></div></div><div class=apple-header__center><ul id=menu role=menubar><li role=none><a href=https://rexai.top/ title=首页 role=menuitem><span class=apple-header__menu-label>首页</span></a></li><li class=has-submenu role=none><a href=https://rexai.top/tutorials/ title=教程 role=menuitem><span class=apple-header__menu-label>教程</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tutorials/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/tutorials/smart-contracts/ title=智能合约开发 role=menuitem>智能合约开发</a></li><li role=none><a href=https://rexai.top/tutorials/ai/ title=AI编程 role=menuitem>AI编程</a></li></ul></li><li role=none><a href=https://rexai.top/tools/ title=工具精选 role=menuitem><span class=apple-header__menu-label>工具精选</span></a></li><li role=none><a href=https://rexai.top/tools/rexai-tool-directory/ title="AI 工具导航" role=menuitem><span class=apple-header__menu-label>AI 工具导航</span></a></li><li role=none><a href=https://rexai.top/marketing/ title="VPN 工具推荐" role=menuitem><span class=apple-header__menu-label>VPN 工具推荐</span></a></li><li class=has-submenu role=none><a href=https://rexai.top/news/ title=资讯 role=menuitem><span class=apple-header__menu-label>资讯</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/js-news/ title=JS资讯 role=menuitem>JS资讯</a></li><li role=none><a href=https://rexai.top/frontend-news/ title=前端资讯 role=menuitem>前端资讯</a></li><li role=none><a href=https://rexai.top/news/ title=综合资讯 role=menuitem>综合资讯</a></li></ul></li><li role=none><a href=https://rexai.top/tags/ title=标签 role=menuitem><span class=apple-header__menu-label>标签</span></a></li><li role=none><a href=https://rexai.top/categories/ title=分类 role=menuitem><span class=apple-header__menu-label>分类</span></a></li></ul></div><div class=apple-header__right><div class=apple-header__actions><a class="apple-header__icon apple-header__search" href=https://rexai.top/search/ aria-label=Search><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></a><div class=nav-controls><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><ul class=lang-switch aria-label="Language switcher"><li><a href="https://rexai.top/posts/rust-refcell-interior-mutability/#untranslated=en" title=:en: aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></div><button class=menu-toggle id=devdrawer-toggle aria-label=菜单 aria-expanded=false aria-controls=devdrawer>
+<span class=menu-toggle-bar></span>
+<span class=menu-toggle-bar></span>
+<span class=menu-toggle-bar></span></button></div></nav></header><div class=devdrawer-overlay id=devdrawer-overlay aria-hidden=true></div><aside class=devdrawer id=devdrawer role=dialog aria-modal=true aria-hidden=true aria-label=导航菜单><div class=devdrawer__header><div><p class=devdrawer__eyebrow>导航</p><h3>导航菜单</h3></div><button class=devdrawer__close id=devdrawer-close aria-label=关闭>×</button></div><ul class=devdrawer__menu><li><a href=https://rexai.top/><span>首页</span></a></li><li><a href=https://rexai.top/tutorials/><span>教程</span></a></li><li><a href=https://rexai.top/tools/><span>工具精选</span></a></li><li><a href=https://rexai.top/tools/rexai-tool-directory/><span>AI 工具导航</span></a></li><li><a href=https://rexai.top/marketing/><span>VPN 工具推荐</span></a></li><li><a href=https://rexai.top/news/><span>资讯</span></a></li><li><a href=https://rexai.top/tags/><span>标签</span></a></li><li><a href=https://rexai.top/categories/><span>分类</span></a></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href="https://rexai.top/posts/rust-refcell-interior-mutability/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></aside><main class="main apple-container"><aside class=apple-untranslated id=apple-untranslated-notice hidden><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge hidden>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge"),s=document.getElementById("apple-untranslated-desc");if(!t||!s)return;const o=()=>{const e=(window.location.hash||"").replace(/^#/,"");return new URLSearchParams(e)},n=()=>{const s=o(),n=s.get("untranslated");if(!n){t.hidden=!0,e&&(e.hidden=!0);return}t.hidden=!1,e&&(e.hidden=!1,e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header apple-hero"><h1 class="post-title entry-hint-parent">Rust的RefCell：那个让我抓狂又让我顿悟的特性</h1><div class=post-description>第一次看到RefCell时，我以为Rust疯了。后来才明白，这不是打破规则，而是给规则开了扇后门。</div><div class=post-meta><span title='2025-12-24 00:00:00 +0000 UTC'>December 24, 2025</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;609 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/posts/rust-refcell-interior-mutability/ style=margin-left:.5rem>
+<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
+<span class=waline-pageview-count data-path=/posts/rust-refcell-interior-mutability/>-</span>
+</span><script type=module>
+  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: '\/posts\/rust-refcell-interior-mutability\/',
+    update: false,
+  });
+</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/posts/rust-refcell-interior-mutability/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#refcell%e6%98%af%e4%bb%80%e4%b9%88%e5%b8%a6%e9%97%a8%e7%a6%81%e7%9a%84%e5%8f%af%e5%8f%98%e6%88%bf%e9%97%b4 aria-label=RefCell是什么？带门禁的可变房间>RefCell是什么？带门禁的可变房间</a></li><li><a href=#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%bf%99%e7%a7%8d%e4%b8%9c%e8%a5%bf aria-label=为什么需要这种东西？>为什么需要这种东西？</a></li><li><a href=#rc--refcell%e9%bb%84%e9%87%91%e6%90%ad%e6%a1%a3 aria-label="Rc + RefCell：黄金搭档">Rc + RefCell：黄金搭档</a></li><li><a href=#refcell%e7%9a%84%e5%80%9f%e7%94%a8%e6%a0%87%e5%bf%97%e8%bf%90%e8%a1%8c%e6%97%b6%e7%9a%84%e5%ae%88%e9%97%a8%e5%91%98 aria-label=RefCell的借用标志：运行时的守门员>RefCell的借用标志：运行时的守门员</a></li><li><a href=#%e8%bf%90%e8%a1%8c%e6%97%b6%e6%a3%80%e6%9f%a5%e7%9a%84%e4%bb%a3%e4%bb%b7%e6%98%af%e4%bb%80%e4%b9%88 aria-label=运行时检查的代价是什么？>运行时检查的代价是什么？</a></li><li><a href=#refcell%e4%b8%8d%e6%98%af%e6%89%93%e7%a0%b4%e8%a7%84%e5%88%99%e6%98%af%e5%ae%8c%e5%96%84%e8%a7%84%e5%88%99 aria-label=RefCell不是打破规则，是完善规则>RefCell不是打破规则，是完善规则</a></li><li><a href=#%e6%80%bb%e7%bb%93 aria-label=总结>总结</a></li></ul></div></details></div><div class=post-content><p>说实话，第一次看到RefCell的时候，我差点把电脑关了。</p><p>Rust不是号称"安全第一"吗？不是默认不可变吗？现在突然冒出个东西，告诉你"嘿，我们可以通过不可变引用来修改数据"，这不是自己打自己脸吗？</p><p>我的脑子里全是问号：这不就是Rust花那么大力气要防止的事情吗？</p><p>但后来，当我真正理解它在解决什么问题的时候，才发现这个设计有多精妙。</p><p>今天咱们就来聊聊这个让我抓狂又让我顿悟的特性。</p><h2 id=refcell是什么带门禁的可变房间>RefCell是什么？带门禁的可变房间<a hidden class=anchor aria-hidden=true href=#refcell是什么带门禁的可变房间>#</a></h2><p>把RefCell想象成一个带门禁系统的房间。这个房间有个特殊的规定：表面上看起来，这个房间是"只读"的，任何人都可以进去参观。但如果你有门禁卡，你进去后可以改变房间里的东西。</p><p>这个"门禁系统"就是RefCell的运行时借用检查。用个图来说明：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>正常Rust（编译期检查）：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>┌─────────┐     ┌─────────────┐
+</span></span><span style=display:flex><span>│ 变量 x  │────▶│   值：10    │  ← 不可变引用 &amp;x
+</span></span><span style=display:flex><span>└─────────┘     └─────────────┘
+</span></span><span style=display:flex><span>                      ▲
+</span></span><span style=display:flex><span>                      │
+</span></span><span style=display:flex><span>                想改成20？❌
+</span></span><span style=display:flex><span>           编译器直接拦住你！
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>用RefCell（运行时检查）：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>┌─────────┐     ┌─────────────────────────┐
+</span></span><span style=display:flex><span>│ 变量 x  │────▶│  RefCell  │  值：10   │  ← borrow_mut()可以改
+</span></span><span style=display:flex><span>└─────────┘     └─────────────────────────┘
+</span></span><span style=display:flex><span>                      ▲
+</span></span><span style=display:flex><span>                      │
+</span></span><span style=display:flex><span>                门禁卡 ✓
+</span></span><span style=display:flex><span>           运行时检查通过→改成20
+</span></span></code></pre></div><p>正常情况下，Rust的借用规则是在编译期检查的：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 这是行不通的
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> x = 10;
+</span></span><span style=display:flex><span><span style=color:#00f>let</span> y = &amp;x;       <span style=color:green>// 不可变引用
+</span></span></span><span style=display:flex><span>*y = 20;          <span style=color:green>// 编译器直接报错：不能通过不可变引用修改数据
+</span></span></span></code></pre></div><p>但RefCell把这个检查推迟到了运行时：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::cell::RefCell;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
+</span></span><span style=display:flex><span>    <span style=color:#00f>let</span> value = RefCell::new(10);
+</span></span><span style=display:flex><span>    *value.borrow_mut() = 20;  <span style=color:green>// 运行时检查，通过了就能改
+</span></span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;Value: </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, value.borrow());
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>这意味着什么？意味着Rust在运行的时候会盯着你，确保你没有同时拿着可变引用和不可变引用。如果你违规了，程序会直接panic，但这panic发生在运行时而不是编译时。</p><h2 id=为什么需要这种东西>为什么需要这种东西？<a hidden class=anchor aria-hidden=true href=#为什么需要这种东西>#</a></h2><p>我遇到RefCell是在做一个插件系统的时候。每个插件可能依赖其他插件，这就形成了一个依赖图。问题来了，每个插件需要引用其他插件，但同时又要能修改自己的状态。</p><p>用最朴素的方式写，大概是这样：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>Plugin</span> {
+</span></span><span style=display:flex><span>    name: String,
+</span></span><span style=display:flex><span>    dependencies: Vec&lt;&amp;Plugin&gt;,  <span style=color:green>// 引用其他插件
+</span></span></span><span style=display:flex><span>    active: <span style=color:#2b91af>bool</span>,
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>编译器直接给你甩一个错误：&ldquo;借用值活得不够长&rdquo;。</p><p>这就是Rust借用检查器的局限性。它没法在编译期表达"共享所有权同时还需要可变内部状态"这种关系。</p><p>这时候，Rc&lt;RefCell<t>>就像救星一样出现了。</p><h2 id=rc--refcell黄金搭档>Rc + RefCell：黄金搭档<a hidden class=anchor aria-hidden=true href=#rc--refcell黄金搭档>#</a></h2><p>Rc负责共享所有权，RefCell负责内部可变性，这两个一配合，就能解决刚才的问题。</p><p>先看个结构图：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Rc&lt;RefCell&lt;T&gt;&gt; 的工作原理：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                    ┌──────────────────┐
+</span></span><span style=display:flex><span>          ┌────────│   Rc&lt;T&gt; (引用计数) │────────┐
+</span></span><span style=display:flex><span>          │        └──────────────────┘        │
+</span></span><span style=display:flex><span>          │                                    │
+</span></span><span style=display:flex><span>     拥有者 A                              拥有者 B
+</span></span><span style=display:flex><span>          │                                    │
+</span></span><span style=display:flex><span>          └──────────┬─────────────┬───────────┘
+</span></span><span style=display:flex><span>                     ▼             ▼
+</span></span><span style=display:flex><span>              ┌──────────────────────────┐
+</span></span><span style=display:flex><span>              │    RefCell&lt;T&gt;            │
+</span></span><span style=display:flex><span>              │  ┌──────────────────┐    │
+</span></span><span style=display:flex><span>              │  │   borrow flag    │    │  ← 运行时借用检查
+</span></span><span style=display:flex><span>              │  │  0=空闲 1=借用   │    │
+</span></span><span style=display:flex><span>              │  └──────────────────┘    │
+</span></span><span style=display:flex><span>              │  ┌──────────────────┐    │
+</span></span><span style=display:flex><span>              │  │      数据 T      │    │
+</span></span><span style=display:flex><span>              │  └──────────────────┘    │
+</span></span><span style=display:flex><span>              └──────────────────────────┘
+</span></span></code></pre></div><p>完整代码：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::cell::RefCell;
+</span></span><span style=display:flex><span><span style=color:#00f>use</span> std::rc::Rc;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 定义一个类型别名，写起来方便点
+</span></span></span><span style=display:flex><span><span style=color:#00f>type</span> <span style=color:#2b91af>PluginRef</span> = Rc&lt;RefCell&lt;Plugin&gt;&gt;;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>Plugin</span> {
+</span></span><span style=display:flex><span>    name: String,
+</span></span><span style=display:flex><span>    dependencies: Vec&lt;PluginRef&gt;,
+</span></span><span style=display:flex><span>    active: <span style=color:#2b91af>bool</span>,
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>impl</span> Plugin {
+</span></span><span style=display:flex><span>    <span style=color:#00f>fn</span> new(name: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>) -&gt; <span style=color:#2b91af>PluginRef</span> {
+</span></span><span style=display:flex><span>        Rc::new(RefCell::new(Self {
+</span></span><span style=display:flex><span>            name: <span style=color:#2b91af>name</span>.to_string(),
+</span></span><span style=display:flex><span>            dependencies: Vec::new(),
+</span></span><span style=display:flex><span>            active: <span style=color:#2b91af>false</span>,
+</span></span><span style=display:flex><span>        }))
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>fn</span> activate(&amp;<span style=color:#00f>mut</span> self) {
+</span></span><span style=display:flex><span>        self.active = <span style=color:#00f>true</span>;
+</span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515> 已激活！&#34;</span>, self.name);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>现在你可以轻松地创建插件依赖关系：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>fn</span> main() {
+</span></span><span style=display:flex><span>    <span style=color:#00f>let</span> plugin_a = Plugin::new(<span style=color:#a31515>&#34;核心模块&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#00f>let</span> plugin_b = Plugin::new(<span style=color:#a31515>&#34;用户界面&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:green>// UI插件依赖核心模块
+</span></span></span><span style=display:flex><span>    plugin_b.borrow_mut().dependencies.push(plugin_a.clone());
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:green>// 激活核心模块
+</span></span></span><span style=display:flex><span>    plugin_a.borrow_mut().activate();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:green>// 打印依赖关系
+</span></span></span><span style=display:flex><span>    println!(
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515> 依赖 </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>,
+</span></span><span style=display:flex><span>        plugin_b.borrow().name,
+</span></span><span style=display:flex><span>        plugin_b.borrow().dependencies[0].borrow().name
+</span></span><span style=display:flex><span>    );
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>依赖关系图：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>        插件依赖图：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    ┌─────────────┐
+</span></span><span style=display:flex><span>    │  核心模块    │ ◀───────┐
+</span></span><span style=display:flex><span>    │  (plugin_a) │         │
+</span></span><span style=display:flex><span>    └─────────────┘         │
+</span></span><span style=display:flex><span>           │                │
+</span></span><span style=display:flex><span>           │ depends        │ owns (Rc)
+</span></span><span style=display:flex><span>           ▼                │
+</span></span><span style=display:flex><span>    ┌─────────────┐         │
+</span></span><span style=display:flex><span>    │  用户界面    │ ────────┘
+</span></span><span style=display:flex><span>    │(plugin_b)   │
+</span></span><span style=display:flex><span>    └─────────────┘
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    Rc让两个插件都能持有对方，
+</span></span><span style=display:flex><span>    RefCell让它们在需要时能修改内部状态
+</span></span></code></pre></div><p>这段代码能跑，而且跑得很顺畅。Rc让多个地方可以同时拥有这个插件的所有权，RefCell让这些拥有者可以在需要的时候修改插件的状态。</p><h2 id=refcell的借用标志运行时的守门员>RefCell的借用标志：运行时的守门员<a hidden class=anchor aria-hidden=true href=#refcell的借用标志运行时的守门员>#</a></h2><p>RefCell内部有个"借用标志"（borrow flag），就像个守门员：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>RefCell内部状态：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    ┌─────────────────────────────────┐
+</span></span><span style=display:flex><span>    │         RefCell&lt;T&gt;              │
+</span></span><span style=display:flex><span>    │                                 │
+</span></span><span style=display:flex><span>    │   borrow_flag:                   │
+</span></span><span style=display:flex><span>    │   ┌─────┬─────┬─────┬─────┐    │
+</span></span><span style=display:flex><span>    │   │  0  │  1  │  2  │ ... │    │
+</span></span><span style=display:flex><span>    │   │空闲 │读1 │读2 │读N │    │
+</span></span><span style=display:flex><span>    │   └─────┴─────┴─────┴─────┘    │
+</span></span><span style=display:flex><span>    │         │                       │
+</span></span><span style=display:flex><span>    │         │ -1 = 写独占            │
+</span></span><span style=display:flex><span>    │                                 │
+</span></span><span style=display:flex><span>    │   ┌───────────────────────┐     │
+</span></span><span style=display:flex><span>    │   │        数据 T         │     │
+</span></span><span style=display:flex><span>    │   └───────────────────────┘     │
+</span></span><span style=display:flex><span>    └─────────────────────────────────┘
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    borrow()     → flag+1  (读锁)
+</span></span><span style=display:flex><span>    borrow_mut() → flag=-1  (写锁)
+</span></span><span style=display:flex><span>    drop()       → 恢复原值
+</span></span></code></pre></div><p>当你调用borrow()或borrow_mut()时，RefCell会检查这个标志：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 这些操作是安全的
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> r1 = refcell.borrow();     <span style=color:green>// flag: 0 → 1 (开始读)
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> r2 = refcell.borrow();     <span style=color:green>// flag: 1 → 2 (继续读)
+</span></span></span><span style=display:flex><span>drop(r1);                      <span style=color:green>// flag: 2 → 1 (结束一个读)
+</span></span></span><span style=display:flex><span>drop(r2);                      <span style=color:green>// flag: 1 → 0 (全部结束)
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 这些会panic
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> r1 = refcell.borrow();     <span style=color:green>// flag: 0 → 1 (开始读)
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> w1 = refcell.borrow_mut(); <span style=color:green>// panic! 已经有人在读了
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>let</span> w1 = refcell.borrow_mut(); <span style=color:green>// flag: 0 → -1 (开始写)
+</span></span></span><span style=display:flex><span><span style=color:#00f>let</span> w2 = refcell.borrow_mut(); <span style=color:green>// panic! 已经有人在写
+</span></span></span></code></pre></div><h2 id=运行时检查的代价是什么>运行时检查的代价是什么？<a hidden class=anchor aria-hidden=true href=#运行时检查的代价是什么>#</a></h2><p>天下没有免费的午餐，RefCell的灵活性也不是没有代价的。</p><p>有人做过benchmark，对比直接修改、RefCell修改、Rc<refcell>修改的性能：</p><table><thead><tr><th>操作类型</th><th>耗时（纳秒）</th><th>相对倍数</th></tr></thead><tbody><tr><td>直接修改</td><td>1.0</td><td>1倍</td></tr><tr><td>RefCell borrow_mut</td><td>13.5</td><td>约13倍</td></tr><tr><td>Rc<refcell> 修改</td><td>21.0</td><td>约21倍</td></tr></tbody></table><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>性能对比（纳秒级）：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    直接修改:  ███ 1.0ns
+</span></span><span style=display:flex><span>    RefCell:  ████████████████████ 13.5ns
+</span></span><span style=display:flex><span>    Rc+RefCell: █████████████████████████████ 21.0ns
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    看着差距大，但记住：这是纳秒！
+</span></span><span style=display:flex><span>    你的代码大部分时间不在这种操作上
+</span></span></code></pre></div><p>看着挺吓人，但仔细想想，这是纳秒级别的差异。在大多数实际应用中，这点开销完全可以忽略。你要是在一个紧密循环里频繁调用borrow_mut，那可能是设计有问题，不是RefCell的问题。</p><p>有个教训我要分享：我用RefCell的时候，不小心搞出了循环依赖，插件A依赖B，B又依赖A。结果在运行时触发了借用错误，程序直接panic：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>循环依赖的危险：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    ┌─────────┐         ┌─────────┐
+</span></span><span style=display:flex><span>    │ Plugin A│◄────────│ Plugin B│
+</span></span><span style=display:flex><span>    └─────────┘         └─────────┘
+</span></span><span style=display:flex><span>         │                   │
+</span></span><span style=display:flex><span>         └───────相互持有─────┘
+</span></span><span style=display:flex><span>               (Rc&lt;RefCell&gt;)
+</span></span><span style=display:flex><span>                  │
+</span></span><span style=display:flex><span>                  ▼
+</span></span><span style=display:flex><span>         可能导致内存泄漏！
+</span></span><span style=display:flex><span>    需要用Weak打破循环
+</span></span></code></pre></div><p>但这个panic让我意识到，RefCell给你的是灵活性，不是自由。你还是得把逻辑设计清楚。</p><h2 id=refcell不是打破规则是完善规则>RefCell不是打破规则，是完善规则<a hidden class=anchor aria-hidden=true href=#refcell不是打破规则是完善规则>#</a></h2><p>理解RefCell后，我最大的感受是：它不是在打破Rust的规则，而是在完善这套规则。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Rust的安全策略：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    编译期检查
+</span></span><span style=display:flex><span>    ┌─────────────────────┐
+</span></span><span style=display:flex><span>    │   静态分析         │ ← 大部分情况
+</span></span><span style=display:flex><span>    │   (借用检查器)      │
+</span></span><span style=display:flex><span>    └─────────────────────┘
+</span></span><span style=display:flex><span>             │
+</span></span><span style=display:flex><span>             │ 无法表达？
+</span></span><span style=display:flex><span>             ▼
+</span></span><span style=display:flex><span>    ┌─────────────────────┐
+</span></span><span style=display:flex><span>    │   运行时检查         │ ← RefCell/Mutex
+</span></span><span style=display:flex><span>    │   (动态借用检查)     │
+</span></span><span style=display:flex><span>    └─────────────────────┘
+</span></span></code></pre></div><p>有些场景，编译期的静态检查确实无法表达，但运行时的动态检查可以。RefCell就是连接这两者的桥梁。它让你在保持Rust安全承诺的前提下，写出更灵活、更动态的架构。</p><p>借用检查器像一堵墙，RefCell就是墙上那扇门。你得找到正确的钥匙才能打开它，但有了这扇门，你可以去那些原本去不了的地方。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>借用检查器这堵墙：
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    ❌ 编译期检查不过
+</span></span><span style=display:flex><span>    ┌─────────────────────────────┐
+</span></span><span style=display:flex><span>    │                             │
+</span></span><span style=display:flex><span>    │   ╔═══════════════════════╗  │
+</span></span><span style=display:flex><span>    │   ║   Rust借用检查器      ║  │
+</span></span><span style=display:flex><span>    │   ║       (墙壁)          ║  │
+</span></span><span style=display:flex><span>    │   ╠═══════════════════════╣  │
+</span></span><span style=display:flex><span>    │   ║                       ║  │
+</span></span><span style=display:flex><span>    │   ║   [🚪 RefCell]       ║  │ ← 后门
+</span></span><span style=display:flex><span>    │   ║   (运行时检查)        ║  │
+</span></span><span style=display:flex><span>    │   ║                       ║  │
+</span></span><span style=display:flex><span>    │   ╚═══════════════════════╝  │
+</span></span><span style=display:flex><span>    │                             │
+</span></span><span style=display:flex><span>    └─────────────────────────────┘
+</span></span><span style=display:flex><span>                    │
+</span></span><span style=display:flex><span>                    ▼
+</span></span><span style=display:flex><span>              ✅ 运行时通过
+</span></span></code></pre></div><h2 id=总结>总结<a hidden class=anchor aria-hidden=true href=#总结>#</a></h2><p>RefCell做的事情其实很简单：它把借用检查从编译期推迟到了运行时，让你能在共享所有权的情况下修改内部状态。</p><p>用的时候记住几点：</p><ol><li>运行时检查意味着违规会panic，不是编译错误</li><li>和Rc配合用，解决共享可变状态的问题</li><li>性能开销是纳秒级的，实际应用中不用担心</li><li>它给的是灵活性，不是让你写乱七八糟的代码</li></ol><p>Rust的设计哲学不是把你限制死，而是在安全的前提下给你足够的表达力。RefCell就是这种哲学的体现：规则不是用来打破的，是用来理解和运用的。</p><hr><p><strong>觉得这篇文章有用吗？</strong></p><ol><li><strong>点赞</strong>：如果觉得有帮助，点个赞让更多人看到</li><li><strong>转发</strong>：分享给正在学习Rust的朋友或同事</li><li><strong>关注</strong>：关注梦兽编程，不错过更多实用技术文章</li><li><strong>留言</strong>：有什么问题或想法？欢迎在评论区交流</li></ol><p><em>你的支持是我持续创作的最大动力！</em></p><hr><p><strong>参考资源</strong>：</p><ul><li><a href=https://doc.rust-lang.org/book/ch15-05-interior-mutability.html target=_blank rel="noopener noreferrer" class=apple-ext aria-label="RefCell and the Interior Mutability Pattern - The Rust Book (外部链接)">RefCell<t> and the Interior Mutability Pattern - The Rust Book <span class=apple-ext__badge aria-hidden=true>外部链接</span></a></li><li><a href="https://www.youtube.com/watch?v=KYJ95TxEC18" target=_blank rel="noopener noreferrer" class=apple-ext aria-label="Rc and RefCell Smart Pointers - Rust Visualization (外部链接)">Rc and RefCell Smart Pointers - Rust Visualization <span class=apple-ext__badge aria-hidden=true>外部链接</span></a></li><li><a href=https://google.github.io/comprehensive-rust/zh-CN/borrowing/interior-mutability.html target=_blank rel="noopener noreferrer" class=apple-ext aria-label="Comprehensive Rust - Interior Mutability (外部链接)">Comprehensive Rust - Interior Mutability <span class=apple-ext__badge aria-hidden=true>外部链接</span></a></li><li><a href=https://www.pexels.com/search/crab/ target=_blank rel="noopener noreferrer" class=apple-ext aria-label="Free Crab Photos (Pexels) (外部链接)">Free Crab Photos (Pexels) <span class=apple-ext__badge aria-hidden=true>外部链接</span></a></li><li><a href=https://icons8.com/icons/set/crab-rust target=_blank rel="noopener noreferrer" class=apple-ext aria-label="Rust Crab Logo Icons (Icon8) (外部链接)">Rust Crab Logo Icons (Icon8) <span class=apple-ext__badge aria-hidden=true>外部链接</span></a></li></ul></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/refcell/>RefCell</a></li><li><a href=https://rexai.top/tags/%E5%86%85%E9%83%A8%E5%8F%AF%E5%8F%98%E6%80%A7/>内部可变性</a></li><li><a href=https://rexai.top/tags/%E6%89%80%E6%9C%89%E6%9D%83/>所有权</a></li><li><a href=https://rexai.top/tags/%E5%86%85%E5%AD%98%E5%AE%89%E5%85%A8/>内存安全</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+
+  
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    requiredMeta: ["nick","mail"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: true,
+  });
+</script><style>#waline-container{background:var(--entry);padding:2rem;border-radius:var(--radius);border:1px solid var(--border)}[data-theme=dark] #waline-container{background:var(--entry);border-color:var(--border)}@media screen and (max-width:768px){#waline-container{padding:1.5rem 1rem;margin-top:2rem}}.wl-editor{border-radius:var(--radius)}.wl-btn{border-radius:var(--radius);transition:all .3s ease}.wl-btn:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.1)}.wl-reaction{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}.wl-reaction-title{color:var(--primary);font-weight:600;margin-bottom:1rem}.wl-reaction-img{transition:transform .2s ease}.wl-reaction-img:hover{transform:scale(1.2)}.wl-card{border:1px solid var(--border);border-radius:var(--radius);background:var(--theme);transition:all .3s ease}.wl-card:hover{border-color:var(--tertiary)}.wl-loading{color:var(--primary)}</style></article></main><footer class=footer><span>© <a href=https://rexai.top/>梦兽编程</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
+</a><a class="rex-cta bottom-left" href="https://rexai.top/marketing/?utm_source=site&amp;utm_medium=fab&amp;utm_campaign=floating_cta" target=_blank rel=noopener aria-label="高性价比 AI 套装"><span class=cta-icon aria-hidden=true>⚡️</span>
+<span class=cta-text><strong>高性价比 AI 套装</strong>
+<em>每月不到一杯咖啡，效率翻倍 →</em>
+</span></a><script>(function(){var e=document.querySelector(".rex-cta");if(!e)return;e.addEventListener("click",function(){window.gtag&&gtag("event","click",{event_category:"cta",event_label:"floating_cta"})})})()</script><script defer src=/js/mobile-menu.min.588d3a00d6f1d87dd1b6e87fe04ca923258ed25e19c8d32876656bde533fc328.js integrity="sha256-WI06ANbx2H3Rtuh/4EypIyWO0l4ZyNModmVr3lM/wyg=" crossorigin=anonymous></script><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>
