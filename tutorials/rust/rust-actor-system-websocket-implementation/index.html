@@ -17,7 +17,7 @@
   });
 </script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href=https://rexai.top/en/tutorials/rust/rust-actor-system-websocket-implementation/>En</a></li></ul></div></header><figure class="entry-cover apple-cover"><img fetchpriority=high srcset='https://rexai.top/tutorials/rust/rust-actor-system-websocket-implementation/cover_hu_c4f60657adeb8b94.jpg 360w,https://rexai.top/tutorials/rust/rust-actor-system-websocket-implementation/cover_hu_5ef6b3cfa9359043.jpg 480w,https://rexai.top/tutorials/rust/rust-actor-system-websocket-implementation/cover_hu_cda546777c6a2170.jpg 720w,https://rexai.top/tutorials/rust/rust-actor-system-websocket-implementation/cover_hu_ce7c3ae49b72d0dc.jpg 1080w,https://rexai.top/tutorials/rust/rust-actor-system-websocket-implementation/cover.jpg 1200w' src=https://rexai.top/tutorials/rust/rust-actor-system-websocket-implementation/cover.jpg sizes="(min-width: 768px) 720px, 100vw" width=1200 height=800 alt="Rust WebSocket Actor实现完整指南"><figcaption>从理论到实践的完美蜕变</figcaption></figure><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#%e5%bc%80%e5%b7%a5%e5%85%88%e6%90%ad%e4%b8%aa%e5%9f%ba%e7%a1%80actor%e7%b3%bb%e7%bb%9f aria-label=开工！先搭个基础Actor系统>开工！先搭个基础Actor系统</a></li><li><a href=#%e7%bd%91%e7%bb%9c%e6%b6%88%e6%81%af%e5%8d%8f%e8%ae%ae%e7%ae%80%e5%8d%95%e7%b2%97%e6%9a%b4%e4%bd%86%e6%9c%89%e6%95%88 aria-label=网络消息协议：简单粗暴但有效>网络消息协议：简单粗暴但有效</a></li><li><a href=#actor%e6%b3%a8%e5%86%8c%e8%a1%a8%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f%e7%9a%84%e7%94%b5%e8%af%9d%e6%9c%ac aria-label=Actor注册表：分布式系统的电话本>Actor注册表：分布式系统的电话本</a></li><li><a href=#websocket%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%bd%91%e7%bb%9c%e9%80%9a%e4%bf%a1%e7%9a%84%e5%a4%a7%e8%84%91 aria-label=WebSocket服务器：网络通信的大脑>WebSocket服务器：网络通信的大脑</a></li><li><a href=#%e6%b6%88%e6%81%af%e8%b7%af%e7%94%b1%e5%88%86%e5%b8%83%e5%bc%8f%e7%b3%bb%e7%bb%9f%e7%9a%84gps aria-label=消息路由：分布式系统的GPS>消息路由：分布式系统的GPS</a></li><li><a href=#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b%e6%89%93%e9%80%a0%e4%b8%80%e4%b8%aa%e5%88%86%e5%b8%83%e5%bc%8f%e8%ae%a1%e7%ae%97%e5%99%a8 aria-label=实战案例：打造一个分布式计算器>实战案例：打造一个分布式计算器</a></li><li><a href=#%e4%b8%bb%e7%a8%8b%e5%ba%8f%e6%8a%8a%e6%89%80%e6%9c%89%e7%bb%84%e4%bb%b6%e4%b8%b2%e8%b5%b7%e6%9d%a5 aria-label=主程序：把所有组件串起来>主程序：把所有组件串起来</a></li><li><a href=#%e6%80%a7%e8%83%bd%e8%b0%83%e4%bc%98%e8%ae%a9%e4%bb%a3%e7%a0%81%e8%b7%91%e5%be%97%e6%9b%b4%e5%bf%ab aria-label=性能调优：让代码跑得更快>性能调优：让代码跑得更快</a></li><li><a href=#cargotoml%e5%ae%8c%e6%95%b4%e9%85%8d%e7%bd%ae aria-label=Cargo.toml完整配置>Cargo.toml完整配置</a></li></ul></div></details></div><div class=post-content><p>凌晨2点半，我又特么在和代码死磕。</p><p>上篇文章发出去后，评论区炸锅了：</p><blockquote><p>&ldquo;大佬，理论听起来很牛逼，但是代码呢？&rdquo;
 &ldquo;能不能来点实战的？光看架构图我要疯了&rdquo;
-&ldquo;给个完整的实现吧，我已经等了一周了！&rdquo;</p></blockquote><p>好吧，你们要代码是吧？今晚我就把整个WebSocket + Actor系统的核心实现掏出来，每一行都带血带泪的那种。</p><p>说实话，写完这篇我自己都有点佩服自己——这套代码在3台机器上跑了整整一周，延迟稳定在1.8ms，没崩过一次。连我妈都问我是不是写出什么黑科技了。</p><h2 id=开工先搭个基础actor系统>开工！先搭个基础Actor系统<a hidden class=anchor aria-hidden=true href=#开工先搭个基础actor系统>#</a></h2><p>别的不说，先把最核心的Actor框架搞出来。这玩意儿必须足够简单，但又不能丢性能：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::collections::HashMap;
+&ldquo;给个完整的实现吧，我已经等了一周了！&rdquo;</p></blockquote><p>好吧，你们要代码是吧？今晚我就把整个WebSocket + Actor系统的核心实现掏出来，每一行都带血带泪的那种。</p><p>说实话，写完这篇我自己都有点佩服自己——这套代码在3台机器上跑了整整一周，延迟稳定在1.8ms，没崩过一次。连我妈都问我是不是写出什么黑科技了。</p><h2 id=开工先搭个基础actor系统>开工！先搭个基础Actor系统<a hidden class=anchor aria-hidden=true href=#开工先搭个基础actor系统>#</a></h2><p>别的不说，先把最核心的Actor框架搞出来。这玩意儿必须足够简单，但又不能丢性能：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::collections::HashMap;
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> std::sync::Arc;
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> tokio::sync::{mpsc, RwLock};
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> async_trait::async_trait;
@@ -52,7 +52,7 @@
 </span></span><span style=display:flex><span>        <span style=color:#00f>let</span> _ = self.sender.send(msg);
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>这里我选择<code>UnboundedSender</code>而不是有界的，原因很简单：在分布式环境下，消息堆积是常态，有界队列容易造成死锁。当然，生产环境你可能需要加个背压机制。</p><p>接下来是spawn函数，这个是整个系统的心脏：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>fn</span> spawn_actor&lt;A&gt;(<span style=color:#00f>mut</span> actor: <span style=color:#2b91af>A</span>) -&gt; <span style=color:#2b91af>Addr</span>&lt;A::Message&gt;
+</span></span></code></pre></div><p>这里我选择<code>UnboundedSender</code>而不是有界的，原因很简单：在分布式环境下，消息堆积是常态，有界队列容易造成死锁。当然，生产环境你可能需要加个背压机制。</p><p>接下来是spawn函数，这个是整个系统的心脏：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>fn</span> spawn_actor&lt;A&gt;(<span style=color:#00f>mut</span> actor: <span style=color:#2b91af>A</span>) -&gt; <span style=color:#2b91af>Addr</span>&lt;A::Message&gt;
 </span></span><span style=display:flex><span><span style=color:#00f>where</span>
 </span></span><span style=display:flex><span>    A: <span style=color:#2b91af>Actor</span>,
 </span></span><span style=display:flex><span>{
@@ -73,7 +73,7 @@
 </span></span><span style=display:flex><span>    
 </span></span><span style=display:flex><span>    Addr { sender: <span style=color:#2b91af>tx</span> }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=网络消息协议简单粗暴但有效>网络消息协议：简单粗暴但有效<a hidden class=anchor aria-hidden=true href=#网络消息协议简单粗暴但有效>#</a></h2><p>分布式系统最怕的就是协议复杂，调试起来要命。我的设计哲学是：<strong>能用JSON就别用二进制，除非性能真的撑不住</strong>。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> serde::{Serialize, Deserialize};
+</span></span></code></pre></div><h2 id=网络消息协议简单粗暴但有效>网络消息协议：简单粗暴但有效<a hidden class=anchor aria-hidden=true href=#网络消息协议简单粗暴但有效>#</a></h2><p>分布式系统最怕的就是协议复杂，调试起来要命。我的设计哲学是：<strong>能用JSON就别用二进制，除非性能真的撑不住</strong>。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> serde::{Serialize, Deserialize};
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>#[derive(Serialize, Deserialize, Debug, Clone)]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>struct</span> <span style=color:#2b91af>NetworkMessage</span> {
@@ -103,7 +103,7 @@
 </span></span><span style=display:flex><span>        self.to.split(<span style=color:#a31515>&#39;:&#39;</span>).nth(1).map(|s| s.to_string())
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>为什么要有<code>msg_id</code>？因为在网络抖动的情况下，同一条消息可能被发送多次。有了ID就能轻松去重。</p><h2 id=actor注册表分布式系统的电话本>Actor注册表：分布式系统的电话本<a hidden class=anchor aria-hidden=true href=#actor注册表分布式系统的电话本>#</a></h2><p>这个组件负责管理所有的Actor地址，就像一个超级电话本：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> dashmap::DashMap;
+</span></span></code></pre></div><p>为什么要有<code>msg_id</code>？因为在网络抖动的情况下，同一条消息可能被发送多次。有了ID就能轻松去重。</p><h2 id=actor注册表分布式系统的电话本>Actor注册表：分布式系统的电话本<a hidden class=anchor aria-hidden=true href=#actor注册表分布式系统的电话本>#</a></h2><p>这个组件负责管理所有的Actor地址，就像一个超级电话本：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> dashmap::DashMap;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>type</span> <span style=color:#2b91af>ActorRef</span> = Arc&lt;<span style=color:#00f>dyn</span> std::any::Any + Send + Sync&gt;;
 </span></span><span style=display:flex><span>
@@ -149,7 +149,7 @@
 </span></span><span style=display:flex><span>        self.actors.iter().map(|entry| entry.key().clone()).collect()
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>用<code>DashMap</code>而不是<code>RwLock&lt;HashMap></code>，这一个选择让我的并发性能提升了300%。在高并发场景下，锁竞争是性能杀手。</p><h2 id=websocket服务器网络通信的大脑>WebSocket服务器：网络通信的大脑<a hidden class=anchor aria-hidden=true href=#websocket服务器网络通信的大脑>#</a></h2><p>这是整个系统最复杂的部分，需要处理连接管理、消息路由、错误恢复等一堆破事：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> tokio_tungstenite::{accept_async, tungstenite::Message};
+</span></span></code></pre></div><p>用<code>DashMap</code>而不是<code>RwLock&lt;HashMap></code>，这一个选择让我的并发性能提升了300%。在高并发场景下，锁竞争是性能杀手。</p><h2 id=websocket服务器网络通信的大脑>WebSocket服务器：网络通信的大脑<a hidden class=anchor aria-hidden=true href=#websocket服务器网络通信的大脑>#</a></h2><p>这是整个系统最复杂的部分，需要处理连接管理、消息路由、错误恢复等一堆破事：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> tokio_tungstenite::{accept_async, tungstenite::Message};
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> tokio::net::{TcpListener, TcpStream};
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> futures_util::{StreamExt, SinkExt};
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> std::net::SocketAddr;
@@ -244,7 +244,7 @@
 </span></span><span style=display:flex><span>    
 </span></span><span style=display:flex><span>    Ok(())
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=消息路由分布式系统的gps>消息路由：分布式系统的GPS<a hidden class=anchor aria-hidden=true href=#消息路由分布式系统的gps>#</a></h2><p>这个函数负责把消息送到正确的目的地，逻辑看起来简单，但细节很多：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> route_message(registry: <span style=color:#00f>&amp;</span><span style=color:#2b91af>Registry</span>, node_id: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>, msg: <span style=color:#2b91af>NetworkMessage</span>) {
+</span></span></code></pre></div><h2 id=消息路由分布式系统的gps>消息路由：分布式系统的GPS<a hidden class=anchor aria-hidden=true href=#消息路由分布式系统的gps>#</a></h2><p>这个函数负责把消息送到正确的目的地，逻辑看起来简单，但细节很多：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> route_message(registry: <span style=color:#00f>&amp;</span><span style=color:#2b91af>Registry</span>, node_id: <span style=color:#00f>&amp;</span><span style=color:#2b91af>str</span>, msg: <span style=color:#2b91af>NetworkMessage</span>) {
 </span></span><span style=display:flex><span>    <span style=color:green>// 解析目标
 </span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> target_node = msg.target_node().unwrap_or_default();
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> target_actor = msg.target_actor().unwrap_or_default();
@@ -268,7 +268,7 @@
 </span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;❌ Actor不存在: </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, actor_name);
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=实战案例打造一个分布式计算器>实战案例：打造一个分布式计算器<a hidden class=anchor aria-hidden=true href=#实战案例打造一个分布式计算器>#</a></h2><p>光讲框架太干巴，来个实际例子。我们建一个分布式计算器，能处理加减乘除：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 计算器Actor
+</span></span></code></pre></div><h2 id=实战案例打造一个分布式计算器>实战案例：打造一个分布式计算器<a hidden class=anchor aria-hidden=true href=#实战案例打造一个分布式计算器>#</a></h2><p>光讲框架太干巴，来个实际例子。我们建一个分布式计算器，能处理加减乘除：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 计算器Actor
 </span></span></span><span style=display:flex><span><span style=color:#00f>#[derive(Default)]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>struct</span> <span style=color:#2b91af>Calculator</span>;
 </span></span><span style=display:flex><span>
@@ -311,7 +311,7 @@
 </span></span><span style=display:flex><span>        _ =&gt; None,
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=主程序把所有组件串起来>主程序：把所有组件串起来<a hidden class=anchor aria-hidden=true href=#主程序把所有组件串起来>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>#[tokio::main]</span>
+</span></span></code></pre></div><h2 id=主程序把所有组件串起来>主程序：把所有组件串起来<a hidden class=anchor aria-hidden=true href=#主程序把所有组件串起来>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>#[tokio::main]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>fn</span> main() -&gt; Result&lt;(), Box&lt;<span style=color:#00f>dyn</span> std::error::Error&gt;&gt; {
 </span></span><span style=display:flex><span>    <span style=color:green>// 创建注册表
 </span></span></span><span style=display:flex><span>    <span style=color:#00f>let</span> registry = Registry::new();
@@ -329,7 +329,7 @@
 </span></span><span style=display:flex><span>    
 </span></span><span style=display:flex><span>    Ok(())
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>现在你可以用<code>websocat</code>来测试：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 安装websocat（如果还没装的话）</span>
+</span></span></code></pre></div><p>现在你可以用<code>websocat</code>来测试：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 安装websocat（如果还没装的话）</span>
 </span></span><span style=display:flex><span>cargo install websocat
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green># 连接到服务器</span>
@@ -337,7 +337,7 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green># 发送计算请求</span>
 </span></span><span style=display:flex><span>{<span style=color:#a31515>&#34;to&#34;</span>:<span style=color:#a31515>&#34;calculator&#34;</span>,<span style=color:#a31515>&#34;from&#34;</span>:<span style=color:#a31515>&#34;client-1&#34;</span>,<span style=color:#a31515>&#34;payload&#34;</span>:<span style=color:#a31515>&#34;10 + 5&#34;</span>}
-</span></span></code></pre></div><h2 id=性能调优让代码跑得更快>性能调优：让代码跑得更快<a hidden class=anchor aria-hidden=true href=#性能调优让代码跑得更快>#</a></h2><p>经过一周的压测，我发现了几个性能瓶颈并逐一解决：</p><p><strong>1. 消息序列化优化</strong></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 原来用serde_json，改成bincode提升30%性能
+</span></span></code></pre></div><h2 id=性能调优让代码跑得更快>性能调优：让代码跑得更快<a hidden class=anchor aria-hidden=true href=#性能调优让代码跑得更快>#</a></h2><p>经过一周的压测，我发现了几个性能瓶颈并逐一解决：</p><p><strong>1. 消息序列化优化</strong></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 原来用serde_json，改成bincode提升30%性能
 </span></span></span><span style=display:flex><span><span style=color:#00f>use</span> bincode;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 网络消息改成二进制格式
@@ -348,7 +348,7 @@
 </span></span><span style=display:flex><span>    <span style=color:#00f>pub</span> payload: Vec&lt;<span style=color:#2b91af>u8</span>&gt;,  <span style=color:green>// 改成二进制
 </span></span></span><span style=display:flex><span>    <span style=color:#00f>pub</span> msg_id: [<span style=color:#2b91af>u8</span>; 16],  <span style=color:green>// UUID改成固定长度
 </span></span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><strong>2. 连接池复用</strong></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 连接管理器，复用WebSocket连接
+</span></span></code></pre></div><p><strong>2. 连接池复用</strong></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 连接管理器，复用WebSocket连接
 </span></span></span><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>struct</span> <span style=color:#2b91af>ConnectionPool</span> {
 </span></span><span style=display:flex><span>    connections: <span style=color:#2b91af>Arc</span>&lt;DashMap&lt;String, WebSocketConnection&gt;&gt;,
 </span></span><span style=display:flex><span>    max_connections: <span style=color:#2b91af>usize</span>,
@@ -360,14 +360,14 @@
 </span></span></span><span style=display:flex><span>        todo!()
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><strong>3. 批量消息处理</strong></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// Actor可以批量处理消息，减少上下文切换
+</span></span></code></pre></div><p><strong>3. 批量消息处理</strong></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// Actor可以批量处理消息，减少上下文切换
 </span></span></span><span style=display:flex><span><span style=color:#00f>#[async_trait]</span>
 </span></span><span style=display:flex><span><span style=color:#00f>pub</span> <span style=color:#00f>trait</span> BatchActor: Send + Sync + &#39;static {
 </span></span><span style=display:flex><span>    <span style=color:#00f>type</span> <span style=color:#2b91af>Message</span>: Send + &#39;static;
 </span></span><span style=display:flex><span>    
 </span></span><span style=display:flex><span>    <span style=color:#00f>async</span> <span style=color:#00f>fn</span> handle_batch(&amp;<span style=color:#00f>mut</span> self, msgs: Vec&lt;Self::Message&gt;);
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=cargotoml完整配置>Cargo.toml完整配置<a hidden class=anchor aria-hidden=true href=#cargotoml完整配置>#</a></h2><p>别忘了依赖配置，这些版本都是我测试过的：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-toml data-lang=toml><span style=display:flex><span>[package]
+</span></span></code></pre></div><h2 id=cargotoml完整配置>Cargo.toml完整配置<a hidden class=anchor aria-hidden=true href=#cargotoml完整配置>#</a></h2><p>别忘了依赖配置，这些版本都是我测试过的：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-toml data-lang=toml><span style=display:flex><span>[package]
 </span></span><span style=display:flex><span>name = <span style=color:#a31515>&#34;distributed-actor-system&#34;</span>
 </span></span><span style=display:flex><span>version = <span style=color:#a31515>&#34;0.1.0&#34;</span>
 </span></span><span style=display:flex><span>edition = <span style=color:#a31515>&#34;2021&#34;</span>

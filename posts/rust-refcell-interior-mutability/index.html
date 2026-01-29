@@ -15,7 +15,7 @@
     path: '\/posts\/rust-refcell-interior-mutability\/',
     update: false,
   });
-</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/posts/rust-refcell-interior-mutability/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#refcell%e6%98%af%e4%bb%80%e4%b9%88%e5%b8%a6%e9%97%a8%e7%a6%81%e7%9a%84%e5%8f%af%e5%8f%98%e6%88%bf%e9%97%b4 aria-label=RefCell是什么？带门禁的可变房间>RefCell是什么？带门禁的可变房间</a></li><li><a href=#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%bf%99%e7%a7%8d%e4%b8%9c%e8%a5%bf aria-label=为什么需要这种东西？>为什么需要这种东西？</a></li><li><a href=#rc--refcell%e9%bb%84%e9%87%91%e6%90%ad%e6%a1%a3 aria-label="Rc + RefCell：黄金搭档">Rc + RefCell：黄金搭档</a></li><li><a href=#refcell%e7%9a%84%e5%80%9f%e7%94%a8%e6%a0%87%e5%bf%97%e8%bf%90%e8%a1%8c%e6%97%b6%e7%9a%84%e5%ae%88%e9%97%a8%e5%91%98 aria-label=RefCell的借用标志：运行时的守门员>RefCell的借用标志：运行时的守门员</a></li><li><a href=#%e8%bf%90%e8%a1%8c%e6%97%b6%e6%a3%80%e6%9f%a5%e7%9a%84%e4%bb%a3%e4%bb%b7%e6%98%af%e4%bb%80%e4%b9%88 aria-label=运行时检查的代价是什么？>运行时检查的代价是什么？</a></li><li><a href=#refcell%e4%b8%8d%e6%98%af%e6%89%93%e7%a0%b4%e8%a7%84%e5%88%99%e6%98%af%e5%ae%8c%e5%96%84%e8%a7%84%e5%88%99 aria-label=RefCell不是打破规则，是完善规则>RefCell不是打破规则，是完善规则</a></li><li><a href=#%e6%80%bb%e7%bb%93 aria-label=总结>总结</a></li></ul></div></details></div><div class=post-content><p>说实话，第一次看到RefCell的时候，我差点把电脑关了。</p><p>Rust不是号称"安全第一"吗？不是默认不可变吗？现在突然冒出个东西，告诉你"嘿，我们可以通过不可变引用来修改数据"，这不是自己打自己脸吗？</p><p>我的脑子里全是问号：这不就是Rust花那么大力气要防止的事情吗？</p><p>但后来，当我真正理解它在解决什么问题的时候，才发现这个设计有多精妙。</p><p>今天咱们就来聊聊这个让我抓狂又让我顿悟的特性。</p><h2 id=refcell是什么带门禁的可变房间>RefCell是什么？带门禁的可变房间<a hidden class=anchor aria-hidden=true href=#refcell是什么带门禁的可变房间>#</a></h2><p>把RefCell想象成一个带门禁系统的房间。这个房间有个特殊的规定：表面上看起来，这个房间是"只读"的，任何人都可以进去参观。但如果你有门禁卡，你进去后可以改变房间里的东西。</p><p>这个"门禁系统"就是RefCell的运行时借用检查。用个图来说明：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>正常Rust（编译期检查）：
+</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/posts/rust-refcell-interior-mutability/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#refcell%e6%98%af%e4%bb%80%e4%b9%88%e5%b8%a6%e9%97%a8%e7%a6%81%e7%9a%84%e5%8f%af%e5%8f%98%e6%88%bf%e9%97%b4 aria-label=RefCell是什么？带门禁的可变房间>RefCell是什么？带门禁的可变房间</a></li><li><a href=#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%bf%99%e7%a7%8d%e4%b8%9c%e8%a5%bf aria-label=为什么需要这种东西？>为什么需要这种东西？</a></li><li><a href=#rc--refcell%e9%bb%84%e9%87%91%e6%90%ad%e6%a1%a3 aria-label="Rc + RefCell：黄金搭档">Rc + RefCell：黄金搭档</a></li><li><a href=#refcell%e7%9a%84%e5%80%9f%e7%94%a8%e6%a0%87%e5%bf%97%e8%bf%90%e8%a1%8c%e6%97%b6%e7%9a%84%e5%ae%88%e9%97%a8%e5%91%98 aria-label=RefCell的借用标志：运行时的守门员>RefCell的借用标志：运行时的守门员</a></li><li><a href=#%e8%bf%90%e8%a1%8c%e6%97%b6%e6%a3%80%e6%9f%a5%e7%9a%84%e4%bb%a3%e4%bb%b7%e6%98%af%e4%bb%80%e4%b9%88 aria-label=运行时检查的代价是什么？>运行时检查的代价是什么？</a></li><li><a href=#refcell%e4%b8%8d%e6%98%af%e6%89%93%e7%a0%b4%e8%a7%84%e5%88%99%e6%98%af%e5%ae%8c%e5%96%84%e8%a7%84%e5%88%99 aria-label=RefCell不是打破规则，是完善规则>RefCell不是打破规则，是完善规则</a></li><li><a href=#%e6%80%bb%e7%bb%93 aria-label=总结>总结</a></li></ul></div></details></div><div class=post-content><p>说实话，第一次看到RefCell的时候，我差点把电脑关了。</p><p>Rust不是号称"安全第一"吗？不是默认不可变吗？现在突然冒出个东西，告诉你"嘿，我们可以通过不可变引用来修改数据"，这不是自己打自己脸吗？</p><p>我的脑子里全是问号：这不就是Rust花那么大力气要防止的事情吗？</p><p>但后来，当我真正理解它在解决什么问题的时候，才发现这个设计有多精妙。</p><p>今天咱们就来聊聊这个让我抓狂又让我顿悟的特性。</p><h2 id=refcell是什么带门禁的可变房间>RefCell是什么？带门禁的可变房间<a hidden class=anchor aria-hidden=true href=#refcell是什么带门禁的可变房间>#</a></h2><p>把RefCell想象成一个带门禁系统的房间。这个房间有个特殊的规定：表面上看起来，这个房间是"只读"的，任何人都可以进去参观。但如果你有门禁卡，你进去后可以改变房间里的东西。</p><p>这个"门禁系统"就是RefCell的运行时借用检查。用个图来说明：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>正常Rust（编译期检查）：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>┌─────────┐     ┌─────────────┐
 </span></span><span style=display:flex><span>│ 变量 x  │────▶│   值：10    │  ← 不可变引用 &amp;x
@@ -24,7 +24,7 @@
 </span></span><span style=display:flex><span>                      │
 </span></span><span style=display:flex><span>                想改成20？❌
 </span></span><span style=display:flex><span>           编译器直接拦住你！
-</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>用RefCell（运行时检查）：
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>用RefCell（运行时检查）：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>┌─────────┐     ┌─────────────────────────┐
 </span></span><span style=display:flex><span>│ 变量 x  │────▶│  RefCell  │  值：10   │  ← borrow_mut()可以改
@@ -33,23 +33,23 @@
 </span></span><span style=display:flex><span>                      │
 </span></span><span style=display:flex><span>                门禁卡 ✓
 </span></span><span style=display:flex><span>           运行时检查通过→改成20
-</span></span></code></pre></div><p>正常情况下，Rust的借用规则是在编译期检查的：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 这是行不通的
+</span></span></code></pre></div><p>正常情况下，Rust的借用规则是在编译期检查的：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 这是行不通的
 </span></span></span><span style=display:flex><span><span style=color:#00f>let</span> x = 10;
 </span></span><span style=display:flex><span><span style=color:#00f>let</span> y = &amp;x;       <span style=color:green>// 不可变引用
 </span></span></span><span style=display:flex><span>*y = 20;          <span style=color:green>// 编译器直接报错：不能通过不可变引用修改数据
-</span></span></span></code></pre></div><p>但RefCell把这个检查推迟到了运行时：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::cell::RefCell;
+</span></span></span></code></pre></div><p>但RefCell把这个检查推迟到了运行时：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::cell::RefCell;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> value = RefCell::new(10);
 </span></span><span style=display:flex><span>    *value.borrow_mut() = 20;  <span style=color:green>// 运行时检查，通过了就能改
 </span></span></span><span style=display:flex><span>    println!(<span style=color:#a31515>&#34;Value: </span><span style=color:#a31515>{}</span><span style=color:#a31515>&#34;</span>, value.borrow());
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>这意味着什么？意味着Rust在运行的时候会盯着你，确保你没有同时拿着可变引用和不可变引用。如果你违规了，程序会直接panic，但这panic发生在运行时而不是编译时。</p><h2 id=为什么需要这种东西>为什么需要这种东西？<a hidden class=anchor aria-hidden=true href=#为什么需要这种东西>#</a></h2><p>我遇到RefCell是在做一个插件系统的时候。每个插件可能依赖其他插件，这就形成了一个依赖图。问题来了，每个插件需要引用其他插件，但同时又要能修改自己的状态。</p><p>用最朴素的方式写，大概是这样：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>Plugin</span> {
+</span></span></code></pre></div><p>这意味着什么？意味着Rust在运行的时候会盯着你，确保你没有同时拿着可变引用和不可变引用。如果你违规了，程序会直接panic，但这panic发生在运行时而不是编译时。</p><h2 id=为什么需要这种东西>为什么需要这种东西？<a hidden class=anchor aria-hidden=true href=#为什么需要这种东西>#</a></h2><p>我遇到RefCell是在做一个插件系统的时候。每个插件可能依赖其他插件，这就形成了一个依赖图。问题来了，每个插件需要引用其他插件，但同时又要能修改自己的状态。</p><p>用最朴素的方式写，大概是这样：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>struct</span> <span style=color:#2b91af>Plugin</span> {
 </span></span><span style=display:flex><span>    name: String,
 </span></span><span style=display:flex><span>    dependencies: Vec&lt;&amp;Plugin&gt;,  <span style=color:green>// 引用其他插件
 </span></span></span><span style=display:flex><span>    active: <span style=color:#2b91af>bool</span>,
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>编译器直接给你甩一个错误：&ldquo;借用值活得不够长&rdquo;。</p><p>这就是Rust借用检查器的局限性。它没法在编译期表达"共享所有权同时还需要可变内部状态"这种关系。</p><p>这时候，Rc&lt;RefCell<t>>就像救星一样出现了。</p><h2 id=rc--refcell黄金搭档>Rc + RefCell：黄金搭档<a hidden class=anchor aria-hidden=true href=#rc--refcell黄金搭档>#</a></h2><p>Rc负责共享所有权，RefCell负责内部可变性，这两个一配合，就能解决刚才的问题。</p><p>先看个结构图：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Rc&lt;RefCell&lt;T&gt;&gt; 的工作原理：
+</span></span></code></pre></div><p>编译器直接给你甩一个错误：&ldquo;借用值活得不够长&rdquo;。</p><p>这就是Rust借用检查器的局限性。它没法在编译期表达"共享所有权同时还需要可变内部状态"这种关系。</p><p>这时候，Rc&lt;RefCell<t>>就像救星一样出现了。</p><h2 id=rc--refcell黄金搭档>Rc + RefCell：黄金搭档<a hidden class=anchor aria-hidden=true href=#rc--refcell黄金搭档>#</a></h2><p>Rc负责共享所有权，RefCell负责内部可变性，这两个一配合，就能解决刚才的问题。</p><p>先看个结构图：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>Rc&lt;RefCell&lt;T&gt;&gt; 的工作原理：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>                    ┌──────────────────┐
 </span></span><span style=display:flex><span>          ┌────────│   Rc&lt;T&gt; (引用计数) │────────┐
@@ -69,7 +69,7 @@
 </span></span><span style=display:flex><span>              │  │      数据 T      │    │
 </span></span><span style=display:flex><span>              │  └──────────────────┘    │
 </span></span><span style=display:flex><span>              └──────────────────────────┘
-</span></span></code></pre></div><p>完整代码：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::cell::RefCell;
+</span></span></code></pre></div><p>完整代码：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>use</span> std::cell::RefCell;
 </span></span><span style=display:flex><span><span style=color:#00f>use</span> std::rc::Rc;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:green>// 定义一个类型别名，写起来方便点
@@ -95,7 +95,7 @@
 </span></span><span style=display:flex><span>        println!(<span style=color:#a31515>&#34;</span><span style=color:#a31515>{}</span><span style=color:#a31515> 已激活！&#34;</span>, self.name);
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>现在你可以轻松地创建插件依赖关系：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>fn</span> main() {
+</span></span></code></pre></div><p>现在你可以轻松地创建插件依赖关系：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>fn</span> main() {
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> plugin_a = Plugin::new(<span style=color:#a31515>&#34;核心模块&#34;</span>);
 </span></span><span style=display:flex><span>    <span style=color:#00f>let</span> plugin_b = Plugin::new(<span style=color:#a31515>&#34;用户界面&#34;</span>);
 </span></span><span style=display:flex><span>
@@ -112,7 +112,7 @@
 </span></span><span style=display:flex><span>        plugin_b.borrow().dependencies[0].borrow().name
 </span></span><span style=display:flex><span>    );
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>依赖关系图：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>        插件依赖图：
+</span></span></code></pre></div><p>依赖关系图：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>        插件依赖图：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    ┌─────────────┐
 </span></span><span style=display:flex><span>    │  核心模块    │ ◀───────┐
@@ -128,7 +128,7 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    Rc让两个插件都能持有对方，
 </span></span><span style=display:flex><span>    RefCell让它们在需要时能修改内部状态
-</span></span></code></pre></div><p>这段代码能跑，而且跑得很顺畅。Rc让多个地方可以同时拥有这个插件的所有权，RefCell让这些拥有者可以在需要的时候修改插件的状态。</p><h2 id=refcell的借用标志运行时的守门员>RefCell的借用标志：运行时的守门员<a hidden class=anchor aria-hidden=true href=#refcell的借用标志运行时的守门员>#</a></h2><p>RefCell内部有个"借用标志"（borrow flag），就像个守门员：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>RefCell内部状态：
+</span></span></code></pre></div><p>这段代码能跑，而且跑得很顺畅。Rc让多个地方可以同时拥有这个插件的所有权，RefCell让这些拥有者可以在需要的时候修改插件的状态。</p><h2 id=refcell的借用标志运行时的守门员>RefCell的借用标志：运行时的守门员<a hidden class=anchor aria-hidden=true href=#refcell的借用标志运行时的守门员>#</a></h2><p>RefCell内部有个"借用标志"（borrow flag），就像个守门员：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>RefCell内部状态：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    ┌─────────────────────────────────┐
 </span></span><span style=display:flex><span>    │         RefCell&lt;T&gt;              │
@@ -149,7 +149,7 @@
 </span></span><span style=display:flex><span>    borrow()     → flag+1  (读锁)
 </span></span><span style=display:flex><span>    borrow_mut() → flag=-1  (写锁)
 </span></span><span style=display:flex><span>    drop()       → 恢复原值
-</span></span></code></pre></div><p>当你调用borrow()或borrow_mut()时，RefCell会检查这个标志：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 这些操作是安全的
+</span></span></code></pre></div><p>当你调用borrow()或borrow_mut()时，RefCell会检查这个标志：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:green>// 这些操作是安全的
 </span></span></span><span style=display:flex><span><span style=color:#00f>let</span> r1 = refcell.borrow();     <span style=color:green>// flag: 0 → 1 (开始读)
 </span></span></span><span style=display:flex><span><span style=color:#00f>let</span> r2 = refcell.borrow();     <span style=color:green>// flag: 1 → 2 (继续读)
 </span></span></span><span style=display:flex><span>drop(r1);                      <span style=color:green>// flag: 2 → 1 (结束一个读)
@@ -161,7 +161,7 @@
 </span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>let</span> w1 = refcell.borrow_mut(); <span style=color:green>// flag: 0 → -1 (开始写)
 </span></span></span><span style=display:flex><span><span style=color:#00f>let</span> w2 = refcell.borrow_mut(); <span style=color:green>// panic! 已经有人在写
-</span></span></span></code></pre></div><h2 id=运行时检查的代价是什么>运行时检查的代价是什么？<a hidden class=anchor aria-hidden=true href=#运行时检查的代价是什么>#</a></h2><p>天下没有免费的午餐，RefCell的灵活性也不是没有代价的。</p><p>有人做过benchmark，对比直接修改、RefCell修改、Rc<refcell>修改的性能：</p><table><thead><tr><th>操作类型</th><th>耗时（纳秒）</th><th>相对倍数</th></tr></thead><tbody><tr><td>直接修改</td><td>1.0</td><td>1倍</td></tr><tr><td>RefCell borrow_mut</td><td>13.5</td><td>约13倍</td></tr><tr><td>Rc<refcell> 修改</td><td>21.0</td><td>约21倍</td></tr></tbody></table><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>性能对比（纳秒级）：
+</span></span></span></code></pre></div><h2 id=运行时检查的代价是什么>运行时检查的代价是什么？<a hidden class=anchor aria-hidden=true href=#运行时检查的代价是什么>#</a></h2><p>天下没有免费的午餐，RefCell的灵活性也不是没有代价的。</p><p>有人做过benchmark，对比直接修改、RefCell修改、Rc<refcell>修改的性能：</p><table><thead><tr><th>操作类型</th><th>耗时（纳秒）</th><th>相对倍数</th></tr></thead><tbody><tr><td>直接修改</td><td>1.0</td><td>1倍</td></tr><tr><td>RefCell borrow_mut</td><td>13.5</td><td>约13倍</td></tr><tr><td>Rc<refcell> 修改</td><td>21.0</td><td>约21倍</td></tr></tbody></table><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>性能对比（纳秒级）：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    直接修改:  ███ 1.0ns
 </span></span><span style=display:flex><span>    RefCell:  ████████████████████ 13.5ns
@@ -169,7 +169,7 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    看着差距大，但记住：这是纳秒！
 </span></span><span style=display:flex><span>    你的代码大部分时间不在这种操作上
-</span></span></code></pre></div><p>看着挺吓人，但仔细想想，这是纳秒级别的差异。在大多数实际应用中，这点开销完全可以忽略。你要是在一个紧密循环里频繁调用borrow_mut，那可能是设计有问题，不是RefCell的问题。</p><p>有个教训我要分享：我用RefCell的时候，不小心搞出了循环依赖，插件A依赖B，B又依赖A。结果在运行时触发了借用错误，程序直接panic：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>循环依赖的危险：
+</span></span></code></pre></div><p>看着挺吓人，但仔细想想，这是纳秒级别的差异。在大多数实际应用中，这点开销完全可以忽略。你要是在一个紧密循环里频繁调用borrow_mut，那可能是设计有问题，不是RefCell的问题。</p><p>有个教训我要分享：我用RefCell的时候，不小心搞出了循环依赖，插件A依赖B，B又依赖A。结果在运行时触发了借用错误，程序直接panic：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>循环依赖的危险：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    ┌─────────┐         ┌─────────┐
 </span></span><span style=display:flex><span>    │ Plugin A│◄────────│ Plugin B│
@@ -181,7 +181,7 @@
 </span></span><span style=display:flex><span>                  ▼
 </span></span><span style=display:flex><span>         可能导致内存泄漏！
 </span></span><span style=display:flex><span>    需要用Weak打破循环
-</span></span></code></pre></div><p>但这个panic让我意识到，RefCell给你的是灵活性，不是自由。你还是得把逻辑设计清楚。</p><h2 id=refcell不是打破规则是完善规则>RefCell不是打破规则，是完善规则<a hidden class=anchor aria-hidden=true href=#refcell不是打破规则是完善规则>#</a></h2><p>理解RefCell后，我最大的感受是：它不是在打破Rust的规则，而是在完善这套规则。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Rust的安全策略：
+</span></span></code></pre></div><p>但这个panic让我意识到，RefCell给你的是灵活性，不是自由。你还是得把逻辑设计清楚。</p><h2 id=refcell不是打破规则是完善规则>RefCell不是打破规则，是完善规则<a hidden class=anchor aria-hidden=true href=#refcell不是打破规则是完善规则>#</a></h2><p>理解RefCell后，我最大的感受是：它不是在打破Rust的规则，而是在完善这套规则。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>Rust的安全策略：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    编译期检查
 </span></span><span style=display:flex><span>    ┌─────────────────────┐
@@ -195,7 +195,7 @@
 </span></span><span style=display:flex><span>    │   运行时检查         │ ← RefCell/Mutex
 </span></span><span style=display:flex><span>    │   (动态借用检查)     │
 </span></span><span style=display:flex><span>    └─────────────────────┘
-</span></span></code></pre></div><p>有些场景，编译期的静态检查确实无法表达，但运行时的动态检查可以。RefCell就是连接这两者的桥梁。它让你在保持Rust安全承诺的前提下，写出更灵活、更动态的架构。</p><p>借用检查器像一堵墙，RefCell就是墙上那扇门。你得找到正确的钥匙才能打开它，但有了这扇门，你可以去那些原本去不了的地方。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>借用检查器这堵墙：
+</span></span></code></pre></div><p>有些场景，编译期的静态检查确实无法表达，但运行时的动态检查可以。RefCell就是连接这两者的桥梁。它让你在保持Rust安全承诺的前提下，写出更灵活、更动态的架构。</p><p>借用检查器像一堵墙，RefCell就是墙上那扇门。你得找到正确的钥匙才能打开它，但有了这扇门，你可以去那些原本去不了的地方。</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>借用检查器这堵墙：
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    ❌ 编译期检查不过
 </span></span><span style=display:flex><span>    ┌─────────────────────────────┐
