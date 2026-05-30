@@ -1,4 +1,4 @@
-<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Cloud Run / GKE 部署：云端部署全攻略 | 梦兽编程</title><meta name=keywords content="Go,ADK,Cloud Run,GKE,云原生,部署,教程"><meta name=description content="详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/><link crossorigin=anonymous href=/assets/css/stylesheet.e5cc7add3db1d5537bcd94f2210c74e21671855996289bd6292dd5d5e1f0b10d.css integrity="sha256-5cx63T2x1VN7zZTyIQx04hZxhVmWKJvWKS3V1eHwsQ0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preload href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css as=style integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><link rel=stylesheet href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","about":[{"@type":"Thing","description":"Smart pointer types in Rust programming language","name":"Rust Smart Pointers"},{"@type":"Thing","description":"Heap allocation smart pointer in Rust","name":"Box\u003cT\u003e"},{"@type":"Thing","description":"Reference counting smart pointer in Rust","name":"Rc\u003cT\u003e"},{"@type":"Thing","description":"Interior mutability smart pointer in Rust","name":"RefCell\u003cT\u003e"}],"author":{"@type":"Person","name":"梦兽编程","url":"https://rexai.top/"},"dateModified":"2026-05-29","datePublished":"2026-05-29","description":"详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。","headline":"Cloud Run / GKE 部署：云端部署全攻略","keywords":"Go,ADK,Cloud Run,GKE,云原生,部署,教程","mainEntityOfPage":{"@id":"https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/","@type":"WebPage"},"proficiencyLevel":"beginner to intermediate","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.svg"},"name":"梦兽编程"}}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Cloud Run / GKE 部署：云端部署全攻略"><meta property="og:description" content="详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T10:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T10:00:00+08:00"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Cloud Run"><meta property="article:tag" content="GKE"><meta property="article:tag" content="云原生"><meta property="article:tag" content="部署"><meta name=twitter:card content="summary"><meta name=twitter:title content="Cloud Run / GKE 部署：云端部署全攻略"><meta name=twitter:description content="详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 7：部署与运维","item":"https://rexai.top/tutorials/go-adk/07-deployment/"},{"@type":"ListItem","position":4,"name":"Cloud Run / GKE 部署：云端部署全攻略","item":"https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Cloud Run / GKE 部署：云端部署全攻略","name":"Cloud Run \/ GKE 部署：云端部署全攻略","description":"详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。","keywords":["Go","ADK","Cloud Run","GKE","云原生","部署","教程"],"articleBody":"Cloud Run / GKE 部署：云端部署全攻略 把 Docker 镜像推到 Google Cloud，在 Cloud Run 或 GKE 上跑——云端部署的完整攻略。\nCloud Run 部署 构建并推送镜像 # 构建 gcloud builds submit --tag gcr.io/$PROJECT_ID/my-agent:latest . # 或者本地构建推送 docker build -t gcr.io/$PROJECT_ID/my-agent:latest . docker push gcr.io/$PROJECT_ID/my-agent:latest 部署 gcloud run deploy my-agent \\ --image gcr.io/$PROJECT_ID/my-agent:latest \\ --platform managed \\ --region asia-east1 \\ --memory 512Mi \\ --cpu 1 \\ --port 8080 \\ --set-env-vars \"GOOGLE_API_KEY=$GOOGLE_API_KEY\" \\ --allow-unauthenticated 密钥管理 使用 Secret Manager：\ngcloud secrets create google-api-key --data-file=./api_key.txt gcloud run deploy my-agent \\ --set-secrets \"GOOGLE_API_KEY=google-api-key:latest\" \\ ... GKE 部署 创建集群 gcloud container clusters create my-cluster \\ --zone asia-east1-a \\ --machine-type e2-medium 部署 kubectl apply -f deployment.yaml deployment.yaml 示例：\napiVersion: apps/v1 kind: Deployment metadata: name: my-agent spec: replicas: 2 selector: matchLabels: app: my-agent template: metadata: labels: app: my-agent spec: containers: - name: my-agent image: gcr.io/$PROJECT_ID/my-agent:latest ports: - containerPort: 8080 resources: limits: memory: \"512Mi\" cpu: \"1\" --- apiVersion: v1 kind: Service metadata: name: my-agent spec: selector: app: my-agent ports: - port: 80 targetPort: 8080 type: LoadBalancer 监控配置 日志 Cloud Run / GKE 自动收集日志到 Cloud Logging：\nimport \"cloud.google.com/go/logging\" logger, _ := logging.NewClient(ctx) logger.Log(logging.Entry{ Payload: \"Agent started\", }) Metrics 接入 Cloud Monitoring：\nimport \"cloud.google.com/go/monitoring/apiv3\" client, _ := monitoring.NewMetricClient(ctx) Traces 接入 Cloud Trace：\nimport \"contrib.go.opencensus.io/exporter/stackdriver\" exporter, _ := stackdriver.NewExporter(stackdriver.Options{ ProjectID: \"my-project\", }) 常见问题 Q：Cloud Run 冷启动慢 A：用 min-instances 保活实例：--min-instances 1\nQ：GKE Pod 无法调度 A：检查资源限制和节点池大小。\nQ：密钥怎么传进去 A：用 Kubernetes Secret 或 Cloud Secret Manager。\n小结 模块 7 完成。学习了：\nAgent Runtime 架构 CLI 部署 Web 界面部署 Docker 容器化 Cloud Run / GKE 云端部署 接下来进入模块 8：A2A 协议——Agent 之间如何通信。\n← 模块 7：部署与运维 | 模块 8：A2A 协议 → →\n想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"262","inLanguage":"zh-cn","datePublished":"2026-05-29T10:00:00+08:00","dateModified":"2026-05-29T10:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
+<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Cloud Run / GKE 部署：云端部署全攻略 | 梦兽编程</title><meta name=keywords content="Go,ADK,Cloud Run,GKE,云原生,部署,教程"><meta name=description content="详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/><link crossorigin=anonymous href=/assets/css/stylesheet.e5cc7add3db1d5537bcd94f2210c74e21671855996289bd6292dd5d5e1f0b10d.css integrity="sha256-5cx63T2x1VN7zZTyIQx04hZxhVmWKJvWKS3V1eHwsQ0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preload href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css as=style integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><link rel=stylesheet href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","about":[{"@type":"Thing","description":"Smart pointer types in Rust programming language","name":"Rust Smart Pointers"},{"@type":"Thing","description":"Heap allocation smart pointer in Rust","name":"Box\u003cT\u003e"},{"@type":"Thing","description":"Reference counting smart pointer in Rust","name":"Rc\u003cT\u003e"},{"@type":"Thing","description":"Interior mutability smart pointer in Rust","name":"RefCell\u003cT\u003e"}],"author":{"@type":"Person","name":"梦兽编程","url":"https://rexai.top/"},"dateModified":"2026-05-29","datePublished":"2026-05-29","description":"详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。","headline":"Cloud Run / GKE 部署：云端部署全攻略","keywords":"Go,ADK,Cloud Run,GKE,云原生,部署,教程","mainEntityOfPage":{"@id":"https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/","@type":"WebPage"},"proficiencyLevel":"beginner to intermediate","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.svg"},"name":"梦兽编程"}}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Cloud Run / GKE 部署：云端部署全攻略"><meta property="og:description" content="详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T10:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T10:00:00+08:00"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Cloud Run"><meta property="article:tag" content="GKE"><meta property="article:tag" content="云原生"><meta property="article:tag" content="部署"><meta name=twitter:card content="summary"><meta name=twitter:title content="Cloud Run / GKE 部署：云端部署全攻略"><meta name=twitter:description content="详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 7：部署与运维","item":"https://rexai.top/tutorials/go-adk/07-deployment/"},{"@type":"ListItem","position":4,"name":"Cloud Run / GKE 部署：云端部署全攻略","item":"https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Cloud Run / GKE 部署：云端部署全攻略","name":"Cloud Run \/ GKE 部署：云端部署全攻略","description":"详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。","keywords":["Go","ADK","Cloud Run","GKE","云原生","部署","教程"],"articleBody":"Cloud Run / GKE 部署：云端部署全攻略 云原生部署不仅是把容器放到云上，而是充分利用云平台的托管能力——自动扩缩容、负载均衡、服务发现、密钥管理、可观测性等。Google Cloud 提供了从 Serverless（Cloud Run）到 Kubernetes（GKE）的全 spectrum 部署选项，理解它们的差异和适用场景，才能为 Agent 系统选择最合适的架构。\n本文将深入讲解 Cloud Run 和 GKE 的部署实践，包括 CI/CD 流水线、密钥管理、监控告警和成本优化。\nCloud Run 部署：Serverless 的极致 simplicity Cloud Run 是 Google Cloud 的完全托管容器平台，它抽象了服务器管理，让你只需关注容器镜像。对于 Agent 场景，Cloud Run 的按请求计费模式和自动扩缩容特性非常有吸引力——没有请求时实例数可以缩到 0，有请求时毫秒级启动新实例。\n构建并推送镜像 # 方式 1：使用 Cloud Build（推荐，无需本地 Docker） gcloud builds submit \\ --tag gcr.io/$PROJECT_ID/my-agent:v1.2.3 \\ --build-arg VERSION=v1.2.3 \\ . # 方式 2：本地构建并推送（需要 Docker 和 gcloud 认证） docker build \\ --build-arg VERSION=v1.2.3 \\ -t gcr.io/$PROJECT_ID/my-agent:v1.2.3 \\ -t gcr.io/$PROJECT_ID/my-agent:latest \\ . docker push gcr.io/$PROJECT_ID/my-agent:v1.2.3 docker push gcr.io/$PROJECT_ID/my-agent:latest # 方式 3：使用 Cloud Build 配置文件（支持复杂构建） # cloudbuild.yaml gcloud builds submit --config cloudbuild.yaml # cloudbuild.yaml steps: # 构建镜像 - name: 'gcr.io/cloud-builders/docker' args: - 'build' - '--build-arg' - 'VERSION=${_VERSION}' - '--build-arg' - 'BUILD_TIME=${_BUILD_TIME}' - '--build-arg' - 'GIT_COMMIT=${SHORT_SHA}' - '-t' - 'gcr.io/$PROJECT_ID/my-agent:${_VERSION}' - '-t' - 'gcr.io/$PROJECT_ID/my-agent:latest' - '.' # 推送镜像 - name: 'gcr.io/cloud-builders/docker' args: ['push', 'gcr.io/$PROJECT_ID/my-agent:${_VERSION}'] # 安全扫描 - name: 'gcr.io/cloud-builders/gcloud' entrypoint: 'bash' args: - '-c' - | gcloud artifacts docker images scan \\ gcr.io/$PROJECT_ID/my-agent:${_VERSION} \\ --remote # 部署到 Cloud Run - name: 'gcr.io/cloud-builders/gcloud' args: - 'run' - 'deploy' - 'my-agent' - '--image' - 'gcr.io/$PROJECT_ID/my-agent:${_VERSION}' - '--region' - 'asia-east1' - '--platform' - 'managed' - '--no-traffic' # 先部署但不接收流量，等待验证 substitutions: _VERSION: v1.2.3 _BUILD_TIME: '2026-05-29T10:00:00Z' images: - 'gcr.io/$PROJECT_ID/my-agent:${_VERSION}' - 'gcr.io/$PROJECT_ID/my-agent:latest' Cloud Run 部署配置 # 基础部署 gcloud run deploy my-agent \\ --image gcr.io/$PROJECT_ID/my-agent:v1.2.3 \\ --platform managed \\ --region asia-east1 \\ --memory 1Gi \\ --cpu 1 \\ --concurrency 100 \\ --max-instances 10 \\ --min-instances 1 \\ --port 8080 \\ --timeout 300 \\ --set-env-vars \"LOG_LEVEL=info,LOG_FORMAT=json,MAX_CONCURRENT=100\" \\ --allow-unauthenticated # 使用 YAML 配置文件部署（推荐用于版本控制） gcloud run services replace service.yaml # service.yaml - Cloud Run 服务配置 apiVersion: serving.knative.dev/v1 kind: Service metadata: name: my-agent annotations: run.googleapis.com/ingress: all # 允许所有入站流量 run.googleapis.com/execution-environment: gen2 # 第二代执行环境 spec: template: metadata: annotations: # 自动扩缩容配置 autoscaling.knative.dev/minScale: \"1\" # 最少保留 1 个实例（避免冷启动） autoscaling.knative.dev/maxScale: \"20\" # 最多 20 个实例 autoscaling.knative.dev/targetConcurrency: \"50\" # 每个实例处理 50 并发 # 连接配置 run.googleapis.com/cpu-throttling: \"false\" # 始终分配 CPU（适合长连接） run.googleapis.com/startup-cpu-boost: \"true\" # 启动时提升 CPU # 云监控 run.googleapis.com/execution-environment: gen2 spec: containerConcurrency: 100 # 单个容器最大并发数 timeoutSeconds: 300 # 请求超时 5 分钟 serviceAccountName: my-agent-sa@$PROJECT_ID.iam.gserviceaccount.com containers: - image: gcr.io/$PROJECT_ID/my-agent:v1.2.3 ports: - containerPort: 8080 env: - name: LOG_LEVEL value: \"info\" - name: LOG_FORMAT value: \"json\" - name: MAX_CONCURRENT value: \"100\" - name: REDIS_URL valueFrom: secretKeyRef: name: redis-url key: latest - name: GOOGLE_API_KEY valueFrom: secretKeyRef: name: google-api-key key: latest resources: limits: cpu: \"2\" memory: \"2Gi\" startupProbe: httpGet: path: /health port: 8080 initialDelaySeconds: 5 periodSeconds: 5 failureThreshold: 6 # 30 秒内必须就绪 livenessProbe: httpGet: path: /health port: 8080 periodSeconds: 10 failureThreshold: 3 密钥管理：Secret Manager 生产环境绝不能在代码或环境变量中硬编码密钥，应使用 Google Secret Manager：\n# 创建密钥 echo -n \"your-api-key\" | gcloud secrets create google-api-key --data-file=- # 创建 Redis 连接字符串密钥 echo -n \"redis://10.0.0.3:6379/0\" | gcloud secrets create redis-url --data-file=- # 查看密钥版本 gcloud secrets versions list google-api-key # 更新密钥 echo -n \"new-api-key\" | gcloud secrets versions add google-api-key --data-file=- 在 Cloud Run 中引用 Secret：\n# 方式 1：作为环境变量注入 env: - name: GOOGLE_API_KEY valueFrom: secretKeyRef: name: google-api-key key: latest # 或指定版本号 # 方式 2：挂载为文件（更安全，避免 env 泄露） volumeMounts: - name: secrets mountPath: /secrets volumes: - name: secrets secret: secretName: google-api-key items: - key: latest path: api-key.txt 在 Go 代码中读取：\nimport ( secretmanager \"cloud.google.com/go/secretmanager/apiv1\" \"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb\" ) func getSecret(ctx context.Context, name string) (string, error) { client, err := secretmanager.NewClient(ctx) if err != nil { return \"\", err } defer client.Close() req := \u0026secretmanagerpb.AccessSecretVersionRequest{ Name: fmt.Sprintf(\"projects/%s/secrets/%s/versions/latest\", projectID, name), } result, err := client.AccessSecretVersion(ctx, req) if err != nil { return \"\", err } return string(result.Payload.Data), nil } // 初始化时读取密钥 func initSecrets(ctx context.Context) error { apiKey, err := getSecret(ctx, \"google-api-key\") if err != nil { return fmt.Errorf(\"failed to get API key: %w\", err) } os.Setenv(\"GOOGLE_API_KEY\", apiKey) redisURL, err := getSecret(ctx, \"redis-url\") if err != nil { return fmt.Errorf(\"failed to get Redis URL: %w\", err) } os.Setenv(\"REDIS_URL\", redisURL) return nil } 冷启动优化 Cloud Run 的冷启动是最大挑战，特别是 Agent 应用可能需要加载模型、初始化连接：\n# 1. 保持最小实例数（避免完全冷启动） gcloud run services update my-agent --min-instances 1 # 2. 使用 startupProbe 确保就绪后再接收流量 # 3. 优化容器镜像大小（越小启动越快） # 4. 使用第二代执行环境（启动更快） gcloud run services update my-agent --execution-environment gen2 // 优化启动时间：延迟初始化非关键组件 func main() { // 1. 先启动 HTTP 服务器（快速就绪） server := startServer() // 2. 后台初始化其他组件 go func() { if err := initLLMClient(); err != nil { log.Printf(\"failed to init LLM client: %v\", err) } }() go func() { if err := initRedis(); err != nil { log.Printf(\"failed to init Redis: %v\", err) } }() // 3. 等待信号 // ... } GKE 部署：Kubernetes 的完全掌控 当需要更精细的控制（自定义网络、持久化存储、复杂的扩缩容策略）时，GKE 是更好的选择。\n创建集群 # 创建标准集群 gcloud container clusters create my-cluster \\ --zone asia-east1-a \\ --machine-type e2-standard-2 \\ --num-nodes 3 \\ --enable-autoscaling \\ --min-nodes 2 \\ --max-nodes 10 \\ --enable-autorepair \\ --enable-autoupgrade \\ --disk-size 100GB \\ --disk-type pd-ssd \\ --workload-pool=$PROJECT_ID.svc.id.goog # 启用 Workload Identity # 获取凭证 gcloud container clusters get-credentials my-cluster --zone asia-east1-a # 验证连接 kubectl get nodes 部署配置 # k8s/namespace.yaml apiVersion: v1 kind: Namespace metadata: name: agent-system labels: istio-injection: enabled # 启用 Istio 服务网格 --- # k8s/serviceaccount.yaml apiVersion: v1 kind: ServiceAccount metadata: name: my-agent namespace: agent-system annotations: iam.gke.io/gcp-service-account: my-agent-sa@$PROJECT_ID.iam.gserviceaccount.com --- # k8s/deployment.yaml apiVersion: apps/v1 kind: Deployment metadata: name: my-agent namespace: agent-system labels: app: my-agent version: v1.2.3 spec: replicas: 3 strategy: type: RollingUpdate rollingUpdate: maxSurge: 1 # 升级时最多多 1 个 Pod maxUnavailable: 0 # 升级时保持全部可用 selector: matchLabels: app: my-agent template: metadata: labels: app: my-agent version: v1.2.3 annotations: prometheus.io/scrape: \"true\" prometheus.io/port: \"9090\" prometheus.io/path: \"/metrics\" spec: serviceAccountName: my-agent securityContext: runAsNonRoot: true runAsUser: 1000 runAsGroup: 1000 fsGroup: 1000 # 亲和性：分散到不同节点 affinity: podAntiAffinity: preferredDuringSchedulingIgnoredDuringExecution: - weight: 100 podAffinityTerm: labelSelector: matchExpressions: - key: app operator: In values: - my-agent topologyKey: kubernetes.io/hostname # 优雅关闭 terminationGracePeriodSeconds: 60 containers: - name: agent image: gcr.io/$PROJECT_ID/my-agent:v1.2.3 imagePullPolicy: Always ports: - name: http containerPort: 8080 protocol: TCP - name: metrics containerPort: 9090 protocol: TCP env: - name: PORT value: \"8080\" - name: LOG_LEVEL value: \"info\" - name: LOG_FORMAT value: \"json\" - name: MAX_CONCURRENT value: \"200\" - name: MAX_SESSIONS value: \"50000\" - name: REDIS_URL valueFrom: secretKeyRef: name: agent-secrets key: redis-url - name: GOOGLE_API_KEY valueFrom: secretKeyRef: name: agent-secrets key: google-api-key resources: requests: cpu: \"500m\" memory: \"512Mi\" limits: cpu: \"2000m\" memory: \"2Gi\" # 健康检查 startupProbe: httpGet: path: /health port: http initialDelaySeconds: 5 periodSeconds: 5 failureThreshold: 12 # 60 秒启动时间 livenessProbe: httpGet: path: /health port: http periodSeconds: 10 failureThreshold: 3 readinessProbe: httpGet: path: /health port: http periodSeconds: 5 failureThreshold: 3 # 安全上下文 securityContext: allowPrivilegeEscalation: false readOnlyRootFilesystem: true capabilities: drop: - ALL # 挂载临时目录 volumeMounts: - name: tmp mountPath: /tmp volumes: - name: tmp emptyDir: sizeLimit: 100Mi --- # k8s/service.yaml apiVersion: v1 kind: Service metadata: name: my-agent namespace: agent-system labels: app: my-agent spec: type: ClusterIP ports: - name: http port: 80 targetPort: http protocol: TCP - name: metrics port: 9090 targetPort: metrics protocol: TCP selector: app: my-agent --- # k8s/hpa.yaml apiVersion: autoscaling/v2 kind: HorizontalPodAutoscaler metadata: name: my-agent namespace: agent-system spec: scaleTargetRef: apiVersion: apps/v1 kind: Deployment name: my-agent minReplicas: 3 maxReplicas: 20 metrics: - type: Resource resource: name: cpu target: type: Utilization averageUtilization: 70 - type: Resource resource: name: memory target: type: Utilization averageUtilization: 80 behavior: scaleUp: stabilizationWindowSeconds: 60 policies: - type: Percent value: 100 periodSeconds: 60 scaleDown: stabilizationWindowSeconds: 300 policies: - type: Percent value: 10 periodSeconds: 60 --- # k8s/ingress.yaml apiVersion: networking.k8s.io/v1 kind: Ingress metadata: name: my-agent namespace: agent-system annotations: kubernetes.io/ingress.class: gce kubernetes.io/ingress.global-static-ip-name: my-agent-ip networking.gke.io/managed-certificates: my-agent-cert networking.gke.io/v1beta1.FrontendConfig: my-agent-frontend-config spec: rules: - host: my-agent.example.com http: paths: - path: / pathType: Prefix backend: service: name: my-agent port: number: 80 --- # k8s/certificate.yaml apiVersion: networking.gke.io/v1 kind: ManagedCertificate metadata: name: my-agent-cert namespace: agent-system spec: domains: - my-agent.example.com --- # k8s/secrets.yaml apiVersion: v1 kind: Secret metadata: name: agent-secrets namespace: agent-system type: Opaque stringData: redis-url: \"redis://10.0.0.3:6379/0\" google-api-key: \"your-api-key\" 部署命令 # 应用所有配置 kubectl apply -f k8s/ # 查看部署状态 kubectl get deployments -n agent-system kubectl get pods -n agent-system -w # 查看 Pod 日志 kubectl logs -f deployment/my-agent -n agent-system # 查看 HPA 状态 kubectl get hpa -n agent-system # 手动扩缩容 kubectl scale deployment my-agent --replicas=5 -n agent-system # 滚动更新 kubectl set image deployment/my-agent agent=gcr.io/$PROJECT_ID/my-agent:v1.2.4 -n agent-system # 回滚 kubectl rollout undo deployment/my-agent -n agent-system # 查看 rollout 历史 kubectl rollout history deployment/my-agent -n agent-system 监控配置：云原生可观测性 Cloud Logging（结构化日志） import ( \"cloud.google.com/go/logging\" \"cloud.google.com/go/logging/logadmin\" ) func setupCloudLogging(ctx context.Context, projectID string) (*logging.Logger, error) { client, err := logging.NewClient(ctx, projectID) if err != nil { return nil, err } logger := client.Logger(\"my-agent\", logging.CommonResource( \u0026monitoredres.MonitoredResource{ Type: \"cloud_run_revision\", Labels: map[string]string{ \"service_name\": \"my-agent\", \"revision_name\": os.Getenv(\"K_REVISION\"), }, }, )) return logger, nil } // 使用 Cloud Logging func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) { ctx := r.Context() // 记录结构化日志 h.logger.Log(logging.Entry{ Severity: logging.Info, Payload: map[string]interface{}{ \"message\": \"request received\", \"request_id\": r.Header.Get(\"X-Request-ID\"), \"user_id\": r.Header.Get(\"X-User-ID\"), \"path\": r.URL.Path, \"method\": r.Method, \"remote_addr\": r.RemoteAddr, }, Trace: r.Header.Get(\"X-Cloud-Trace-Context\"), // 关联 Trace }) // ... 处理请求 ... } Cloud Monitoring（Metrics） import ( \"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb\" \"google.golang.org/protobuf/types/known/metricpb\" \"google.golang.org/protobuf/types/known/timestamppb\" ) func recordMetric(ctx context.Context, client *monitoring.MetricClient, value float64) error { req := \u0026monitoringpb.CreateTimeSeriesRequest{ Name: fmt.Sprintf(\"projects/%s\", projectID), TimeSeries: []*monitoringpb.TimeSeries{ { Metric: \u0026metricpb.Metric{ Type: \"custom.googleapis.com/agent/request_latency\", Labels: map[string]string{ \"service\": \"my-agent\", }, }, Resource: \u0026monitoredres.MonitoredResource{ Type: \"global\", }, Points: []*monitoringpb.Point{ { Interval: \u0026monitoringpb.TimeInterval{ EndTime: timestamppb.New(time.Now()), }, Value: \u0026monitoringpb.TypedValue{ Value: \u0026monitoringpb.TypedValue_DoubleValue{ DoubleValue: value, }, }, }, }, }, }, } return client.CreateTimeSeries(ctx, req) } Cloud Trace（分布式追踪） import ( \"contrib.go.opencensus.io/exporter/stackdriver\" \"go.opencensus.io/trace\" ) func initTracing(projectID string) error { exporter, err := stackdriver.NewExporter(stackdriver.Options{ ProjectID: projectID, }) if err != nil { return err } trace.RegisterExporter(exporter) trace.ApplyConfig(trace.Config{ DefaultSampler: trace.ProbabilitySampler(0.1), // 10% 采样率 }) return nil } // 在请求处理中使用 func handleRequest(ctx context.Context, req *Request) { ctx, span := trace.StartSpan(ctx, \"agent.handleRequest\") defer span.End() span.AddAttributes( trace.StringAttribute(\"request_id\", req.ID), trace.StringAttribute(\"user_id\", req.UserID), ) // 子 span：LLM 调用 ctx, llmSpan := trace.StartSpan(ctx, \"llm.call\") resp, err := llmClient.Generate(ctx, req.Input) llmSpan.End() if err != nil { span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()}) return } span.AddAttributes(trace.Int64Attribute(\"response_length\", int64(len(resp)))) } 常见问题深度排查 Q：Cloud Run 冷启动慢 根本原因分析：\n容器镜像太大，拉取时间长 应用初始化逻辑太重 没有配置 min-instances，请求到达时才启动 使用了第一代执行环境 优化方案：\n# 1. 配置最小实例数（成本 vs 延迟的权衡） gcloud run services update my-agent --min-instances 1 # 2. 使用第二代执行环境 gcloud run services update my-agent --execution-environment gen2 # 3. 优化镜像大小（使用 distroless） # 4. 延迟初始化非关键组件 # 5. 使用 startupProbe 确保就绪 成本影响：\nmin-instances=0：无请求时 0 成本，但有冷启动延迟（5-30s） min-instances=1：始终有 1 个实例运行，无冷启动，但持续计费 min-instances=3：适合高可用场景，成本是 min-instances=1 的 3 倍 Q：GKE Pod 无法调度 诊断：\n# 查看 Pod 状态 kubectl describe pod my-agent-xxx -n agent-system # 查看事件 kubectl get events -n agent-system --sort-by='.lastTimestamp' # 查看节点资源 kubectl top nodes kubectl describe node # 查看 Pending Pod 的原因 kubectl get pods -n agent-system -o wide 常见原因与解决：\n原因 症状 解决 资源不足 Insufficient cpu / Insufficient memory 扩容节点池或降低 requests 镜像拉取失败 ImagePullBackOff 检查镜像名、权限、网络 节点污点 PodToleratesNodeTaints 添加 tolerations 亲和性冲突 MatchNodeSelector 调整 affinity 配置 PVC 未绑定 UnboundImmediatePVC 检查 StorageClass Q：密钥怎么安全传递 方案对比：\n方案 安全性 复杂度 适用场景 环境变量 低 低 开发测试 Kubernetes Secret 中 中 GKE 基础 Secret Manager 高 中 Cloud Run 推荐 Workload Identity 最高 高 GKE 生产 HashiCorp Vault 最高 高 多云环境 Workload Identity 配置（GKE 最佳实践）：\n# 1. 创建 GCP 服务账号 gcloud iam service-accounts create my-agent-sa \\ --display-name=\"My Agent Service Account\" # 2. 授予 Secret Manager 访问权限 gcloud secrets add-iam-policy-binding google-api-key \\ --member=\"serviceAccount:my-agent-sa@$PROJECT_ID.iam.gserviceaccount.com\" \\ --role=\"roles/secretmanager.secretAccessor\" # 3. 绑定 K8s ServiceAccount 到 GCP ServiceAccount gcloud iam service-accounts add-iam-policy-binding \\ my-agent-sa@$PROJECT_ID.iam.gserviceaccount.com \\ --role=\"roles/iam.workloadIdentityUser\" \\ --member=\"serviceAccount:$PROJECT_ID.svc.id.goog[agent-system/my-agent]\" # 4. 在 K8s 中配置 ServiceAccount（见上面的 serviceaccount.yaml） 成本优化策略 Cloud Run 成本优化 # 1. 设置最大实例数限制 gcloud run services update my-agent --max-instances 10 # 2. 优化并发数（每个实例处理更多请求） gcloud run services update my-agent --concurrency 100 # 3. 合理配置内存（不要过度配置） gcloud run services update my-agent --memory 512Mi # 4. 使用请求超时控制（防止长时间占用） gcloud run services update my-agent --timeout 300 GKE 成本优化 # 使用 Spot 实例（可节省 60-90%） apiVersion: apps/v1 kind: Deployment spec: template: spec: nodeSelector: cloud.google.com/gke-spot: \"true\" tolerations: - key: cloud.google.com/gke-spot operator: Equal value: \"true\" effect: NoSchedule # 启用集群自动扩缩容 gcloud container clusters update my-cluster \\ --enable-autoscaling \\ --min-nodes 1 \\ --max-nodes 10 # 使用 e2-medium 机器类型（性价比最高） gcloud container node-pools create spot-pool \\ --cluster my-cluster \\ --machine-type e2-medium \\ --spot \\ --num-nodes 1 \\ --enable-autoscaling \\ --min-nodes 0 \\ --max-nodes 10 小结 模块 7 完成。学习了：\nAgent Runtime 架构的深层机制 CLI 部署的完整生产实践 Web 界面部署的高可用方案 Docker 容器化的安全与优化 Cloud Run / GKE 的云端部署策略 接下来进入模块 8：A2A 协议——Agent 之间如何通信。\n← 模块 7：部署与运维 | 模块 8：A2A 协议 → →\n想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"1904","inLanguage":"zh-cn","datePublished":"2026-05-29T10:00:00+08:00","dateModified":"2026-05-29T10:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
 <span class=logo-text-short>梦兽编程</span></span></a></div></div><div class=apple-header__center><ul id=menu role=menubar><li role=none><a href=https://rexai.top/ title=首页 role=menuitem><span class=apple-header__menu-label>首页</span></a></li><li class=has-submenu role=none><a href=https://rexai.top/tutorials/ title=教程 role=menuitem><span class=apple-header__menu-label>教程</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tutorials/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/tutorials/smart-contracts/ title=智能合约 role=menuitem>智能合约</a></li><li role=none><a href=https://rexai.top/tutorials/ai/ title=AI编程 role=menuitem>AI编程</a></li><li role=none><a href=https://rexai.top/tutorials/go-adk/ title="Go ADK" role=menuitem>Go ADK</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/ai/ title=AI role=menuitem><span class=apple-header__menu-label>AI</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/ai/claude-code/ title="Claude Code" role=menuitem>Claude Code</a></li><li role=none><a href=https://rexai.top/ai/codex/ title=Codex role=menuitem>Codex</a></li><li role=none><a href=https://rexai.top/ai/llm/ title=LLM role=menuitem>LLM</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/languages/ title=开发 role=menuitem><span class=apple-header__menu-label>开发</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/languages/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/languages/go/ title=Go role=menuitem>Go</a></li><li role=none><a href=https://rexai.top/languages/python/ title=Python role=menuitem>Python</a></li><li role=none><a href=https://rexai.top/frontend/ title=前端 role=menuitem>前端</a></li><li role=none><a href=https://rexai.top/infrastructure/ title=基础设施 role=menuitem>基础设施</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/tools/ title="工具 (Alt + /)" accesskey='/role="menuitem"'><span class=apple-header__menu-label>工具</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tools/rexai-tool-directory/ title="AI 工具导航" role=menuitem>AI 工具导航</a></li><li role=none><a href=https://tool.rexai.top/ title="Rex 工具集" target=_blank rel="noopener noreferrer" role=menuitem>Rex 工具集</a></li></ul></li><li role=none><a href=https://rexai.top/marketing/ title=VPN网络链 role=menuitem><span class=apple-header__menu-label>VPN网络链</span></a></li><li role=none><a href=https://rexai.top/tags/ title=标签 role=menuitem><span class=apple-header__menu-label>标签</span></a></li><li role=none><a href=https://rexai.top/categories/ title=分类 role=menuitem><span class=apple-header__menu-label>分类</span></a></li></ul></div><div class=apple-header__right><div class=apple-header__actions><div class=nav-controls><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
 <svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
 <svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><ul class=lang-switch aria-label="Language switcher"><li><a href="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/#untranslated=en" title=:en: aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></div><button class=menu-toggle id=devdrawer-toggle aria-label=菜单 aria-expanded=false aria-controls=devdrawer>
@@ -12,7 +12,7 @@
 </a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/languages/rust/>Rust</a></li><li><a href=https://rexai.top/languages/go/>Go</a></li><li><a href=https://rexai.top/languages/python/>Python</a></li><li><a href=https://rexai.top/frontend/>前端</a></li><li><a href=https://rexai.top/infrastructure/>基础设施</a></li></ul></li><li class=has-submenu><div class=devdrawer__item-content><a href=https://rexai.top/tools/ class=devdrawer__link><span class=devdrawer__link-text>工具</span>
 </a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li></ul></li><li><div class=devdrawer__item-content><a href=https://rexai.top/marketing/ class=devdrawer__link><span class=devdrawer__link-text>VPN网络链</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/tags/ class=devdrawer__link><span class=devdrawer__link-text>标签</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/categories/ class=devdrawer__link><span class=devdrawer__link-text>分类</span></a></div></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></aside><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class="main apple-container page-content"><aside class=apple-untranslated id=apple-untranslated-notice hidden><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge hidden>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge"),s=document.getElementById("apple-untranslated-desc");if(!t||!s)return;const o=()=>{const e=(window.location.hash||"").replace(/^#/,"");return new URLSearchParams(e)},n=()=>{const s=o(),n=s.get("untranslated");if(!n){t.hidden=!0,e&&(e.hidden=!0);return}t.hidden=!1,e&&(e.hidden=!1,e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header giz-post-header"><h1 class="post-title entry-hint-parent">Cloud Run / GKE 部署：云端部署全攻略</h1><div class=post-description>详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。</div><div class=post-meta><span title='2026-05-29 10:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;262 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/ style=margin-left:.5rem>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li></ul></li><li><div class=devdrawer__item-content><a href=https://rexai.top/marketing/ class=devdrawer__link><span class=devdrawer__link-text>VPN网络链</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/tags/ class=devdrawer__link><span class=devdrawer__link-text>标签</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/categories/ class=devdrawer__link><span class=devdrawer__link-text>分类</span></a></div></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></aside><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class="main apple-container page-content"><aside class=apple-untranslated id=apple-untranslated-notice hidden><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge hidden>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge"),s=document.getElementById("apple-untranslated-desc");if(!t||!s)return;const o=()=>{const e=(window.location.hash||"").replace(/^#/,"");return new URLSearchParams(e)},n=()=>{const s=o(),n=s.get("untranslated");if(!n){t.hidden=!0,e&&(e.hidden=!0);return}t.hidden=!1,e&&(e.hidden=!1,e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header giz-post-header"><h1 class="post-title entry-hint-parent">Cloud Run / GKE 部署：云端部署全攻略</h1><div class=post-description>详解在 Google Cloud Run 和 GKE 上部署 ADK Go Agent——包括日志配置、Metrics、Traces、密钥管理。</div><div class=post-meta><span title='2026-05-29 10:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;1904 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/ style=margin-left:.5rem>
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/>-</span>
 </span><script type=module>
@@ -23,36 +23,313 @@
     path: '\/tutorials\/go-adk\/07-deployment\/go-adk-deploy-cloud\/',
     update: false,
   });
-</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#cloud-run--gke-%e9%83%a8%e7%bd%b2%e4%ba%91%e7%ab%af%e9%83%a8%e7%bd%b2%e5%85%a8%e6%94%bb%e7%95%a5 aria-label="Cloud Run / GKE 部署：云端部署全攻略">Cloud Run / GKE 部署：云端部署全攻略</a><ul><li><a href=#cloud-run-%e9%83%a8%e7%bd%b2 aria-label="Cloud Run 部署">Cloud Run 部署</a><ul><li><a href=#%e6%9e%84%e5%bb%ba%e5%b9%b6%e6%8e%a8%e9%80%81%e9%95%9c%e5%83%8f aria-label=构建并推送镜像>构建并推送镜像</a></li><li><a href=#%e9%83%a8%e7%bd%b2 aria-label=部署>部署</a></li><li><a href=#%e5%af%86%e9%92%a5%e7%ae%a1%e7%90%86 aria-label=密钥管理>密钥管理</a></li></ul></li><li><a href=#gke-%e9%83%a8%e7%bd%b2 aria-label="GKE 部署">GKE 部署</a><ul><li><a href=#%e5%88%9b%e5%bb%ba%e9%9b%86%e7%be%a4 aria-label=创建集群>创建集群</a></li><li><a href=#%e9%83%a8%e7%bd%b2-1 aria-label=部署>部署</a></li></ul></li><li><a href=#%e7%9b%91%e6%8e%a7%e9%85%8d%e7%bd%ae aria-label=监控配置>监控配置</a><ul><li><a href=#%e6%97%a5%e5%bf%97 aria-label=日志>日志</a></li><li><a href=#metrics aria-label=Metrics>Metrics</a></li><li><a href=#traces aria-label=Traces>Traces</a></li></ul></li><li><a href=#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98 aria-label=常见问题>常见问题</a></li><li><a href=#%e5%b0%8f%e7%bb%93 aria-label=小结>小结</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=cloud-run--gke-部署云端部署全攻略>Cloud Run / GKE 部署：云端部署全攻略<a hidden class=anchor aria-hidden=true href=#cloud-run--gke-部署云端部署全攻略>#</a></h1><p>把 Docker 镜像推到 Google Cloud，在 Cloud Run 或 GKE 上跑——云端部署的完整攻略。</p><h2 id=cloud-run-部署>Cloud Run 部署<a hidden class=anchor aria-hidden=true href=#cloud-run-部署>#</a></h2><h3 id=构建并推送镜像>构建并推送镜像<a hidden class=anchor aria-hidden=true href=#构建并推送镜像>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 构建</span>
-</span></span><span style=display:flex><span>gcloud builds submit --tag gcr.io/$PROJECT_ID/my-agent:latest .
+</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#cloud-run--gke-%e9%83%a8%e7%bd%b2%e4%ba%91%e7%ab%af%e9%83%a8%e7%bd%b2%e5%85%a8%e6%94%bb%e7%95%a5 aria-label="Cloud Run / GKE 部署：云端部署全攻略">Cloud Run / GKE 部署：云端部署全攻略</a><ul><li><a href=#cloud-run-%e9%83%a8%e7%bd%b2serverless-%e7%9a%84%e6%9e%81%e8%87%b4-simplicity aria-label="Cloud Run 部署：Serverless 的极致 simplicity">Cloud Run 部署：Serverless 的极致 simplicity</a><ul><li><a href=#%e6%9e%84%e5%bb%ba%e5%b9%b6%e6%8e%a8%e9%80%81%e9%95%9c%e5%83%8f aria-label=构建并推送镜像>构建并推送镜像</a></li><li><a href=#cloud-run-%e9%83%a8%e7%bd%b2%e9%85%8d%e7%bd%ae aria-label="Cloud Run 部署配置">Cloud Run 部署配置</a></li><li><a href=#%e5%af%86%e9%92%a5%e7%ae%a1%e7%90%86secret-manager aria-label="密钥管理：Secret Manager">密钥管理：Secret Manager</a></li><li><a href=#%e5%86%b7%e5%90%af%e5%8a%a8%e4%bc%98%e5%8c%96 aria-label=冷启动优化>冷启动优化</a></li></ul></li><li><a href=#gke-%e9%83%a8%e7%bd%b2kubernetes-%e7%9a%84%e5%ae%8c%e5%85%a8%e6%8e%8c%e6%8e%a7 aria-label="GKE 部署：Kubernetes 的完全掌控">GKE 部署：Kubernetes 的完全掌控</a><ul><li><a href=#%e5%88%9b%e5%bb%ba%e9%9b%86%e7%be%a4 aria-label=创建集群>创建集群</a></li><li><a href=#%e9%83%a8%e7%bd%b2%e9%85%8d%e7%bd%ae aria-label=部署配置>部署配置</a></li><li><a href=#%e9%83%a8%e7%bd%b2%e5%91%bd%e4%bb%a4 aria-label=部署命令>部署命令</a></li></ul></li><li><a href=#%e7%9b%91%e6%8e%a7%e9%85%8d%e7%bd%ae%e4%ba%91%e5%8e%9f%e7%94%9f%e5%8f%af%e8%a7%82%e6%b5%8b%e6%80%a7 aria-label=监控配置：云原生可观测性>监控配置：云原生可观测性</a><ul><li><a href=#cloud-logging%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97 aria-label="Cloud Logging（结构化日志）">Cloud Logging（结构化日志）</a></li><li><a href=#cloud-monitoringmetrics aria-label="Cloud Monitoring（Metrics）">Cloud Monitoring（Metrics）</a></li><li><a href=#cloud-trace%e5%88%86%e5%b8%83%e5%bc%8f%e8%bf%bd%e8%b8%aa aria-label="Cloud Trace（分布式追踪）">Cloud Trace（分布式追踪）</a></li></ul></li><li><a href=#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%b7%b1%e5%ba%a6%e6%8e%92%e6%9f%a5 aria-label=常见问题深度排查>常见问题深度排查</a><ul><li><a href=#qcloud-run-%e5%86%b7%e5%90%af%e5%8a%a8%e6%85%a2 aria-label="Q：Cloud Run 冷启动慢">Q：Cloud Run 冷启动慢</a></li><li><a href=#qgke-pod-%e6%97%a0%e6%b3%95%e8%b0%83%e5%ba%a6 aria-label="Q：GKE Pod 无法调度">Q：GKE Pod 无法调度</a></li><li><a href=#q%e5%af%86%e9%92%a5%e6%80%8e%e4%b9%88%e5%ae%89%e5%85%a8%e4%bc%a0%e9%80%92 aria-label=Q：密钥怎么安全传递>Q：密钥怎么安全传递</a></li></ul></li><li><a href=#%e6%88%90%e6%9c%ac%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5 aria-label=成本优化策略>成本优化策略</a><ul><li><a href=#cloud-run-%e6%88%90%e6%9c%ac%e4%bc%98%e5%8c%96 aria-label="Cloud Run 成本优化">Cloud Run 成本优化</a></li><li><a href=#gke-%e6%88%90%e6%9c%ac%e4%bc%98%e5%8c%96 aria-label="GKE 成本优化">GKE 成本优化</a></li></ul></li><li><a href=#%e5%b0%8f%e7%bb%93 aria-label=小结>小结</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=cloud-run--gke-部署云端部署全攻略>Cloud Run / GKE 部署：云端部署全攻略<a hidden class=anchor aria-hidden=true href=#cloud-run--gke-部署云端部署全攻略>#</a></h1><p>云原生部署不仅是把容器放到云上，而是充分利用云平台的托管能力——自动扩缩容、负载均衡、服务发现、密钥管理、可观测性等。Google Cloud 提供了从 Serverless（Cloud Run）到 Kubernetes（GKE）的全 spectrum 部署选项，理解它们的差异和适用场景，才能为 Agent 系统选择最合适的架构。</p><p>本文将深入讲解 Cloud Run 和 GKE 的部署实践，包括 CI/CD 流水线、密钥管理、监控告警和成本优化。</p><hr><h2 id=cloud-run-部署serverless-的极致-simplicity>Cloud Run 部署：Serverless 的极致 simplicity<a hidden class=anchor aria-hidden=true href=#cloud-run-部署serverless-的极致-simplicity>#</a></h2><p>Cloud Run 是 Google Cloud 的完全托管容器平台，它抽象了服务器管理，让你只需关注容器镜像。对于 Agent 场景，Cloud Run 的按请求计费模式和自动扩缩容特性非常有吸引力——没有请求时实例数可以缩到 0，有请求时毫秒级启动新实例。</p><h3 id=构建并推送镜像>构建并推送镜像<a hidden class=anchor aria-hidden=true href=#构建并推送镜像>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 方式 1：使用 Cloud Build（推荐，无需本地 Docker）</span>
+</span></span><span style=display:flex><span>gcloud builds submit <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --tag gcr.io/$PROJECT_ID/my-agent:v1.2.3 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --build-arg VERSION=v1.2.3 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    .
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green># 或者本地构建推送</span>
-</span></span><span style=display:flex><span>docker build -t gcr.io/$PROJECT_ID/my-agent:latest .
+</span></span><span style=display:flex><span><span style=color:green># 方式 2：本地构建并推送（需要 Docker 和 gcloud 认证）</span>
+</span></span><span style=display:flex><span>docker build <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --build-arg VERSION=v1.2.3 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    -t gcr.io/$PROJECT_ID/my-agent:v1.2.3 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    -t gcr.io/$PROJECT_ID/my-agent:latest <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    .
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>docker push gcr.io/$PROJECT_ID/my-agent:v1.2.3
 </span></span><span style=display:flex><span>docker push gcr.io/$PROJECT_ID/my-agent:latest
-</span></span></code></pre></div><h3 id=部署>部署<a hidden class=anchor aria-hidden=true href=#部署>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>gcloud run deploy my-agent <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --image gcr.io/$PROJECT_ID/my-agent:latest <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --platform managed <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --region asia-east1 <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --memory 512Mi <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --cpu 1 <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --port 8080 <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --set-env-vars <span style=color:#a31515>&#34;GOOGLE_API_KEY=</span>$GOOGLE_API_KEY<span style=color:#a31515>&#34;</span> <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --allow-unauthenticated
-</span></span></code></pre></div><h3 id=密钥管理>密钥管理<a hidden class=anchor aria-hidden=true href=#密钥管理>#</a></h3><p>使用 Secret Manager：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>gcloud secrets create google-api-key --data-file=./api_key.txt
 </span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 方式 3：使用 Cloud Build 配置文件（支持复杂构建）</span>
+</span></span><span style=display:flex><span><span style=color:green># cloudbuild.yaml</span>
+</span></span><span style=display:flex><span>gcloud builds submit --config cloudbuild.yaml
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:green># cloudbuild.yaml</span>
+</span></span><span style=display:flex><span>steps:
+</span></span><span style=display:flex><span>  <span style=color:green># 构建镜像</span>
+</span></span><span style=display:flex><span>  - name: <span style=color:#a31515>&#39;gcr.io/cloud-builders/docker&#39;</span>
+</span></span><span style=display:flex><span>    args:
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;build&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;--build-arg&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;VERSION=${_VERSION}&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;--build-arg&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;BUILD_TIME=${_BUILD_TIME}&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;--build-arg&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;GIT_COMMIT=${SHORT_SHA}&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;-t&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;gcr.io/$PROJECT_ID/my-agent:${_VERSION}&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;-t&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;gcr.io/$PROJECT_ID/my-agent:latest&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;.&#39;</span>
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span>  <span style=color:green># 推送镜像</span>
+</span></span><span style=display:flex><span>  - name: <span style=color:#a31515>&#39;gcr.io/cloud-builders/docker&#39;</span>
+</span></span><span style=display:flex><span>    args: [<span style=color:#a31515>&#39;push&#39;</span>, <span style=color:#a31515>&#39;gcr.io/$PROJECT_ID/my-agent:${_VERSION}&#39;</span>]
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span>  <span style=color:green># 安全扫描</span>
+</span></span><span style=display:flex><span>  - name: <span style=color:#a31515>&#39;gcr.io/cloud-builders/gcloud&#39;</span>
+</span></span><span style=display:flex><span>    entrypoint: <span style=color:#a31515>&#39;bash&#39;</span>
+</span></span><span style=display:flex><span>    args:
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;-c&#39;</span>
+</span></span><span style=display:flex><span>      - |<span style=color:#a31515>
+</span></span></span><span style=display:flex><span><span style=color:#a31515>        gcloud artifacts docker images scan \
+</span></span></span><span style=display:flex><span><span style=color:#a31515>          gcr.io/$PROJECT_ID/my-agent:${_VERSION} \
+</span></span></span><span style=display:flex><span><span style=color:#a31515>          --remote</span>
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span>  <span style=color:green># 部署到 Cloud Run</span>
+</span></span><span style=display:flex><span>  - name: <span style=color:#a31515>&#39;gcr.io/cloud-builders/gcloud&#39;</span>
+</span></span><span style=display:flex><span>    args:
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;run&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;deploy&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;my-agent&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;--image&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;gcr.io/$PROJECT_ID/my-agent:${_VERSION}&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;--region&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;asia-east1&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;--platform&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;managed&#39;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#39;--no-traffic&#39;</span>  <span style=color:green># 先部署但不接收流量，等待验证</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>substitutions:
+</span></span><span style=display:flex><span>  _VERSION: v1.2.3
+</span></span><span style=display:flex><span>  _BUILD_TIME: <span style=color:#a31515>&#39;2026-05-29T10:00:00Z&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>images:
+</span></span><span style=display:flex><span>  - <span style=color:#a31515>&#39;gcr.io/$PROJECT_ID/my-agent:${_VERSION}&#39;</span>
+</span></span><span style=display:flex><span>  - <span style=color:#a31515>&#39;gcr.io/$PROJECT_ID/my-agent:latest&#39;</span>
+</span></span></code></pre></div><h3 id=cloud-run-部署配置>Cloud Run 部署配置<a hidden class=anchor aria-hidden=true href=#cloud-run-部署配置>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 基础部署</span>
 </span></span><span style=display:flex><span>gcloud run deploy my-agent <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --set-secrets <span style=color:#a31515>&#34;GOOGLE_API_KEY=google-api-key:latest&#34;</span> <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  ...
-</span></span></code></pre></div><hr><h2 id=gke-部署>GKE 部署<a hidden class=anchor aria-hidden=true href=#gke-部署>#</a></h2><h3 id=创建集群>创建集群<a hidden class=anchor aria-hidden=true href=#创建集群>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>gcloud container clusters create my-cluster <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --zone asia-east1-a <span style=color:#a31515>\
-</span></span></span><span style=display:flex><span>  --machine-type e2-medium
-</span></span></code></pre></div><h3 id=部署-1>部署<a hidden class=anchor aria-hidden=true href=#部署-1>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>kubectl apply -f deployment.yaml
-</span></span></code></pre></div><p>deployment.yaml 示例：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span>apiVersion: apps/v1
+</span></span></span><span style=display:flex><span>    --image gcr.io/$PROJECT_ID/my-agent:v1.2.3 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --platform managed <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --region asia-east1 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --memory 1Gi <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --cpu 1 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --concurrency 100 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --max-instances 10 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --min-instances 1 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --port 8080 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --timeout 300 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --set-env-vars <span style=color:#a31515>&#34;LOG_LEVEL=info,LOG_FORMAT=json,MAX_CONCURRENT=100&#34;</span> <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --allow-unauthenticated
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 使用 YAML 配置文件部署（推荐用于版本控制）</span>
+</span></span><span style=display:flex><span>gcloud run services replace service.yaml
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:green># service.yaml - Cloud Run 服务配置</span>
+</span></span><span style=display:flex><span>apiVersion: serving.knative.dev/v1
+</span></span><span style=display:flex><span>kind: Service
+</span></span><span style=display:flex><span>metadata:
+</span></span><span style=display:flex><span>  name: my-agent
+</span></span><span style=display:flex><span>  annotations:
+</span></span><span style=display:flex><span>    run.googleapis.com/ingress: all  <span style=color:green># 允许所有入站流量</span>
+</span></span><span style=display:flex><span>    run.googleapis.com/execution-environment: gen2  <span style=color:green># 第二代执行环境</span>
+</span></span><span style=display:flex><span>spec:
+</span></span><span style=display:flex><span>  template:
+</span></span><span style=display:flex><span>    metadata:
+</span></span><span style=display:flex><span>      annotations:
+</span></span><span style=display:flex><span>        <span style=color:green># 自动扩缩容配置</span>
+</span></span><span style=display:flex><span>        autoscaling.knative.dev/minScale: <span style=color:#a31515>&#34;1&#34;</span>      <span style=color:green># 最少保留 1 个实例（避免冷启动）</span>
+</span></span><span style=display:flex><span>        autoscaling.knative.dev/maxScale: <span style=color:#a31515>&#34;20&#34;</span>     <span style=color:green># 最多 20 个实例</span>
+</span></span><span style=display:flex><span>        autoscaling.knative.dev/targetConcurrency: <span style=color:#a31515>&#34;50&#34;</span>  <span style=color:green># 每个实例处理 50 并发</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 连接配置</span>
+</span></span><span style=display:flex><span>        run.googleapis.com/cpu-throttling: <span style=color:#a31515>&#34;false&#34;</span>  <span style=color:green># 始终分配 CPU（适合长连接）</span>
+</span></span><span style=display:flex><span>        run.googleapis.com/startup-cpu-boost: <span style=color:#a31515>&#34;true&#34;</span>  <span style=color:green># 启动时提升 CPU</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 云监控</span>
+</span></span><span style=display:flex><span>        run.googleapis.com/execution-environment: gen2
+</span></span><span style=display:flex><span>    spec:
+</span></span><span style=display:flex><span>      containerConcurrency: 100  <span style=color:green># 单个容器最大并发数</span>
+</span></span><span style=display:flex><span>      timeoutSeconds: 300        <span style=color:green># 请求超时 5 分钟</span>
+</span></span><span style=display:flex><span>      serviceAccountName: my-agent-sa@$PROJECT_ID.iam.gserviceaccount.com
+</span></span><span style=display:flex><span>      
+</span></span><span style=display:flex><span>      containers:
+</span></span><span style=display:flex><span>        - image: gcr.io/$PROJECT_ID/my-agent:v1.2.3
+</span></span><span style=display:flex><span>          ports:
+</span></span><span style=display:flex><span>            - containerPort: 8080
+</span></span><span style=display:flex><span>          env:
+</span></span><span style=display:flex><span>            - name: LOG_LEVEL
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;info&#34;</span>
+</span></span><span style=display:flex><span>            - name: LOG_FORMAT
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;json&#34;</span>
+</span></span><span style=display:flex><span>            - name: MAX_CONCURRENT
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;100&#34;</span>
+</span></span><span style=display:flex><span>            - name: REDIS_URL
+</span></span><span style=display:flex><span>              valueFrom:
+</span></span><span style=display:flex><span>                secretKeyRef:
+</span></span><span style=display:flex><span>                  name: redis-url
+</span></span><span style=display:flex><span>                  key: latest
+</span></span><span style=display:flex><span>            - name: GOOGLE_API_KEY
+</span></span><span style=display:flex><span>              valueFrom:
+</span></span><span style=display:flex><span>                secretKeyRef:
+</span></span><span style=display:flex><span>                  name: google-api-key
+</span></span><span style=display:flex><span>                  key: latest
+</span></span><span style=display:flex><span>          resources:
+</span></span><span style=display:flex><span>            limits:
+</span></span><span style=display:flex><span>              cpu: <span style=color:#a31515>&#34;2&#34;</span>
+</span></span><span style=display:flex><span>              memory: <span style=color:#a31515>&#34;2Gi&#34;</span>
+</span></span><span style=display:flex><span>          startupProbe:
+</span></span><span style=display:flex><span>            httpGet:
+</span></span><span style=display:flex><span>              path: /health
+</span></span><span style=display:flex><span>              port: 8080
+</span></span><span style=display:flex><span>            initialDelaySeconds: 5
+</span></span><span style=display:flex><span>            periodSeconds: 5
+</span></span><span style=display:flex><span>            failureThreshold: 6  <span style=color:green># 30 秒内必须就绪</span>
+</span></span><span style=display:flex><span>          livenessProbe:
+</span></span><span style=display:flex><span>            httpGet:
+</span></span><span style=display:flex><span>              path: /health
+</span></span><span style=display:flex><span>              port: 8080
+</span></span><span style=display:flex><span>            periodSeconds: 10
+</span></span><span style=display:flex><span>            failureThreshold: 3
+</span></span></code></pre></div><h3 id=密钥管理secret-manager>密钥管理：Secret Manager<a hidden class=anchor aria-hidden=true href=#密钥管理secret-manager>#</a></h3><p>生产环境绝不能在代码或环境变量中硬编码密钥，应使用 Google Secret Manager：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 创建密钥</span>
+</span></span><span style=display:flex><span>echo -n <span style=color:#a31515>&#34;your-api-key&#34;</span> | gcloud secrets create google-api-key --data-file=-
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 创建 Redis 连接字符串密钥</span>
+</span></span><span style=display:flex><span>echo -n <span style=color:#a31515>&#34;redis://10.0.0.3:6379/0&#34;</span> | gcloud secrets create redis-url --data-file=-
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看密钥版本</span>
+</span></span><span style=display:flex><span>gcloud secrets versions list google-api-key
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 更新密钥</span>
+</span></span><span style=display:flex><span>echo -n <span style=color:#a31515>&#34;new-api-key&#34;</span> | gcloud secrets versions add google-api-key --data-file=-
+</span></span></code></pre></div><p><strong>在 Cloud Run 中引用 Secret</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:green># 方式 1：作为环境变量注入</span>
+</span></span><span style=display:flex><span>env:
+</span></span><span style=display:flex><span>  - name: GOOGLE_API_KEY
+</span></span><span style=display:flex><span>    valueFrom:
+</span></span><span style=display:flex><span>      secretKeyRef:
+</span></span><span style=display:flex><span>        name: google-api-key
+</span></span><span style=display:flex><span>        key: latest  <span style=color:green># 或指定版本号</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 方式 2：挂载为文件（更安全，避免 env 泄露）</span>
+</span></span><span style=display:flex><span>volumeMounts:
+</span></span><span style=display:flex><span>  - name: secrets
+</span></span><span style=display:flex><span>    mountPath: /secrets
+</span></span><span style=display:flex><span>volumes:
+</span></span><span style=display:flex><span>  - name: secrets
+</span></span><span style=display:flex><span>    secret:
+</span></span><span style=display:flex><span>      secretName: google-api-key
+</span></span><span style=display:flex><span>      items:
+</span></span><span style=display:flex><span>        - key: latest
+</span></span><span style=display:flex><span>          path: api-key.txt
+</span></span></code></pre></div><p><strong>在 Go 代码中读取</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    secretmanager <span style=color:#a31515>&#34;cloud.google.com/go/secretmanager/apiv1&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;cloud.google.com/go/secretmanager/apiv1/secretmanagerpb&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> getSecret(ctx context.Context, name <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    client, err := secretmanager.NewClient(ctx)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> client.Close()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    req := &amp;secretmanagerpb.AccessSecretVersionRequest{
+</span></span><span style=display:flex><span>        Name: fmt.Sprintf(<span style=color:#a31515>&#34;projects/%s/secrets/%s/versions/latest&#34;</span>, projectID, name),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    result, err := client.AccessSecretVersion(ctx, req)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> string(result.Payload.Data), <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 初始化时读取密钥</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> initSecrets(ctx context.Context) <span style=color:#2b91af>error</span> {
+</span></span><span style=display:flex><span>    apiKey, err := getSecret(ctx, <span style=color:#a31515>&#34;google-api-key&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;failed to get API key: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    os.Setenv(<span style=color:#a31515>&#34;GOOGLE_API_KEY&#34;</span>, apiKey)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    redisURL, err := getSecret(ctx, <span style=color:#a31515>&#34;redis-url&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;failed to get Redis URL: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    os.Setenv(<span style=color:#a31515>&#34;REDIS_URL&#34;</span>, redisURL)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=冷启动优化>冷启动优化<a hidden class=anchor aria-hidden=true href=#冷启动优化>#</a></h3><p>Cloud Run 的冷启动是最大挑战，特别是 Agent 应用可能需要加载模型、初始化连接：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 1. 保持最小实例数（避免完全冷启动）</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --min-instances 1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 2. 使用 startupProbe 确保就绪后再接收流量</span>
+</span></span><span style=display:flex><span><span style=color:green># 3. 优化容器镜像大小（越小启动越快）</span>
+</span></span><span style=display:flex><span><span style=color:green># 4. 使用第二代执行环境（启动更快）</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --execution-environment gen2
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// 优化启动时间：延迟初始化非关键组件</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> main() {
+</span></span><span style=display:flex><span>    <span style=color:green>// 1. 先启动 HTTP 服务器（快速就绪）</span>
+</span></span><span style=display:flex><span>    server := startServer()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 2. 后台初始化其他组件</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> err := initLLMClient(); err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>            log.Printf(<span style=color:#a31515>&#34;failed to init LLM client: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> err := initRedis(); err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>            log.Printf(<span style=color:#a31515>&#34;failed to init Redis: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 3. 等待信号</span>
+</span></span><span style=display:flex><span>    <span style=color:green>// ...</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=gke-部署kubernetes-的完全掌控>GKE 部署：Kubernetes 的完全掌控<a hidden class=anchor aria-hidden=true href=#gke-部署kubernetes-的完全掌控>#</a></h2><p>当需要更精细的控制（自定义网络、持久化存储、复杂的扩缩容策略）时，GKE 是更好的选择。</p><h3 id=创建集群>创建集群<a hidden class=anchor aria-hidden=true href=#创建集群>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 创建标准集群</span>
+</span></span><span style=display:flex><span>gcloud container clusters create my-cluster <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --zone asia-east1-a <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --machine-type e2-standard-2 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --num-nodes 3 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --enable-autoscaling <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --min-nodes 2 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --max-nodes 10 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --enable-autorepair <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --enable-autoupgrade <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --disk-size 100GB <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --disk-type pd-ssd <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --workload-pool=$PROJECT_ID.svc.id.goog  <span style=color:green># 启用 Workload Identity</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 获取凭证</span>
+</span></span><span style=display:flex><span>gcloud container clusters get-credentials my-cluster --zone asia-east1-a
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 验证连接</span>
+</span></span><span style=display:flex><span>kubectl get nodes
+</span></span></code></pre></div><h3 id=部署配置>部署配置<a hidden class=anchor aria-hidden=true href=#部署配置>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:green># k8s/namespace.yaml</span>
+</span></span><span style=display:flex><span>apiVersion: v1
+</span></span><span style=display:flex><span>kind: Namespace
+</span></span><span style=display:flex><span>metadata:
+</span></span><span style=display:flex><span>  name: agent-system
+</span></span><span style=display:flex><span>  labels:
+</span></span><span style=display:flex><span>    istio-injection: enabled  <span style=color:green># 启用 Istio 服务网格</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:green># k8s/serviceaccount.yaml</span>
+</span></span><span style=display:flex><span>apiVersion: v1
+</span></span><span style=display:flex><span>kind: ServiceAccount
+</span></span><span style=display:flex><span>metadata:
+</span></span><span style=display:flex><span>  name: my-agent
+</span></span><span style=display:flex><span>  namespace: agent-system
+</span></span><span style=display:flex><span>  annotations:
+</span></span><span style=display:flex><span>    iam.gke.io/gcp-service-account: my-agent-sa@$PROJECT_ID.iam.gserviceaccount.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:green># k8s/deployment.yaml</span>
+</span></span><span style=display:flex><span>apiVersion: apps/v1
 </span></span><span style=display:flex><span>kind: Deployment
 </span></span><span style=display:flex><span>metadata:
 </span></span><span style=display:flex><span>  name: my-agent
+</span></span><span style=display:flex><span>  namespace: agent-system
+</span></span><span style=display:flex><span>  labels:
+</span></span><span style=display:flex><span>    app: my-agent
+</span></span><span style=display:flex><span>    version: v1.2.3
 </span></span><span style=display:flex><span>spec:
-</span></span><span style=display:flex><span>  replicas: 2
+</span></span><span style=display:flex><span>  replicas: 3
+</span></span><span style=display:flex><span>  strategy:
+</span></span><span style=display:flex><span>    type: RollingUpdate
+</span></span><span style=display:flex><span>    rollingUpdate:
+</span></span><span style=display:flex><span>      maxSurge: 1           <span style=color:green># 升级时最多多 1 个 Pod</span>
+</span></span><span style=display:flex><span>      maxUnavailable: 0     <span style=color:green># 升级时保持全部可用</span>
 </span></span><span style=display:flex><span>  selector:
 </span></span><span style=display:flex><span>    matchLabels:
 </span></span><span style=display:flex><span>      app: my-agent
@@ -60,46 +337,457 @@
 </span></span><span style=display:flex><span>    metadata:
 </span></span><span style=display:flex><span>      labels:
 </span></span><span style=display:flex><span>        app: my-agent
+</span></span><span style=display:flex><span>        version: v1.2.3
+</span></span><span style=display:flex><span>      annotations:
+</span></span><span style=display:flex><span>        prometheus.io/scrape: <span style=color:#a31515>&#34;true&#34;</span>
+</span></span><span style=display:flex><span>        prometheus.io/port: <span style=color:#a31515>&#34;9090&#34;</span>
+</span></span><span style=display:flex><span>        prometheus.io/path: <span style=color:#a31515>&#34;/metrics&#34;</span>
 </span></span><span style=display:flex><span>    spec:
+</span></span><span style=display:flex><span>      serviceAccountName: my-agent
+</span></span><span style=display:flex><span>      securityContext:
+</span></span><span style=display:flex><span>        runAsNonRoot: <span style=color:#00f>true</span>
+</span></span><span style=display:flex><span>        runAsUser: 1000
+</span></span><span style=display:flex><span>        runAsGroup: 1000
+</span></span><span style=display:flex><span>        fsGroup: 1000
+</span></span><span style=display:flex><span>      
+</span></span><span style=display:flex><span>      <span style=color:green># 亲和性：分散到不同节点</span>
+</span></span><span style=display:flex><span>      affinity:
+</span></span><span style=display:flex><span>        podAntiAffinity:
+</span></span><span style=display:flex><span>          preferredDuringSchedulingIgnoredDuringExecution:
+</span></span><span style=display:flex><span>            - weight: 100
+</span></span><span style=display:flex><span>              podAffinityTerm:
+</span></span><span style=display:flex><span>                labelSelector:
+</span></span><span style=display:flex><span>                  matchExpressions:
+</span></span><span style=display:flex><span>                    - key: app
+</span></span><span style=display:flex><span>                      operator: In
+</span></span><span style=display:flex><span>                      values:
+</span></span><span style=display:flex><span>                        - my-agent
+</span></span><span style=display:flex><span>                topologyKey: kubernetes.io/hostname
+</span></span><span style=display:flex><span>      
+</span></span><span style=display:flex><span>      <span style=color:green># 优雅关闭</span>
+</span></span><span style=display:flex><span>      terminationGracePeriodSeconds: 60
+</span></span><span style=display:flex><span>      
 </span></span><span style=display:flex><span>      containers:
-</span></span><span style=display:flex><span>      - name: my-agent
-</span></span><span style=display:flex><span>        image: gcr.io/$PROJECT_ID/my-agent:latest
-</span></span><span style=display:flex><span>        ports:
-</span></span><span style=display:flex><span>        - containerPort: 8080
-</span></span><span style=display:flex><span>        resources:
-</span></span><span style=display:flex><span>          limits:
-</span></span><span style=display:flex><span>            memory: <span style=color:#a31515>&#34;512Mi&#34;</span>
-</span></span><span style=display:flex><span>            cpu: <span style=color:#a31515>&#34;1&#34;</span>
+</span></span><span style=display:flex><span>        - name: agent
+</span></span><span style=display:flex><span>          image: gcr.io/$PROJECT_ID/my-agent:v1.2.3
+</span></span><span style=display:flex><span>          imagePullPolicy: Always
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          ports:
+</span></span><span style=display:flex><span>            - name: http
+</span></span><span style=display:flex><span>              containerPort: 8080
+</span></span><span style=display:flex><span>              protocol: TCP
+</span></span><span style=display:flex><span>            - name: metrics
+</span></span><span style=display:flex><span>              containerPort: 9090
+</span></span><span style=display:flex><span>              protocol: TCP
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          env:
+</span></span><span style=display:flex><span>            - name: PORT
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;8080&#34;</span>
+</span></span><span style=display:flex><span>            - name: LOG_LEVEL
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;info&#34;</span>
+</span></span><span style=display:flex><span>            - name: LOG_FORMAT
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;json&#34;</span>
+</span></span><span style=display:flex><span>            - name: MAX_CONCURRENT
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;200&#34;</span>
+</span></span><span style=display:flex><span>            - name: MAX_SESSIONS
+</span></span><span style=display:flex><span>              value: <span style=color:#a31515>&#34;50000&#34;</span>
+</span></span><span style=display:flex><span>            - name: REDIS_URL
+</span></span><span style=display:flex><span>              valueFrom:
+</span></span><span style=display:flex><span>                secretKeyRef:
+</span></span><span style=display:flex><span>                  name: agent-secrets
+</span></span><span style=display:flex><span>                  key: redis-url
+</span></span><span style=display:flex><span>            - name: GOOGLE_API_KEY
+</span></span><span style=display:flex><span>              valueFrom:
+</span></span><span style=display:flex><span>                secretKeyRef:
+</span></span><span style=display:flex><span>                  name: agent-secrets
+</span></span><span style=display:flex><span>                  key: google-api-key
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          resources:
+</span></span><span style=display:flex><span>            requests:
+</span></span><span style=display:flex><span>              cpu: <span style=color:#a31515>&#34;500m&#34;</span>
+</span></span><span style=display:flex><span>              memory: <span style=color:#a31515>&#34;512Mi&#34;</span>
+</span></span><span style=display:flex><span>            limits:
+</span></span><span style=display:flex><span>              cpu: <span style=color:#a31515>&#34;2000m&#34;</span>
+</span></span><span style=display:flex><span>              memory: <span style=color:#a31515>&#34;2Gi&#34;</span>
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          <span style=color:green># 健康检查</span>
+</span></span><span style=display:flex><span>          startupProbe:
+</span></span><span style=display:flex><span>            httpGet:
+</span></span><span style=display:flex><span>              path: /health
+</span></span><span style=display:flex><span>              port: http
+</span></span><span style=display:flex><span>            initialDelaySeconds: 5
+</span></span><span style=display:flex><span>            periodSeconds: 5
+</span></span><span style=display:flex><span>            failureThreshold: 12  <span style=color:green># 60 秒启动时间</span>
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          livenessProbe:
+</span></span><span style=display:flex><span>            httpGet:
+</span></span><span style=display:flex><span>              path: /health
+</span></span><span style=display:flex><span>              port: http
+</span></span><span style=display:flex><span>            periodSeconds: 10
+</span></span><span style=display:flex><span>            failureThreshold: 3
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          readinessProbe:
+</span></span><span style=display:flex><span>            httpGet:
+</span></span><span style=display:flex><span>              path: /health
+</span></span><span style=display:flex><span>              port: http
+</span></span><span style=display:flex><span>            periodSeconds: 5
+</span></span><span style=display:flex><span>            failureThreshold: 3
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          <span style=color:green># 安全上下文</span>
+</span></span><span style=display:flex><span>          securityContext:
+</span></span><span style=display:flex><span>            allowPrivilegeEscalation: <span style=color:#00f>false</span>
+</span></span><span style=display:flex><span>            readOnlyRootFilesystem: <span style=color:#00f>true</span>
+</span></span><span style=display:flex><span>            capabilities:
+</span></span><span style=display:flex><span>              drop:
+</span></span><span style=display:flex><span>                - ALL
+</span></span><span style=display:flex><span>          
+</span></span><span style=display:flex><span>          <span style=color:green># 挂载临时目录</span>
+</span></span><span style=display:flex><span>          volumeMounts:
+</span></span><span style=display:flex><span>            - name: tmp
+</span></span><span style=display:flex><span>              mountPath: /tmp
+</span></span><span style=display:flex><span>      
+</span></span><span style=display:flex><span>      volumes:
+</span></span><span style=display:flex><span>        - name: tmp
+</span></span><span style=display:flex><span>          emptyDir:
+</span></span><span style=display:flex><span>            sizeLimit: 100Mi
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:green># k8s/service.yaml</span>
 </span></span><span style=display:flex><span>apiVersion: v1
 </span></span><span style=display:flex><span>kind: Service
 </span></span><span style=display:flex><span>metadata:
 </span></span><span style=display:flex><span>  name: my-agent
+</span></span><span style=display:flex><span>  namespace: agent-system
+</span></span><span style=display:flex><span>  labels:
+</span></span><span style=display:flex><span>    app: my-agent
 </span></span><span style=display:flex><span>spec:
+</span></span><span style=display:flex><span>  type: ClusterIP
+</span></span><span style=display:flex><span>  ports:
+</span></span><span style=display:flex><span>    - name: http
+</span></span><span style=display:flex><span>      port: 80
+</span></span><span style=display:flex><span>      targetPort: http
+</span></span><span style=display:flex><span>      protocol: TCP
+</span></span><span style=display:flex><span>    - name: metrics
+</span></span><span style=display:flex><span>      port: 9090
+</span></span><span style=display:flex><span>      targetPort: metrics
+</span></span><span style=display:flex><span>      protocol: TCP
 </span></span><span style=display:flex><span>  selector:
 </span></span><span style=display:flex><span>    app: my-agent
-</span></span><span style=display:flex><span>  ports:
-</span></span><span style=display:flex><span>  - port: 80
-</span></span><span style=display:flex><span>    targetPort: 8080
-</span></span><span style=display:flex><span>  type: LoadBalancer
-</span></span></code></pre></div><hr><h2 id=监控配置>监控配置<a hidden class=anchor aria-hidden=true href=#监控配置>#</a></h2><h3 id=日志>日志<a hidden class=anchor aria-hidden=true href=#日志>#</a></h3><p>Cloud Run / GKE 自动收集日志到 Cloud Logging：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> <span style=color:#a31515>&#34;cloud.google.com/go/logging&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>logger, _ := logging.NewClient(ctx)
-</span></span><span style=display:flex><span>logger.Log(logging.Entry{
-</span></span><span style=display:flex><span>    Payload: <span style=color:#a31515>&#34;Agent started&#34;</span>,
-</span></span><span style=display:flex><span>})
-</span></span></code></pre></div><h3 id=metrics>Metrics<a hidden class=anchor aria-hidden=true href=#metrics>#</a></h3><p>接入 Cloud Monitoring：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> <span style=color:#a31515>&#34;cloud.google.com/go/monitoring/apiv3&#34;</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:green># k8s/hpa.yaml</span>
+</span></span><span style=display:flex><span>apiVersion: autoscaling/v2
+</span></span><span style=display:flex><span>kind: HorizontalPodAutoscaler
+</span></span><span style=display:flex><span>metadata:
+</span></span><span style=display:flex><span>  name: my-agent
+</span></span><span style=display:flex><span>  namespace: agent-system
+</span></span><span style=display:flex><span>spec:
+</span></span><span style=display:flex><span>  scaleTargetRef:
+</span></span><span style=display:flex><span>    apiVersion: apps/v1
+</span></span><span style=display:flex><span>    kind: Deployment
+</span></span><span style=display:flex><span>    name: my-agent
+</span></span><span style=display:flex><span>  minReplicas: 3
+</span></span><span style=display:flex><span>  maxReplicas: 20
+</span></span><span style=display:flex><span>  metrics:
+</span></span><span style=display:flex><span>    - type: Resource
+</span></span><span style=display:flex><span>      resource:
+</span></span><span style=display:flex><span>        name: cpu
+</span></span><span style=display:flex><span>        target:
+</span></span><span style=display:flex><span>          type: Utilization
+</span></span><span style=display:flex><span>          averageUtilization: 70
+</span></span><span style=display:flex><span>    - type: Resource
+</span></span><span style=display:flex><span>      resource:
+</span></span><span style=display:flex><span>        name: memory
+</span></span><span style=display:flex><span>        target:
+</span></span><span style=display:flex><span>          type: Utilization
+</span></span><span style=display:flex><span>          averageUtilization: 80
+</span></span><span style=display:flex><span>  behavior:
+</span></span><span style=display:flex><span>    scaleUp:
+</span></span><span style=display:flex><span>      stabilizationWindowSeconds: 60
+</span></span><span style=display:flex><span>      policies:
+</span></span><span style=display:flex><span>        - type: Percent
+</span></span><span style=display:flex><span>          value: 100
+</span></span><span style=display:flex><span>          periodSeconds: 60
+</span></span><span style=display:flex><span>    scaleDown:
+</span></span><span style=display:flex><span>      stabilizationWindowSeconds: 300
+</span></span><span style=display:flex><span>      policies:
+</span></span><span style=display:flex><span>        - type: Percent
+</span></span><span style=display:flex><span>          value: 10
+</span></span><span style=display:flex><span>          periodSeconds: 60
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>client, _ := monitoring.NewMetricClient(ctx)
-</span></span></code></pre></div><h3 id=traces>Traces<a hidden class=anchor aria-hidden=true href=#traces>#</a></h3><p>接入 Cloud Trace：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> <span style=color:#a31515>&#34;contrib.go.opencensus.io/exporter/stackdriver&#34;</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:green># k8s/ingress.yaml</span>
+</span></span><span style=display:flex><span>apiVersion: networking.k8s.io/v1
+</span></span><span style=display:flex><span>kind: Ingress
+</span></span><span style=display:flex><span>metadata:
+</span></span><span style=display:flex><span>  name: my-agent
+</span></span><span style=display:flex><span>  namespace: agent-system
+</span></span><span style=display:flex><span>  annotations:
+</span></span><span style=display:flex><span>    kubernetes.io/ingress.class: gce
+</span></span><span style=display:flex><span>    kubernetes.io/ingress.global-static-ip-name: my-agent-ip
+</span></span><span style=display:flex><span>    networking.gke.io/managed-certificates: my-agent-cert
+</span></span><span style=display:flex><span>    networking.gke.io/v1beta1.FrontendConfig: my-agent-frontend-config
+</span></span><span style=display:flex><span>spec:
+</span></span><span style=display:flex><span>  rules:
+</span></span><span style=display:flex><span>    - host: my-agent.example.com
+</span></span><span style=display:flex><span>      http:
+</span></span><span style=display:flex><span>        paths:
+</span></span><span style=display:flex><span>          - path: /
+</span></span><span style=display:flex><span>            pathType: Prefix
+</span></span><span style=display:flex><span>            backend:
+</span></span><span style=display:flex><span>              service:
+</span></span><span style=display:flex><span>                name: my-agent
+</span></span><span style=display:flex><span>                port:
+</span></span><span style=display:flex><span>                  number: 80
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>exporter, _ := stackdriver.NewExporter(stackdriver.Options{
-</span></span><span style=display:flex><span>    ProjectID: <span style=color:#a31515>&#34;my-project&#34;</span>,
-</span></span><span style=display:flex><span>})
-</span></span></code></pre></div><hr><h2 id=常见问题>常见问题<a hidden class=anchor aria-hidden=true href=#常见问题>#</a></h2><p><strong>Q：Cloud Run 冷启动慢</strong>
-A：用 <code>min-instances</code> 保活实例：<code>--min-instances 1</code></p><p><strong>Q：GKE Pod 无法调度</strong>
-A：检查资源限制和节点池大小。</p><p><strong>Q：密钥怎么传进去</strong>
-A：用 Kubernetes Secret 或 Cloud Secret Manager。</p><hr><h2 id=小结>小结<a hidden class=anchor aria-hidden=true href=#小结>#</a></h2><p>模块 7 完成。学习了：</p><ul><li>Agent Runtime 架构</li><li>CLI 部署</li><li>Web 界面部署</li><li>Docker 容器化</li><li>Cloud Run / GKE 云端部署</li></ul><p>接下来进入模块 8：A2A 协议——Agent 之间如何通信。</p><p>← <a href=/tutorials/go-adk/07-deployment/>模块 7：部署与运维</a>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:green># k8s/certificate.yaml</span>
+</span></span><span style=display:flex><span>apiVersion: networking.gke.io/v1
+</span></span><span style=display:flex><span>kind: ManagedCertificate
+</span></span><span style=display:flex><span>metadata:
+</span></span><span style=display:flex><span>  name: my-agent-cert
+</span></span><span style=display:flex><span>  namespace: agent-system
+</span></span><span style=display:flex><span>spec:
+</span></span><span style=display:flex><span>  domains:
+</span></span><span style=display:flex><span>    - my-agent.example.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:green># k8s/secrets.yaml</span>
+</span></span><span style=display:flex><span>apiVersion: v1
+</span></span><span style=display:flex><span>kind: Secret
+</span></span><span style=display:flex><span>metadata:
+</span></span><span style=display:flex><span>  name: agent-secrets
+</span></span><span style=display:flex><span>  namespace: agent-system
+</span></span><span style=display:flex><span>type: Opaque
+</span></span><span style=display:flex><span>stringData:
+</span></span><span style=display:flex><span>  redis-url: <span style=color:#a31515>&#34;redis://10.0.0.3:6379/0&#34;</span>
+</span></span><span style=display:flex><span>  google-api-key: <span style=color:#a31515>&#34;your-api-key&#34;</span>
+</span></span></code></pre></div><h3 id=部署命令>部署命令<a hidden class=anchor aria-hidden=true href=#部署命令>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 应用所有配置</span>
+</span></span><span style=display:flex><span>kubectl apply -f k8s/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看部署状态</span>
+</span></span><span style=display:flex><span>kubectl get deployments -n agent-system
+</span></span><span style=display:flex><span>kubectl get pods -n agent-system -w
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看 Pod 日志</span>
+</span></span><span style=display:flex><span>kubectl logs -f deployment/my-agent -n agent-system
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看 HPA 状态</span>
+</span></span><span style=display:flex><span>kubectl get hpa -n agent-system
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 手动扩缩容</span>
+</span></span><span style=display:flex><span>kubectl scale deployment my-agent --replicas=5 -n agent-system
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 滚动更新</span>
+</span></span><span style=display:flex><span>kubectl set image deployment/my-agent agent=gcr.io/$PROJECT_ID/my-agent:v1.2.4 -n agent-system
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 回滚</span>
+</span></span><span style=display:flex><span>kubectl rollout undo deployment/my-agent -n agent-system
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看 rollout 历史</span>
+</span></span><span style=display:flex><span>kubectl rollout history deployment/my-agent -n agent-system
+</span></span></code></pre></div><hr><h2 id=监控配置云原生可观测性>监控配置：云原生可观测性<a hidden class=anchor aria-hidden=true href=#监控配置云原生可观测性>#</a></h2><h3 id=cloud-logging结构化日志>Cloud Logging（结构化日志）<a hidden class=anchor aria-hidden=true href=#cloud-logging结构化日志>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;cloud.google.com/go/logging&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;cloud.google.com/go/logging/logadmin&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> setupCloudLogging(ctx context.Context, projectID <span style=color:#2b91af>string</span>) (*logging.Logger, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    client, err := logging.NewClient(ctx, projectID)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    logger := client.Logger(<span style=color:#a31515>&#34;my-agent&#34;</span>, logging.CommonResource(
+</span></span><span style=display:flex><span>        &amp;monitoredres.MonitoredResource{
+</span></span><span style=display:flex><span>            Type: <span style=color:#a31515>&#34;cloud_run_revision&#34;</span>,
+</span></span><span style=display:flex><span>            Labels: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#2b91af>string</span>{
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#34;service_name&#34;</span>: <span style=color:#a31515>&#34;my-agent&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#34;revision_name&#34;</span>: os.Getenv(<span style=color:#a31515>&#34;K_REVISION&#34;</span>),
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    ))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> logger, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 使用 Cloud Logging</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+</span></span><span style=display:flex><span>    ctx := r.Context()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 记录结构化日志</span>
+</span></span><span style=display:flex><span>    h.logger.Log(logging.Entry{
+</span></span><span style=display:flex><span>        Severity: logging.Info,
+</span></span><span style=display:flex><span>        Payload: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;message&#34;</span>:       <span style=color:#a31515>&#34;request received&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;request_id&#34;</span>:    r.Header.Get(<span style=color:#a31515>&#34;X-Request-ID&#34;</span>),
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;user_id&#34;</span>:       r.Header.Get(<span style=color:#a31515>&#34;X-User-ID&#34;</span>),
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;path&#34;</span>:          r.URL.Path,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;method&#34;</span>:        r.Method,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;remote_addr&#34;</span>:   r.RemoteAddr,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        Trace: r.Header.Get(<span style=color:#a31515>&#34;X-Cloud-Trace-Context&#34;</span>),  <span style=color:green>// 关联 Trace</span>
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// ... 处理请求 ...</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=cloud-monitoringmetrics>Cloud Monitoring（Metrics）<a hidden class=anchor aria-hidden=true href=#cloud-monitoringmetrics>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;cloud.google.com/go/monitoring/apiv3/v2/monitoringpb&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/protobuf/types/known/metricpb&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/protobuf/types/known/timestamppb&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> recordMetric(ctx context.Context, client *monitoring.MetricClient, value <span style=color:#2b91af>float64</span>) <span style=color:#2b91af>error</span> {
+</span></span><span style=display:flex><span>    req := &amp;monitoringpb.CreateTimeSeriesRequest{
+</span></span><span style=display:flex><span>        Name: fmt.Sprintf(<span style=color:#a31515>&#34;projects/%s&#34;</span>, projectID),
+</span></span><span style=display:flex><span>        TimeSeries: []*monitoringpb.TimeSeries{
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                Metric: &amp;metricpb.Metric{
+</span></span><span style=display:flex><span>                    Type: <span style=color:#a31515>&#34;custom.googleapis.com/agent/request_latency&#34;</span>,
+</span></span><span style=display:flex><span>                    Labels: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#2b91af>string</span>{
+</span></span><span style=display:flex><span>                        <span style=color:#a31515>&#34;service&#34;</span>: <span style=color:#a31515>&#34;my-agent&#34;</span>,
+</span></span><span style=display:flex><span>                    },
+</span></span><span style=display:flex><span>                },
+</span></span><span style=display:flex><span>                Resource: &amp;monitoredres.MonitoredResource{
+</span></span><span style=display:flex><span>                    Type: <span style=color:#a31515>&#34;global&#34;</span>,
+</span></span><span style=display:flex><span>                },
+</span></span><span style=display:flex><span>                Points: []*monitoringpb.Point{
+</span></span><span style=display:flex><span>                    {
+</span></span><span style=display:flex><span>                        Interval: &amp;monitoringpb.TimeInterval{
+</span></span><span style=display:flex><span>                            EndTime: timestamppb.New(time.Now()),
+</span></span><span style=display:flex><span>                        },
+</span></span><span style=display:flex><span>                        Value: &amp;monitoringpb.TypedValue{
+</span></span><span style=display:flex><span>                            Value: &amp;monitoringpb.TypedValue_DoubleValue{
+</span></span><span style=display:flex><span>                                DoubleValue: value,
+</span></span><span style=display:flex><span>                            },
+</span></span><span style=display:flex><span>                        },
+</span></span><span style=display:flex><span>                    },
+</span></span><span style=display:flex><span>                },
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> client.CreateTimeSeries(ctx, req)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=cloud-trace分布式追踪>Cloud Trace（分布式追踪）<a hidden class=anchor aria-hidden=true href=#cloud-trace分布式追踪>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;contrib.go.opencensus.io/exporter/stackdriver&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;go.opencensus.io/trace&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> initTracing(projectID <span style=color:#2b91af>string</span>) <span style=color:#2b91af>error</span> {
+</span></span><span style=display:flex><span>    exporter, err := stackdriver.NewExporter(stackdriver.Options{
+</span></span><span style=display:flex><span>        ProjectID: projectID,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    trace.RegisterExporter(exporter)
+</span></span><span style=display:flex><span>    trace.ApplyConfig(trace.Config{
+</span></span><span style=display:flex><span>        DefaultSampler: trace.ProbabilitySampler(0.1),  <span style=color:green>// 10% 采样率</span>
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 在请求处理中使用</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> handleRequest(ctx context.Context, req *Request) {
+</span></span><span style=display:flex><span>    ctx, span := trace.StartSpan(ctx, <span style=color:#a31515>&#34;agent.handleRequest&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> span.End()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    span.AddAttributes(
+</span></span><span style=display:flex><span>        trace.StringAttribute(<span style=color:#a31515>&#34;request_id&#34;</span>, req.ID),
+</span></span><span style=display:flex><span>        trace.StringAttribute(<span style=color:#a31515>&#34;user_id&#34;</span>, req.UserID),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 子 span：LLM 调用</span>
+</span></span><span style=display:flex><span>    ctx, llmSpan := trace.StartSpan(ctx, <span style=color:#a31515>&#34;llm.call&#34;</span>)
+</span></span><span style=display:flex><span>    resp, err := llmClient.Generate(ctx, req.Input)
+</span></span><span style=display:flex><span>    llmSpan.End()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        span.SetStatus(trace.Status{Code: trace.StatusCodeInternal, Message: err.Error()})
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    span.AddAttributes(trace.Int64Attribute(<span style=color:#a31515>&#34;response_length&#34;</span>, int64(len(resp))))
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=常见问题深度排查>常见问题深度排查<a hidden class=anchor aria-hidden=true href=#常见问题深度排查>#</a></h2><h3 id=qcloud-run-冷启动慢>Q：Cloud Run 冷启动慢<a hidden class=anchor aria-hidden=true href=#qcloud-run-冷启动慢>#</a></h3><p><strong>根本原因分析</strong>：</p><ol><li>容器镜像太大，拉取时间长</li><li>应用初始化逻辑太重</li><li>没有配置 min-instances，请求到达时才启动</li><li>使用了第一代执行环境</li></ol><p><strong>优化方案</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 1. 配置最小实例数（成本 vs 延迟的权衡）</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --min-instances 1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 2. 使用第二代执行环境</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --execution-environment gen2
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 3. 优化镜像大小（使用 distroless）</span>
+</span></span><span style=display:flex><span><span style=color:green># 4. 延迟初始化非关键组件</span>
+</span></span><span style=display:flex><span><span style=color:green># 5. 使用 startupProbe 确保就绪</span>
+</span></span></code></pre></div><p><strong>成本影响</strong>：</p><ul><li><code>min-instances=0</code>：无请求时 0 成本，但有冷启动延迟（5-30s）</li><li><code>min-instances=1</code>：始终有 1 个实例运行，无冷启动，但持续计费</li><li><code>min-instances=3</code>：适合高可用场景，成本是 <code>min-instances=1</code> 的 3 倍</li></ul><h3 id=qgke-pod-无法调度>Q：GKE Pod 无法调度<a hidden class=anchor aria-hidden=true href=#qgke-pod-无法调度>#</a></h3><p><strong>诊断</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 查看 Pod 状态</span>
+</span></span><span style=display:flex><span>kubectl describe pod my-agent-xxx -n agent-system
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看事件</span>
+</span></span><span style=display:flex><span>kubectl get events -n agent-system --sort-by=<span style=color:#a31515>&#39;.lastTimestamp&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看节点资源</span>
+</span></span><span style=display:flex><span>kubectl top nodes
+</span></span><span style=display:flex><span>kubectl describe node
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 查看 Pending Pod 的原因</span>
+</span></span><span style=display:flex><span>kubectl get pods -n agent-system -o wide
+</span></span></code></pre></div><p><strong>常见原因与解决</strong>：</p><table><thead><tr><th>原因</th><th>症状</th><th>解决</th></tr></thead><tbody><tr><td>资源不足</td><td><code>Insufficient cpu</code> / <code>Insufficient memory</code></td><td>扩容节点池或降低 requests</td></tr><tr><td>镜像拉取失败</td><td><code>ImagePullBackOff</code></td><td>检查镜像名、权限、网络</td></tr><tr><td>节点污点</td><td><code>PodToleratesNodeTaints</code></td><td>添加 tolerations</td></tr><tr><td>亲和性冲突</td><td><code>MatchNodeSelector</code></td><td>调整 affinity 配置</td></tr><tr><td>PVC 未绑定</td><td><code>UnboundImmediatePVC</code></td><td>检查 StorageClass</td></tr></tbody></table><h3 id=q密钥怎么安全传递>Q：密钥怎么安全传递<a hidden class=anchor aria-hidden=true href=#q密钥怎么安全传递>#</a></h3><p><strong>方案对比</strong>：</p><table><thead><tr><th>方案</th><th>安全性</th><th>复杂度</th><th>适用场景</th></tr></thead><tbody><tr><td>环境变量</td><td>低</td><td>低</td><td>开发测试</td></tr><tr><td>Kubernetes Secret</td><td>中</td><td>中</td><td>GKE 基础</td></tr><tr><td>Secret Manager</td><td>高</td><td>中</td><td><strong>Cloud Run 推荐</strong></td></tr><tr><td>Workload Identity</td><td>最高</td><td>高</td><td>GKE 生产</td></tr><tr><td>HashiCorp Vault</td><td>最高</td><td>高</td><td>多云环境</td></tr></tbody></table><p><strong>Workload Identity 配置（GKE 最佳实践）</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 1. 创建 GCP 服务账号</span>
+</span></span><span style=display:flex><span>gcloud iam service-accounts create my-agent-sa <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --display-name=<span style=color:#a31515>&#34;My Agent Service Account&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 2. 授予 Secret Manager 访问权限</span>
+</span></span><span style=display:flex><span>gcloud secrets add-iam-policy-binding google-api-key <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --member=<span style=color:#a31515>&#34;serviceAccount:my-agent-sa@</span>$PROJECT_ID<span style=color:#a31515>.iam.gserviceaccount.com&#34;</span> <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --role=<span style=color:#a31515>&#34;roles/secretmanager.secretAccessor&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 3. 绑定 K8s ServiceAccount 到 GCP ServiceAccount</span>
+</span></span><span style=display:flex><span>gcloud iam service-accounts add-iam-policy-binding <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    my-agent-sa@$PROJECT_ID.iam.gserviceaccount.com <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --role=<span style=color:#a31515>&#34;roles/iam.workloadIdentityUser&#34;</span> <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --member=<span style=color:#a31515>&#34;serviceAccount:</span>$PROJECT_ID<span style=color:#a31515>.svc.id.goog[agent-system/my-agent]&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 4. 在 K8s 中配置 ServiceAccount（见上面的 serviceaccount.yaml）</span>
+</span></span></code></pre></div><hr><h2 id=成本优化策略>成本优化策略<a hidden class=anchor aria-hidden=true href=#成本优化策略>#</a></h2><h3 id=cloud-run-成本优化>Cloud Run 成本优化<a hidden class=anchor aria-hidden=true href=#cloud-run-成本优化>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 1. 设置最大实例数限制</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --max-instances 10
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 2. 优化并发数（每个实例处理更多请求）</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --concurrency 100
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 3. 合理配置内存（不要过度配置）</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --memory 512Mi
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 4. 使用请求超时控制（防止长时间占用）</span>
+</span></span><span style=display:flex><span>gcloud run services update my-agent --timeout 300
+</span></span></code></pre></div><h3 id=gke-成本优化>GKE 成本优化<a hidden class=anchor aria-hidden=true href=#gke-成本优化>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:green># 使用 Spot 实例（可节省 60-90%）</span>
+</span></span><span style=display:flex><span>apiVersion: apps/v1
+</span></span><span style=display:flex><span>kind: Deployment
+</span></span><span style=display:flex><span>spec:
+</span></span><span style=display:flex><span>  template:
+</span></span><span style=display:flex><span>    spec:
+</span></span><span style=display:flex><span>      nodeSelector:
+</span></span><span style=display:flex><span>        cloud.google.com/gke-spot: <span style=color:#a31515>&#34;true&#34;</span>
+</span></span><span style=display:flex><span>      tolerations:
+</span></span><span style=display:flex><span>        - key: cloud.google.com/gke-spot
+</span></span><span style=display:flex><span>          operator: Equal
+</span></span><span style=display:flex><span>          value: <span style=color:#a31515>&#34;true&#34;</span>
+</span></span><span style=display:flex><span>          effect: NoSchedule
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 启用集群自动扩缩容</span>
+</span></span><span style=display:flex><span>gcloud container clusters update my-cluster <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --enable-autoscaling <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --min-nodes 1 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --max-nodes 10
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 使用 e2-medium 机器类型（性价比最高）</span>
+</span></span><span style=display:flex><span>gcloud container node-pools create spot-pool <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --cluster my-cluster <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --machine-type e2-medium <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --spot <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --num-nodes 1 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --enable-autoscaling <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --min-nodes 0 <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    --max-nodes 10
+</span></span></code></pre></div><hr><h2 id=小结>小结<a hidden class=anchor aria-hidden=true href=#小结>#</a></h2><p>模块 7 完成。学习了：</p><ul><li>Agent Runtime 架构的深层机制</li><li>CLI 部署的完整生产实践</li><li>Web 界面部署的高可用方案</li><li>Docker 容器化的安全与优化</li><li>Cloud Run / GKE 的云端部署策略</li></ul><p>接下来进入模块 8：A2A 协议——Agent 之间如何通信。</p><p>← <a href=/tutorials/go-adk/07-deployment/>模块 7：部署与运维</a>
 | <a href=/tutorials/go-adk/08-a2a/>模块 8：A2A 协议 →</a>
 →</p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/go/>Go</a></li><li><a href=https://rexai.top/tags/adk/>ADK</a></li><li><a href=https://rexai.top/tags/cloud-run/>Cloud Run</a></li><li><a href=https://rexai.top/tags/gke/>GKE</a></li><li><a href=https://rexai.top/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/>云原生</a></li><li><a href=https://rexai.top/tags/%E9%83%A8%E7%BD%B2/>部署</a></li><li><a href=https://rexai.top/tags/%E6%95%99%E7%A8%8B/>教程</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
   import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';

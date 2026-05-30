@@ -1,4 +1,4 @@
-<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Consuming：消费外部 Agent | 梦兽编程</title><meta name=keywords content="Go,ADK,A2A,消费,教程"><meta name=description content="详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/><link crossorigin=anonymous href=/assets/css/stylesheet.e5cc7add3db1d5537bcd94f2210c74e21671855996289bd6292dd5d5e1f0b10d.css integrity="sha256-5cx63T2x1VN7zZTyIQx04hZxhVmWKJvWKS3V1eHwsQ0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preload href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css as=style integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><link rel=stylesheet href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","about":[{"@type":"Thing","description":"Smart pointer types in Rust programming language","name":"Rust Smart Pointers"},{"@type":"Thing","description":"Heap allocation smart pointer in Rust","name":"Box\u003cT\u003e"},{"@type":"Thing","description":"Reference counting smart pointer in Rust","name":"Rc\u003cT\u003e"},{"@type":"Thing","description":"Interior mutability smart pointer in Rust","name":"RefCell\u003cT\u003e"}],"author":{"@type":"Person","name":"梦兽编程","url":"https://rexai.top/"},"dateModified":"2026-05-29","datePublished":"2026-05-29","description":"详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。","headline":"Consuming：消费外部 Agent","keywords":"Go,ADK,A2A,消费,教程","mainEntityOfPage":{"@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/","@type":"WebPage"},"proficiencyLevel":"beginner to intermediate","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.svg"},"name":"梦兽编程"}}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Consuming：消费外部 Agent"><meta property="og:description" content="详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T10:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T10:00:00+08:00"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="A2A"><meta property="article:tag" content="消费"><meta property="article:tag" content="教程"><meta name=twitter:card content="summary"><meta name=twitter:title content="Consuming：消费外部 Agent"><meta name=twitter:description content="详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 8：A2A 协议","item":"https://rexai.top/tutorials/go-adk/08-a2a/"},{"@type":"ListItem","position":4,"name":"Consuming：消费外部 Agent","item":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Consuming：消费外部 Agent","name":"Consuming：消费外部 Agent","description":"详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。","keywords":["Go","ADK","A2A","消费","教程"],"articleBody":"Consuming：消费外部 Agent 通过 A2A Client 在 Go Agent 里调用外部 Agent——比如 Python Agent、Java Agent。\n创建 Client import \"google.golang.org/adk/a2a/client\" client, _ := a2aclient.New(ctx, a2aclient.WithURL(\"http://python-agent:8080/a2a\"), ) 调用外部 Agent response, err := client.Call(ctx, \u0026a2a.CallRequest{ Input: \"帮我查一下天气\", AgentID: \"weather-agent\", }) 封装为 Tool 把外部 Agent 封装成本地 Tool，方便接入 Agent：\ntype externalAgentTool struct { client *a2aclient.Client } func (t externalAgentTool) Name() string { return \"python_weather\" } func (t externalAgentTool) Description() string { return \"查询天气\" } func (t externalAgentTool) Call(ctx context.Context, input string) (string, error) { resp, _ := t.client.Call(ctx, input) return resp.Output, nil } // 注册 agent, _ := llmagent.New(llmagent.Config{ Tools: []tool.Tool{externalAgentTool{client}}, }) 常见问题 Q：外部 Agent 无响应怎么办 A：配置超时：a2aclient.WithTimeout(30 * time.Second)\nQ：多个外部 Agent 怎么管理 A：用 Agent Registry 统一管理。\n下一步 消费搞定了，接下来看跨语言协作——Python + Go 的实战案例。\n← 模块 8：A2A 协议 | 跨语言协作 → →\n想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"130","inLanguage":"zh-cn","datePublished":"2026-05-29T10:00:00+08:00","dateModified":"2026-05-29T10:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
+<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Consuming：消费外部 Agent | 梦兽编程</title><meta name=keywords content="Go,ADK,A2A,消费,教程"><meta name=description content="详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/><link crossorigin=anonymous href=/assets/css/stylesheet.e5cc7add3db1d5537bcd94f2210c74e21671855996289bd6292dd5d5e1f0b10d.css integrity="sha256-5cx63T2x1VN7zZTyIQx04hZxhVmWKJvWKS3V1eHwsQ0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preload href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css as=style integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><link rel=stylesheet href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","about":[{"@type":"Thing","description":"Smart pointer types in Rust programming language","name":"Rust Smart Pointers"},{"@type":"Thing","description":"Heap allocation smart pointer in Rust","name":"Box\u003cT\u003e"},{"@type":"Thing","description":"Reference counting smart pointer in Rust","name":"Rc\u003cT\u003e"},{"@type":"Thing","description":"Interior mutability smart pointer in Rust","name":"RefCell\u003cT\u003e"}],"author":{"@type":"Person","name":"梦兽编程","url":"https://rexai.top/"},"dateModified":"2026-05-29","datePublished":"2026-05-29","description":"详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。","headline":"Consuming：消费外部 Agent","keywords":"Go,ADK,A2A,消费,教程","mainEntityOfPage":{"@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/","@type":"WebPage"},"proficiencyLevel":"beginner to intermediate","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.svg"},"name":"梦兽编程"}}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Consuming：消费外部 Agent"><meta property="og:description" content="详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T10:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T10:00:00+08:00"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="A2A"><meta property="article:tag" content="消费"><meta property="article:tag" content="教程"><meta name=twitter:card content="summary"><meta name=twitter:title content="Consuming：消费外部 Agent"><meta name=twitter:description content="详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 8：A2A 协议","item":"https://rexai.top/tutorials/go-adk/08-a2a/"},{"@type":"ListItem","position":4,"name":"Consuming：消费外部 Agent","item":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Consuming：消费外部 Agent","name":"Consuming：消费外部 Agent","description":"详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。","keywords":["Go","ADK","A2A","消费","教程"],"articleBody":"Consuming：消费外部 Agent 消费外部 Agent 是多 Agent 系统的核心能力。与调用普通 HTTP API 不同，消费 A2A Agent 需要处理异步任务、流式响应、错误重试、超时控制等复杂语义。一个健壮的 A2A Client 不仅要能发送请求，还要能管理任务生命周期、处理网络分区、实现熔断降级。\n本文将深入讲解如何构建生产级的 A2A 消费端，从基础调用到高级模式。\n创建 Client：连接管理的基础 基础 Client 配置 package main import ( \"context\" \"crypto/tls\" \"fmt\" \"log\" \"net\" \"net/http\" \"time\" \"google.golang.org/adk/a2a/client\" ) func createClient() (*a2aclient.Client, error) { ctx := context.Background() // 自定义 HTTP Transport（生产级配置） transport := \u0026http.Transport{ // 连接池配置 MaxIdleConns: 100, // 最大空闲连接数 MaxIdleConnsPerHost: 10, // 每个主机的最大空闲连接 MaxConnsPerHost: 50, // 每个主机的最大连接数 IdleConnTimeout: 90 * time.Second, // 空闲连接超时 // TLS 配置 TLSClientConfig: \u0026tls.Config{ MinVersion: tls.VersionTLS12, // 生产环境：验证服务器证书 InsecureSkipVerify: false, }, // 连接超时 DialContext: (\u0026net.Dialer{ Timeout: 5 * time.Second, // 连接超时 KeepAlive: 30 * time.Second, // TCP KeepAlive }).DialContext, // 响应头超时 ResponseHeaderTimeout: 10 * time.Second, // 期望 100-continue 超时 ExpectContinueTimeout: 1 * time.Second, // 强制使用 HTTP/2 ForceAttemptHTTP2: true, } client, err := a2aclient.New(ctx, a2aclient.WithURL(\"https://python-agent.example.com/a2a\"), a2aclient.WithHTTPClient(\u0026http.Client{ Transport: transport, Timeout: 30 * time.Second, // 总请求超时 }), a2aclient.WithAPIKey(\"production-api-key\"), a2aclient.WithRetry(3, time.Second), // 失败重试 3 次，间隔 1s a2aclient.WithRequestTimeout(30*time.Second), ) if err != nil { return nil, fmt.Errorf(\"failed to create client: %w\", err) } return client, nil } 连接池优化 A2A Client 的连接池配置直接影响性能：\n// 高并发场景下的 Transport 配置 transport := \u0026http.Transport{ // 大量并发时，增加连接池大小 MaxIdleConns: 500, MaxIdleConnsPerHost: 100, MaxConnsPerHost: 200, // 长连接保持时间（A2A 适合长连接复用） IdleConnTimeout: 5 * time.Minute, // 禁用压缩（如果 Agent 返回大量文本，压缩反而增加 CPU） DisableCompression: false, // TCP 连接复用 DialContext: (\u0026net.Dialer{ Timeout: 5 * time.Second, KeepAlive: 30 * time.Second, // 使用双栈（IPv4 + IPv6） DualStack: true, }).DialContext, } 调用外部 Agent：任务生命周期管理 同步调用（简单场景） func callAgentSync(ctx context.Context, client *a2aclient.Client, input string) (string, error) { // 创建任务 task, err := client.SendTask(ctx, \u0026a2a.Task{ Input: map[string]interface{}{ \"skill\": \"weather-query\", \"query\": input, }, }) if err != nil { return \"\", fmt.Errorf(\"failed to send task: %w\", err) } log.Printf(\"task created: %s (status: %s)\", task.ID, task.Status) // 轮询等待完成 ticker := time.NewTicker(time.Second) defer ticker.Stop() timeout := time.After(30 * time.Second) for { select { case \u003c-ticker.C: task, err = client.GetTask(ctx, task.ID) if err != nil { return \"\", fmt.Errorf(\"failed to get task: %w\", err) } log.Printf(\"task status: %s\", task.Status) switch task.Status { case a2a.TaskStatusCompleted: output, _ := task.Output[\"result\"].(string) return output, nil case a2a.TaskStatusFailed: errMsg, _ := task.Output[\"error\"].(string) return \"\", fmt.Errorf(\"task failed: %s\", errMsg) case a2a.TaskStatusCancelled: return \"\", fmt.Errorf(\"task was cancelled\") } case \u003c-timeout: // 超时取消任务 if err := client.CancelTask(ctx, task.ID); err != nil { log.Printf(\"failed to cancel task: %v\", err) } return \"\", fmt.Errorf(\"task timeout\") case \u003c-ctx.Done(): return \"\", ctx.Err() } } } 异步调用（生产推荐） type AsyncResult struct { TaskID string Result string Error error } func callAgentAsync(ctx context.Context, client *a2aclient.Client, input string) (\u003c-chan AsyncResult, error) { // 创建任务 task, err := client.SendTask(ctx, \u0026a2a.Task{ Input: map[string]interface{}{ \"skill\": \"data-analysis\", \"query\": input, }, }) if err != nil { return nil, err } resultCh := make(chan AsyncResult, 1) // 后台轮询 go func() { defer close(resultCh) ticker := time.NewTicker(2 * time.Second) defer ticker.Stop() timeout := time.After(5 * time.Minute) for { select { case \u003c-ticker.C: currentTask, err := client.GetTask(ctx, task.ID) if err != nil { resultCh \u003c- AsyncResult{TaskID: task.ID, Error: err} return } switch currentTask.Status { case a2a.TaskStatusCompleted: output, _ := currentTask.Output[\"result\"].(string) resultCh \u003c- AsyncResult{TaskID: task.ID, Result: output} return case a2a.TaskStatusFailed: errMsg, _ := currentTask.Output[\"error\"].(string) resultCh \u003c- AsyncResult{ TaskID: task.ID, Error: fmt.Errorf(\"task failed: %s\", errMsg), } return case a2a.TaskStatusCancelled: resultCh \u003c- AsyncResult{ TaskID: task.ID, Error: fmt.Errorf(\"task cancelled\"), } return } case \u003c-timeout: client.CancelTask(ctx, task.ID) resultCh \u003c- AsyncResult{ TaskID: task.ID, Error: fmt.Errorf(\"task timeout after 5m\"), } return case \u003c-ctx.Done(): client.CancelTask(ctx, task.ID) resultCh \u003c- AsyncResult{TaskID: task.ID, Error: ctx.Err()} return } } }() return resultCh, nil } // 使用示例 func main() { client, _ := createClient() resultCh, err := callAgentAsync(ctx, client, \"分析 Q3 销售数据\") if err != nil { log.Fatal(err) } // 继续处理其他事情... // 等待结果 result := \u003c-resultCh if result.Error != nil { log.Printf(\"task %s failed: %v\", result.TaskID, result.Error) return } log.Printf(\"task %s completed: %s\", result.TaskID, result.Result) } 流式调用（实时响应） func callAgentStreaming(ctx context.Context, client *a2aclient.Client, input string) error { // 创建流式任务 stream, err := client.SendTaskStreaming(ctx, \u0026a2a.Task{ Input: map[string]interface{}{ \"skill\": \"code-generation\", \"query\": input, }, }) if err != nil { return fmt.Errorf(\"failed to start streaming: %w\", err) } defer stream.Close() // 实时接收流式响应 for { select { case update, ok := \u003c-stream.Updates(): if !ok { log.Println(\"stream closed\") return nil } switch update.Type { case a2a.StreamUpdateTypeStatus: log.Printf(\"status: %s\", update.Status) case a2a.StreamUpdateTypeOutput: // 实时输出（如代码片段） chunk, _ := update.Data[\"chunk\"].(string) fmt.Print(chunk) // 实时打印 case a2a.StreamUpdateTypeArtifact: // 完整产物（如生成的文件） artifact := update.Artifact log.Printf(\"artifact received: %s (%d bytes)\", artifact.Name, len(artifact.Data)) case a2a.StreamUpdateTypeError: log.Printf(\"stream error: %s\", update.Error) return fmt.Errorf(\"stream error: %s\", update.Error) } case \u003c-ctx.Done(): return ctx.Err() } } } 封装为 Tool：无缝接入本地 Agent 将外部 A2A Agent 封装为本地 Tool，可以让 orchestrator Agent 像调用本地函数一样调用远程 Agent：\npackage tools import ( \"context\" \"encoding/json\" \"fmt\" \"time\" \"google.golang.org/adk/a2a/client\" \"google.golang.org/adk/tool\" ) // ExternalAgentTool 将远程 A2A Agent 封装为本地 Tool type ExternalAgentTool struct { name string description string client *a2aclient.Client skill string timeout time.Duration maxRetries int } // NewExternalAgentTool 创建外部 Agent Tool func NewExternalAgentTool(config ExternalAgentConfig) (*ExternalAgentTool, error) { ctx := context.Background() client, err := a2aclient.New(ctx, a2aclient.WithURL(config.URL), a2aclient.WithAPIKey(config.APIKey), a2aclient.WithTimeout(config.Timeout), a2aclient.WithRetry(config.MaxRetries, time.Second), ) if err != nil { return nil, fmt.Errorf(\"failed to create client: %w\", err) } return \u0026ExternalAgentTool{ name: config.Name, description: config.Description, client: client, skill: config.Skill, timeout: config.Timeout, maxRetries: config.MaxRetries, }, nil } type ExternalAgentConfig struct { Name string Description string URL string APIKey string Skill string Timeout time.Duration MaxRetries int } func (t *ExternalAgentTool) Name() string { return t.name } func (t *ExternalAgentTool) Description() string { return t.description } func (t *ExternalAgentTool) Schema() tool.Schema { return tool.Schema{ Type: \"object\", Properties: map[string]tool.Property{ \"query\": { Type: \"string\", Description: \"要发送给外部 Agent 的查询\", }, }, Required: []string{\"query\"}, } } func (t *ExternalAgentTool) Call(ctx context.Context, input string) (string, error) { // 解析输入 var params struct { Query string `json:\"query\"` } if err := json.Unmarshal([]byte(input), \u0026params); err != nil { return \"\", fmt.Errorf(\"invalid input: %w\", err) } // 创建带超时的上下文 callCtx, cancel := context.WithTimeout(ctx, t.timeout) defer cancel() // 调用外部 Agent task, err := t.client.SendTask(callCtx, \u0026a2a.Task{ Input: map[string]interface{}{ \"skill\": t.skill, \"query\": params.Query, }, }) if err != nil { return \"\", fmt.Errorf(\"failed to send task: %w\", err) } // 轮询等待结果 ticker := time.NewTicker(time.Second) defer ticker.Stop() for { select { case \u003c-ticker.C: currentTask, err := t.client.GetTask(callCtx, task.ID) if err != nil { return \"\", fmt.Errorf(\"failed to get task: %w\", err) } switch currentTask.Status { case a2a.TaskStatusCompleted: result, _ := currentTask.Output[\"result\"].(string) return result, nil case a2a.TaskStatusFailed: errMsg, _ := currentTask.Output[\"error\"].(string) return \"\", fmt.Errorf(\"external agent failed: %s\", errMsg) case a2a.TaskStatusCancelled: return \"\", fmt.Errorf(\"task was cancelled\") } case \u003c-callCtx.Done(): // 超时取消任务 t.client.CancelTask(ctx, task.ID) return \"\", fmt.Errorf(\"external agent call timeout\") } } } // 使用示例 func setupOrchestratorAgent() (*llmagent.Agent, error) { ctx := context.Background() // 创建外部 Agent Tools weatherTool, err := NewExternalAgentTool(ExternalAgentConfig{ Name: \"weather_query\", Description: \"查询指定城市的天气信息\", URL: \"https://weather-agent.example.com/a2a\", APIKey: \"weather-api-key\", Skill: \"current-weather\", Timeout: 10 * time.Second, MaxRetries: 2, }) if err != nil { return nil, err } dataTool, err := NewExternalAgentTool(ExternalAgentConfig{ Name: \"data_analysis\", Description: \"分析数据集并返回统计摘要\", URL: \"https://data-agent.example.com/a2a\", APIKey: \"data-api-key\", Skill: \"csv-analysis\", Timeout: 60 * time.Second, MaxRetries: 3, }) if err != nil { return nil, err } // 创建 orchestrator Agent agent, err := llmagent.New(llmagent.Config{ Name: \"orchestrator\", Model: model, Instruction: `你是一个任务调度专家。根据用户需求，调用合适的工具完成任务。 可用工具： - weather_query: 查询天气 - data_analysis: 数据分析 如果用户请求涉及多个步骤，请依次调用工具。`, Tools: []tool.Tool{weatherTool, dataTool}, }) if err != nil { return nil, err } return agent, nil } 高级模式：Agent 编排 并行调用多个 Agent func parallelAgentCalls(ctx context.Context, inputs map[string]string) (map[string]string, error) { type agentCall struct { name string client *a2aclient.Client input string } calls := []agentCall{ {\"weather\", weatherClient, inputs[\"weather\"]}, {\"news\", newsClient, inputs[\"news\"]}, {\"stock\", stockClient, inputs[\"stock\"]}, } results := make(map[string]string) errCh := make(chan error, len(calls)) resultCh := make(chan struct { name string result string err error }, len(calls)) // 并行调用 for _, call := range calls { go func(c agentCall) { task, err := c.client.SendTask(ctx, \u0026a2a.Task{ Input: map[string]interface{}{ \"query\": c.input, }, }) if err != nil { resultCh \u003c- struct { name string result string err error }{c.name, \"\", err} return } // 等待完成（简化版，实际应轮询） result, err := waitForTask(ctx, c.client, task.ID) resultCh \u003c- struct { name string result string err error }{c.name, result, err} }(call) } // 收集结果 var errs []error for i := 0; i \u003c len(calls); i++ { r := \u003c-resultCh if r.err != nil { errs = append(errs, fmt.Errorf(\"%s: %w\", r.name, r.err)) continue } results[r.name] = r.result } if len(errs) \u003e 0 { return results, fmt.Errorf(\"partial failures: %v\", errs) } return results, nil } 流水线调用（链式处理） func pipelineAgentCalls(ctx context.Context, initialInput string) (string, error) { // 步骤 1：数据获取 step1Result, err := callAgent(ctx, dataClient, \"fetch-data\", initialInput) if err != nil { return \"\", fmt.Errorf(\"step 1 failed: %w\", err) } // 步骤 2：数据处理 step2Result, err := callAgent(ctx, processClient, \"process-data\", step1Result) if err != nil { return \"\", fmt.Errorf(\"step 2 failed: %w\", err) } // 步骤 3：结果格式化 step3Result, err := callAgent(ctx, formatClient, \"format-result\", step2Result) if err != nil { return \"\", fmt.Errorf(\"step 3 failed: %w\", err) } return step3Result, nil } 错误处理与重试策略 智能重试 type RetryPolicy struct { MaxRetries int BaseDelay time.Duration MaxDelay time.Duration Multiplier float64 RetryableErrors []string // 可重试的错误类型 } func (p *RetryPolicy) Execute(ctx context.Context, operation func() error) error { var lastErr error for attempt := 0; attempt \u003c= p.MaxRetries; attempt++ { if attempt \u003e 0 { // 计算退避时间 delay := p.BaseDelay * time.Duration(math.Pow(p.Multiplier, float64(attempt-1))) if delay \u003e p.MaxDelay { delay = p.MaxDelay } // 添加抖动，防止惊群 jitter := time.Duration(rand.Int63n(int64(delay) / 2)) delay = delay + jitter log.Printf(\"retry attempt %d/%d after %v\", attempt, p.MaxRetries, delay) select { case \u003c-time.After(delay): case \u003c-ctx.Done(): return ctx.Err() } } err := operation() if err == nil { return nil } lastErr = err // 检查是否可重试 if !p.isRetryable(err) { return err } log.Printf(\"attempt %d failed: %v\", attempt+1, err) } return fmt.Errorf(\"max retries exceeded: %w\", lastErr) } func (p *RetryPolicy) isRetryable(err error) bool { errStr := err.Error() for _, retryable := range p.RetryableErrors { if strings.Contains(errStr, retryable) { return true } } return false } // 使用示例 policy := RetryPolicy{ MaxRetries: 3, BaseDelay: time.Second, MaxDelay: 30 * time.Second, Multiplier: 2.0, RetryableErrors: []string{ \"connection refused\", \"timeout\", \"temporary\", \"rate limit\", \"service unavailable\", }, } err := policy.Execute(ctx, func() error { _, err := client.SendTask(ctx, task) return err }) 常见问题深度解析 Q：外部 Agent 无响应怎么办？ 根本原因：\n网络分区或延迟 外部 Agent 过载 外部 Agent 崩溃 请求本身导致死循环或长执行 解决方案：\n// 1. 配置合理的超时 client, _ := a2aclient.New(ctx, a2aclient.WithTimeout(30*time.Second), // 单次请求超时 a2aclient.WithRequestTimeout(5*time.Minute), // 任务总超时 ) // 2. 实现熔断 cbClient := NewCircuitBreakerClient(client) // 3. 优雅降级 func callWithFallback(ctx context.Context, client *a2aclient.Client, input string) (string, error) { result, err := client.Call(ctx, input) if err != nil { log.Printf(\"primary agent failed: %v\", err) // 尝试备用 Agent result, err = fallbackClient.Call(ctx, input) if err != nil { // 返回缓存结果 return getCachedResult(input), nil } } return result, nil } // 4. 异步处理 + 回调 func callAsyncWithCallback(ctx context.Context, client *a2aclient.Client, input string, callbackURL string) error { _, err := client.SendTask(ctx, \u0026a2a.Task{ Input: map[string]interface{}{ \"query\": input, \"callback_url\": callbackURL, }, }) return err } Q：多个外部 Agent 怎么管理？ Agent Registry 模式：\ntype AgentRegistry struct { agents map[string]*AgentConnection mu sync.RWMutex } type AgentConnection struct { Name string Client *a2aclient.Client Health HealthStatus LastUsed time.Time CallCount int64 ErrorCount int64 AvgLatency time.Duration } func (r *AgentRegistry) GetHealthyAgent(skill string) (*AgentConnection, error) { r.mu.RLock() defer r.mu.RUnlock() var candidates []*AgentConnection for _, agent := range r.agents { if agent.HasSkill(skill) \u0026\u0026 agent.Health == HealthHealthy { candidates = append(candidates, agent) } } if len(candidates) == 0 { return nil, fmt.Errorf(\"no healthy agent found for skill: %s\", skill) } // 选择延迟最低的 sort.Slice(candidates, func(i, j int) bool { return candidates[i].AvgLatency \u003c candidates[j].AvgLatency }) return candidates[0], nil } func (r *AgentRegistry) HealthCheck(ctx context.Context) { ticker := time.NewTicker(30 * time.Second) defer ticker.Stop() for { select { case \u003c-ticker.C: r.mu.RLock() agents := make([]*AgentConnection, 0, len(r.agents)) for _, agent := range r.agents { agents = append(agents, agent) } r.mu.RUnlock() for _, agent := range agents { go func(a *AgentConnection) { start := time.Now() _, err := a.Client.GetAgentCard(ctx) latency := time.Since(start) r.mu.Lock() defer r.mu.Unlock() a.LastUsed = time.Now() a.AvgLatency = (a.AvgLatency + latency) / 2 if err != nil { a.ErrorCount++ if a.ErrorCount \u003e 5 { a.Health = HealthUnhealthy } } else { a.ErrorCount = 0 a.Health = HealthHealthy } }(agent) } case \u003c-ctx.Done(): return } } } 下一步 消费搞定了，接下来看跨语言协作——Python + Go 的实战案例。\n← 模块 8：A2A 协议 | 跨语言协作 → →\n想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"1944","inLanguage":"zh-cn","datePublished":"2026-05-29T10:00:00+08:00","dateModified":"2026-05-29T10:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
 <span class=logo-text-short>梦兽编程</span></span></a></div></div><div class=apple-header__center><ul id=menu role=menubar><li role=none><a href=https://rexai.top/ title=首页 role=menuitem><span class=apple-header__menu-label>首页</span></a></li><li class=has-submenu role=none><a href=https://rexai.top/tutorials/ title=教程 role=menuitem><span class=apple-header__menu-label>教程</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tutorials/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/tutorials/smart-contracts/ title=智能合约 role=menuitem>智能合约</a></li><li role=none><a href=https://rexai.top/tutorials/ai/ title=AI编程 role=menuitem>AI编程</a></li><li role=none><a href=https://rexai.top/tutorials/go-adk/ title="Go ADK" role=menuitem>Go ADK</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/ai/ title=AI role=menuitem><span class=apple-header__menu-label>AI</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/ai/claude-code/ title="Claude Code" role=menuitem>Claude Code</a></li><li role=none><a href=https://rexai.top/ai/codex/ title=Codex role=menuitem>Codex</a></li><li role=none><a href=https://rexai.top/ai/llm/ title=LLM role=menuitem>LLM</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/languages/ title=开发 role=menuitem><span class=apple-header__menu-label>开发</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/languages/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/languages/go/ title=Go role=menuitem>Go</a></li><li role=none><a href=https://rexai.top/languages/python/ title=Python role=menuitem>Python</a></li><li role=none><a href=https://rexai.top/frontend/ title=前端 role=menuitem>前端</a></li><li role=none><a href=https://rexai.top/infrastructure/ title=基础设施 role=menuitem>基础设施</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/tools/ title="工具 (Alt + /)" accesskey='/role="menuitem"'><span class=apple-header__menu-label>工具</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tools/rexai-tool-directory/ title="AI 工具导航" role=menuitem>AI 工具导航</a></li><li role=none><a href=https://tool.rexai.top/ title="Rex 工具集" target=_blank rel="noopener noreferrer" role=menuitem>Rex 工具集</a></li></ul></li><li role=none><a href=https://rexai.top/marketing/ title=VPN网络链 role=menuitem><span class=apple-header__menu-label>VPN网络链</span></a></li><li role=none><a href=https://rexai.top/tags/ title=标签 role=menuitem><span class=apple-header__menu-label>标签</span></a></li><li role=none><a href=https://rexai.top/categories/ title=分类 role=menuitem><span class=apple-header__menu-label>分类</span></a></li></ul></div><div class=apple-header__right><div class=apple-header__actions><div class=nav-controls><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
 <svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
 <svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><ul class=lang-switch aria-label="Language switcher"><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/#untranslated=en" title=:en: aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></div><button class=menu-toggle id=devdrawer-toggle aria-label=菜单 aria-expanded=false aria-controls=devdrawer>
@@ -12,7 +12,7 @@
 </a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/languages/rust/>Rust</a></li><li><a href=https://rexai.top/languages/go/>Go</a></li><li><a href=https://rexai.top/languages/python/>Python</a></li><li><a href=https://rexai.top/frontend/>前端</a></li><li><a href=https://rexai.top/infrastructure/>基础设施</a></li></ul></li><li class=has-submenu><div class=devdrawer__item-content><a href=https://rexai.top/tools/ class=devdrawer__link><span class=devdrawer__link-text>工具</span>
 </a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li></ul></li><li><div class=devdrawer__item-content><a href=https://rexai.top/marketing/ class=devdrawer__link><span class=devdrawer__link-text>VPN网络链</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/tags/ class=devdrawer__link><span class=devdrawer__link-text>标签</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/categories/ class=devdrawer__link><span class=devdrawer__link-text>分类</span></a></div></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></aside><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class="main apple-container page-content"><aside class=apple-untranslated id=apple-untranslated-notice hidden><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge hidden>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge"),s=document.getElementById("apple-untranslated-desc");if(!t||!s)return;const o=()=>{const e=(window.location.hash||"").replace(/^#/,"");return new URLSearchParams(e)},n=()=>{const s=o(),n=s.get("untranslated");if(!n){t.hidden=!0,e&&(e.hidden=!0);return}t.hidden=!1,e&&(e.hidden=!1,e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header giz-post-header"><h1 class="post-title entry-hint-parent">Consuming：消费外部 Agent</h1><div class=post-description>详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。</div><div class=post-meta><span title='2026-05-29 10:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;130 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/08-a2a/go-adk-a2a-consume/ style=margin-left:.5rem>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li></ul></li><li><div class=devdrawer__item-content><a href=https://rexai.top/marketing/ class=devdrawer__link><span class=devdrawer__link-text>VPN网络链</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/tags/ class=devdrawer__link><span class=devdrawer__link-text>标签</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/categories/ class=devdrawer__link><span class=devdrawer__link-text>分类</span></a></div></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></aside><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class="main apple-container page-content"><aside class=apple-untranslated id=apple-untranslated-notice hidden><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge hidden>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge"),s=document.getElementById("apple-untranslated-desc");if(!t||!s)return;const o=()=>{const e=(window.location.hash||"").replace(/^#/,"");return new URLSearchParams(e)},n=()=>{const s=o(),n=s.get("untranslated");if(!n){t.hidden=!0,e&&(e.hidden=!0);return}t.hidden=!1,e&&(e.hidden=!1,e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header giz-post-header"><h1 class="post-title entry-hint-parent">Consuming：消费外部 Agent</h1><div class=post-description>详解如何在 Go Agent 中调用其他语言暴露的 Agent——通过 A2A Client 接入外部 Agent。</div><div class=post-meta><span title='2026-05-29 10:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;10 min&nbsp;·&nbsp;1944 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/08-a2a/go-adk-a2a-consume/ style=margin-left:.5rem>
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tutorials/go-adk/08-a2a/go-adk-a2a-consume/>-</span>
 </span><script type=module>
@@ -23,34 +23,749 @@
     path: '\/tutorials\/go-adk\/08-a2a\/go-adk-a2a-consume\/',
     update: false,
   });
-</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#consuming%e6%b6%88%e8%b4%b9%e5%a4%96%e9%83%a8-agent aria-label="Consuming：消费外部 Agent">Consuming：消费外部 Agent</a><ul><li><a href=#%e5%88%9b%e5%bb%ba-client aria-label="创建 Client">创建 Client</a></li><li><a href=#%e8%b0%83%e7%94%a8%e5%a4%96%e9%83%a8-agent aria-label="调用外部 Agent">调用外部 Agent</a></li><li><a href=#%e5%b0%81%e8%a3%85%e4%b8%ba-tool aria-label="封装为 Tool">封装为 Tool</a></li><li><a href=#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98 aria-label=常见问题>常见问题</a></li><li><a href=#%e4%b8%8b%e4%b8%80%e6%ad%a5 aria-label=下一步>下一步</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=consuming消费外部-agent>Consuming：消费外部 Agent<a hidden class=anchor aria-hidden=true href=#consuming消费外部-agent>#</a></h1><p>通过 A2A Client 在 Go Agent 里调用外部 Agent——比如 Python Agent、Java Agent。</p><h2 id=创建-client>创建 Client<a hidden class=anchor aria-hidden=true href=#创建-client>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> <span style=color:#a31515>&#34;google.golang.org/adk/a2a/client&#34;</span>
+</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-consume/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#consuming%e6%b6%88%e8%b4%b9%e5%a4%96%e9%83%a8-agent aria-label="Consuming：消费外部 Agent">Consuming：消费外部 Agent</a><ul><li><a href=#%e5%88%9b%e5%bb%ba-client%e8%bf%9e%e6%8e%a5%e7%ae%a1%e7%90%86%e7%9a%84%e5%9f%ba%e7%a1%80 aria-label="创建 Client：连接管理的基础">创建 Client：连接管理的基础</a><ul><li><a href=#%e5%9f%ba%e7%a1%80-client-%e9%85%8d%e7%bd%ae aria-label="基础 Client 配置">基础 Client 配置</a></li><li><a href=#%e8%bf%9e%e6%8e%a5%e6%b1%a0%e4%bc%98%e5%8c%96 aria-label=连接池优化>连接池优化</a></li></ul></li><li><a href=#%e8%b0%83%e7%94%a8%e5%a4%96%e9%83%a8-agent%e4%bb%bb%e5%8a%a1%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f%e7%ae%a1%e7%90%86 aria-label="调用外部 Agent：任务生命周期管理">调用外部 Agent：任务生命周期管理</a><ul><li><a href=#%e5%90%8c%e6%ad%a5%e8%b0%83%e7%94%a8%e7%ae%80%e5%8d%95%e5%9c%ba%e6%99%af aria-label=同步调用（简单场景）>同步调用（简单场景）</a></li><li><a href=#%e5%bc%82%e6%ad%a5%e8%b0%83%e7%94%a8%e7%94%9f%e4%ba%a7%e6%8e%a8%e8%8d%90 aria-label=异步调用（生产推荐）>异步调用（生产推荐）</a></li><li><a href=#%e6%b5%81%e5%bc%8f%e8%b0%83%e7%94%a8%e5%ae%9e%e6%97%b6%e5%93%8d%e5%ba%94 aria-label=流式调用（实时响应）>流式调用（实时响应）</a></li></ul></li><li><a href=#%e5%b0%81%e8%a3%85%e4%b8%ba-tool%e6%97%a0%e7%bc%9d%e6%8e%a5%e5%85%a5%e6%9c%ac%e5%9c%b0-agent aria-label="封装为 Tool：无缝接入本地 Agent">封装为 Tool：无缝接入本地 Agent</a></li><li><a href=#%e9%ab%98%e7%ba%a7%e6%a8%a1%e5%bc%8fagent-%e7%bc%96%e6%8e%92 aria-label="高级模式：Agent 编排">高级模式：Agent 编排</a><ul><li><a href=#%e5%b9%b6%e8%a1%8c%e8%b0%83%e7%94%a8%e5%a4%9a%e4%b8%aa-agent aria-label="并行调用多个 Agent">并行调用多个 Agent</a></li><li><a href=#%e6%b5%81%e6%b0%b4%e7%ba%bf%e8%b0%83%e7%94%a8%e9%93%be%e5%bc%8f%e5%a4%84%e7%90%86 aria-label=流水线调用（链式处理）>流水线调用（链式处理）</a></li></ul></li><li><a href=#%e9%94%99%e8%af%af%e5%a4%84%e7%90%86%e4%b8%8e%e9%87%8d%e8%af%95%e7%ad%96%e7%95%a5 aria-label=错误处理与重试策略>错误处理与重试策略</a><ul><li><a href=#%e6%99%ba%e8%83%bd%e9%87%8d%e8%af%95 aria-label=智能重试>智能重试</a></li></ul></li><li><a href=#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%b7%b1%e5%ba%a6%e8%a7%a3%e6%9e%90 aria-label=常见问题深度解析>常见问题深度解析</a><ul><li><a href=#q%e5%a4%96%e9%83%a8-agent-%e6%97%a0%e5%93%8d%e5%ba%94%e6%80%8e%e4%b9%88%e5%8a%9e aria-label="Q：外部 Agent 无响应怎么办？">Q：外部 Agent 无响应怎么办？</a></li><li><a href=#q%e5%a4%9a%e4%b8%aa%e5%a4%96%e9%83%a8-agent-%e6%80%8e%e4%b9%88%e7%ae%a1%e7%90%86 aria-label="Q：多个外部 Agent 怎么管理？">Q：多个外部 Agent 怎么管理？</a></li></ul></li><li><a href=#%e4%b8%8b%e4%b8%80%e6%ad%a5 aria-label=下一步>下一步</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=consuming消费外部-agent>Consuming：消费外部 Agent<a hidden class=anchor aria-hidden=true href=#consuming消费外部-agent>#</a></h1><p>消费外部 Agent 是多 Agent 系统的核心能力。与调用普通 HTTP API 不同，消费 A2A Agent 需要处理异步任务、流式响应、错误重试、超时控制等复杂语义。一个健壮的 A2A Client 不仅要能发送请求，还要能管理任务生命周期、处理网络分区、实现熔断降级。</p><p>本文将深入讲解如何构建生产级的 A2A 消费端，从基础调用到高级模式。</p><hr><h2 id=创建-client连接管理的基础>创建 Client：连接管理的基础<a hidden class=anchor aria-hidden=true href=#创建-client连接管理的基础>#</a></h2><h3 id=基础-client-配置>基础 Client 配置<a hidden class=anchor aria-hidden=true href=#基础-client-配置>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>client, _ := a2aclient.New(ctx,
-</span></span><span style=display:flex><span>    a2aclient.WithURL(<span style=color:#a31515>&#34;http://python-agent:8080/a2a&#34;</span>),
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;crypto/tls&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;log&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;net&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;net/http&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/a2a/client&#34;</span>
 </span></span><span style=display:flex><span>)
-</span></span></code></pre></div><hr><h2 id=调用外部-agent>调用外部 Agent<a hidden class=anchor aria-hidden=true href=#调用外部-agent>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span>response, err := client.Call(ctx, &amp;a2a.CallRequest{
-</span></span><span style=display:flex><span>    Input:    <span style=color:#a31515>&#34;帮我查一下天气&#34;</span>,
-</span></span><span style=display:flex><span>    AgentID:  <span style=color:#a31515>&#34;weather-agent&#34;</span>,
-</span></span><span style=display:flex><span>})
-</span></span></code></pre></div><hr><h2 id=封装为-tool>封装为 Tool<a hidden class=anchor aria-hidden=true href=#封装为-tool>#</a></h2><p>把外部 Agent 封装成本地 Tool，方便接入 Agent：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>type</span> externalAgentTool <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    client *a2aclient.Client
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> createClient() (*a2aclient.Client, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    ctx := context.Background()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 自定义 HTTP Transport（生产级配置）</span>
+</span></span><span style=display:flex><span>    transport := &amp;http.Transport{
+</span></span><span style=display:flex><span>        <span style=color:green>// 连接池配置</span>
+</span></span><span style=display:flex><span>        MaxIdleConns:        100,              <span style=color:green>// 最大空闲连接数</span>
+</span></span><span style=display:flex><span>        MaxIdleConnsPerHost: 10,               <span style=color:green>// 每个主机的最大空闲连接</span>
+</span></span><span style=display:flex><span>        MaxConnsPerHost:     50,               <span style=color:green>// 每个主机的最大连接数</span>
+</span></span><span style=display:flex><span>        IdleConnTimeout:     90 * time.Second, <span style=color:green>// 空闲连接超时</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green>// TLS 配置</span>
+</span></span><span style=display:flex><span>        TLSClientConfig: &amp;tls.Config{
+</span></span><span style=display:flex><span>            MinVersion: tls.VersionTLS12,
+</span></span><span style=display:flex><span>            <span style=color:green>// 生产环境：验证服务器证书</span>
+</span></span><span style=display:flex><span>            InsecureSkipVerify: <span style=color:#00f>false</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green>// 连接超时</span>
+</span></span><span style=display:flex><span>        DialContext: (&amp;net.Dialer{
+</span></span><span style=display:flex><span>            Timeout:   5 * time.Second,  <span style=color:green>// 连接超时</span>
+</span></span><span style=display:flex><span>            KeepAlive: 30 * time.Second, <span style=color:green>// TCP KeepAlive</span>
+</span></span><span style=display:flex><span>        }).DialContext,
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green>// 响应头超时</span>
+</span></span><span style=display:flex><span>        ResponseHeaderTimeout: 10 * time.Second,
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green>// 期望 100-continue 超时</span>
+</span></span><span style=display:flex><span>        ExpectContinueTimeout: 1 * time.Second,
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green>// 强制使用 HTTP/2</span>
+</span></span><span style=display:flex><span>        ForceAttemptHTTP2: <span style=color:#00f>true</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    client, err := a2aclient.New(ctx,
+</span></span><span style=display:flex><span>        a2aclient.WithURL(<span style=color:#a31515>&#34;https://python-agent.example.com/a2a&#34;</span>),
+</span></span><span style=display:flex><span>        a2aclient.WithHTTPClient(&amp;http.Client{
+</span></span><span style=display:flex><span>            Transport: transport,
+</span></span><span style=display:flex><span>            Timeout:   30 * time.Second, <span style=color:green>// 总请求超时</span>
+</span></span><span style=display:flex><span>        }),
+</span></span><span style=display:flex><span>        a2aclient.WithAPIKey(<span style=color:#a31515>&#34;production-api-key&#34;</span>),
+</span></span><span style=display:flex><span>        a2aclient.WithRetry(3, time.Second), <span style=color:green>// 失败重试 3 次，间隔 1s</span>
+</span></span><span style=display:flex><span>        a2aclient.WithRequestTimeout(30*time.Second),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to create client: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> client, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=连接池优化>连接池优化<a hidden class=anchor aria-hidden=true href=#连接池优化>#</a></h3><p>A2A Client 的连接池配置直接影响性能：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// 高并发场景下的 Transport 配置</span>
+</span></span><span style=display:flex><span>transport := &amp;http.Transport{
+</span></span><span style=display:flex><span>    <span style=color:green>// 大量并发时，增加连接池大小</span>
+</span></span><span style=display:flex><span>    MaxIdleConns:        500,
+</span></span><span style=display:flex><span>    MaxIdleConnsPerHost: 100,
+</span></span><span style=display:flex><span>    MaxConnsPerHost:     200,
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 长连接保持时间（A2A 适合长连接复用）</span>
+</span></span><span style=display:flex><span>    IdleConnTimeout:     5 * time.Minute,
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 禁用压缩（如果 Agent 返回大量文本，压缩反而增加 CPU）</span>
+</span></span><span style=display:flex><span>    DisableCompression: <span style=color:#00f>false</span>,
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// TCP 连接复用</span>
+</span></span><span style=display:flex><span>    DialContext: (&amp;net.Dialer{
+</span></span><span style=display:flex><span>        Timeout:   5 * time.Second,
+</span></span><span style=display:flex><span>        KeepAlive: 30 * time.Second,
+</span></span><span style=display:flex><span>        <span style=color:green>// 使用双栈（IPv4 + IPv6）</span>
+</span></span><span style=display:flex><span>        DualStack: <span style=color:#00f>true</span>,
+</span></span><span style=display:flex><span>    }).DialContext,
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=调用外部-agent任务生命周期管理>调用外部 Agent：任务生命周期管理<a hidden class=anchor aria-hidden=true href=#调用外部-agent任务生命周期管理>#</a></h2><h3 id=同步调用简单场景>同步调用（简单场景）<a hidden class=anchor aria-hidden=true href=#同步调用简单场景>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>func</span> callAgentSync(ctx context.Context, client *a2aclient.Client, input <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建任务</span>
+</span></span><span style=display:flex><span>    task, err := client.SendTask(ctx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;skill&#34;</span>: <span style=color:#a31515>&#34;weather-query&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;query&#34;</span>: input,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to send task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    log.Printf(<span style=color:#a31515>&#34;task created: %s (status: %s)&#34;</span>, task.ID, task.Status)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 轮询等待完成</span>
+</span></span><span style=display:flex><span>    ticker := time.NewTicker(time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> ticker.Stop()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    timeout := time.After(30 * time.Second)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ticker.C:
+</span></span><span style=display:flex><span>            task, err = client.GetTask(ctx, task.ID)
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to get task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            log.Printf(<span style=color:#a31515>&#34;task status: %s&#34;</span>, task.Status)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>switch</span> task.Status {
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusCompleted:
+</span></span><span style=display:flex><span>                output, _ := task.Output[<span style=color:#a31515>&#34;result&#34;</span>].(<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> output, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusFailed:
+</span></span><span style=display:flex><span>                errMsg, _ := task.Output[<span style=color:#a31515>&#34;error&#34;</span>].(<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;task failed: %s&#34;</span>, errMsg)
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusCancelled:
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;task was cancelled&#34;</span>)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-timeout:
+</span></span><span style=display:flex><span>            <span style=color:green>// 超时取消任务</span>
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> err := client.CancelTask(ctx, task.ID); err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;failed to cancel task: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;task timeout&#34;</span>)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ctx.Done():
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, ctx.Err()
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=异步调用生产推荐>异步调用（生产推荐）<a hidden class=anchor aria-hidden=true href=#异步调用生产推荐>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>type</span> AsyncResult <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    TaskID <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Result <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Error  <span style=color:#2b91af>error</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t externalAgentTool) Name() <span style=color:#2b91af>string</span>    { <span style=color:#00f>return</span> <span style=color:#a31515>&#34;python_weather&#34;</span> }
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t externalAgentTool) Description() <span style=color:#2b91af>string</span> { <span style=color:#00f>return</span> <span style=color:#a31515>&#34;查询天气&#34;</span> }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t externalAgentTool) Call(ctx context.Context, input <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
-</span></span><span style=display:flex><span>    resp, _ := t.client.Call(ctx, input)
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> resp.Output, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> callAgentAsync(ctx context.Context, client *a2aclient.Client, input <span style=color:#2b91af>string</span>) (&lt;-<span style=color:#00f>chan</span> AsyncResult, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建任务</span>
+</span></span><span style=display:flex><span>    task, err := client.SendTask(ctx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;skill&#34;</span>: <span style=color:#a31515>&#34;data-analysis&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;query&#34;</span>: input,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    resultCh := make(<span style=color:#00f>chan</span> AsyncResult, 1)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 后台轮询</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#00f>defer</span> close(resultCh)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        ticker := time.NewTicker(2 * time.Second)
+</span></span><span style=display:flex><span>        <span style=color:#00f>defer</span> ticker.Stop()
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        timeout := time.After(5 * time.Minute)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#00f>for</span> {
+</span></span><span style=display:flex><span>            <span style=color:#00f>select</span> {
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> &lt;-ticker.C:
+</span></span><span style=display:flex><span>                currentTask, err := client.GetTask(ctx, task.ID)
+</span></span><span style=display:flex><span>                <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>                    resultCh &lt;- AsyncResult{TaskID: task.ID, Error: err}
+</span></span><span style=display:flex><span>                    <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>                <span style=color:#00f>switch</span> currentTask.Status {
+</span></span><span style=display:flex><span>                <span style=color:#00f>case</span> a2a.TaskStatusCompleted:
+</span></span><span style=display:flex><span>                    output, _ := currentTask.Output[<span style=color:#a31515>&#34;result&#34;</span>].(<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>                    resultCh &lt;- AsyncResult{TaskID: task.ID, Result: output}
+</span></span><span style=display:flex><span>                    <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>                <span style=color:#00f>case</span> a2a.TaskStatusFailed:
+</span></span><span style=display:flex><span>                    errMsg, _ := currentTask.Output[<span style=color:#a31515>&#34;error&#34;</span>].(<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>                    resultCh &lt;- AsyncResult{
+</span></span><span style=display:flex><span>                        TaskID: task.ID,
+</span></span><span style=display:flex><span>                        Error:  fmt.Errorf(<span style=color:#a31515>&#34;task failed: %s&#34;</span>, errMsg),
+</span></span><span style=display:flex><span>                    }
+</span></span><span style=display:flex><span>                    <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>                <span style=color:#00f>case</span> a2a.TaskStatusCancelled:
+</span></span><span style=display:flex><span>                    resultCh &lt;- AsyncResult{
+</span></span><span style=display:flex><span>                        TaskID: task.ID,
+</span></span><span style=display:flex><span>                        Error:  fmt.Errorf(<span style=color:#a31515>&#34;task cancelled&#34;</span>),
+</span></span><span style=display:flex><span>                    }
+</span></span><span style=display:flex><span>                    <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> &lt;-timeout:
+</span></span><span style=display:flex><span>                client.CancelTask(ctx, task.ID)
+</span></span><span style=display:flex><span>                resultCh &lt;- AsyncResult{
+</span></span><span style=display:flex><span>                    TaskID: task.ID,
+</span></span><span style=display:flex><span>                    Error:  fmt.Errorf(<span style=color:#a31515>&#34;task timeout after 5m&#34;</span>),
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> &lt;-ctx.Done():
+</span></span><span style=display:flex><span>                client.CancelTask(ctx, task.ID)
+</span></span><span style=display:flex><span>                resultCh &lt;- AsyncResult{TaskID: task.ID, Error: ctx.Err()}
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> resultCh, <span style=color:#00f>nil</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// 注册</span>
-</span></span><span style=display:flex><span>agent, _ := llmagent.New(llmagent.Config{
-</span></span><span style=display:flex><span>    Tools: []tool.Tool{externalAgentTool{client}},
+</span></span><span style=display:flex><span><span style=color:green>// 使用示例</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> main() {
+</span></span><span style=display:flex><span>    client, _ := createClient()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    resultCh, err := callAgentAsync(ctx, client, <span style=color:#a31515>&#34;分析 Q3 销售数据&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        log.Fatal(err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 继续处理其他事情...</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 等待结果</span>
+</span></span><span style=display:flex><span>    result := &lt;-resultCh
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> result.Error != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        log.Printf(<span style=color:#a31515>&#34;task %s failed: %v&#34;</span>, result.TaskID, result.Error)
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    log.Printf(<span style=color:#a31515>&#34;task %s completed: %s&#34;</span>, result.TaskID, result.Result)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=流式调用实时响应>流式调用（实时响应）<a hidden class=anchor aria-hidden=true href=#流式调用实时响应>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>func</span> callAgentStreaming(ctx context.Context, client *a2aclient.Client, input <span style=color:#2b91af>string</span>) <span style=color:#2b91af>error</span> {
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建流式任务</span>
+</span></span><span style=display:flex><span>    stream, err := client.SendTaskStreaming(ctx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;skill&#34;</span>: <span style=color:#a31515>&#34;code-generation&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;query&#34;</span>: input,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;failed to start streaming: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> stream.Close()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 实时接收流式响应</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> update, ok := &lt;-stream.Updates():
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> !ok {
+</span></span><span style=display:flex><span>                log.Println(<span style=color:#a31515>&#34;stream closed&#34;</span>)
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>switch</span> update.Type {
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.StreamUpdateTypeStatus:
+</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;status: %s&#34;</span>, update.Status)
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.StreamUpdateTypeOutput:
+</span></span><span style=display:flex><span>                <span style=color:green>// 实时输出（如代码片段）</span>
+</span></span><span style=display:flex><span>                chunk, _ := update.Data[<span style=color:#a31515>&#34;chunk&#34;</span>].(<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>                fmt.Print(chunk) <span style=color:green>// 实时打印</span>
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.StreamUpdateTypeArtifact:
+</span></span><span style=display:flex><span>                <span style=color:green>// 完整产物（如生成的文件）</span>
+</span></span><span style=display:flex><span>                artifact := update.Artifact
+</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;artifact received: %s (%d bytes)&#34;</span>, artifact.Name, len(artifact.Data))
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.StreamUpdateTypeError:
+</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;stream error: %s&#34;</span>, update.Error)
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;stream error: %s&#34;</span>, update.Error)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ctx.Done():
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> ctx.Err()
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=封装为-tool无缝接入本地-agent>封装为 Tool：无缝接入本地 Agent<a hidden class=anchor aria-hidden=true href=#封装为-tool无缝接入本地-agent>#</a></h2><p>将外部 A2A Agent 封装为本地 Tool，可以让 orchestrator Agent 像调用本地函数一样调用远程 Agent：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>package</span> tools
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/a2a/client&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/tool&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// ExternalAgentTool 将远程 A2A Agent 封装为本地 Tool</span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> ExternalAgentTool <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    name        <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    description <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    client      *a2aclient.Client
+</span></span><span style=display:flex><span>    skill       <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    timeout     time.Duration
+</span></span><span style=display:flex><span>    maxRetries  <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// NewExternalAgentTool 创建外部 Agent Tool</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> NewExternalAgentTool(config ExternalAgentConfig) (*ExternalAgentTool, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    ctx := context.Background()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    client, err := a2aclient.New(ctx,
+</span></span><span style=display:flex><span>        a2aclient.WithURL(config.URL),
+</span></span><span style=display:flex><span>        a2aclient.WithAPIKey(config.APIKey),
+</span></span><span style=display:flex><span>        a2aclient.WithTimeout(config.Timeout),
+</span></span><span style=display:flex><span>        a2aclient.WithRetry(config.MaxRetries, time.Second),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to create client: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;ExternalAgentTool{
+</span></span><span style=display:flex><span>        name:        config.Name,
+</span></span><span style=display:flex><span>        description: config.Description,
+</span></span><span style=display:flex><span>        client:      client,
+</span></span><span style=display:flex><span>        skill:       config.Skill,
+</span></span><span style=display:flex><span>        timeout:     config.Timeout,
+</span></span><span style=display:flex><span>        maxRetries:  config.MaxRetries,
+</span></span><span style=display:flex><span>    }, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> ExternalAgentConfig <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    Name        <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Description <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    URL         <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    APIKey      <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Skill       <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Timeout     time.Duration
+</span></span><span style=display:flex><span>    MaxRetries  <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ExternalAgentTool) Name() <span style=color:#2b91af>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> t.name
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ExternalAgentTool) Description() <span style=color:#2b91af>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> t.description
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ExternalAgentTool) Schema() tool.Schema {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> tool.Schema{
+</span></span><span style=display:flex><span>        Type: <span style=color:#a31515>&#34;object&#34;</span>,
+</span></span><span style=display:flex><span>        Properties: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]tool.Property{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;query&#34;</span>: {
+</span></span><span style=display:flex><span>                Type:        <span style=color:#a31515>&#34;string&#34;</span>,
+</span></span><span style=display:flex><span>                Description: <span style=color:#a31515>&#34;要发送给外部 Agent 的查询&#34;</span>,
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        Required: []<span style=color:#2b91af>string</span>{<span style=color:#a31515>&#34;query&#34;</span>},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ExternalAgentTool) Call(ctx context.Context, input <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:green>// 解析输入</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> params <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>        Query <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;query&#34;`</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := json.Unmarshal([]byte(input), &amp;params); err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;invalid input: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建带超时的上下文</span>
+</span></span><span style=display:flex><span>    callCtx, cancel := context.WithTimeout(ctx, t.timeout)
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> cancel()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 调用外部 Agent</span>
+</span></span><span style=display:flex><span>    task, err := t.client.SendTask(callCtx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;skill&#34;</span>: t.skill,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;query&#34;</span>: params.Query,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to send task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 轮询等待结果</span>
+</span></span><span style=display:flex><span>    ticker := time.NewTicker(time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> ticker.Stop()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ticker.C:
+</span></span><span style=display:flex><span>            currentTask, err := t.client.GetTask(callCtx, task.ID)
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to get task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>switch</span> currentTask.Status {
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusCompleted:
+</span></span><span style=display:flex><span>                result, _ := currentTask.Output[<span style=color:#a31515>&#34;result&#34;</span>].(<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> result, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusFailed:
+</span></span><span style=display:flex><span>                errMsg, _ := currentTask.Output[<span style=color:#a31515>&#34;error&#34;</span>].(<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;external agent failed: %s&#34;</span>, errMsg)
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusCancelled:
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;task was cancelled&#34;</span>)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-callCtx.Done():
+</span></span><span style=display:flex><span>            <span style=color:green>// 超时取消任务</span>
+</span></span><span style=display:flex><span>            t.client.CancelTask(ctx, task.ID)
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;external agent call timeout&#34;</span>)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 使用示例</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> setupOrchestratorAgent() (*llmagent.Agent, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    ctx := context.Background()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建外部 Agent Tools</span>
+</span></span><span style=display:flex><span>    weatherTool, err := NewExternalAgentTool(ExternalAgentConfig{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#a31515>&#34;weather_query&#34;</span>,
+</span></span><span style=display:flex><span>        Description: <span style=color:#a31515>&#34;查询指定城市的天气信息&#34;</span>,
+</span></span><span style=display:flex><span>        URL:         <span style=color:#a31515>&#34;https://weather-agent.example.com/a2a&#34;</span>,
+</span></span><span style=display:flex><span>        APIKey:      <span style=color:#a31515>&#34;weather-api-key&#34;</span>,
+</span></span><span style=display:flex><span>        Skill:       <span style=color:#a31515>&#34;current-weather&#34;</span>,
+</span></span><span style=display:flex><span>        Timeout:     10 * time.Second,
+</span></span><span style=display:flex><span>        MaxRetries:  2,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    dataTool, err := NewExternalAgentTool(ExternalAgentConfig{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#a31515>&#34;data_analysis&#34;</span>,
+</span></span><span style=display:flex><span>        Description: <span style=color:#a31515>&#34;分析数据集并返回统计摘要&#34;</span>,
+</span></span><span style=display:flex><span>        URL:         <span style=color:#a31515>&#34;https://data-agent.example.com/a2a&#34;</span>,
+</span></span><span style=display:flex><span>        APIKey:      <span style=color:#a31515>&#34;data-api-key&#34;</span>,
+</span></span><span style=display:flex><span>        Skill:       <span style=color:#a31515>&#34;csv-analysis&#34;</span>,
+</span></span><span style=display:flex><span>        Timeout:     60 * time.Second,
+</span></span><span style=display:flex><span>        MaxRetries:  3,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建 orchestrator Agent</span>
+</span></span><span style=display:flex><span>    agent, err := llmagent.New(llmagent.Config{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#a31515>&#34;orchestrator&#34;</span>,
+</span></span><span style=display:flex><span>        Model:       model,
+</span></span><span style=display:flex><span>        Instruction: <span style=color:#a31515>`你是一个任务调度专家。根据用户需求，调用合适的工具完成任务。
+</span></span></span><span style=display:flex><span><span style=color:#a31515>可用工具：
+</span></span></span><span style=display:flex><span><span style=color:#a31515>- weather_query: 查询天气
+</span></span></span><span style=display:flex><span><span style=color:#a31515>- data_analysis: 数据分析
+</span></span></span><span style=display:flex><span><span style=color:#a31515>
+</span></span></span><span style=display:flex><span><span style=color:#a31515>如果用户请求涉及多个步骤，请依次调用工具。`</span>,
+</span></span><span style=display:flex><span>        Tools: []tool.Tool{weatherTool, dataTool},
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> agent, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=高级模式agent-编排>高级模式：Agent 编排<a hidden class=anchor aria-hidden=true href=#高级模式agent-编排>#</a></h2><h3 id=并行调用多个-agent>并行调用多个 Agent<a hidden class=anchor aria-hidden=true href=#并行调用多个-agent>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>func</span> parallelAgentCalls(ctx context.Context, inputs <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#2b91af>string</span>) (<span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#00f>type</span> agentCall <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>        name   <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>        client *a2aclient.Client
+</span></span><span style=display:flex><span>        input  <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    calls := []agentCall{
+</span></span><span style=display:flex><span>        {<span style=color:#a31515>&#34;weather&#34;</span>, weatherClient, inputs[<span style=color:#a31515>&#34;weather&#34;</span>]},
+</span></span><span style=display:flex><span>        {<span style=color:#a31515>&#34;news&#34;</span>, newsClient, inputs[<span style=color:#a31515>&#34;news&#34;</span>]},
+</span></span><span style=display:flex><span>        {<span style=color:#a31515>&#34;stock&#34;</span>, stockClient, inputs[<span style=color:#a31515>&#34;stock&#34;</span>]},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    results := make(<span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#2b91af>string</span>)
+</span></span><span style=display:flex><span>    errCh := make(<span style=color:#00f>chan</span> <span style=color:#2b91af>error</span>, len(calls))
+</span></span><span style=display:flex><span>    resultCh := make(<span style=color:#00f>chan</span> <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>        name   <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>        result <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>        err    <span style=color:#2b91af>error</span>
+</span></span><span style=display:flex><span>    }, len(calls))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 并行调用</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> _, call := <span style=color:#00f>range</span> calls {
+</span></span><span style=display:flex><span>        <span style=color:#00f>go</span> <span style=color:#00f>func</span>(c agentCall) {
+</span></span><span style=display:flex><span>            task, err := c.client.SendTask(ctx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>                Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;query&#34;</span>: c.input,
+</span></span><span style=display:flex><span>                },
+</span></span><span style=display:flex><span>            })
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>                resultCh &lt;- <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>                    name   <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>                    result <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>                    err    <span style=color:#2b91af>error</span>
+</span></span><span style=display:flex><span>                }{c.name, <span style=color:#a31515>&#34;&#34;</span>, err}
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:green>// 等待完成（简化版，实际应轮询）</span>
+</span></span><span style=display:flex><span>            result, err := waitForTask(ctx, c.client, task.ID)
+</span></span><span style=display:flex><span>            resultCh &lt;- <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>                name   <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>                result <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>                err    <span style=color:#2b91af>error</span>
+</span></span><span style=display:flex><span>            }{c.name, result, err}
+</span></span><span style=display:flex><span>        }(call)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 收集结果</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> errs []<span style=color:#2b91af>error</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> i := 0; i &lt; len(calls); i++ {
+</span></span><span style=display:flex><span>        r := &lt;-resultCh
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> r.err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>            errs = append(errs, fmt.Errorf(<span style=color:#a31515>&#34;%s: %w&#34;</span>, r.name, r.err))
+</span></span><span style=display:flex><span>            <span style=color:#00f>continue</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        results[r.name] = r.result
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> len(errs) &gt; 0 {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> results, fmt.Errorf(<span style=color:#a31515>&#34;partial failures: %v&#34;</span>, errs)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> results, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=流水线调用链式处理>流水线调用（链式处理）<a hidden class=anchor aria-hidden=true href=#流水线调用链式处理>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>func</span> pipelineAgentCalls(ctx context.Context, initialInput <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:green>// 步骤 1：数据获取</span>
+</span></span><span style=display:flex><span>    step1Result, err := callAgent(ctx, dataClient, <span style=color:#a31515>&#34;fetch-data&#34;</span>, initialInput)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;step 1 failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 步骤 2：数据处理</span>
+</span></span><span style=display:flex><span>    step2Result, err := callAgent(ctx, processClient, <span style=color:#a31515>&#34;process-data&#34;</span>, step1Result)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;step 2 failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 步骤 3：结果格式化</span>
+</span></span><span style=display:flex><span>    step3Result, err := callAgent(ctx, formatClient, <span style=color:#a31515>&#34;format-result&#34;</span>, step2Result)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;step 3 failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> step3Result, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=错误处理与重试策略>错误处理与重试策略<a hidden class=anchor aria-hidden=true href=#错误处理与重试策略>#</a></h2><h3 id=智能重试>智能重试<a hidden class=anchor aria-hidden=true href=#智能重试>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>type</span> RetryPolicy <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    MaxRetries  <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span>    BaseDelay   time.Duration
+</span></span><span style=display:flex><span>    MaxDelay    time.Duration
+</span></span><span style=display:flex><span>    Multiplier  <span style=color:#2b91af>float64</span>
+</span></span><span style=display:flex><span>    RetryableErrors []<span style=color:#2b91af>string</span> <span style=color:green>// 可重试的错误类型</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (p *RetryPolicy) Execute(ctx context.Context, operation <span style=color:#00f>func</span>() <span style=color:#2b91af>error</span>) <span style=color:#2b91af>error</span> {
+</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> lastErr <span style=color:#2b91af>error</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> attempt := 0; attempt &lt;= p.MaxRetries; attempt++ {
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> attempt &gt; 0 {
+</span></span><span style=display:flex><span>            <span style=color:green>// 计算退避时间</span>
+</span></span><span style=display:flex><span>            delay := p.BaseDelay * time.Duration(math.Pow(p.Multiplier, float64(attempt-1)))
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> delay &gt; p.MaxDelay {
+</span></span><span style=display:flex><span>                delay = p.MaxDelay
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:green>// 添加抖动，防止惊群</span>
+</span></span><span style=display:flex><span>            jitter := time.Duration(rand.Int63n(int64(delay) / 2))
+</span></span><span style=display:flex><span>            delay = delay + jitter
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            log.Printf(<span style=color:#a31515>&#34;retry attempt %d/%d after %v&#34;</span>, attempt, p.MaxRetries, delay)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>select</span> {
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> &lt;-time.After(delay):
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> &lt;-ctx.Done():
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> ctx.Err()
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        err := operation()
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> err == <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        lastErr = err
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green>// 检查是否可重试</span>
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> !p.isRetryable(err) {
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> err
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        log.Printf(<span style=color:#a31515>&#34;attempt %d failed: %v&#34;</span>, attempt+1, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;max retries exceeded: %w&#34;</span>, lastErr)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (p *RetryPolicy) isRetryable(err <span style=color:#2b91af>error</span>) <span style=color:#2b91af>bool</span> {
+</span></span><span style=display:flex><span>    errStr := err.Error()
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> _, retryable := <span style=color:#00f>range</span> p.RetryableErrors {
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> strings.Contains(errStr, retryable) {
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> <span style=color:#00f>true</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#00f>false</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 使用示例</span>
+</span></span><span style=display:flex><span>policy := RetryPolicy{
+</span></span><span style=display:flex><span>    MaxRetries:  3,
+</span></span><span style=display:flex><span>    BaseDelay:   time.Second,
+</span></span><span style=display:flex><span>    MaxDelay:    30 * time.Second,
+</span></span><span style=display:flex><span>    Multiplier:  2.0,
+</span></span><span style=display:flex><span>    RetryableErrors: []<span style=color:#2b91af>string</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;connection refused&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;timeout&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;temporary&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;rate limit&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;service unavailable&#34;</span>,
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>err := policy.Execute(ctx, <span style=color:#00f>func</span>() <span style=color:#2b91af>error</span> {
+</span></span><span style=display:flex><span>    _, err := client.SendTask(ctx, task)
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> err
 </span></span><span style=display:flex><span>})
-</span></span></code></pre></div><hr><h2 id=常见问题>常见问题<a hidden class=anchor aria-hidden=true href=#常见问题>#</a></h2><p><strong>Q：外部 Agent 无响应怎么办</strong>
-A：配置超时：<code>a2aclient.WithTimeout(30 * time.Second)</code></p><p><strong>Q：多个外部 Agent 怎么管理</strong>
-A：用 Agent Registry 统一管理。</p><hr><h2 id=下一步>下一步<a hidden class=anchor aria-hidden=true href=#下一步>#</a></h2><p>消费搞定了，接下来看跨语言协作——Python + Go 的实战案例。</p><p>← <a href=/tutorials/go-adk/08-a2a/>模块 8：A2A 协议</a>
+</span></span></code></pre></div><hr><h2 id=常见问题深度解析>常见问题深度解析<a hidden class=anchor aria-hidden=true href=#常见问题深度解析>#</a></h2><h3 id=q外部-agent-无响应怎么办>Q：外部 Agent 无响应怎么办？<a hidden class=anchor aria-hidden=true href=#q外部-agent-无响应怎么办>#</a></h3><p><strong>根本原因</strong>：</p><ol><li>网络分区或延迟</li><li>外部 Agent 过载</li><li>外部 Agent 崩溃</li><li>请求本身导致死循环或长执行</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// 1. 配置合理的超时</span>
+</span></span><span style=display:flex><span>client, _ := a2aclient.New(ctx,
+</span></span><span style=display:flex><span>    a2aclient.WithTimeout(30*time.Second),        <span style=color:green>// 单次请求超时</span>
+</span></span><span style=display:flex><span>    a2aclient.WithRequestTimeout(5*time.Minute),  <span style=color:green>// 任务总超时</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 2. 实现熔断</span>
+</span></span><span style=display:flex><span>cbClient := NewCircuitBreakerClient(client)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 3. 优雅降级</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> callWithFallback(ctx context.Context, client *a2aclient.Client, input <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    result, err := client.Call(ctx, input)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        log.Printf(<span style=color:#a31515>&#34;primary agent failed: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green>// 尝试备用 Agent</span>
+</span></span><span style=display:flex><span>        result, err = fallbackClient.Call(ctx, input)
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>            <span style=color:green>// 返回缓存结果</span>
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> getCachedResult(input), <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> result, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// 4. 异步处理 + 回调</span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> callAsyncWithCallback(ctx context.Context, client *a2aclient.Client, input <span style=color:#2b91af>string</span>, callbackURL <span style=color:#2b91af>string</span>) <span style=color:#2b91af>error</span> {
+</span></span><span style=display:flex><span>    _, err := client.SendTask(ctx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;query&#34;</span>:        input,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;callback_url&#34;</span>: callbackURL,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> err
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=q多个外部-agent-怎么管理>Q：多个外部 Agent 怎么管理？<a hidden class=anchor aria-hidden=true href=#q多个外部-agent-怎么管理>#</a></h3><p><strong>Agent Registry 模式</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>type</span> AgentRegistry <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    agents <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]*AgentConnection
+</span></span><span style=display:flex><span>    mu     sync.RWMutex
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> AgentConnection <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    Name        <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Client      *a2aclient.Client
+</span></span><span style=display:flex><span>    Health      HealthStatus
+</span></span><span style=display:flex><span>    LastUsed    time.Time
+</span></span><span style=display:flex><span>    CallCount   <span style=color:#2b91af>int64</span>
+</span></span><span style=display:flex><span>    ErrorCount  <span style=color:#2b91af>int64</span>
+</span></span><span style=display:flex><span>    AvgLatency  time.Duration
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (r *AgentRegistry) GetHealthyAgent(skill <span style=color:#2b91af>string</span>) (*AgentConnection, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    r.mu.RLock()
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> r.mu.RUnlock()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> candidates []*AgentConnection
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> _, agent := <span style=color:#00f>range</span> r.agents {
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> agent.HasSkill(skill) &amp;&amp; agent.Health == HealthHealthy {
+</span></span><span style=display:flex><span>            candidates = append(candidates, agent)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> len(candidates) == 0 {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, fmt.Errorf(<span style=color:#a31515>&#34;no healthy agent found for skill: %s&#34;</span>, skill)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 选择延迟最低的</span>
+</span></span><span style=display:flex><span>    sort.Slice(candidates, <span style=color:#00f>func</span>(i, j <span style=color:#2b91af>int</span>) <span style=color:#2b91af>bool</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> candidates[i].AvgLatency &lt; candidates[j].AvgLatency
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> candidates[0], <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (r *AgentRegistry) HealthCheck(ctx context.Context) {
+</span></span><span style=display:flex><span>    ticker := time.NewTicker(30 * time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> ticker.Stop()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ticker.C:
+</span></span><span style=display:flex><span>            r.mu.RLock()
+</span></span><span style=display:flex><span>            agents := make([]*AgentConnection, 0, len(r.agents))
+</span></span><span style=display:flex><span>            <span style=color:#00f>for</span> _, agent := <span style=color:#00f>range</span> r.agents {
+</span></span><span style=display:flex><span>                agents = append(agents, agent)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            r.mu.RUnlock()
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>for</span> _, agent := <span style=color:#00f>range</span> agents {
+</span></span><span style=display:flex><span>                <span style=color:#00f>go</span> <span style=color:#00f>func</span>(a *AgentConnection) {
+</span></span><span style=display:flex><span>                    start := time.Now()
+</span></span><span style=display:flex><span>                    _, err := a.Client.GetAgentCard(ctx)
+</span></span><span style=display:flex><span>                    latency := time.Since(start)
+</span></span><span style=display:flex><span>                    
+</span></span><span style=display:flex><span>                    r.mu.Lock()
+</span></span><span style=display:flex><span>                    <span style=color:#00f>defer</span> r.mu.Unlock()
+</span></span><span style=display:flex><span>                    
+</span></span><span style=display:flex><span>                    a.LastUsed = time.Now()
+</span></span><span style=display:flex><span>                    a.AvgLatency = (a.AvgLatency + latency) / 2
+</span></span><span style=display:flex><span>                    
+</span></span><span style=display:flex><span>                    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>                        a.ErrorCount++
+</span></span><span style=display:flex><span>                        <span style=color:#00f>if</span> a.ErrorCount &gt; 5 {
+</span></span><span style=display:flex><span>                            a.Health = HealthUnhealthy
+</span></span><span style=display:flex><span>                        }
+</span></span><span style=display:flex><span>                    } <span style=color:#00f>else</span> {
+</span></span><span style=display:flex><span>                        a.ErrorCount = 0
+</span></span><span style=display:flex><span>                        a.Health = HealthHealthy
+</span></span><span style=display:flex><span>                    }
+</span></span><span style=display:flex><span>                }(agent)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ctx.Done():
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=下一步>下一步<a hidden class=anchor aria-hidden=true href=#下一步>#</a></h2><p>消费搞定了，接下来看跨语言协作——Python + Go 的实战案例。</p><p>← <a href=/tutorials/go-adk/08-a2a/>模块 8：A2A 协议</a>
 | <a href=/tutorials/go-adk/08-a2a/04-cross-language/>跨语言协作 →</a>
 →</p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/go/>Go</a></li><li><a href=https://rexai.top/tags/adk/>ADK</a></li><li><a href=https://rexai.top/tags/a2a/>A2A</a></li><li><a href=https://rexai.top/tags/%E6%B6%88%E8%B4%B9/>消费</a></li><li><a href=https://rexai.top/tags/%E6%95%99%E7%A8%8B/>教程</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
   import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';

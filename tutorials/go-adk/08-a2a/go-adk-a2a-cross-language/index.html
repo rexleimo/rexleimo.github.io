@@ -1,4 +1,4 @@
-<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>跨语言协作实战：Python + Go Agent 协作 | 梦兽编程</title><meta name=keywords content="Go,ADK,Python,A2A,跨语言,教程"><meta name=description content="通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/><link crossorigin=anonymous href=/assets/css/stylesheet.e5cc7add3db1d5537bcd94f2210c74e21671855996289bd6292dd5d5e1f0b10d.css integrity="sha256-5cx63T2x1VN7zZTyIQx04hZxhVmWKJvWKS3V1eHwsQ0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preload href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css as=style integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><link rel=stylesheet href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","about":[{"@type":"Thing","description":"Smart pointer types in Rust programming language","name":"Rust Smart Pointers"},{"@type":"Thing","description":"Heap allocation smart pointer in Rust","name":"Box\u003cT\u003e"},{"@type":"Thing","description":"Reference counting smart pointer in Rust","name":"Rc\u003cT\u003e"},{"@type":"Thing","description":"Interior mutability smart pointer in Rust","name":"RefCell\u003cT\u003e"}],"author":{"@type":"Person","name":"梦兽编程","url":"https://rexai.top/"},"dateModified":"2026-05-29","datePublished":"2026-05-29","description":"通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。","headline":"跨语言协作实战：Python + Go Agent 协作","keywords":"Go,ADK,Python,A2A,跨语言,教程","mainEntityOfPage":{"@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/","@type":"WebPage"},"proficiencyLevel":"beginner to intermediate","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.svg"},"name":"梦兽编程"}}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="跨语言协作实战：Python + Go Agent 协作"><meta property="og:description" content="通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T10:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T10:00:00+08:00"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Python"><meta property="article:tag" content="A2A"><meta property="article:tag" content="跨语言"><meta property="article:tag" content="教程"><meta name=twitter:card content="summary"><meta name=twitter:title content="跨语言协作实战：Python + Go Agent 协作"><meta name=twitter:description content="通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 8：A2A 协议","item":"https://rexai.top/tutorials/go-adk/08-a2a/"},{"@type":"ListItem","position":4,"name":"跨语言协作实战：Python + Go Agent 协作","item":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"跨语言协作实战：Python + Go Agent 协作","name":"跨语言协作实战：Python \u002b Go Agent 协作","description":"通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。","keywords":["Go","ADK","Python","A2A","跨语言","教程"],"articleBody":"跨语言协作实战：Python + Go Agent 协作 用 Python 写数据处理 Agent，用 Go 写 API 代理 Agent，通过 A2A 协作——语言无关的 Agent 系统。\n架构设计 用户请求 ↓ Go Agent（API 代理）──A2A──→ Python Agent（数据处理） ↓ ↓ 返回结果 处理数据 Python Agent：数据处理专家 # python_agent.py from adk import Agent, model, tool data_agent = Agent( name=\"data-processor\", model=model.Gemini(model=\"gemini-flash\"), instruction=\"你是一个数据处理专家，处理用户请求的数据任务。\", tools=[...], ) if __name__ == \"__main__\": data_agent.serve(port=8081) 启动：python python_agent.py --port 8081\nGo Agent：API 代理 goAgent, _ := llmagent.New(llmagent.Config{ Name: \"api-proxy\", Model: model, Instruction: \"你是 API 代理，把请求转发给 Python 数据处理 Agent。\", }) pythonClient, _ := a2aclient.New(ctx, a2aclient.WithURL(\"http://python-agent:8081/a2a\"), ) proxyTool := \u0026proxyTool{client: pythonClient} agent, _ := llmagent.New(llmagent.Config{ Tools: []tool.Tool{proxyTool}, }) 完整协作流程 // 用户请求：处理这组数据 response, _ := agent.Run(ctx, \"处理这组数据：1,2,3,4,5\") // Go Agent 接收请求，通过 A2A 调用 Python Agent // Python Agent 处理数据，返回结果 // Go Agent 汇总结果，返回给用户 小结 模块 8 完成。学习了：\nA2A 协议介绍 Exposing 暴露 Go Agent Consuming 消费外部 Agent 跨语言协作实战 接下来进入模块 9：进阶主题——Grounding、Artifacts、Skills、Callbacks。\n← 模块 8：A2A 协议 | 模块 9：进阶主题 → →\n想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"150","inLanguage":"zh-cn","datePublished":"2026-05-29T10:00:00+08:00","dateModified":"2026-05-29T10:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
+<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>跨语言协作实战：Python + Go Agent 协作 | 梦兽编程</title><meta name=keywords content="Go,ADK,Python,A2A,跨语言,教程"><meta name=description content="通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/><link crossorigin=anonymous href=/assets/css/stylesheet.e5cc7add3db1d5537bcd94f2210c74e21671855996289bd6292dd5d5e1f0b10d.css integrity="sha256-5cx63T2x1VN7zZTyIQx04hZxhVmWKJvWKS3V1eHwsQ0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><link rel=preload href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css as=style integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><link rel=stylesheet href=/css/extended/bundle.min.c8a76b55a935333543fa1f8e21d340ac897a78dbe7690e5821e05872a4939b16.css integrity="sha256-yKdrVak1MzVD+h+OIdNArIl6eNvnaQ5YIeBYcqSTmxY="><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","about":[{"@type":"Thing","description":"Smart pointer types in Rust programming language","name":"Rust Smart Pointers"},{"@type":"Thing","description":"Heap allocation smart pointer in Rust","name":"Box\u003cT\u003e"},{"@type":"Thing","description":"Reference counting smart pointer in Rust","name":"Rc\u003cT\u003e"},{"@type":"Thing","description":"Interior mutability smart pointer in Rust","name":"RefCell\u003cT\u003e"}],"author":{"@type":"Person","name":"梦兽编程","url":"https://rexai.top/"},"dateModified":"2026-05-29","datePublished":"2026-05-29","description":"通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。","headline":"跨语言协作实战：Python + Go Agent 协作","keywords":"Go,ADK,Python,A2A,跨语言,教程","mainEntityOfPage":{"@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/","@type":"WebPage"},"proficiencyLevel":"beginner to intermediate","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.svg"},"name":"梦兽编程"}}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="跨语言协作实战：Python + Go Agent 协作"><meta property="og:description" content="通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T10:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T10:00:00+08:00"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Python"><meta property="article:tag" content="A2A"><meta property="article:tag" content="跨语言"><meta property="article:tag" content="教程"><meta name=twitter:card content="summary"><meta name=twitter:title content="跨语言协作实战：Python + Go Agent 协作"><meta name=twitter:description content="通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 8：A2A 协议","item":"https://rexai.top/tutorials/go-adk/08-a2a/"},{"@type":"ListItem","position":4,"name":"跨语言协作实战：Python + Go Agent 协作","item":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"跨语言协作实战：Python + Go Agent 协作","name":"跨语言协作实战：Python \u002b Go Agent 协作","description":"通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。","keywords":["Go","ADK","Python","A2A","跨语言","教程"],"articleBody":"跨语言协作实战：Python + Go Agent 协作 在真实的 Agent 系统中，不同组件往往由不同团队使用不同技术栈开发。Python 在数据科学和机器学习领域有深厚积累，Go 在高并发和网络服务方面表现卓越。通过 A2A 协议，这两种语言的 Agent 可以无缝协作，发挥各自优势。\n本文将通过一个完整的实战案例——智能数据分析平台，展示 Python Agent（数据处理）和 Go Agent（API 网关）如何通过 A2A 协议协作。\n架构设计：分工明确的 Agent 网络 系统架构 用户请求 │ ▼ ┌─────────────────────────────────────────────────────────────┐ │ Go Agent（API 网关） │ │ 职责：请求路由、认证、限流 │ │ 技术：Go + ADK + A2A Client │ └────────┬────────────────────────────┬───────────────────────┘ │ │ ▼ ▼ ┌──────────────────┐ ┌──────────────────┐ │ Python Agent │ │ Go Agent │ │（数据处理专家） │ │（报告生成器） │ │ 职责：数据清洗、 │ │ 职责：格式化输出、 │ │ 统计分析 │ │ 文件导出 │ │ 技术：Python + │ │ 技术：Go + ADK │ │ Pandas + │ │ │ │ NumPy │ │ │ └────────┬──────────┘ └────────┬──────────┘ │ │ ▼ ▼ ┌──────────────────┐ ┌──────────────────┐ │ 数据存储 │ │ 文件存储 │ │（PostgreSQL） │ │（S3 / MinIO） │ └──────────────────┘ └──────────────────┘ 协作流程 1. 用户：\"分析 sales_data.csv，生成季度报告\" │ ▼ 2. Go Gateway Agent - 验证用户权限 - 解析请求意图 - 路由到 Python Data Agent │ ▼ 3. Python Data Agent - 从 S3 下载 sales_data.csv - 使用 Pandas 进行数据清洗 - 计算季度统计指标 - 将结果存储到 PostgreSQL - 返回处理结果摘要 │ ▼ 4. Go Gateway Agent - 接收数据处理结果 - 调用 Go Report Agent │ ▼ 5. Go Report Agent - 从 PostgreSQL 读取统计数据 - 生成 PDF 报告 - 上传到 S3 - 返回报告下载链接 │ ▼ 6. Go Gateway Agent - 汇总所有结果 - 返回给用户 Python Agent：数据处理专家 项目结构 python-data-agent/ ├── Dockerfile ├── requirements.txt ├── src/ │ ├── __init__.py │ ├── agent.py # Agent 核心逻辑 │ ├── data_processor.py # 数据处理模块 │ ├── storage.py # 存储接口 │ └── a2a_server.py # A2A 服务端 ├── config/ │ └── config.yaml └── tests/ └── test_processor.py 核心实现 # src/agent.py from dataclasses import dataclass from typing import Dict, List, Optional, Any import pandas as pd import numpy as np from datetime import datetime, timedelta import logging logger = logging.getLogger(__name__) @dataclass class AnalysisResult: total_records: int date_range: tuple revenue_stats: Dict[str, float] top_products: List[Dict[str, Any]] monthly_trend: List[Dict[str, Any]] anomalies: List[Dict[str, Any]] raw_data_path: str class DataProcessor: \"\"\"数据处理核心类\"\"\" def __init__(self, storage_client): self.storage = storage_client self.required_columns = ['date', 'product', 'quantity', 'price', 'revenue'] def process(self, file_path: str, analysis_type: str = 'full') -\u003e AnalysisResult: \"\"\"处理数据文件并返回分析结果\"\"\" # 1. 读取数据 logger.info(f\"Reading data from {file_path}\") df = self._read_data(file_path) # 2. 数据清洗 logger.info(\"Cleaning data\") df = self._clean_data(df) # 3. 根据分析类型执行不同处理 if analysis_type == 'full': result = self._full_analysis(df) elif analysis_type == 'summary': result = self._summary_analysis(df) else: raise ValueError(f\"Unknown analysis type: {analysis_type}\") # 4. 存储原始数据到数据库 db_path = self.storage.save_dataframe(df, f\"processed_{datetime.now().strftime('%Y%m%d_%H%M%S')}\") result.raw_data_path = db_path return result def _read_data(self, file_path: str) -\u003e pd.DataFrame: \"\"\"读取 CSV/Excel 文件\"\"\" if file_path.endswith('.csv'): df = pd.read_csv(file_path) elif file_path.endswith(('.xlsx', '.xls')): df = pd.read_excel(file_path) else: raise ValueError(f\"Unsupported file format: {file_path}\") # 验证必需列 missing = set(self.required_columns) - set(df.columns) if missing: raise ValueError(f\"Missing required columns: {missing}\") return df def _clean_data(self, df: pd.DataFrame) -\u003e pd.DataFrame: \"\"\"数据清洗\"\"\" # 去除重复行 df = df.drop_duplicates() # 处理缺失值 df = df.dropna(subset=['date', 'product', 'revenue']) # 转换日期格式 df['date'] = pd.to_datetime(df['date']) # 去除异常值（revenue \u003c 0 或 \u003e 99.9 分位数） q99 = df['revenue'].quantile(0.999) df = df[(df['revenue'] \u003e= 0) \u0026 (df['revenue'] \u003c= q99)] # 排序 df = df.sort_values('date') logger.info(f\"Cleaned data: {len(df)} records\") return df def _full_analysis(self, df: pd.DataFrame) -\u003e AnalysisResult: \"\"\"完整分析\"\"\" # 基础统计 total_records = len(df) date_range = (df['date'].min().isoformat(), df['date'].max().isoformat()) # 收入统计 revenue_stats = { 'total': float(df['revenue'].sum()), 'mean': float(df['revenue'].mean()), 'median': float(df['revenue'].median()), 'std': float(df['revenue'].std()), 'min': float(df['revenue'].min()), 'max': float(df['revenue'].max()), } # 热销产品 TOP 10 top_products = df.groupby('product').agg({ 'revenue': 'sum', 'quantity': 'sum' }).sort_values('revenue', ascending=False).head(10) top_products_list = [ { 'product': idx, 'revenue': float(row['revenue']), 'quantity': int(row['quantity']) } for idx, row in top_products.iterrows() ] # 月度趋势 df['month'] = df['date'].dt.to_period('M') monthly = df.groupby('month')['revenue'].sum().reset_index() monthly_trend = [ { 'month': str(row['month']), 'revenue': float(row['revenue']) } for _, row in monthly.iterrows() ] # 异常检测（使用 3-sigma 规则） mean = df['revenue'].mean() std = df['revenue'].std() anomalies = df[abs(df['revenue'] - mean) \u003e 3 * std] anomalies_list = [ { 'date': row['date'].isoformat(), 'product': row['product'], 'revenue': float(row['revenue']), 'deviation': float(abs(row['revenue'] - mean) / std) } for _, row in anomalies.iterrows() ] return AnalysisResult( total_records=total_records, date_range=date_range, revenue_stats=revenue_stats, top_products=top_products_list, monthly_trend=monthly_trend, anomalies=anomalies_list, raw_data_path=\"\" ) A2A 服务端 # src/a2a_server.py from fastapi import FastAPI, HTTPException, Depends, Header from fastapi.middleware.cors import CORSMiddleware from pydantic import BaseModel from typing import Optional, Dict, Any import uvicorn import os import logging from agent import DataProcessor from storage import PostgresStorage logging.basicConfig(level=logging.INFO) logger = logging.getLogger(__name__) app = FastAPI(title=\"Python Data Agent\", version=\"1.0.0\") # CORS app.add_middleware( CORSMiddleware, allow_origins=[\"*\"], # 生产环境应限制 allow_methods=[\"*\"], allow_headers=[\"*\"], ) # 全局配置 API_KEY = os.getenv(\"A2A_API_KEY\", \"dev-key\") storage = PostgresStorage(os.getenv(\"DATABASE_URL\")) processor = DataProcessor(storage) # A2A Agent Card AGENT_CARD = { \"name\": \"python-data-processor\", \"version\": \"1.0.0\", \"description\": \"数据处理专家，支持 CSV/Excel 的分析和转换\", \"url\": \"http://localhost:8081/a2a\", \"capabilities\": { \"streaming\": False, \"pushNotifications\": False }, \"skills\": [ { \"id\": \"csv-analysis\", \"name\": \"CSV 数据分析\", \"description\": \"分析 CSV/Excel 文件，返回统计摘要和可视化建议\", \"inputModes\": [\"text\", \"file\"], \"outputModes\": [\"text\", \"file\"] }, { \"id\": \"data-cleaning\", \"name\": \"数据清洗\", \"description\": \"清洗数据集中的异常值和缺失值\", \"inputModes\": [\"file\"], \"outputModes\": [\"file\"] } ], \"authentication\": { \"type\": \"apiKey\", \"header\": \"X-API-Key\" } } # 模型定义 class TaskRequest(BaseModel): skill: str input: Dict[str, Any] class TaskResponse(BaseModel): task_id: str status: str result: Optional[Dict[str, Any]] = None error: Optional[str] = None # 认证 def verify_api_key(x_api_key: str = Header(...)): if x_api_key != API_KEY: raise HTTPException(status_code=401, detail=\"Invalid API key\") return x_api_key # 端点 @app.get(\"/.well-known/agent.json\") async def get_agent_card(): return AGENT_CARD @app.post(\"/a2a/tasks\") async def create_task( request: TaskRequest, api_key: str = Depends(verify_api_key) ): import uuid task_id = str(uuid.uuid4()) logger.info(f\"Creating task {task_id} for skill {request.skill}\") try: if request.skill == \"csv-analysis\": file_path = request.input.get(\"file_path\") analysis_type = request.input.get(\"analysis_type\", \"full\") if not file_path: raise ValueError(\"file_path is required\") result = processor.process(file_path, analysis_type) return TaskResponse( task_id=task_id, status=\"completed\", result={ \"total_records\": result.total_records, \"date_range\": result.date_range, \"revenue_stats\": result.revenue_stats, \"top_products\": result.top_products, \"monthly_trend\": result.monthly_trend, \"anomalies\": result.anomalies, \"raw_data_path\": result.raw_data_path } ) elif request.skill == \"data-cleaning\": file_path = request.input.get(\"file_path\") if not file_path: raise ValueError(\"file_path is required\") df = processor._read_data(file_path) cleaned_df = processor._clean_data(df) output_path = f\"/tmp/cleaned_{task_id}.csv\" cleaned_df.to_csv(output_path, index=False) return TaskResponse( task_id=task_id, status=\"completed\", result={\"output_path\": output_path} ) else: raise ValueError(f\"Unknown skill: {request.skill}\") except Exception as e: logger.error(f\"Task {task_id} failed: {e}\") return TaskResponse( task_id=task_id, status=\"failed\", error=str(e) ) @app.get(\"/health\") async def health_check(): return {\"status\": \"healthy\", \"agent\": \"python-data-processor\"} if __name__ == \"__main__\": port = int(os.getenv(\"PORT\", \"8081\")) uvicorn.run(app, host=\"0.0.0.0\", port=port) Dockerfile FROM python:3.11-slim WORKDIR /app # 安装系统依赖 RUN apt-get update \u0026\u0026 apt-get install -y \\ gcc \\ postgresql-client \\ \u0026\u0026 rm -rf /var/lib/apt/lists/* # 安装 Python 依赖 COPY requirements.txt . RUN pip install --no-cache-dir -r requirements.txt # 复制代码 COPY src/ ./src/ # 非 root 用户 RUN useradd -m -u 1000 appuser \u0026\u0026 chown -R appuser:appuser /app USER appuser EXPOSE 8081 CMD [\"python\", \"-m\", \"src.a2a_server\"] Go Agent：API 网关与报告生成 项目结构 go-gateway-agent/ ├── Dockerfile ├── go.mod ├── go.sum ├── main.go ├── internal/ │ ├── gateway/ │ │ └── gateway.go │ ├── report/ │ │ └── generator.go │ └── a2a/ │ └── client.go └── config/ └── config.yaml Gateway 实现 // internal/gateway/gateway.go package gateway import ( \"context\" \"fmt\" \"os\" \"time\" \"google.golang.org/adk/a2a/client\" \"google.golang.org/adk/agent\" \"google.golang.org/adk/tool\" ) type GatewayAgent struct { agent *agent.Agent pythonClient *a2aclient.Client reportClient *a2aclient.Client } func NewGatewayAgent(ctx context.Context) (*GatewayAgent, error) { // 创建 Python Data Agent 客户端 pythonClient, err := a2aclient.New(ctx, a2aclient.WithURL(\"http://python-agent:8081/a2a\"), a2aclient.WithAPIKey(os.Getenv(\"PYTHON_AGENT_API_KEY\")), a2aclient.WithTimeout(60*time.Second), a2aclient.WithRetry(3, time.Second), ) if err != nil { return nil, fmt.Errorf(\"failed to create python client: %w\", err) } // 创建本地 Report Agent 客户端（内部调用） reportClient, err := a2aclient.New(ctx, a2aclient.WithURL(\"http://localhost:8082/a2a\"), a2aclient.WithTimeout(30*time.Second), ) if err != nil { return nil, fmt.Errorf(\"failed to create report client: %w\", err) } // 创建 Gateway Agent a, err := agent.New(agent.Config{ Name: \"gateway-agent\", Model: model, Instruction: `你是一个智能数据分析平台的网关。你的职责：1. 理解用户的分析需求 2. 调用 python-data-processor 进行数据处理 3. 调用 report-generator 生成报告 4. 汇总结果返回给用户`, Tools: []tool.Tool{ NewProcessDataTool(pythonClient), NewGenerateReportTool(reportClient), }, }) if err != nil { return nil, err } return \u0026GatewayAgent{ agent: a, pythonClient: pythonClient, reportClient: reportClient, }, nil } func (g *GatewayAgent) HandleRequest(ctx context.Context, userInput string) (string, error) { return g.agent.Run(ctx, userInput) } Report Generator // internal/report/generator.go package report import ( \"context\" \"fmt\" \"os\" \"time\" \"github.com/jung-kurt/gofpdf\" ) type ReportGenerator struct { templateDir string outputDir string } func NewReportGenerator(templateDir, outputDir string) *ReportGenerator { return \u0026ReportGenerator{ templateDir: templateDir, outputDir: outputDir, } } func (g *ReportGenerator) GeneratePDF(ctx context.Context, data ReportData) (string, error) { pdf := gofpdf.New(\"P\", \"mm\", \"A4\", \"\") pdf.AddPage() pdf.SetFont(\"Arial\", \"B\", 16) // 标题 pdf.Cell(40, 10, fmt.Sprintf(\"数据分析报告 - %s\", data.Title)) pdf.Ln(20) // 概览 pdf.SetFont(\"Arial\", \"B\", 12) pdf.Cell(40, 10, \"数据概览\") pdf.Ln(10) pdf.SetFont(\"Arial\", \"\", 10) pdf.Cell(40, 10, fmt.Sprintf(\"总记录数: %d\", data.TotalRecords)) pdf.Ln(5) pdf.Cell(40, 10, fmt.Sprintf(\"日期范围: %s 至 %s\", data.DateRange[0], data.DateRange[1])) pdf.Ln(5) pdf.Cell(40, 10, fmt.Sprintf(\"总收入: %.2f\", data.RevenueStats[\"total\"])) pdf.Ln(10) // 热销产品 pdf.SetFont(\"Arial\", \"B\", 12) pdf.Cell(40, 10, \"热销产品 TOP 10\") pdf.Ln(10) pdf.SetFont(\"Arial\", \"\", 10) for i, product := range data.TopProducts { pdf.Cell(40, 10, fmt.Sprintf(\"%d. %s - 收入: %.2f\", i+1, product.Product, product.Revenue)) pdf.Ln(5) } // 保存 filename := fmt.Sprintf(\"report_%d.pdf\", time.Now().Unix()) filepath := fmt.Sprintf(\"%s/%s\", g.outputDir, filename) if err := pdf.OutputFileAndClose(filepath); err != nil { return \"\", fmt.Errorf(\"failed to generate PDF: %w\", err) } return filepath, nil } type ReportData struct { Title string TotalRecords int DateRange [2]string RevenueStats map[string]float64 TopProducts []ProductStat MonthlyTrend []MonthlyData } type ProductStat struct { Product string Revenue float64 Quantity int } type MonthlyData struct { Month string Revenue float64 } A2A 工具封装 // internal/gateway/tools.go package gateway import ( \"context\" \"encoding/json\" \"fmt\" \"time\" \"google.golang.org/adk/a2a/client\" \"google.golang.org/adk/tool\" ) // ProcessDataTool 调用 Python Agent 处理数据 type ProcessDataTool struct { client *a2aclient.Client } func NewProcessDataTool(client *a2aclient.Client) *ProcessDataTool { return \u0026ProcessDataTool{client: client} } func (t *ProcessDataTool) Name() string { return \"process_data\" } func (t *ProcessDataTool) Description() string { return \"调用 Python Agent 处理数据文件\" } func (t *ProcessDataTool) Schema() tool.Schema { return tool.Schema{ Type: \"object\", Properties: map[string]tool.Property{ \"file_path\": { Type: \"string\", Description: \"数据文件路径\", }, \"analysis_type\": { Type: \"string\", Description: \"分析类型: full 或 summary\", Enum: []string{\"full\", \"summary\"}, }, }, Required: []string{\"file_path\"}, } } func (t *ProcessDataTool) Call(ctx context.Context, input string) (string, error) { var params struct { FilePath string `json:\"file_path\"` AnalysisType string `json:\"analysis_type\"` } if err := json.Unmarshal([]byte(input), \u0026params); err != nil { return \"\", err } if params.AnalysisType == \"\" { params.AnalysisType = \"full\" } // 调用 Python Agent task, err := t.client.SendTask(ctx, \u0026a2a.Task{ Input: map[string]interface{}{ \"skill\": \"csv-analysis\", \"file_path\": params.FilePath, \"analysis_type\": params.AnalysisType, }, }) if err != nil { return \"\", fmt.Errorf(\"failed to send task: %w\", err) } // 等待结果（简化版，实际应轮询） result, err := waitForTask(ctx, t.client, task.ID) if err != nil { return \"\", err } return result, nil } // GenerateReportTool 调用 Report Agent 生成报告 type GenerateReportTool struct { client *a2aclient.Client } func NewGenerateReportTool(client *a2aclient.Client) *GenerateReportTool { return \u0026GenerateReportTool{client: client} } func (t *GenerateReportTool) Name() string { return \"generate_report\" } func (t *GenerateReportTool) Description() string { return \"生成 PDF 报告\" } func (t *GenerateReportTool) Schema() tool.Schema { return tool.Schema{ Type: \"object\", Properties: map[string]tool.Property{ \"data_path\": { Type: \"string\", Description: \"数据文件路径\", }, \"title\": { Type: \"string\", Description: \"报告标题\", }, }, Required: []string{\"data_path\", \"title\"}, } } func (t *GenerateReportTool) Call(ctx context.Context, input string) (string, error) { var params struct { DataPath string `json:\"data_path\"` Title string `json:\"title\"` } if err := json.Unmarshal([]byte(input), \u0026params); err != nil { return \"\", err } task, err := t.client.SendTask(ctx, \u0026a2a.Task{ Input: map[string]interface{}{ \"skill\": \"generate-pdf\", \"data_path\": params.DataPath, \"title\": params.Title, }, }) if err != nil { return \"\", fmt.Errorf(\"failed to send task: %w\", err) } result, err := waitForTask(ctx, t.client, task.ID) if err != nil { return \"\", err } return result, nil } func waitForTask(ctx context.Context, client *a2aclient.Client, taskID string) (string, error) { ticker := time.NewTicker(time.Second) defer ticker.Stop() timeout := time.After(5 * time.Minute) for { select { case \u003c-ticker.C: task, err := client.GetTask(ctx, taskID) if err != nil { return \"\", err } switch task.Status { case a2a.TaskStatusCompleted: result, _ := json.Marshal(task.Output) return string(result), nil case a2a.TaskStatusFailed: return \"\", fmt.Errorf(\"task failed: %v\", task.Output) case a2a.TaskStatusCancelled: return \"\", fmt.Errorf(\"task cancelled\") } case \u003c-timeout: client.CancelTask(ctx, taskID) return \"\", fmt.Errorf(\"task timeout\") case \u003c-ctx.Done(): client.CancelTask(ctx, taskID) return \"\", ctx.Err() } } } 部署与运行 Docker Compose 编排 # docker-compose.yml version: '3.8' services: python-agent: build: ./python-data-agent ports: - \"8081:8081\" environment: - PORT=8081 - A2A_API_KEY=${PYTHON_AGENT_API_KEY} - DATABASE_URL=postgresql://postgres:password@postgres:5432/agentdb - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} depends_on: - postgres volumes: - ./data:/data networks: - agent-network go-gateway: build: ./go-gateway-agent ports: - \"8080:8080\" environment: - PORT=8080 - PYTHON_AGENT_API_KEY=${PYTHON_AGENT_API_KEY} - PYTHON_AGENT_URL=http://python-agent:8081/a2a - DATABASE_URL=postgresql://postgres:password@postgres:5432/agentdb depends_on: - python-agent - postgres networks: - agent-network postgres: image: postgres:15-alpine environment: - POSTGRES_USER=postgres - POSTGRES_PASSWORD=password - POSTGRES_DB=agentdb volumes: - postgres-data:/var/lib/postgresql/data networks: - agent-network minio: image: minio/minio command: server /data --console-address \":9001\" ports: - \"9000:9000\" - \"9001:9001\" environment: - MINIO_ROOT_USER=minioadmin - MINIO_ROOT_PASSWORD=minioadmin volumes: - minio-data:/data networks: - agent-network volumes: postgres-data: minio-data: networks: agent-network: driver: bridge 运行流程 # 1. 设置环境变量 export PYTHON_AGENT_API_KEY=\"your-secret-key\" export AWS_ACCESS_KEY_ID=\"your-aws-key\" export AWS_SECRET_ACCESS_KEY=\"your-aws-secret\" # 2. 启动所有服务 docker-compose up -d # 3. 验证服务状态 docker-compose ps curl http://localhost:8081/health curl http://localhost:8080/health # 4. 测试完整流程 curl -X POST http://localhost:8080/a2a/tasks \\ -H \"Content-Type: application/json\" \\ -H \"X-API-Key: your-secret-key\" \\ -d '{ \"skill\": \"analyze-and-report\", \"input\": { \"file_path\": \"/data/sales_data.csv\", \"title\": \"Q3 销售数据分析报告\" } }' 生产环境考量 跨语言类型映射 Python 类型 Go 类型 JSON 表示 注意事项 int int64 number Python int 无上限，Go 有上限 float float64 number 浮点精度差异 str string string UTF-8 编码 dict map[string]interface{} object 键必须是字符串 list []interface{} array 类型一致性检查 datetime time.Time string (RFC3339) 时区处理 None nil null 空值判断 pandas.DataFrame 自定义结构 object/array 需序列化 错误处理策略 // Go 端：统一错误格式 type ErrorResponse struct { Code string `json:\"code\"` Message string `json:\"message\"` Details string `json:\"details,omitempty\"` } func handleA2AError(err error) *ErrorResponse { var a2aErr *a2a.Error if errors.As(err, \u0026a2aErr) { return \u0026ErrorResponse{ Code: a2aErr.Code, Message: a2aErr.Message, Details: a2aErr.Details, } } // 网络错误 if errors.Is(err, context.DeadlineExceeded) { return \u0026ErrorResponse{ Code: \"TIMEOUT\", Message: \"请求超时，请稍后重试\", } } return \u0026ErrorResponse{ Code: \"INTERNAL\", Message: \"内部错误\", } } # Python 端：统一错误格式 class AgentError(Exception): def __init__(self, code: str, message: str, details: str = None): self.code = code self.message = message self.details = details super().__init__(message) def handle_error(e: Exception) -\u003e dict: if isinstance(e, AgentError): return { \"code\": e.code, \"message\": e.message, \"details\": e.details } elif isinstance(e, pd.errors.EmptyDataError): return { \"code\": \"EMPTY_DATA\", \"message\": \"数据文件为空\" } elif isinstance(e, ValueError): return { \"code\": \"INVALID_INPUT\", \"message\": str(e) } else: return { \"code\": \"INTERNAL\", \"message\": \"内部错误\", \"details\": str(e) } 性能优化 连接池复用：Go Client 保持长连接，避免频繁 TCP 握手 批量处理：Python Agent 支持批量数据分析，减少跨语言调用次数 异步流水线：Gateway 使用 goroutine 并行调用多个 Agent 结果缓存：常用分析结果缓存到 Redis，避免重复计算 小结 模块 8 完成。学习了：\nA2A 协议的深层设计理念 Exposing 暴露 Go Agent 的完整实践 Consuming 消费外部 Agent 的高级模式 跨语言协作的实战案例 接下来进入模块 9：进阶主题——Grounding、Artifacts、Skills、Callbacks。\n← 模块 8：A2A 协议 | 模块 9：进阶主题 → →\n想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"2220","inLanguage":"zh-cn","datePublished":"2026-05-29T10:00:00+08:00","dateModified":"2026-05-29T10:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
 <span class=logo-text-short>梦兽编程</span></span></a></div></div><div class=apple-header__center><ul id=menu role=menubar><li role=none><a href=https://rexai.top/ title=首页 role=menuitem><span class=apple-header__menu-label>首页</span></a></li><li class=has-submenu role=none><a href=https://rexai.top/tutorials/ title=教程 role=menuitem><span class=apple-header__menu-label>教程</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tutorials/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/tutorials/smart-contracts/ title=智能合约 role=menuitem>智能合约</a></li><li role=none><a href=https://rexai.top/tutorials/ai/ title=AI编程 role=menuitem>AI编程</a></li><li role=none><a href=https://rexai.top/tutorials/go-adk/ title="Go ADK" role=menuitem>Go ADK</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/ai/ title=AI role=menuitem><span class=apple-header__menu-label>AI</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/ai/claude-code/ title="Claude Code" role=menuitem>Claude Code</a></li><li role=none><a href=https://rexai.top/ai/codex/ title=Codex role=menuitem>Codex</a></li><li role=none><a href=https://rexai.top/ai/llm/ title=LLM role=menuitem>LLM</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/languages/ title=开发 role=menuitem><span class=apple-header__menu-label>开发</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/languages/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/languages/go/ title=Go role=menuitem>Go</a></li><li role=none><a href=https://rexai.top/languages/python/ title=Python role=menuitem>Python</a></li><li role=none><a href=https://rexai.top/frontend/ title=前端 role=menuitem>前端</a></li><li role=none><a href=https://rexai.top/infrastructure/ title=基础设施 role=menuitem>基础设施</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/tools/ title="工具 (Alt + /)" accesskey='/role="menuitem"'><span class=apple-header__menu-label>工具</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tools/rexai-tool-directory/ title="AI 工具导航" role=menuitem>AI 工具导航</a></li><li role=none><a href=https://tool.rexai.top/ title="Rex 工具集" target=_blank rel="noopener noreferrer" role=menuitem>Rex 工具集</a></li></ul></li><li role=none><a href=https://rexai.top/marketing/ title=VPN网络链 role=menuitem><span class=apple-header__menu-label>VPN网络链</span></a></li><li role=none><a href=https://rexai.top/tags/ title=标签 role=menuitem><span class=apple-header__menu-label>标签</span></a></li><li role=none><a href=https://rexai.top/categories/ title=分类 role=menuitem><span class=apple-header__menu-label>分类</span></a></li></ul></div><div class=apple-header__right><div class=apple-header__actions><div class=nav-controls><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
 <svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
 <svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><ul class=lang-switch aria-label="Language switcher"><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/#untranslated=en" title=:en: aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></div><button class=menu-toggle id=devdrawer-toggle aria-label=菜单 aria-expanded=false aria-controls=devdrawer>
@@ -12,7 +12,7 @@
 </a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/languages/rust/>Rust</a></li><li><a href=https://rexai.top/languages/go/>Go</a></li><li><a href=https://rexai.top/languages/python/>Python</a></li><li><a href=https://rexai.top/frontend/>前端</a></li><li><a href=https://rexai.top/infrastructure/>基础设施</a></li></ul></li><li class=has-submenu><div class=devdrawer__item-content><a href=https://rexai.top/tools/ class=devdrawer__link><span class=devdrawer__link-text>工具</span>
 </a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li></ul></li><li><div class=devdrawer__item-content><a href=https://rexai.top/marketing/ class=devdrawer__link><span class=devdrawer__link-text>VPN网络链</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/tags/ class=devdrawer__link><span class=devdrawer__link-text>标签</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/categories/ class=devdrawer__link><span class=devdrawer__link-text>分类</span></a></div></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></aside><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class="main apple-container page-content"><aside class=apple-untranslated id=apple-untranslated-notice hidden><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge hidden>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge"),s=document.getElementById("apple-untranslated-desc");if(!t||!s)return;const o=()=>{const e=(window.location.hash||"").replace(/^#/,"");return new URLSearchParams(e)},n=()=>{const s=o(),n=s.get("untranslated");if(!n){t.hidden=!0,e&&(e.hidden=!0);return}t.hidden=!1,e&&(e.hidden=!1,e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header giz-post-header"><h1 class="post-title entry-hint-parent">跨语言协作实战：Python + Go Agent 协作</h1><div class=post-description>通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。</div><div class=post-meta><span title='2026-05-29 10:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;150 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/ style=margin-left:.5rem>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li></ul></li><li><div class=devdrawer__item-content><a href=https://rexai.top/marketing/ class=devdrawer__link><span class=devdrawer__link-text>VPN网络链</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/tags/ class=devdrawer__link><span class=devdrawer__link-text>标签</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/categories/ class=devdrawer__link><span class=devdrawer__link-text>分类</span></a></div></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></aside><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class="main apple-container page-content"><aside class=apple-untranslated id=apple-untranslated-notice hidden><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge hidden>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge"),s=document.getElementById("apple-untranslated-desc");if(!t||!s)return;const o=()=>{const e=(window.location.hash||"").replace(/^#/,"");return new URLSearchParams(e)},n=()=>{const s=o(),n=s.get("untranslated");if(!n){t.hidden=!0,e&&(e.hidden=!0);return}t.hidden=!1,e&&(e.hidden=!1,e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header giz-post-header"><h1 class="post-title entry-hint-parent">跨语言协作实战：Python + Go Agent 协作</h1><div class=post-description>通过实际案例展示 Python ADK Agent 和 Go ADK Agent 如何通过 A2A 协议协作——任务分工、信息传递、结果汇总。</div><div class=post-meta><span title='2026-05-29 10:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2220 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/ style=margin-left:.5rem>
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/>-</span>
 </span><script type=module>
@@ -23,45 +23,896 @@
     path: '\/tutorials\/go-adk\/08-a2a\/go-adk-a2a-cross-language\/',
     update: false,
   });
-</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#%e8%b7%a8%e8%af%ad%e8%a8%80%e5%8d%8f%e4%bd%9c%e5%ae%9e%e6%88%98python--go-agent-%e5%8d%8f%e4%bd%9c aria-label="跨语言协作实战：Python + Go Agent 协作">跨语言协作实战：Python + Go Agent 协作</a><ul><li><a href=#%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1 aria-label=架构设计>架构设计</a></li><li><a href=#python-agent%e6%95%b0%e6%8d%ae%e5%a4%84%e7%90%86%e4%b8%93%e5%ae%b6 aria-label="Python Agent：数据处理专家">Python Agent：数据处理专家</a></li><li><a href=#go-agentapi-%e4%bb%a3%e7%90%86 aria-label="Go Agent：API 代理">Go Agent：API 代理</a></li><li><a href=#%e5%ae%8c%e6%95%b4%e5%8d%8f%e4%bd%9c%e6%b5%81%e7%a8%8b aria-label=完整协作流程>完整协作流程</a></li><li><a href=#%e5%b0%8f%e7%bb%93 aria-label=小结>小结</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=跨语言协作实战python--go-agent-协作>跨语言协作实战：Python + Go Agent 协作<a hidden class=anchor aria-hidden=true href=#跨语言协作实战python--go-agent-协作>#</a></h1><p>用 Python 写数据处理 Agent，用 Go 写 API 代理 Agent，通过 A2A 协作——语言无关的 Agent 系统。</p><h2 id=架构设计>架构设计<a hidden class=anchor aria-hidden=true href=#架构设计>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>用户请求
-</span></span><span style=display:flex><span>    ↓
-</span></span><span style=display:flex><span>Go Agent（API 代理）──A2A──→ Python Agent（数据处理）
-</span></span><span style=display:flex><span>    ↓                              ↓
-</span></span><span style=display:flex><span>返回结果                    处理数据
-</span></span></code></pre></div><hr><h2 id=python-agent数据处理专家>Python Agent：数据处理专家<a hidden class=anchor aria-hidden=true href=#python-agent数据处理专家>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:green># python_agent.py</span>
-</span></span><span style=display:flex><span><span style=color:#00f>from</span> adk <span style=color:#00f>import</span> Agent, model, tool
+</script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href="https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/#untranslated=en" aria-label=":en: - 未翻译">En<span class=apple-untranslated__badge>未翻译</span></a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#%e8%b7%a8%e8%af%ad%e8%a8%80%e5%8d%8f%e4%bd%9c%e5%ae%9e%e6%88%98python--go-agent-%e5%8d%8f%e4%bd%9c aria-label="跨语言协作实战：Python + Go Agent 协作">跨语言协作实战：Python + Go Agent 协作</a><ul><li><a href=#%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e5%88%86%e5%b7%a5%e6%98%8e%e7%a1%ae%e7%9a%84-agent-%e7%bd%91%e7%bb%9c aria-label="架构设计：分工明确的 Agent 网络">架构设计：分工明确的 Agent 网络</a><ul><li><a href=#%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84 aria-label=系统架构>系统架构</a></li><li><a href=#%e5%8d%8f%e4%bd%9c%e6%b5%81%e7%a8%8b aria-label=协作流程>协作流程</a></li></ul></li><li><a href=#python-agent%e6%95%b0%e6%8d%ae%e5%a4%84%e7%90%86%e4%b8%93%e5%ae%b6 aria-label="Python Agent：数据处理专家">Python Agent：数据处理专家</a><ul><li><a href=#%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84 aria-label=项目结构>项目结构</a></li><li><a href=#%e6%a0%b8%e5%bf%83%e5%ae%9e%e7%8e%b0 aria-label=核心实现>核心实现</a></li><li><a href=#a2a-%e6%9c%8d%e5%8a%a1%e7%ab%af aria-label="A2A 服务端">A2A 服务端</a></li><li><a href=#dockerfile aria-label=Dockerfile>Dockerfile</a></li></ul></li><li><a href=#go-agentapi-%e7%bd%91%e5%85%b3%e4%b8%8e%e6%8a%a5%e5%91%8a%e7%94%9f%e6%88%90 aria-label="Go Agent：API 网关与报告生成">Go Agent：API 网关与报告生成</a><ul><li><a href=#%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84-1 aria-label=项目结构>项目结构</a></li><li><a href=#gateway-%e5%ae%9e%e7%8e%b0 aria-label="Gateway 实现">Gateway 实现</a></li><li><a href=#report-generator aria-label="Report Generator">Report Generator</a></li><li><a href=#a2a-%e5%b7%a5%e5%85%b7%e5%b0%81%e8%a3%85 aria-label="A2A 工具封装">A2A 工具封装</a></li></ul></li><li><a href=#%e9%83%a8%e7%bd%b2%e4%b8%8e%e8%bf%90%e8%a1%8c aria-label=部署与运行>部署与运行</a><ul><li><a href=#docker-compose-%e7%bc%96%e6%8e%92 aria-label="Docker Compose 编排">Docker Compose 编排</a></li><li><a href=#%e8%bf%90%e8%a1%8c%e6%b5%81%e7%a8%8b aria-label=运行流程>运行流程</a></li></ul></li><li><a href=#%e7%94%9f%e4%ba%a7%e7%8e%af%e5%a2%83%e8%80%83%e9%87%8f aria-label=生产环境考量>生产环境考量</a><ul><li><a href=#%e8%b7%a8%e8%af%ad%e8%a8%80%e7%b1%bb%e5%9e%8b%e6%98%a0%e5%b0%84 aria-label=跨语言类型映射>跨语言类型映射</a></li><li><a href=#%e9%94%99%e8%af%af%e5%a4%84%e7%90%86%e7%ad%96%e7%95%a5 aria-label=错误处理策略>错误处理策略</a></li><li><a href=#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96 aria-label=性能优化>性能优化</a></li></ul></li><li><a href=#%e5%b0%8f%e7%bb%93 aria-label=小结>小结</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=跨语言协作实战python--go-agent-协作>跨语言协作实战：Python + Go Agent 协作<a hidden class=anchor aria-hidden=true href=#跨语言协作实战python--go-agent-协作>#</a></h1><p>在真实的 Agent 系统中，不同组件往往由不同团队使用不同技术栈开发。Python 在数据科学和机器学习领域有深厚积累，Go 在高并发和网络服务方面表现卓越。通过 A2A 协议，这两种语言的 Agent 可以无缝协作，发挥各自优势。</p><p>本文将通过一个完整的实战案例——智能数据分析平台，展示 Python Agent（数据处理）和 Go Agent（API 网关）如何通过 A2A 协议协作。</p><hr><h2 id=架构设计分工明确的-agent-网络>架构设计：分工明确的 Agent 网络<a hidden class=anchor aria-hidden=true href=#架构设计分工明确的-agent-网络>#</a></h2><h3 id=系统架构>系统架构<a hidden class=anchor aria-hidden=true href=#系统架构>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>用户请求
+</span></span><span style=display:flex><span>    │
+</span></span><span style=display:flex><span>    ▼
+</span></span><span style=display:flex><span>┌─────────────────────────────────────────────────────────────┐
+</span></span><span style=display:flex><span>│                  Go Agent（API 网关）                        │
+</span></span><span style=display:flex><span>│                  职责：请求路由、认证、限流                   │
+</span></span><span style=display:flex><span>│                  技术：Go + ADK + A2A Client                 │
+</span></span><span style=display:flex><span>└────────┬────────────────────────────┬───────────────────────┘
+</span></span><span style=display:flex><span>         │                            │
+</span></span><span style=display:flex><span>         ▼                            ▼
+</span></span><span style=display:flex><span>┌──────────────────┐          ┌──────────────────┐
+</span></span><span style=display:flex><span>│ Python Agent      │          │ Go Agent          │
+</span></span><span style=display:flex><span>│（数据处理专家）    │          │（报告生成器）      │
+</span></span><span style=display:flex><span>│ 职责：数据清洗、   │          │ 职责：格式化输出、  │
+</span></span><span style=display:flex><span>│       统计分析    │          │       文件导出      │
+</span></span><span style=display:flex><span>│ 技术：Python +    │          │ 技术：Go + ADK     │
+</span></span><span style=display:flex><span>│        Pandas +   │          │                    │
+</span></span><span style=display:flex><span>│        NumPy      │          │                    │
+</span></span><span style=display:flex><span>└────────┬──────────┘          └────────┬──────────┘
+</span></span><span style=display:flex><span>         │                              │
+</span></span><span style=display:flex><span>         ▼                              ▼
+</span></span><span style=display:flex><span>┌──────────────────┐          ┌──────────────────┐
+</span></span><span style=display:flex><span>│ 数据存储          │          │ 文件存储          │
+</span></span><span style=display:flex><span>│（PostgreSQL）     │          │（S3 / MinIO）     │
+</span></span><span style=display:flex><span>└──────────────────┘          └──────────────────┘
+</span></span></code></pre></div><h3 id=协作流程>协作流程<a hidden class=anchor aria-hidden=true href=#协作流程>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>1. 用户：&#34;分析 sales_data.csv，生成季度报告&#34;
+</span></span><span style=display:flex><span>         │
+</span></span><span style=display:flex><span>         ▼
+</span></span><span style=display:flex><span>2. Go Gateway Agent
+</span></span><span style=display:flex><span>   - 验证用户权限
+</span></span><span style=display:flex><span>   - 解析请求意图
+</span></span><span style=display:flex><span>   - 路由到 Python Data Agent
+</span></span><span style=display:flex><span>         │
+</span></span><span style=display:flex><span>         ▼
+</span></span><span style=display:flex><span>3. Python Data Agent
+</span></span><span style=display:flex><span>   - 从 S3 下载 sales_data.csv
+</span></span><span style=display:flex><span>   - 使用 Pandas 进行数据清洗
+</span></span><span style=display:flex><span>   - 计算季度统计指标
+</span></span><span style=display:flex><span>   - 将结果存储到 PostgreSQL
+</span></span><span style=display:flex><span>   - 返回处理结果摘要
+</span></span><span style=display:flex><span>         │
+</span></span><span style=display:flex><span>         ▼
+</span></span><span style=display:flex><span>4. Go Gateway Agent
+</span></span><span style=display:flex><span>   - 接收数据处理结果
+</span></span><span style=display:flex><span>   - 调用 Go Report Agent
+</span></span><span style=display:flex><span>         │
+</span></span><span style=display:flex><span>         ▼
+</span></span><span style=display:flex><span>5. Go Report Agent
+</span></span><span style=display:flex><span>   - 从 PostgreSQL 读取统计数据
+</span></span><span style=display:flex><span>   - 生成 PDF 报告
+</span></span><span style=display:flex><span>   - 上传到 S3
+</span></span><span style=display:flex><span>   - 返回报告下载链接
+</span></span><span style=display:flex><span>         │
+</span></span><span style=display:flex><span>         ▼
+</span></span><span style=display:flex><span>6. Go Gateway Agent
+</span></span><span style=display:flex><span>   - 汇总所有结果
+</span></span><span style=display:flex><span>   - 返回给用户
+</span></span></code></pre></div><hr><h2 id=python-agent数据处理专家>Python Agent：数据处理专家<a hidden class=anchor aria-hidden=true href=#python-agent数据处理专家>#</a></h2><h3 id=项目结构>项目结构<a hidden class=anchor aria-hidden=true href=#项目结构>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>python-data-agent/
+</span></span><span style=display:flex><span>├── Dockerfile
+</span></span><span style=display:flex><span>├── requirements.txt
+</span></span><span style=display:flex><span>├── src/
+</span></span><span style=display:flex><span>│   ├── __init__.py
+</span></span><span style=display:flex><span>│   ├── agent.py          # Agent 核心逻辑
+</span></span><span style=display:flex><span>│   ├── data_processor.py  # 数据处理模块
+</span></span><span style=display:flex><span>│   ├── storage.py        # 存储接口
+</span></span><span style=display:flex><span>│   └── a2a_server.py     # A2A 服务端
+</span></span><span style=display:flex><span>├── config/
+</span></span><span style=display:flex><span>│   └── config.yaml
+</span></span><span style=display:flex><span>└── tests/
+</span></span><span style=display:flex><span>    └── test_processor.py
+</span></span></code></pre></div><h3 id=核心实现>核心实现<a hidden class=anchor aria-hidden=true href=#核心实现>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:green># src/agent.py</span>
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> dataclasses <span style=color:#00f>import</span> dataclass
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> typing <span style=color:#00f>import</span> Dict, List, Optional, Any
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> pandas <span style=color:#00f>as</span> pd
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> numpy <span style=color:#00f>as</span> np
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> datetime <span style=color:#00f>import</span> datetime, timedelta
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> logging
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>data_agent = Agent(
-</span></span><span style=display:flex><span>    name=<span style=color:#a31515>&#34;data-processor&#34;</span>,
-</span></span><span style=display:flex><span>    model=model.Gemini(model=<span style=color:#a31515>&#34;gemini-flash&#34;</span>),
-</span></span><span style=display:flex><span>    instruction=<span style=color:#a31515>&#34;你是一个数据处理专家，处理用户请求的数据任务。&#34;</span>,
-</span></span><span style=display:flex><span>    tools=[...],
+</span></span><span style=display:flex><span>logger = logging.getLogger(__name__)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@dataclass
+</span></span><span style=display:flex><span><span style=color:#00f>class</span> <span style=color:#2b91af>AnalysisResult</span>:
+</span></span><span style=display:flex><span>    total_records: int
+</span></span><span style=display:flex><span>    date_range: tuple
+</span></span><span style=display:flex><span>    revenue_stats: Dict[str, float]
+</span></span><span style=display:flex><span>    top_products: List[Dict[str, Any]]
+</span></span><span style=display:flex><span>    monthly_trend: List[Dict[str, Any]]
+</span></span><span style=display:flex><span>    anomalies: List[Dict[str, Any]]
+</span></span><span style=display:flex><span>    raw_data_path: str
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>class</span> <span style=color:#2b91af>DataProcessor</span>:
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;&#34;&#34;数据处理核心类&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>def</span> __init__(self, storage_client):
+</span></span><span style=display:flex><span>        self.storage = storage_client
+</span></span><span style=display:flex><span>        self.required_columns = [<span style=color:#a31515>&#39;date&#39;</span>, <span style=color:#a31515>&#39;product&#39;</span>, <span style=color:#a31515>&#39;quantity&#39;</span>, <span style=color:#a31515>&#39;price&#39;</span>, <span style=color:#a31515>&#39;revenue&#39;</span>]
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>def</span> process(self, file_path: str, analysis_type: str = <span style=color:#a31515>&#39;full&#39;</span>) -&gt; AnalysisResult:
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;&#34;&#34;处理数据文件并返回分析结果&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 1. 读取数据</span>
+</span></span><span style=display:flex><span>        logger.info(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Reading data from </span><span style=color:#a31515>{</span>file_path<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>        df = self._read_data(file_path)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 2. 数据清洗</span>
+</span></span><span style=display:flex><span>        logger.info(<span style=color:#a31515>&#34;Cleaning data&#34;</span>)
+</span></span><span style=display:flex><span>        df = self._clean_data(df)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 3. 根据分析类型执行不同处理</span>
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> analysis_type == <span style=color:#a31515>&#39;full&#39;</span>:
+</span></span><span style=display:flex><span>            result = self._full_analysis(df)
+</span></span><span style=display:flex><span>        <span style=color:#00f>elif</span> analysis_type == <span style=color:#a31515>&#39;summary&#39;</span>:
+</span></span><span style=display:flex><span>            result = self._summary_analysis(df)
+</span></span><span style=display:flex><span>        <span style=color:#00f>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#00f>raise</span> ValueError(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Unknown analysis type: </span><span style=color:#a31515>{</span>analysis_type<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 4. 存储原始数据到数据库</span>
+</span></span><span style=display:flex><span>        db_path = self.storage.save_dataframe(df, <span style=color:#a31515>f</span><span style=color:#a31515>&#34;processed_</span><span style=color:#a31515>{</span>datetime.now().strftime(<span style=color:#a31515>&#39;%Y%m</span><span style=color:#a31515>%d</span><span style=color:#a31515>_%H%M%S&#39;</span>)<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>        result.raw_data_path = db_path
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> result
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>def</span> _read_data(self, file_path: str) -&gt; pd.DataFrame:
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;&#34;&#34;读取 CSV/Excel 文件&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> file_path.endswith(<span style=color:#a31515>&#39;.csv&#39;</span>):
+</span></span><span style=display:flex><span>            df = pd.read_csv(file_path)
+</span></span><span style=display:flex><span>        <span style=color:#00f>elif</span> file_path.endswith((<span style=color:#a31515>&#39;.xlsx&#39;</span>, <span style=color:#a31515>&#39;.xls&#39;</span>)):
+</span></span><span style=display:flex><span>            df = pd.read_excel(file_path)
+</span></span><span style=display:flex><span>        <span style=color:#00f>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#00f>raise</span> ValueError(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Unsupported file format: </span><span style=color:#a31515>{</span>file_path<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 验证必需列</span>
+</span></span><span style=display:flex><span>        missing = set(self.required_columns) - set(df.columns)
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> missing:
+</span></span><span style=display:flex><span>            <span style=color:#00f>raise</span> ValueError(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Missing required columns: </span><span style=color:#a31515>{</span>missing<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> df
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>def</span> _clean_data(self, df: pd.DataFrame) -&gt; pd.DataFrame:
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;&#34;&#34;数据清洗&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:green># 去除重复行</span>
+</span></span><span style=display:flex><span>        df = df.drop_duplicates()
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 处理缺失值</span>
+</span></span><span style=display:flex><span>        df = df.dropna(subset=[<span style=color:#a31515>&#39;date&#39;</span>, <span style=color:#a31515>&#39;product&#39;</span>, <span style=color:#a31515>&#39;revenue&#39;</span>])
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 转换日期格式</span>
+</span></span><span style=display:flex><span>        df[<span style=color:#a31515>&#39;date&#39;</span>] = pd.to_datetime(df[<span style=color:#a31515>&#39;date&#39;</span>])
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 去除异常值（revenue &lt; 0 或 &gt; 99.9 分位数）</span>
+</span></span><span style=display:flex><span>        q99 = df[<span style=color:#a31515>&#39;revenue&#39;</span>].quantile(0.999)
+</span></span><span style=display:flex><span>        df = df[(df[<span style=color:#a31515>&#39;revenue&#39;</span>] &gt;= 0) &amp; (df[<span style=color:#a31515>&#39;revenue&#39;</span>] &lt;= q99)]
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 排序</span>
+</span></span><span style=display:flex><span>        df = df.sort_values(<span style=color:#a31515>&#39;date&#39;</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        logger.info(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Cleaned data: </span><span style=color:#a31515>{</span>len(df)<span style=color:#a31515>}</span><span style=color:#a31515> records&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> df
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>def</span> _full_analysis(self, df: pd.DataFrame) -&gt; AnalysisResult:
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;&#34;&#34;完整分析&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 基础统计</span>
+</span></span><span style=display:flex><span>        total_records = len(df)
+</span></span><span style=display:flex><span>        date_range = (df[<span style=color:#a31515>&#39;date&#39;</span>].min().isoformat(), df[<span style=color:#a31515>&#39;date&#39;</span>].max().isoformat())
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 收入统计</span>
+</span></span><span style=display:flex><span>        revenue_stats = {
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;total&#39;</span>: float(df[<span style=color:#a31515>&#39;revenue&#39;</span>].sum()),
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;mean&#39;</span>: float(df[<span style=color:#a31515>&#39;revenue&#39;</span>].mean()),
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;median&#39;</span>: float(df[<span style=color:#a31515>&#39;revenue&#39;</span>].median()),
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;std&#39;</span>: float(df[<span style=color:#a31515>&#39;revenue&#39;</span>].std()),
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;min&#39;</span>: float(df[<span style=color:#a31515>&#39;revenue&#39;</span>].min()),
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;max&#39;</span>: float(df[<span style=color:#a31515>&#39;revenue&#39;</span>].max()),
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 热销产品 TOP 10</span>
+</span></span><span style=display:flex><span>        top_products = df.groupby(<span style=color:#a31515>&#39;product&#39;</span>).agg({
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;revenue&#39;</span>: <span style=color:#a31515>&#39;sum&#39;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#39;quantity&#39;</span>: <span style=color:#a31515>&#39;sum&#39;</span>
+</span></span><span style=display:flex><span>        }).sort_values(<span style=color:#a31515>&#39;revenue&#39;</span>, ascending=<span style=color:#00f>False</span>).head(10)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        top_products_list = [
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;product&#39;</span>: idx,
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;revenue&#39;</span>: float(row[<span style=color:#a31515>&#39;revenue&#39;</span>]),
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;quantity&#39;</span>: int(row[<span style=color:#a31515>&#39;quantity&#39;</span>])
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#00f>for</span> idx, row <span style=color:#00f>in</span> top_products.iterrows()
+</span></span><span style=display:flex><span>        ]
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 月度趋势</span>
+</span></span><span style=display:flex><span>        df[<span style=color:#a31515>&#39;month&#39;</span>] = df[<span style=color:#a31515>&#39;date&#39;</span>].dt.to_period(<span style=color:#a31515>&#39;M&#39;</span>)
+</span></span><span style=display:flex><span>        monthly = df.groupby(<span style=color:#a31515>&#39;month&#39;</span>)[<span style=color:#a31515>&#39;revenue&#39;</span>].sum().reset_index()
+</span></span><span style=display:flex><span>        monthly_trend = [
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;month&#39;</span>: str(row[<span style=color:#a31515>&#39;month&#39;</span>]),
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;revenue&#39;</span>: float(row[<span style=color:#a31515>&#39;revenue&#39;</span>])
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#00f>for</span> _, row <span style=color:#00f>in</span> monthly.iterrows()
+</span></span><span style=display:flex><span>        ]
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:green># 异常检测（使用 3-sigma 规则）</span>
+</span></span><span style=display:flex><span>        mean = df[<span style=color:#a31515>&#39;revenue&#39;</span>].mean()
+</span></span><span style=display:flex><span>        std = df[<span style=color:#a31515>&#39;revenue&#39;</span>].std()
+</span></span><span style=display:flex><span>        anomalies = df[abs(df[<span style=color:#a31515>&#39;revenue&#39;</span>] - mean) &gt; 3 * std]
+</span></span><span style=display:flex><span>        anomalies_list = [
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;date&#39;</span>: row[<span style=color:#a31515>&#39;date&#39;</span>].isoformat(),
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;product&#39;</span>: row[<span style=color:#a31515>&#39;product&#39;</span>],
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;revenue&#39;</span>: float(row[<span style=color:#a31515>&#39;revenue&#39;</span>]),
+</span></span><span style=display:flex><span>                <span style=color:#a31515>&#39;deviation&#39;</span>: float(abs(row[<span style=color:#a31515>&#39;revenue&#39;</span>] - mean) / std)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#00f>for</span> _, row <span style=color:#00f>in</span> anomalies.iterrows()
+</span></span><span style=display:flex><span>        ]
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> AnalysisResult(
+</span></span><span style=display:flex><span>            total_records=total_records,
+</span></span><span style=display:flex><span>            date_range=date_range,
+</span></span><span style=display:flex><span>            revenue_stats=revenue_stats,
+</span></span><span style=display:flex><span>            top_products=top_products_list,
+</span></span><span style=display:flex><span>            monthly_trend=monthly_trend,
+</span></span><span style=display:flex><span>            anomalies=anomalies_list,
+</span></span><span style=display:flex><span>            raw_data_path=<span style=color:#a31515>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        )
+</span></span></code></pre></div><h3 id=a2a-服务端>A2A 服务端<a hidden class=anchor aria-hidden=true href=#a2a-服务端>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:green># src/a2a_server.py</span>
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> fastapi <span style=color:#00f>import</span> FastAPI, HTTPException, Depends, Header
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> fastapi.middleware.cors <span style=color:#00f>import</span> CORSMiddleware
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> pydantic <span style=color:#00f>import</span> BaseModel
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> typing <span style=color:#00f>import</span> Optional, Dict, Any
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> uvicorn
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> os
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> logging
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> agent <span style=color:#00f>import</span> DataProcessor
+</span></span><span style=display:flex><span><span style=color:#00f>from</span> storage <span style=color:#00f>import</span> PostgresStorage
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>logging.basicConfig(level=logging.INFO)
+</span></span><span style=display:flex><span>logger = logging.getLogger(__name__)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>app = FastAPI(title=<span style=color:#a31515>&#34;Python Data Agent&#34;</span>, version=<span style=color:#a31515>&#34;1.0.0&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># CORS</span>
+</span></span><span style=display:flex><span>app.add_middleware(
+</span></span><span style=display:flex><span>    CORSMiddleware,
+</span></span><span style=display:flex><span>    allow_origins=[<span style=color:#a31515>&#34;*&#34;</span>],  <span style=color:green># 生产环境应限制</span>
+</span></span><span style=display:flex><span>    allow_methods=[<span style=color:#a31515>&#34;*&#34;</span>],
+</span></span><span style=display:flex><span>    allow_headers=[<span style=color:#a31515>&#34;*&#34;</span>],
 </span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 全局配置</span>
+</span></span><span style=display:flex><span>API_KEY = os.getenv(<span style=color:#a31515>&#34;A2A_API_KEY&#34;</span>, <span style=color:#a31515>&#34;dev-key&#34;</span>)
+</span></span><span style=display:flex><span>storage = PostgresStorage(os.getenv(<span style=color:#a31515>&#34;DATABASE_URL&#34;</span>))
+</span></span><span style=display:flex><span>processor = DataProcessor(storage)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># A2A Agent Card</span>
+</span></span><span style=display:flex><span>AGENT_CARD = {
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;name&#34;</span>: <span style=color:#a31515>&#34;python-data-processor&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;version&#34;</span>: <span style=color:#a31515>&#34;1.0.0&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;description&#34;</span>: <span style=color:#a31515>&#34;数据处理专家，支持 CSV/Excel 的分析和转换&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;url&#34;</span>: <span style=color:#a31515>&#34;http://localhost:8081/a2a&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;capabilities&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;streaming&#34;</span>: <span style=color:#00f>False</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;pushNotifications&#34;</span>: <span style=color:#00f>False</span>
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;skills&#34;</span>: [
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;id&#34;</span>: <span style=color:#a31515>&#34;csv-analysis&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;name&#34;</span>: <span style=color:#a31515>&#34;CSV 数据分析&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;description&#34;</span>: <span style=color:#a31515>&#34;分析 CSV/Excel 文件，返回统计摘要和可视化建议&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;inputModes&#34;</span>: [<span style=color:#a31515>&#34;text&#34;</span>, <span style=color:#a31515>&#34;file&#34;</span>],
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;outputModes&#34;</span>: [<span style=color:#a31515>&#34;text&#34;</span>, <span style=color:#a31515>&#34;file&#34;</span>]
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;id&#34;</span>: <span style=color:#a31515>&#34;data-cleaning&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;name&#34;</span>: <span style=color:#a31515>&#34;数据清洗&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;description&#34;</span>: <span style=color:#a31515>&#34;清洗数据集中的异常值和缺失值&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;inputModes&#34;</span>: [<span style=color:#a31515>&#34;file&#34;</span>],
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;outputModes&#34;</span>: [<span style=color:#a31515>&#34;file&#34;</span>]
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    ],
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;authentication&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;type&#34;</span>: <span style=color:#a31515>&#34;apiKey&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a31515>&#34;header&#34;</span>: <span style=color:#a31515>&#34;X-API-Key&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 模型定义</span>
+</span></span><span style=display:flex><span><span style=color:#00f>class</span> <span style=color:#2b91af>TaskRequest</span>(BaseModel):
+</span></span><span style=display:flex><span>    skill: str
+</span></span><span style=display:flex><span>    input: Dict[str, Any]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>class</span> <span style=color:#2b91af>TaskResponse</span>(BaseModel):
+</span></span><span style=display:flex><span>    task_id: str
+</span></span><span style=display:flex><span>    status: str
+</span></span><span style=display:flex><span>    result: Optional[Dict[str, Any]] = <span style=color:#00f>None</span>
+</span></span><span style=display:flex><span>    error: Optional[str] = <span style=color:#00f>None</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 认证</span>
+</span></span><span style=display:flex><span><span style=color:#00f>def</span> verify_api_key(x_api_key: str = Header(...)):
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> x_api_key != API_KEY:
+</span></span><span style=display:flex><span>        <span style=color:#00f>raise</span> HTTPException(status_code=401, detail=<span style=color:#a31515>&#34;Invalid API key&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> x_api_key
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 端点</span>
+</span></span><span style=display:flex><span>@app.get(<span style=color:#a31515>&#34;/.well-known/agent.json&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>def</span> get_agent_card():
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> AGENT_CARD
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@app.post(<span style=color:#a31515>&#34;/a2a/tasks&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>def</span> create_task(
+</span></span><span style=display:flex><span>    request: TaskRequest,
+</span></span><span style=display:flex><span>    api_key: str = Depends(verify_api_key)
+</span></span><span style=display:flex><span>):
+</span></span><span style=display:flex><span>    <span style=color:#00f>import</span> uuid
+</span></span><span style=display:flex><span>    task_id = str(uuid.uuid4())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    logger.info(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Creating task </span><span style=color:#a31515>{</span>task_id<span style=color:#a31515>}</span><span style=color:#a31515> for skill </span><span style=color:#a31515>{</span>request.skill<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>try</span>:
+</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> request.skill == <span style=color:#a31515>&#34;csv-analysis&#34;</span>:
+</span></span><span style=display:flex><span>            file_path = request.input.get(<span style=color:#a31515>&#34;file_path&#34;</span>)
+</span></span><span style=display:flex><span>            analysis_type = request.input.get(<span style=color:#a31515>&#34;analysis_type&#34;</span>, <span style=color:#a31515>&#34;full&#34;</span>)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> <span style=color:#00f>not</span> file_path:
+</span></span><span style=display:flex><span>                <span style=color:#00f>raise</span> ValueError(<span style=color:#a31515>&#34;file_path is required&#34;</span>)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            result = processor.process(file_path, analysis_type)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> TaskResponse(
+</span></span><span style=display:flex><span>                task_id=task_id,
+</span></span><span style=display:flex><span>                status=<span style=color:#a31515>&#34;completed&#34;</span>,
+</span></span><span style=display:flex><span>                result={
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;total_records&#34;</span>: result.total_records,
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;date_range&#34;</span>: result.date_range,
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;revenue_stats&#34;</span>: result.revenue_stats,
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;top_products&#34;</span>: result.top_products,
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;monthly_trend&#34;</span>: result.monthly_trend,
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;anomalies&#34;</span>: result.anomalies,
+</span></span><span style=display:flex><span>                    <span style=color:#a31515>&#34;raw_data_path&#34;</span>: result.raw_data_path
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            )
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#00f>elif</span> request.skill == <span style=color:#a31515>&#34;data-cleaning&#34;</span>:
+</span></span><span style=display:flex><span>            file_path = request.input.get(<span style=color:#a31515>&#34;file_path&#34;</span>)
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> <span style=color:#00f>not</span> file_path:
+</span></span><span style=display:flex><span>                <span style=color:#00f>raise</span> ValueError(<span style=color:#a31515>&#34;file_path is required&#34;</span>)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            df = processor._read_data(file_path)
+</span></span><span style=display:flex><span>            cleaned_df = processor._clean_data(df)
+</span></span><span style=display:flex><span>            output_path = <span style=color:#a31515>f</span><span style=color:#a31515>&#34;/tmp/cleaned_</span><span style=color:#a31515>{</span>task_id<span style=color:#a31515>}</span><span style=color:#a31515>.csv&#34;</span>
+</span></span><span style=display:flex><span>            cleaned_df.to_csv(output_path, index=<span style=color:#00f>False</span>)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> TaskResponse(
+</span></span><span style=display:flex><span>                task_id=task_id,
+</span></span><span style=display:flex><span>                status=<span style=color:#a31515>&#34;completed&#34;</span>,
+</span></span><span style=display:flex><span>                result={<span style=color:#a31515>&#34;output_path&#34;</span>: output_path}
+</span></span><span style=display:flex><span>            )
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#00f>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#00f>raise</span> ValueError(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Unknown skill: </span><span style=color:#a31515>{</span>request.skill<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>except</span> Exception <span style=color:#00f>as</span> e:
+</span></span><span style=display:flex><span>        logger.error(<span style=color:#a31515>f</span><span style=color:#a31515>&#34;Task </span><span style=color:#a31515>{</span>task_id<span style=color:#a31515>}</span><span style=color:#a31515> failed: </span><span style=color:#a31515>{</span>e<span style=color:#a31515>}</span><span style=color:#a31515>&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> TaskResponse(
+</span></span><span style=display:flex><span>            task_id=task_id,
+</span></span><span style=display:flex><span>            status=<span style=color:#a31515>&#34;failed&#34;</span>,
+</span></span><span style=display:flex><span>            error=str(e)
+</span></span><span style=display:flex><span>        )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>@app.get(<span style=color:#a31515>&#34;/health&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#00f>async</span> <span style=color:#00f>def</span> health_check():
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> {<span style=color:#a31515>&#34;status&#34;</span>: <span style=color:#a31515>&#34;healthy&#34;</span>, <span style=color:#a31515>&#34;agent&#34;</span>: <span style=color:#a31515>&#34;python-data-processor&#34;</span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#00f>if</span> __name__ == <span style=color:#a31515>&#34;__main__&#34;</span>:
-</span></span><span style=display:flex><span>    data_agent.serve(port=8081)
-</span></span></code></pre></div><p>启动：<code>python python_agent.py --port 8081</code></p><hr><h2 id=go-agentapi-代理>Go Agent：API 代理<a hidden class=anchor aria-hidden=true href=#go-agentapi-代理>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span>goAgent, _ := llmagent.New(llmagent.Config{
-</span></span><span style=display:flex><span>    Name:        <span style=color:#a31515>&#34;api-proxy&#34;</span>,
-</span></span><span style=display:flex><span>    Model:       model,
-</span></span><span style=display:flex><span>    Instruction: <span style=color:#a31515>&#34;你是 API 代理，把请求转发给 Python 数据处理 Agent。&#34;</span>,
-</span></span><span style=display:flex><span>})
+</span></span><span style=display:flex><span>    port = int(os.getenv(<span style=color:#a31515>&#34;PORT&#34;</span>, <span style=color:#a31515>&#34;8081&#34;</span>))
+</span></span><span style=display:flex><span>    uvicorn.run(app, host=<span style=color:#a31515>&#34;0.0.0.0&#34;</span>, port=port)
+</span></span></code></pre></div><h3 id=dockerfile>Dockerfile<a hidden class=anchor aria-hidden=true href=#dockerfile>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-dockerfile data-lang=dockerfile><span style=display:flex><span><span style=color:#00f>FROM</span> <span style=color:#a31515>python:3.11-slim</span><span>
+</span></span></span><span style=display:flex><span><span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>WORKDIR</span> <span style=color:#a31515>/app</span><span>
+</span></span></span><span style=display:flex><span><span>
+</span></span></span><span style=display:flex><span><span style=color:green># 安装系统依赖</span><span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>RUN</span> apt-get update &amp;&amp; apt-get install -y <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    gcc <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    postgresql-client <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>    &amp;&amp; rm -rf /var/lib/apt/lists/*<span>
+</span></span></span><span style=display:flex><span><span>
+</span></span></span><span style=display:flex><span><span style=color:green># 安装 Python 依赖</span><span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>COPY</span> requirements.txt .<span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>RUN</span> pip install --no-cache-dir -r requirements.txt<span>
+</span></span></span><span style=display:flex><span><span>
+</span></span></span><span style=display:flex><span><span style=color:green># 复制代码</span><span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>COPY</span> src/ ./src/<span>
+</span></span></span><span style=display:flex><span><span>
+</span></span></span><span style=display:flex><span><span style=color:green># 非 root 用户</span><span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>RUN</span> useradd -m -u 1000 appuser &amp;&amp; chown -R appuser:appuser /app<span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>USER</span> <span style=color:#a31515>appuser</span><span>
+</span></span></span><span style=display:flex><span><span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>EXPOSE</span> <span style=color:#a31515>8081</span><span>
+</span></span></span><span style=display:flex><span><span>
+</span></span></span><span style=display:flex><span><span style=color:#00f>CMD</span> [<span style=color:#a31515>&#34;python&#34;</span>, <span style=color:#a31515>&#34;-m&#34;</span>, <span style=color:#a31515>&#34;src.a2a_server&#34;</span>]<span>
+</span></span></span></code></pre></div><hr><h2 id=go-agentapi-网关与报告生成>Go Agent：API 网关与报告生成<a hidden class=anchor aria-hidden=true href=#go-agentapi-网关与报告生成>#</a></h2><h3 id=项目结构-1>项目结构<a hidden class=anchor aria-hidden=true href=#项目结构-1>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>go-gateway-agent/
+</span></span><span style=display:flex><span>├── Dockerfile
+</span></span><span style=display:flex><span>├── go.mod
+</span></span><span style=display:flex><span>├── go.sum
+</span></span><span style=display:flex><span>├── main.go
+</span></span><span style=display:flex><span>├── internal/
+</span></span><span style=display:flex><span>│   ├── gateway/
+</span></span><span style=display:flex><span>│   │   └── gateway.go
+</span></span><span style=display:flex><span>│   ├── report/
+</span></span><span style=display:flex><span>│   │   └── generator.go
+</span></span><span style=display:flex><span>│   └── a2a/
+</span></span><span style=display:flex><span>│       └── client.go
+</span></span><span style=display:flex><span>└── config/
+</span></span><span style=display:flex><span>    └── config.yaml
+</span></span></code></pre></div><h3 id=gateway-实现>Gateway 实现<a hidden class=anchor aria-hidden=true href=#gateway-实现>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// internal/gateway/gateway.go</span>
+</span></span><span style=display:flex><span><span style=color:#00f>package</span> gateway
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>pythonClient, _ := a2aclient.New(ctx,
-</span></span><span style=display:flex><span>    a2aclient.WithURL(<span style=color:#a31515>&#34;http://python-agent:8081/a2a&#34;</span>),
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;os&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/a2a/client&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/agent&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/tool&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>proxyTool := &amp;proxyTool{client: pythonClient}
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> GatewayAgent <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    agent        *agent.Agent
+</span></span><span style=display:flex><span>    pythonClient *a2aclient.Client
+</span></span><span style=display:flex><span>    reportClient *a2aclient.Client
+</span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>agent, _ := llmagent.New(llmagent.Config{
-</span></span><span style=display:flex><span>    Tools: []tool.Tool{proxyTool},
-</span></span><span style=display:flex><span>})
-</span></span></code></pre></div><hr><h2 id=完整协作流程>完整协作流程<a hidden class=anchor aria-hidden=true href=#完整协作流程>#</a></h2><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// 用户请求：处理这组数据</span>
-</span></span><span style=display:flex><span>response, _ := agent.Run(ctx, <span style=color:#a31515>&#34;处理这组数据：1,2,3,4,5&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> NewGatewayAgent(ctx context.Context) (*GatewayAgent, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建 Python Data Agent 客户端</span>
+</span></span><span style=display:flex><span>    pythonClient, err := a2aclient.New(ctx,
+</span></span><span style=display:flex><span>        a2aclient.WithURL(<span style=color:#a31515>&#34;http://python-agent:8081/a2a&#34;</span>),
+</span></span><span style=display:flex><span>        a2aclient.WithAPIKey(os.Getenv(<span style=color:#a31515>&#34;PYTHON_AGENT_API_KEY&#34;</span>)),
+</span></span><span style=display:flex><span>        a2aclient.WithTimeout(60*time.Second),
+</span></span><span style=display:flex><span>        a2aclient.WithRetry(3, time.Second),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to create python client: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建本地 Report Agent 客户端（内部调用）</span>
+</span></span><span style=display:flex><span>    reportClient, err := a2aclient.New(ctx,
+</span></span><span style=display:flex><span>        a2aclient.WithURL(<span style=color:#a31515>&#34;http://localhost:8082/a2a&#34;</span>),
+</span></span><span style=display:flex><span>        a2aclient.WithTimeout(30*time.Second),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to create report client: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 创建 Gateway Agent</span>
+</span></span><span style=display:flex><span>    a, err := agent.New(agent.Config{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#a31515>&#34;gateway-agent&#34;</span>,
+</span></span><span style=display:flex><span>        Model:       model,
+</span></span><span style=display:flex><span>        Instruction: <span style=color:#a31515>`你是一个智能数据分析平台的网关。你的职责：1. 理解用户的分析需求 2. 调用 python-data-processor 进行数据处理 3. 调用 report-generator 生成报告 4. 汇总结果返回给用户`</span>,
+</span></span><span style=display:flex><span>        Tools: []tool.Tool{
+</span></span><span style=display:flex><span>            NewProcessDataTool(pythonClient),
+</span></span><span style=display:flex><span>            NewGenerateReportTool(reportClient),
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;GatewayAgent{
+</span></span><span style=display:flex><span>        agent:        a,
+</span></span><span style=display:flex><span>        pythonClient: pythonClient,
+</span></span><span style=display:flex><span>        reportClient: reportClient,
+</span></span><span style=display:flex><span>    }, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// Go Agent 接收请求，通过 A2A 调用 Python Agent</span>
-</span></span><span style=display:flex><span><span style=color:green>// Python Agent 处理数据，返回结果</span>
-</span></span><span style=display:flex><span><span style=color:green>// Go Agent 汇总结果，返回给用户</span>
-</span></span></code></pre></div><hr><h2 id=小结>小结<a hidden class=anchor aria-hidden=true href=#小结>#</a></h2><p>模块 8 完成。学习了：</p><ul><li>A2A 协议介绍</li><li>Exposing 暴露 Go Agent</li><li>Consuming 消费外部 Agent</li><li>跨语言协作实战</li></ul><p>接下来进入模块 9：进阶主题——Grounding、Artifacts、Skills、Callbacks。</p><p>← <a href=/tutorials/go-adk/08-a2a/>模块 8：A2A 协议</a>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (g *GatewayAgent) HandleRequest(ctx context.Context, userInput <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> g.agent.Run(ctx, userInput)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=report-generator>Report Generator<a hidden class=anchor aria-hidden=true href=#report-generator>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// internal/report/generator.go</span>
+</span></span><span style=display:flex><span><span style=color:#00f>package</span> report
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;os&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;github.com/jung-kurt/gofpdf&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> ReportGenerator <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    templateDir <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    outputDir   <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> NewReportGenerator(templateDir, outputDir <span style=color:#2b91af>string</span>) *ReportGenerator {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;ReportGenerator{
+</span></span><span style=display:flex><span>        templateDir: templateDir,
+</span></span><span style=display:flex><span>        outputDir:   outputDir,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (g *ReportGenerator) GeneratePDF(ctx context.Context, data ReportData) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    pdf := gofpdf.New(<span style=color:#a31515>&#34;P&#34;</span>, <span style=color:#a31515>&#34;mm&#34;</span>, <span style=color:#a31515>&#34;A4&#34;</span>, <span style=color:#a31515>&#34;&#34;</span>)
+</span></span><span style=display:flex><span>    pdf.AddPage()
+</span></span><span style=display:flex><span>    pdf.SetFont(<span style=color:#a31515>&#34;Arial&#34;</span>, <span style=color:#a31515>&#34;B&#34;</span>, 16)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 标题</span>
+</span></span><span style=display:flex><span>    pdf.Cell(40, 10, fmt.Sprintf(<span style=color:#a31515>&#34;数据分析报告 - %s&#34;</span>, data.Title))
+</span></span><span style=display:flex><span>    pdf.Ln(20)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 概览</span>
+</span></span><span style=display:flex><span>    pdf.SetFont(<span style=color:#a31515>&#34;Arial&#34;</span>, <span style=color:#a31515>&#34;B&#34;</span>, 12)
+</span></span><span style=display:flex><span>    pdf.Cell(40, 10, <span style=color:#a31515>&#34;数据概览&#34;</span>)
+</span></span><span style=display:flex><span>    pdf.Ln(10)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    pdf.SetFont(<span style=color:#a31515>&#34;Arial&#34;</span>, <span style=color:#a31515>&#34;&#34;</span>, 10)
+</span></span><span style=display:flex><span>    pdf.Cell(40, 10, fmt.Sprintf(<span style=color:#a31515>&#34;总记录数: %d&#34;</span>, data.TotalRecords))
+</span></span><span style=display:flex><span>    pdf.Ln(5)
+</span></span><span style=display:flex><span>    pdf.Cell(40, 10, fmt.Sprintf(<span style=color:#a31515>&#34;日期范围: %s 至 %s&#34;</span>, data.DateRange[0], data.DateRange[1]))
+</span></span><span style=display:flex><span>    pdf.Ln(5)
+</span></span><span style=display:flex><span>    pdf.Cell(40, 10, fmt.Sprintf(<span style=color:#a31515>&#34;总收入: %.2f&#34;</span>, data.RevenueStats[<span style=color:#a31515>&#34;total&#34;</span>]))
+</span></span><span style=display:flex><span>    pdf.Ln(10)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 热销产品</span>
+</span></span><span style=display:flex><span>    pdf.SetFont(<span style=color:#a31515>&#34;Arial&#34;</span>, <span style=color:#a31515>&#34;B&#34;</span>, 12)
+</span></span><span style=display:flex><span>    pdf.Cell(40, 10, <span style=color:#a31515>&#34;热销产品 TOP 10&#34;</span>)
+</span></span><span style=display:flex><span>    pdf.Ln(10)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    pdf.SetFont(<span style=color:#a31515>&#34;Arial&#34;</span>, <span style=color:#a31515>&#34;&#34;</span>, 10)
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> i, product := <span style=color:#00f>range</span> data.TopProducts {
+</span></span><span style=display:flex><span>        pdf.Cell(40, 10, fmt.Sprintf(<span style=color:#a31515>&#34;%d. %s - 收入: %.2f&#34;</span>, 
+</span></span><span style=display:flex><span>            i+1, product.Product, product.Revenue))
+</span></span><span style=display:flex><span>        pdf.Ln(5)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 保存</span>
+</span></span><span style=display:flex><span>    filename := fmt.Sprintf(<span style=color:#a31515>&#34;report_%d.pdf&#34;</span>, time.Now().Unix())
+</span></span><span style=display:flex><span>    filepath := fmt.Sprintf(<span style=color:#a31515>&#34;%s/%s&#34;</span>, g.outputDir, filename)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := pdf.OutputFileAndClose(filepath); err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to generate PDF: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> filepath, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> ReportData <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    Title         <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    TotalRecords  <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span>    DateRange     [2]<span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    RevenueStats  <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#2b91af>float64</span>
+</span></span><span style=display:flex><span>    TopProducts   []ProductStat
+</span></span><span style=display:flex><span>    MonthlyTrend  []MonthlyData
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> ProductStat <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    Product  <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Revenue  <span style=color:#2b91af>float64</span>
+</span></span><span style=display:flex><span>    Quantity <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> MonthlyData <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    Month   <span style=color:#2b91af>string</span>
+</span></span><span style=display:flex><span>    Revenue <span style=color:#2b91af>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=a2a-工具封装>A2A 工具封装<a hidden class=anchor aria-hidden=true href=#a2a-工具封装>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// internal/gateway/tools.go</span>
+</span></span><span style=display:flex><span><span style=color:#00f>package</span> gateway
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/a2a/client&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;google.golang.org/adk/tool&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// ProcessDataTool 调用 Python Agent 处理数据</span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> ProcessDataTool <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    client *a2aclient.Client
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> NewProcessDataTool(client *a2aclient.Client) *ProcessDataTool {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;ProcessDataTool{client: client}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ProcessDataTool) Name() <span style=color:#2b91af>string</span>        { <span style=color:#00f>return</span> <span style=color:#a31515>&#34;process_data&#34;</span> }
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ProcessDataTool) Description() <span style=color:#2b91af>string</span> { <span style=color:#00f>return</span> <span style=color:#a31515>&#34;调用 Python Agent 处理数据文件&#34;</span> }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ProcessDataTool) Schema() tool.Schema {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> tool.Schema{
+</span></span><span style=display:flex><span>        Type: <span style=color:#a31515>&#34;object&#34;</span>,
+</span></span><span style=display:flex><span>        Properties: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]tool.Property{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;file_path&#34;</span>: {
+</span></span><span style=display:flex><span>                Type:        <span style=color:#a31515>&#34;string&#34;</span>,
+</span></span><span style=display:flex><span>                Description: <span style=color:#a31515>&#34;数据文件路径&#34;</span>,
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;analysis_type&#34;</span>: {
+</span></span><span style=display:flex><span>                Type:        <span style=color:#a31515>&#34;string&#34;</span>,
+</span></span><span style=display:flex><span>                Description: <span style=color:#a31515>&#34;分析类型: full 或 summary&#34;</span>,
+</span></span><span style=display:flex><span>                Enum:        []<span style=color:#2b91af>string</span>{<span style=color:#a31515>&#34;full&#34;</span>, <span style=color:#a31515>&#34;summary&#34;</span>},
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        Required: []<span style=color:#2b91af>string</span>{<span style=color:#a31515>&#34;file_path&#34;</span>},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *ProcessDataTool) Call(ctx context.Context, input <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> params <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>        FilePath     <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;file_path&#34;`</span>
+</span></span><span style=display:flex><span>        AnalysisType <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;analysis_type&#34;`</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := json.Unmarshal([]byte(input), &amp;params); err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> params.AnalysisType == <span style=color:#a31515>&#34;&#34;</span> {
+</span></span><span style=display:flex><span>        params.AnalysisType = <span style=color:#a31515>&#34;full&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 调用 Python Agent</span>
+</span></span><span style=display:flex><span>    task, err := t.client.SendTask(ctx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;skill&#34;</span>:         <span style=color:#a31515>&#34;csv-analysis&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;file_path&#34;</span>:     params.FilePath,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;analysis_type&#34;</span>: params.AnalysisType,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to send task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 等待结果（简化版，实际应轮询）</span>
+</span></span><span style=display:flex><span>    result, err := waitForTask(ctx, t.client, task.ID)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> result, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green>// GenerateReportTool 调用 Report Agent 生成报告</span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> GenerateReportTool <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    client *a2aclient.Client
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> NewGenerateReportTool(client *a2aclient.Client) *GenerateReportTool {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;GenerateReportTool{client: client}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *GenerateReportTool) Name() <span style=color:#2b91af>string</span>        { <span style=color:#00f>return</span> <span style=color:#a31515>&#34;generate_report&#34;</span> }
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *GenerateReportTool) Description() <span style=color:#2b91af>string</span> { <span style=color:#00f>return</span> <span style=color:#a31515>&#34;生成 PDF 报告&#34;</span> }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *GenerateReportTool) Schema() tool.Schema {
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> tool.Schema{
+</span></span><span style=display:flex><span>        Type: <span style=color:#a31515>&#34;object&#34;</span>,
+</span></span><span style=display:flex><span>        Properties: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]tool.Property{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;data_path&#34;</span>: {
+</span></span><span style=display:flex><span>                Type:        <span style=color:#a31515>&#34;string&#34;</span>,
+</span></span><span style=display:flex><span>                Description: <span style=color:#a31515>&#34;数据文件路径&#34;</span>,
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;title&#34;</span>: {
+</span></span><span style=display:flex><span>                Type:        <span style=color:#a31515>&#34;string&#34;</span>,
+</span></span><span style=display:flex><span>                Description: <span style=color:#a31515>&#34;报告标题&#34;</span>,
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        Required: []<span style=color:#2b91af>string</span>{<span style=color:#a31515>&#34;data_path&#34;</span>, <span style=color:#a31515>&#34;title&#34;</span>},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> (t *GenerateReportTool) Call(ctx context.Context, input <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> params <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>        DataPath <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;data_path&#34;`</span>
+</span></span><span style=display:flex><span>        Title    <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;title&#34;`</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := json.Unmarshal([]byte(input), &amp;params); err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    task, err := t.client.SendTask(ctx, &amp;a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;skill&#34;</span>:      <span style=color:#a31515>&#34;generate-pdf&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;data_path&#34;</span>:  params.DataPath,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;title&#34;</span>:      params.Title,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;failed to send task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    result, err := waitForTask(ctx, t.client, task.ID)
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> result, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> waitForTask(ctx context.Context, client *a2aclient.Client, taskID <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
+</span></span><span style=display:flex><span>    ticker := time.NewTicker(time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> ticker.Stop()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    timeout := time.After(5 * time.Minute)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ticker.C:
+</span></span><span style=display:flex><span>            task, err := client.GetTask(ctx, taskID)
+</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#00f>switch</span> task.Status {
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusCompleted:
+</span></span><span style=display:flex><span>                result, _ := json.Marshal(task.Output)
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> string(result), <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusFailed:
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;task failed: %v&#34;</span>, task.Output)
+</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> a2a.TaskStatusCancelled:
+</span></span><span style=display:flex><span>                <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;task cancelled&#34;</span>)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-timeout:
+</span></span><span style=display:flex><span>            client.CancelTask(ctx, taskID)
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, fmt.Errorf(<span style=color:#a31515>&#34;task timeout&#34;</span>)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ctx.Done():
+</span></span><span style=display:flex><span>            client.CancelTask(ctx, taskID)
+</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, ctx.Err()
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=部署与运行>部署与运行<a hidden class=anchor aria-hidden=true href=#部署与运行>#</a></h2><h3 id=docker-compose-编排>Docker Compose 编排<a hidden class=anchor aria-hidden=true href=#docker-compose-编排>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:green># docker-compose.yml</span>
+</span></span><span style=display:flex><span>version: <span style=color:#a31515>&#39;3.8&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>services:
+</span></span><span style=display:flex><span>  python-agent:
+</span></span><span style=display:flex><span>    build: ./python-data-agent
+</span></span><span style=display:flex><span>    ports:
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#34;8081:8081&#34;</span>
+</span></span><span style=display:flex><span>    environment:
+</span></span><span style=display:flex><span>      - PORT=8081
+</span></span><span style=display:flex><span>      - A2A_API_KEY=${PYTHON_AGENT_API_KEY}
+</span></span><span style=display:flex><span>      - DATABASE_URL=postgresql://postgres:password@postgres:5432/agentdb
+</span></span><span style=display:flex><span>      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+</span></span><span style=display:flex><span>      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+</span></span><span style=display:flex><span>    depends_on:
+</span></span><span style=display:flex><span>      - postgres
+</span></span><span style=display:flex><span>    volumes:
+</span></span><span style=display:flex><span>      - ./data:/data
+</span></span><span style=display:flex><span>    networks:
+</span></span><span style=display:flex><span>      - agent-network
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  go-gateway:
+</span></span><span style=display:flex><span>    build: ./go-gateway-agent
+</span></span><span style=display:flex><span>    ports:
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#34;8080:8080&#34;</span>
+</span></span><span style=display:flex><span>    environment:
+</span></span><span style=display:flex><span>      - PORT=8080
+</span></span><span style=display:flex><span>      - PYTHON_AGENT_API_KEY=${PYTHON_AGENT_API_KEY}
+</span></span><span style=display:flex><span>      - PYTHON_AGENT_URL=http://python-agent:8081/a2a
+</span></span><span style=display:flex><span>      - DATABASE_URL=postgresql://postgres:password@postgres:5432/agentdb
+</span></span><span style=display:flex><span>    depends_on:
+</span></span><span style=display:flex><span>      - python-agent
+</span></span><span style=display:flex><span>      - postgres
+</span></span><span style=display:flex><span>    networks:
+</span></span><span style=display:flex><span>      - agent-network
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  postgres:
+</span></span><span style=display:flex><span>    image: postgres:15-alpine
+</span></span><span style=display:flex><span>    environment:
+</span></span><span style=display:flex><span>      - POSTGRES_USER=postgres
+</span></span><span style=display:flex><span>      - POSTGRES_PASSWORD=password
+</span></span><span style=display:flex><span>      - POSTGRES_DB=agentdb
+</span></span><span style=display:flex><span>    volumes:
+</span></span><span style=display:flex><span>      - postgres-data:/var/lib/postgresql/data
+</span></span><span style=display:flex><span>    networks:
+</span></span><span style=display:flex><span>      - agent-network
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  minio:
+</span></span><span style=display:flex><span>    image: minio/minio
+</span></span><span style=display:flex><span>    command: server /data --console-address &#34;:9001&#34;
+</span></span><span style=display:flex><span>    ports:
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#34;9000:9000&#34;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#a31515>&#34;9001:9001&#34;</span>
+</span></span><span style=display:flex><span>    environment:
+</span></span><span style=display:flex><span>      - MINIO_ROOT_USER=minioadmin
+</span></span><span style=display:flex><span>      - MINIO_ROOT_PASSWORD=minioadmin
+</span></span><span style=display:flex><span>    volumes:
+</span></span><span style=display:flex><span>      - minio-data:/data
+</span></span><span style=display:flex><span>    networks:
+</span></span><span style=display:flex><span>      - agent-network
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>volumes:
+</span></span><span style=display:flex><span>  postgres-data:
+</span></span><span style=display:flex><span>  minio-data:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>networks:
+</span></span><span style=display:flex><span>  agent-network:
+</span></span><span style=display:flex><span>    driver: bridge
+</span></span></code></pre></div><h3 id=运行流程>运行流程<a hidden class=anchor aria-hidden=true href=#运行流程>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:green># 1. 设置环境变量</span>
+</span></span><span style=display:flex><span>export PYTHON_AGENT_API_KEY=<span style=color:#a31515>&#34;your-secret-key&#34;</span>
+</span></span><span style=display:flex><span>export AWS_ACCESS_KEY_ID=<span style=color:#a31515>&#34;your-aws-key&#34;</span>
+</span></span><span style=display:flex><span>export AWS_SECRET_ACCESS_KEY=<span style=color:#a31515>&#34;your-aws-secret&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 2. 启动所有服务</span>
+</span></span><span style=display:flex><span>docker-compose up -d
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 3. 验证服务状态</span>
+</span></span><span style=display:flex><span>docker-compose ps
+</span></span><span style=display:flex><span>curl http://localhost:8081/health
+</span></span><span style=display:flex><span>curl http://localhost:8080/health
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green># 4. 测试完整流程</span>
+</span></span><span style=display:flex><span>curl -X POST http://localhost:8080/a2a/tasks <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>  -H <span style=color:#a31515>&#34;Content-Type: application/json&#34;</span> <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>  -H <span style=color:#a31515>&#34;X-API-Key: your-secret-key&#34;</span> <span style=color:#a31515>\
+</span></span></span><span style=display:flex><span>  -d <span style=color:#a31515>&#39;{
+</span></span></span><span style=display:flex><span><span style=color:#a31515>    &#34;skill&#34;: &#34;analyze-and-report&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#a31515>    &#34;input&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#a31515>      &#34;file_path&#34;: &#34;/data/sales_data.csv&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#a31515>      &#34;title&#34;: &#34;Q3 销售数据分析报告&#34;
+</span></span></span><span style=display:flex><span><span style=color:#a31515>    }
+</span></span></span><span style=display:flex><span><span style=color:#a31515>  }&#39;</span>
+</span></span></code></pre></div><hr><h2 id=生产环境考量>生产环境考量<a hidden class=anchor aria-hidden=true href=#生产环境考量>#</a></h2><h3 id=跨语言类型映射>跨语言类型映射<a hidden class=anchor aria-hidden=true href=#跨语言类型映射>#</a></h3><table><thead><tr><th>Python 类型</th><th>Go 类型</th><th>JSON 表示</th><th>注意事项</th></tr></thead><tbody><tr><td><code>int</code></td><td><code>int64</code></td><td>number</td><td>Python int 无上限，Go 有上限</td></tr><tr><td><code>float</code></td><td><code>float64</code></td><td>number</td><td>浮点精度差异</td></tr><tr><td><code>str</code></td><td><code>string</code></td><td>string</td><td>UTF-8 编码</td></tr><tr><td><code>dict</code></td><td><code>map[string]interface{}</code></td><td>object</td><td>键必须是字符串</td></tr><tr><td><code>list</code></td><td><code>[]interface{}</code></td><td>array</td><td>类型一致性检查</td></tr><tr><td><code>datetime</code></td><td><code>time.Time</code></td><td>string (RFC3339)</td><td>时区处理</td></tr><tr><td><code>None</code></td><td><code>nil</code></td><td>null</td><td>空值判断</td></tr><tr><td><code>pandas.DataFrame</code></td><td>自定义结构</td><td>object/array</td><td>需序列化</td></tr></tbody></table><h3 id=错误处理策略>错误处理策略<a hidden class=anchor aria-hidden=true href=#错误处理策略>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// Go 端：统一错误格式</span>
+</span></span><span style=display:flex><span><span style=color:#00f>type</span> ErrorResponse <span style=color:#00f>struct</span> {
+</span></span><span style=display:flex><span>    Code    <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;code&#34;`</span>
+</span></span><span style=display:flex><span>    Message <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;message&#34;`</span>
+</span></span><span style=display:flex><span>    Details <span style=color:#2b91af>string</span> <span style=color:#a31515>`json:&#34;details,omitempty&#34;`</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>func</span> handleA2AError(err <span style=color:#2b91af>error</span>) *ErrorResponse {
+</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> a2aErr *a2a.Error
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> errors.As(err, &amp;a2aErr) {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> &amp;ErrorResponse{
+</span></span><span style=display:flex><span>            Code:    a2aErr.Code,
+</span></span><span style=display:flex><span>            Message: a2aErr.Message,
+</span></span><span style=display:flex><span>            Details: a2aErr.Details,
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:green>// 网络错误</span>
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> errors.Is(err, context.DeadlineExceeded) {
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> &amp;ErrorResponse{
+</span></span><span style=display:flex><span>            Code:    <span style=color:#a31515>&#34;TIMEOUT&#34;</span>,
+</span></span><span style=display:flex><span>            Message: <span style=color:#a31515>&#34;请求超时，请稍后重试&#34;</span>,
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;ErrorResponse{
+</span></span><span style=display:flex><span>        Code:    <span style=color:#a31515>&#34;INTERNAL&#34;</span>,
+</span></span><span style=display:flex><span>        Message: <span style=color:#a31515>&#34;内部错误&#34;</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:green># Python 端：统一错误格式</span>
+</span></span><span style=display:flex><span><span style=color:#00f>class</span> <span style=color:#2b91af>AgentError</span>(Exception):
+</span></span><span style=display:flex><span>    <span style=color:#00f>def</span> __init__(self, code: str, message: str, details: str = <span style=color:#00f>None</span>):
+</span></span><span style=display:flex><span>        self.code = code
+</span></span><span style=display:flex><span>        self.message = message
+</span></span><span style=display:flex><span>        self.details = details
+</span></span><span style=display:flex><span>        super().__init__(message)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#00f>def</span> handle_error(e: Exception) -&gt; dict:
+</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> isinstance(e, AgentError):
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> {
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;code&#34;</span>: e.code,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;message&#34;</span>: e.message,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;details&#34;</span>: e.details
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    <span style=color:#00f>elif</span> isinstance(e, pd.errors.EmptyDataError):
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> {
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;code&#34;</span>: <span style=color:#a31515>&#34;EMPTY_DATA&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;message&#34;</span>: <span style=color:#a31515>&#34;数据文件为空&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    <span style=color:#00f>elif</span> isinstance(e, ValueError):
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> {
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;code&#34;</span>: <span style=color:#a31515>&#34;INVALID_INPUT&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;message&#34;</span>: str(e)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    <span style=color:#00f>else</span>:
+</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> {
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;code&#34;</span>: <span style=color:#a31515>&#34;INTERNAL&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;message&#34;</span>: <span style=color:#a31515>&#34;内部错误&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;details&#34;</span>: str(e)
+</span></span><span style=display:flex><span>        }
+</span></span></code></pre></div><h3 id=性能优化>性能优化<a hidden class=anchor aria-hidden=true href=#性能优化>#</a></h3><ol><li><strong>连接池复用</strong>：Go Client 保持长连接，避免频繁 TCP 握手</li><li><strong>批量处理</strong>：Python Agent 支持批量数据分析，减少跨语言调用次数</li><li><strong>异步流水线</strong>：Gateway 使用 goroutine 并行调用多个 Agent</li><li><strong>结果缓存</strong>：常用分析结果缓存到 Redis，避免重复计算</li></ol><hr><h2 id=小结>小结<a hidden class=anchor aria-hidden=true href=#小结>#</a></h2><p>模块 8 完成。学习了：</p><ul><li>A2A 协议的深层设计理念</li><li>Exposing 暴露 Go Agent 的完整实践</li><li>Consuming 消费外部 Agent 的高级模式</li><li>跨语言协作的实战案例</li></ul><p>接下来进入模块 9：进阶主题——Grounding、Artifacts、Skills、Callbacks。</p><p>← <a href=/tutorials/go-adk/08-a2a/>模块 8：A2A 协议</a>
 | <a href=/tutorials/go-adk/09-advanced/>模块 9：进阶主题 →</a>
 →</p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/go/>Go</a></li><li><a href=https://rexai.top/tags/adk/>ADK</a></li><li><a href=https://rexai.top/tags/python/>Python</a></li><li><a href=https://rexai.top/tags/a2a/>A2A</a></li><li><a href=https://rexai.top/tags/%E8%B7%A8%E8%AF%AD%E8%A8%80/>跨语言</a></li><li><a href=https://rexai.top/tags/%E6%95%99%E7%A8%8B/>教程</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
   import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
