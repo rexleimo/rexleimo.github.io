@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/en/tutorials/go-adk/08-a2a/go-adk-a2a-intro/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -24,15 +24,15 @@
     update: false,
   });
 </script>&nbsp;|&nbsp;Translations:<ul class=i18n_list><li><a href=https://rexai.top/tutorials/go-adk/08-a2a/go-adk-a2a-intro/>Zh-Cn</a></li></ul></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#a2a-protocol-universal-language-for-cross-agent-communication aria-label="A2A Protocol: Universal Language for Cross-Agent Communication">A2A Protocol: Universal Language for Cross-Agent Communication</a></li></ul></div></details></div><div class=post-content><h1 id=a2a-protocol-universal-language-for-cross-agent-communication>A2A Protocol: Universal Language for Cross-Agent Communication<a hidden class=anchor aria-hidden=true href=#a2a-protocol-universal-language-for-cross-agent-communication>#</a></h1><p>Multiple Agents need to communicate, A2A (Agent to Agent) is their &ldquo;universal language&rdquo;.</p><p>← <a href=/en/tutorials/go-adk/07-deployment/go-adk-deploy-cloud/>Cloud Deploy</a>
-| <a href=/en/tutorials/go-adk/08-a2a/go-adk-a2a-expose/>Exposing →</a></p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/en/tags/go/>Go</a></li><li><a href=https://rexai.top/en/tags/adk/>ADK</a></li><li><a href=https://rexai.top/en/tags/a2a/>A2A</a></li><li><a href=https://rexai.top/en/tags/protocol/>Protocol</a></li><li><a href=https://rexai.top/en/tags/tutorial/>Tutorial</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+| <a href=/en/tutorials/go-adk/08-a2a/go-adk-a2a-expose/>Exposing →</a></p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/en/tags/go/>Go</a></li><li><a href=https://rexai.top/en/tags/adk/>ADK</a></li><li><a href=https://rexai.top/en/tags/a2a/>A2A</a></li><li><a href=https://rexai.top/en/tags/protocol/>Protocol</a></li><li><a href=https://rexai.top/en/tags/tutorial/>Tutorial</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'en-US',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

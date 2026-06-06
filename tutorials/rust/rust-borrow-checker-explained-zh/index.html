@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tutorials/rust/rust-borrow-checker-explained-zh/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -56,15 +56,15 @@
 </span></span></code></pre></div><p>这个神秘的 <code>'a</code> (我们叫它生命周期参数)，根本不是什么黑魔法。它只是你在和保镖沟通：“嘿，哥们儿！看清楚了，这个函数返回的通行证，它的有效期，跟传进来的<code>a</code>和<code>b</code>两张通行证里，那个有效期最短的保持一致就行。放心，绝对安全！”</p><p>你等于和保镖签下了一份时间的契约，向他保证，返回的引用绝对不会比它所引用的数据活得更久。如果你想深入了解生命周期可能遇到的坑，可以阅读我们的另一篇文章：<a href=../rust-lifetime-mistakes/>《Rust生命周期常见错误精讲》</a></p><h2 id=终章为你的最强保镖献上敬意>终章：为你的最强保镖，献上敬意<a hidden class=anchor aria-hidden=true href=#终章为你的最强保镖献上敬意>#</a></h2><p>现在，你还觉得借用检查器是个“暴君”吗？</p><p>不，他是一位沉默的守护神。</p><p>他用编译期的“咆哮”，换来了你运行期的“高枕无忧”。没有了垃圾回收（GC）时不时的“暂停服务”，没有了多线程下心惊胆战的数据竞争，更没有了那些能让整个程序崩溃的悬垂指针。</p><p>他把所有的安全隐患，都在代码诞生的那一刻，扼杀在了摇篮里。他让你写的每一行Rust代码，都充满了力量感和确定性。</p><p>这位保镖，从不向你索取运行时的任何性能开销，却为你提供了金融级别的安全保障。他所做的，只是要求你把“规矩”想清楚。而一旦你理解了他的良苦用心，你就会发现，这根本不是束缚，这是通往高性能和高安全世界的、最彻底的自由。</p><h2 id=推荐阅读>推荐阅读<a hidden class=anchor aria-hidden=true href=#推荐阅读>#</a></h2><ul><li><strong><a href=https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html target=_blank rel="noopener noreferrer" class=apple-ext aria-label="官方《Rust程序设计语言》文档：理解所有权 (外部链接)">官方《Rust程序设计语言》文档：理解所有权 <span class=apple-ext__badge aria-hidden=true>外部链接</span></a>
 </strong>：直接来自Rust官方的权威指南，是理解借用检查器背后所有权概念的基石。</li><li><strong><a href=https://doc.rust-lang.org/rust-by-example/scope/borrow.html target=_blank rel="noopener noreferrer" class=apple-ext aria-label="Rust By Example：借用 (外部链接)">Rust By Example：借用 <span class=apple-ext__badge aria-hidden=true>外部链接</span></a>
 </strong>：通过具体的代码示例，一步步向你展示可变借用和不可变借用的规则。</li><li><strong><a href=https://nikomatsakis.github.io/2022/08/03/my-vision-for-a-borrow-checker-that-just-works.html target=_blank rel="noopener noreferrer" class=apple-ext aria-label="Niko Matsakis的深度解析（英文） (外部链接)">Niko Matsakis的深度解析（英文） <span class=apple-ext__badge aria-hidden=true>外部链接</span></a>
-</strong>：对于希望深入了解借用检查器工作原理和未来发展的读者，Rust核心开发者Niko的文章是不可多得的宝贵资料。</li></ul><hr><p><strong>觉得这篇文章让你对Rust的理解更深了一层？别忘了关注梦兽编程微信公众号，解锁更多让你直呼“原来如此”的黑科技！</strong></p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>编程语言</a></li><li><a href=https://rexai.top/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/>系统编程</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+</strong>：对于希望深入了解借用检查器工作原理和未来发展的读者，Rust核心开发者Niko的文章是不可多得的宝贵资料。</li></ul><hr><p><strong>觉得这篇文章让你对Rust的理解更深了一层？别忘了关注梦兽编程微信公众号，解锁更多让你直呼“原来如此”的黑科技！</strong></p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/>编程语言</a></li><li><a href=https://rexai.top/tags/%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/>系统编程</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

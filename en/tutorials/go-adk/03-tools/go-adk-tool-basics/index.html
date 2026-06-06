@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/en/tutorials/go-adk/03-tools/go-adk-tool-basics/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -149,15 +149,15 @@
 A: Check if <code>Description()</code> clearly describes when this Tool should be called. Model decides whether to call based on Description.</p><p><strong>Q: Parameter parsing failed</strong>
 A: Check if <code>InputSchema()</code> returned JSON Schema matches actual input parameters. Wrong Schema causes ADK Go parameter validation failure.</p><p><strong>Q: Tool doesn&rsquo;t return for a long time</strong>
 A: Implement timeout logic, add deadline to Tool, prevent slow operations from blocking Agent.</p><hr><h2 id=next-steps>Next Steps<a hidden class=anchor aria-hidden=true href=#next-steps>#</a></h2><p>Tool written. Next, learn about Tool performance optimization—timeout control, concurrency handling—so Agent is more robust.</p><p>← <a href=/en/tutorials/go-adk/02-quickstart/go-adk-api-key/>API Key & Model Selection</a>
-| <a href=/en/tutorials/go-adk/03-tools/go-adk-tool-performance/>Function Tool Performance →</a></p><hr><blockquote><p>Follow &ldquo;Mengshou Programming&rdquo; on WeChat for more Go ADK hands-on tutorials, weekly updates on Go / AI programming 实战干货.</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/en/tags/go/>Go</a></li><li><a href=https://rexai.top/en/tags/adk/>ADK</a></li><li><a href=https://rexai.top/en/tags/tool/>Tool</a></li><li><a href=https://rexai.top/en/tags/function-tool/>Function Tool</a></li><li><a href=https://rexai.top/en/tags/tutorial/>Tutorial</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+| <a href=/en/tutorials/go-adk/03-tools/go-adk-tool-performance/>Function Tool Performance →</a></p><hr><blockquote><p>Follow &ldquo;Mengshou Programming&rdquo; on WeChat for more Go ADK hands-on tutorials, weekly updates on Go / AI programming 实战干货.</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/en/tags/go/>Go</a></li><li><a href=https://rexai.top/en/tags/adk/>ADK</a></li><li><a href=https://rexai.top/en/tags/tool/>Tool</a></li><li><a href=https://rexai.top/en/tags/function-tool/>Function Tool</a></li><li><a href=https://rexai.top/en/tags/tutorial/>Tutorial</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'en-US',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

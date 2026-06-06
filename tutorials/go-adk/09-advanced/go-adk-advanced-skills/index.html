@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tutorials/go-adk/09-advanced/go-adk-advanced-skills/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -307,15 +307,15 @@
 </span></span><span style=display:flex><span>    <span style=color:#00f>return</span> result, err
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><h2 id=常见陷阱与最佳实践>常见陷阱与最佳实践<a hidden class=anchor aria-hidden=true href=#常见陷阱与最佳实践>#</a></h2><h3 id=陷阱-1skill-过度耦合>陷阱 1：Skill 过度耦合<a hidden class=anchor aria-hidden=true href=#陷阱-1skill-过度耦合>#</a></h3><p>将太多逻辑塞进一个 Skill 会导致维护困难和复用性降低。遵循"单一职责原则"，一个 Skill 只负责一个明确的专业领域。</p><h3 id=陷阱-2skill-与-tool-边界模糊>陷阱 2：Skill 与 Tool 边界模糊<a hidden class=anchor aria-hidden=true href=#陷阱-2skill-与-tool-边界模糊>#</a></h3><p>如果一个"Skill"只是简单封装了一个 Tool 调用，没有额外的领域逻辑或思维框架，那它应该是一个 Tool，而不是 Skill。</p><h3 id=陷阱-3忽略-skill-的上下文窗口消耗>陷阱 3：忽略 Skill 的上下文窗口消耗<a hidden class=anchor aria-hidden=true href=#陷阱-3忽略-skill-的上下文窗口消耗>#</a></h3><p>复杂的 Skill Instructions 会占用大量上下文窗口。监控每个 Skill 的指令长度，必要时将长指令拆分为核心指令 + 可加载的参考文档。</p><h3 id=陷阱-4skill-间的状态冲突>陷阱 4：Skill 间的状态冲突<a hidden class=anchor aria-hidden=true href=#陷阱-4skill-间的状态冲突>#</a></h3><p>当多个 Skill 同时被激活时，它们可能产生冲突的指令或争夺 Tool 调用权。使用明确的优先级机制和冲突解决策略。</p><h2 id=下一步>下一步<a hidden class=anchor aria-hidden=true href=#下一步>#</a></h2><p>Skills 赋予 Agent 专业化的领域能力，使其从通用助手升级为行业专家。接下来我们将探讨 Callbacks 与 Plugins——ADK Go 最强大的扩展机制，让你能够在 Agent 生命周期的每一个关键节点插入自定义逻辑，实现真正的深度定制。</p><p>← <a href=/tutorials/go-adk/09-advanced/go-adk-advanced-artifacts/>Artifacts</a>
-| <a href=/tutorials/go-adk/09-advanced/go-adk-advanced-callbacks/>Callbacks 与 Plugins →</a></p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/go/>Go</a></li><li><a href=https://rexai.top/tags/adk/>ADK</a></li><li><a href=https://rexai.top/tags/skills/>Skills</a></li><li><a href=https://rexai.top/tags/%E6%8A%80%E8%83%BD/>技能</a></li><li><a href=https://rexai.top/tags/%E6%95%99%E7%A8%8B/>教程</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+| <a href=/tutorials/go-adk/09-advanced/go-adk-advanced-callbacks/>Callbacks 与 Plugins →</a></p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/go/>Go</a></li><li><a href=https://rexai.top/tags/adk/>ADK</a></li><li><a href=https://rexai.top/tags/skills/>Skills</a></li><li><a href=https://rexai.top/tags/%E6%8A%80%E8%83%BD/>技能</a></li><li><a href=https://rexai.top/tags/%E6%95%99%E7%A8%8B/>教程</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

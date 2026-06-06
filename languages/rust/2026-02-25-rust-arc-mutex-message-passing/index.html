@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/languages/rust/2026-02-25-rust-arc-mutex-message-passing/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -72,15 +72,15 @@
 </span></span></code></pre></div><p>每个 shard 独立运行，互不干扰。</p><h2 id=从-arcmutex-迁移到-channel-的实际体验>从 Arc&lt;Mutex<t>> 迁移到 Channel 的实际体验<a hidden class=anchor aria-hidden=true href=#从-arcmutex-迁移到-channel-的实际体验>#</a></h2><p>我第一次把 <code>Arc&lt;Mutex&lt;T>></code> 从核心服务里移除的时候，有种奇怪的感觉。</p><p>代码变简单了，更容易理解了，死锁这种事基本不可能发生了。负载下的行为也变得可预测了。</p><p>为什么？因为状态不再到处都是，它只活在一个地方。你要找 bug，去那一个地方找就行，而不是满世界搜索谁在什么时候改了什么。</p><h2 id=写在最后>写在最后<a hidden class=anchor aria-hidden=true href=#写在最后>#</a></h2><p><code>Arc&lt;Mutex&lt;T>></code> 不是恶魔。但它常常是一个信号，说明你的架构还默认"线程间共享可变内存是正常的"。</p><p>在 Rust 里，这不太正常。</p><p>Rust 想让你设计的是：所有权、隔离、消息传递、显式的并发。</p><p>当你开始顺着这个思路走，你会发现自己不再和语言打架了，系统也开始自然地扩展。</p><p>与其说是语法或库的选择，不如说是思考方式的转变：从"大家一起抢着用"变成"每个人都有自己的，通过沟通协作"。</p><p>传统语言习惯了前一种，Rust 鼓励后一种。</p><hr><p>常见问题：</p><p><strong>Q: 用 channel 会不会让代码变复杂？</strong>
 A: 一开始可能需要适应，但逻辑清晰了。你明确定义了"可以做什么操作"（消息类型），而不是到处都是 <code>mutex.lock().unwrap()</code>。</p><p><strong>Q: 所有 Arc&lt;Mutex<t>> 都要替换掉吗？</strong>
 A: 不用。如果代码跑得好，性能没瓶颈，没必要动。重点是理解它可能成为瓶颈的场景，在设计新代码时有这个意识。</p><p><strong>Q: tokio::sync::Mutex 比 std::sync::Mutex 好用吗？</strong>
-A: 在异步代码里应该用 <code>tokio::sync::Mutex</code>，因为它不阻塞线程。但问题依然存在：访问是串行的，高并发时会成为瓶颈。消息传递往往能更好地利用并发。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a></li><li><a href=https://rexai.top/tags/tokio/>Tokio</a></li><li><a href=https://rexai.top/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/>性能优化</a></li><li><a href=https://rexai.top/tags/actor%E6%A8%A1%E5%BC%8F/>Actor模式</a></li><li><a href=https://rexai.top/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/>异步编程</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+A: 在异步代码里应该用 <code>tokio::sync::Mutex</code>，因为它不阻塞线程。但问题依然存在：访问是串行的，高并发时会成为瓶颈。消息传递往往能更好地利用并发。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a></li><li><a href=https://rexai.top/tags/tokio/>Tokio</a></li><li><a href=https://rexai.top/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/>性能优化</a></li><li><a href=https://rexai.top/tags/actor%E6%A8%A1%E5%BC%8F/>Actor模式</a></li><li><a href=https://rexai.top/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/>异步编程</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

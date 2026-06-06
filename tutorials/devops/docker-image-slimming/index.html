@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tutorials/devops/docker-image-slimming/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -66,15 +66,15 @@
 </span></span><span style=display:flex><span><span style=color:#00f>COPY</span> --from=builder /app/node_modules /app/node_modules<span>
 </span></span></span><span style=display:flex><span><span style=color:#00f>COPY</span> --from=builder /app/dist /app/dist<span>
 </span></span></span><span style=display:flex><span><span style=color:#00f>CMD</span> [<span style=color:#a31515>&#34;node&#34;</span>, <span style=color:#a31515>&#34;dist/index.js&#34;</span>]<span>
-</span></span></span></code></pre></div><p>线上默认用干净版，需要排查时切到 debug 变体，问题解决再切回去。别嫌麻烦，这一步常常省的是通宵。</p><h2 id=最后清单一步步瘦下来的关键点>最后清单：一步步瘦下来的关键点<a hidden class=anchor aria-hidden=true href=#最后清单一步步瘦下来的关键点>#</a></h2><p>等一圈下来，我回头补了个小清单，留给以后的我：</p><ol><li>基础镜像能小就小，别盲目追轻，先跑通。</li><li>多阶段构建分清“工地”和“新家”。</li><li>依赖装完就打扫，缓存别带回家。</li><li><code>.dockerignore</code> 不要偷懒，能挡住一堆麻烦。</li><li>预留一个可进入的 debug 版本，别把自己锁门外。</li></ol><h2 id=效果与结语>效果与结语<a hidden class=anchor aria-hidden=true href=#效果与结语>#</a></h2><p>最后的效果？</p><p>我们从 2GB 掉到 50MB，拉取速度像坐直梯。CI 构建时间少了快一半，节点磁盘告警没再见过。更重要的是，后面新项目仿照这一套，一开始就“清爽出生”，不至于长大了再强行节食。</p><p>如果你家镜像也正发福，别一口吃个胖子（也别一刀砍成竹竿）。先从基础镜像动手，再试多阶段构建，装完就打扫。两三天后看一眼体重秤，如果数字不动，来骂我；如果数字下来了，你大概率会像我一样，知道这事就是点手艺活。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/docker/>Docker</a></li><li><a href=https://rexai.top/tags/%E5%AE%B9%E5%99%A8/>容器</a></li><li><a href=https://rexai.top/tags/%E9%95%9C%E5%83%8F%E4%BC%98%E5%8C%96/>镜像优化</a></li><li><a href=https://rexai.top/tags/devops/>DevOps</a></li><li><a href=https://rexai.top/tags/ci/cd/>CI/CD</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+</span></span></span></code></pre></div><p>线上默认用干净版，需要排查时切到 debug 变体，问题解决再切回去。别嫌麻烦，这一步常常省的是通宵。</p><h2 id=最后清单一步步瘦下来的关键点>最后清单：一步步瘦下来的关键点<a hidden class=anchor aria-hidden=true href=#最后清单一步步瘦下来的关键点>#</a></h2><p>等一圈下来，我回头补了个小清单，留给以后的我：</p><ol><li>基础镜像能小就小，别盲目追轻，先跑通。</li><li>多阶段构建分清“工地”和“新家”。</li><li>依赖装完就打扫，缓存别带回家。</li><li><code>.dockerignore</code> 不要偷懒，能挡住一堆麻烦。</li><li>预留一个可进入的 debug 版本，别把自己锁门外。</li></ol><h2 id=效果与结语>效果与结语<a hidden class=anchor aria-hidden=true href=#效果与结语>#</a></h2><p>最后的效果？</p><p>我们从 2GB 掉到 50MB，拉取速度像坐直梯。CI 构建时间少了快一半，节点磁盘告警没再见过。更重要的是，后面新项目仿照这一套，一开始就“清爽出生”，不至于长大了再强行节食。</p><p>如果你家镜像也正发福，别一口吃个胖子（也别一刀砍成竹竿）。先从基础镜像动手，再试多阶段构建，装完就打扫。两三天后看一眼体重秤，如果数字不动，来骂我；如果数字下来了，你大概率会像我一样，知道这事就是点手艺活。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/docker/>Docker</a></li><li><a href=https://rexai.top/tags/%E5%AE%B9%E5%99%A8/>容器</a></li><li><a href=https://rexai.top/tags/%E9%95%9C%E5%83%8F%E4%BC%98%E5%8C%96/>镜像优化</a></li><li><a href=https://rexai.top/tags/devops/>DevOps</a></li><li><a href=https://rexai.top/tags/ci/cd/>CI/CD</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

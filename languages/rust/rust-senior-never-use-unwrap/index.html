@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/languages/rust/rust-senior-never-use-unwrap/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -113,15 +113,15 @@
 </span></span></code></pre></div><p><strong>硬编码的东西用expect：</strong></p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#00f>let</span> re = Regex::new(<span style=color:#a31515>r</span><span style=color:#a31515>&#34;^\d+$&#34;</span>).expect(<span style=color:#a31515>&#34;这正则我自己写的，不可能错&#34;</span>);
 </span></span></code></pre></div><p>注意是expect不是unwrap。expect能带个说明，万一真崩了，至少知道是哪儿出的问题。</p><h3 id=说个真事儿>说个真事儿<a hidden class=anchor aria-hidden=true href=#说个真事儿>#</a></h3><p>我之前接手一个项目，全局搜了一下，200多个unwrap。</p><p><img alt=半夜报警 loading=lazy src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop&crop=center">
 <em>半夜三点的夺命连环call，是每个开发者的噩梦</em></p><p>花了两天挨个改完，上线之后线上崩溃直接归零。不是说没错误了，而是错误变成了日志，变成了能查的东西，不再是半夜三点的夺命连环call。</p><h3 id=最后说两句>最后说两句<a hidden class=anchor aria-hidden=true href=#最后说两句>#</a></h3><p>Go语言被人吐槽 <code>if err != nil</code> 写到手软，但人家至少逼着你处理每一个错误。</p><p>Rust给了你自由，你可以unwrap一把梭，也可以老老实实处理。大部分人选了前者，然后在生产环境交学费。</p><p><img alt=代码评审 loading=lazy src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=400&fit=crop&crop=center">
-<em>代码评审：发现并修复unwrap的时刻</em></p><p>现在去搜一下你项目里有多少unwrap，找几个在关键路径上的，想想怎么改改。</p><p>别等线上炸了再后悔。</p><hr><p>觉得有用的话点个赞，转发给你那些还在unwrap一把梭的同事，顺手关注一下，后面还有更多踩坑实录。</p><p>少写一个unwrap，少接一个报警电话。回见。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/unwrap/>Unwrap</a></li><li><a href=https://rexai.top/tags/%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/>错误处理</a></li><li><a href=https://rexai.top/tags/option/>Option</a></li><li><a href=https://rexai.top/tags/result/>Result</a></li><li><a href=https://rexai.top/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/>最佳实践</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+<em>代码评审：发现并修复unwrap的时刻</em></p><p>现在去搜一下你项目里有多少unwrap，找几个在关键路径上的，想想怎么改改。</p><p>别等线上炸了再后悔。</p><hr><p>觉得有用的话点个赞，转发给你那些还在unwrap一把梭的同事，顺手关注一下，后面还有更多踩坑实录。</p><p>少写一个unwrap，少接一个报警电话。回见。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/unwrap/>Unwrap</a></li><li><a href=https://rexai.top/tags/%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/>错误处理</a></li><li><a href=https://rexai.top/tags/option/>Option</a></li><li><a href=https://rexai.top/tags/result/>Result</a></li><li><a href=https://rexai.top/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/>最佳实践</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/ai/codex/2026-03-29-codex-superpowers-agents-v3/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -120,15 +120,15 @@
 </span></span><span style=display:flex><span><span style=color:#00f>-</span> 前端设计：ui-ux-pro-max
 </span></span></code></pre></div><hr><h2 id=用起来的几个建议>用起来的几个建议<a hidden class=anchor aria-hidden=true href=#用起来的几个建议>#</a></h2><p>拿到这份 AGENTS.md，不要直接全量上。先挑一个中等规模的项目试水，观察 Codex 的行为是否符合预期。</p><p>重点盯几个信号：并行任务有没有真的在同时跑，子代理有没有出现"假死"（看起来在运行但不出结果），commit message 的格式有没有被正确遵循。</p><p>这几个点没问题，再迁移到其他项目。</p><hr><h2 id=faq>FAQ<a hidden class=anchor aria-hidden=true href=#faq>#</a></h2><p><strong>Q: 全局 AGENTS.md 和项目级 AGENTS.md 同时存在时哪个生效？</strong></p><p>项目级覆盖全局。Codex 会把两个文件的内容合并，项目级的规则优先级更高。</p><p><strong>Q: 子代理卡死了怎么办？</strong></p><p>先检查是不是还在用 <code>wait</code> 而不是 <code>wait_agent</code>。V3 的配置里已经统一用 <code>wait_agent</code>。如果问题依旧，检查任务是否真的适合并行——有些场景拆分后整合成本反而更高。</p><p><strong>Q: 轻量任务不想跳过 brainstorm 可以吗？</strong></p><p>可以。AGENTS.md 是默认规则，用户在当前会话提出明确要求时，优先级高于 AGENTS.md。</p><hr><p>顺便分享一个我常用的 <a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer" class=apple-ext aria-label="AI自媒体运营工具 (外部链接)">AI自媒体运营工具 <span class=apple-ext__badge aria-hidden=true>外部链接</span></a>
 ，覆盖内容排版、素材处理和效率提效，写公众号会更省力。</p><p>最近在玩 Claude Code 的新功能，发现官方出了个 <a href="https://rexai.top/tools/cc-codex-portal/?utm_source=site&amp;utm_medium=fab&amp;utm_campaign=floating_cta">Codex 增强版门户</a>
-，把各种智能编程能力整合在一起了，感兴趣可以去看看。</p><p>如果你想看到更多这类工具测评和 AI 编程实战，欢迎关注我的公众号「梦兽编程交个朋友」，每周更新。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/codex-cli/>Codex CLI</a></li><li><a href=https://rexai.top/tags/openai/>OpenAI</a></li><li><a href=https://rexai.top/tags/superpowers/>Superpowers</a></li><li><a href=https://rexai.top/tags/ai%E7%BC%96%E7%A8%8B/>AI编程</a></li><li><a href=https://rexai.top/tags/agents.md/>AGENTS.md</a></li><li><a href=https://rexai.top/tags/%E5%B9%B6%E8%A1%8C%E5%BC%80%E5%8F%91/>并行开发</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+，把各种智能编程能力整合在一起了，感兴趣可以去看看。</p><p>如果你想看到更多这类工具测评和 AI 编程实战，欢迎关注我的公众号「梦兽编程交个朋友」，每周更新。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/codex-cli/>Codex CLI</a></li><li><a href=https://rexai.top/tags/openai/>OpenAI</a></li><li><a href=https://rexai.top/tags/superpowers/>Superpowers</a></li><li><a href=https://rexai.top/tags/ai%E7%BC%96%E7%A8%8B/>AI编程</a></li><li><a href=https://rexai.top/tags/agents.md/>AGENTS.md</a></li><li><a href=https://rexai.top/tags/%E5%B9%B6%E8%A1%8C%E5%BC%80%E5%8F%91/>并行开发</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

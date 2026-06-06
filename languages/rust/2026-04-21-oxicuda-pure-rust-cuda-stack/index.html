@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/languages/rust/2026-04-21-oxicuda-pure-rust-cuda-stack/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -28,15 +28,15 @@
 ，把各种智能编程能力整合在一起了，感兴趣可以去看看。</p><p>如果你想看到更多这类工具测评和 AI 编程实战，欢迎关注我的公众号「梦兽编程交个朋友」，每周更新。</p><h2 id=常见问题>常见问题<a hidden class=anchor aria-hidden=true href=#常见问题>#</a></h2><p><strong>Q: OxiCUDA 性能比原生 CUDA 差吗？</strong>
 目前没有公开的 benchmark 数据。由于是运行时生成 PTX，在某些场景下可能略有开销，但 Rust 的零成本抽象能把这个差距控制在很小范围内。实际表现需要针对你的场景测试。</p><p><strong>Q: 能完全替代 CUDA 吗？</strong>
 不能。对于需要最新 GPU 特性的场景，原生 CUDA 仍然是最佳选择。OxiCUDA 适合作为替代方案，特别是当你需要跨平台支持或者不想依赖 NVIDIA SDK 时。</p><p><strong>Q: 项目稳定吗？</strong>
-目前是 v0.1.0，生产环境使用需要谨慎。建议先在非关键场景验证一段时间。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/cuda/>CUDA</a></li><li><a href=https://rexai.top/tags/gpu%E7%BC%96%E7%A8%8B/>GPU编程</a></li><li><a href=https://rexai.top/tags/oxicuda/>OxiCUDA</a></li><li><a href=https://rexai.top/tags/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97/>高性能计算</a></li><li><a href=https://rexai.top/tags/ptx/>PTX</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+目前是 v0.1.0，生产环境使用需要谨慎。建议先在非关键场景验证一段时间。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/cuda/>CUDA</a></li><li><a href=https://rexai.top/tags/gpu%E7%BC%96%E7%A8%8B/>GPU编程</a></li><li><a href=https://rexai.top/tags/oxicuda/>OxiCUDA</a></li><li><a href=https://rexai.top/tags/%E9%AB%98%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97/>高性能计算</a></li><li><a href=https://rexai.top/tags/ptx/>PTX</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

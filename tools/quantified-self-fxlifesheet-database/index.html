@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tools/quantified-self-fxlifesheet-database/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -32,15 +32,15 @@ A：基础的数据库操作能力和简单的编程知识就够了。如果你�
 A：所有数据都存在你自己的数据库里，不依赖任何云服务。只要你的服务器安全，数据就是安全的。当然，这也意味着你需要自己负责备份。</p><p><strong>Q：手动记录太麻烦了怎么办？</strong>
 A：可以只追踪能自动采集的数据。RescueTime、Apple Health 这些都不需要手动操作。手动记录的部分，可以从每天3-5个指标开始，养成习惯再加量。</p><p><strong>Q：数据分析需要统计学基础吗？</strong>
 A：基本的图表能看懂就行。Felix 的可视化系统已经做好了，你只需要解读结果。如果想做更深入的分析（比如相关性检验），可能需要学一点基础知识。</p><p><strong>Q：这个项目还在维护吗？</strong>
-A：截至2026年初，FxLifeSheet 仍在 GitHub 上活跃维护。Felix 会不定期更新文档和代码。项目地址：github.com/KrauseFx/FxLifeSheet</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/%E9%87%8F%E5%8C%96%E8%87%AA%E6%88%91/>量化自我</a></li><li><a href=https://rexai.top/tags/quantified-self/>Quantified Self</a></li><li><a href=https://rexai.top/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/>数据分析</a></li><li><a href=https://rexai.top/tags/postgresql/>PostgreSQL</a></li><li><a href=https://rexai.top/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/>开源项目</a></li><li><a href=https://rexai.top/tags/fxlifesheet/>FxLifeSheet</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+A：截至2026年初，FxLifeSheet 仍在 GitHub 上活跃维护。Felix 会不定期更新文档和代码。项目地址：github.com/KrauseFx/FxLifeSheet</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/%E9%87%8F%E5%8C%96%E8%87%AA%E6%88%91/>量化自我</a></li><li><a href=https://rexai.top/tags/quantified-self/>Quantified Self</a></li><li><a href=https://rexai.top/tags/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90/>数据分析</a></li><li><a href=https://rexai.top/tags/postgresql/>PostgreSQL</a></li><li><a href=https://rexai.top/tags/%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE/>开源项目</a></li><li><a href=https://rexai.top/tags/fxlifesheet/>FxLifeSheet</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

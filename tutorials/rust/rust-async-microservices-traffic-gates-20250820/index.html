@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/tutorials/rust/rust-async-microservices-traffic-gates-20250820/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -156,15 +156,15 @@
 </span></span><span style=display:flex><span>    .into_inner();
 </span></span></code></pre></div><p>小贴士是：把“参数”抽成配置，让它和指标联动。系统忙的时候，自动调小并发上限；下游稳定时，再慢慢放开。在塔式中间件里做这件事非常自然。</p><h2 id=策略怎么选一句话的矩阵>策略怎么选：一句话的矩阵<a hidden class=anchor aria-hidden=true href=#策略怎么选一句话的矩阵>#</a></h2><p>如果上游太猛，先用限流稳入口，再用背压防堆积。
 如果下游很昂贵，优先批处理，配合超时与聪明的重试。
-如果整体都在抖动，用限流稳住入口，再把并发、超时、重试参数挂在指标上动态调。</p><h2 id=实战一条链大促下单一路稳住>实战一条链：大促下单一路稳住<a hidden class=anchor aria-hidden=true href=#实战一条链大促下单一路稳住>#</a></h2><p>入口先按租户/用户限流，给重度用户保留突发额度。订单写入走“100 条或 50ms 就刷”的批处理。库存服务前面挂并发上限，忙则直接 503（load shed），上游收到后按指数退避重试。全链路用 tracing 打点、用 metrics 暴露，面板盯的是入/出 QPS、队列深度、批大小、超时率、P95/P99。</p><h2 id=监控与优化闭环才是稳定的灵魂>监控与优化：闭环才是稳定的灵魂<a hidden class=anchor aria-hidden=true href=#监控与优化闭环才是稳定的灵魂>#</a></h2><p>没有数据，调参就像摸黑走路。最少要有这些：入/出流量、当前并发、排队深度、批量大小、超时与重试次数、P95/P99 延迟。出事故时，一眼能看到“哪一段在发红”。有了指标，才谈得上自动化：SLO 警报触发后，临时把入口速率下调 20%，或把批处理等待时间减少 30%，顶住高峰再恢复。</p><h2 id=最后一锤稳不是慢而是让快有序发生>最后一锤：稳不是慢，而是让快有序发生<a hidden class=anchor aria-hidden=true href=#最后一锤稳不是慢而是让快有序发生>#</a></h2><p>今天你要做的，就是给关键接口装上四道闸门。把闸门装在入口，别让洪水直接冲进厨房。然后你会发现，流量再大，系统也只是“忙而不乱”。</p><p>关注梦兽编程微信公众号，解锁更多黑科技</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/tokio/>Tokio</a></li><li><a href=https://rexai.top/tags/axum/>Axum</a></li><li><a href=https://rexai.top/tags/tower/>Tower</a></li><li><a href=https://rexai.top/tags/rate-limiting/>Rate-Limiting</a></li><li><a href=https://rexai.top/tags/backpressure/>Backpressure</a></li><li><a href=https://rexai.top/tags/batching/>Batching</a></li><li><a href=https://rexai.top/tags/middleware/>Middleware</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+如果整体都在抖动，用限流稳住入口，再把并发、超时、重试参数挂在指标上动态调。</p><h2 id=实战一条链大促下单一路稳住>实战一条链：大促下单一路稳住<a hidden class=anchor aria-hidden=true href=#实战一条链大促下单一路稳住>#</a></h2><p>入口先按租户/用户限流，给重度用户保留突发额度。订单写入走“100 条或 50ms 就刷”的批处理。库存服务前面挂并发上限，忙则直接 503（load shed），上游收到后按指数退避重试。全链路用 tracing 打点、用 metrics 暴露，面板盯的是入/出 QPS、队列深度、批大小、超时率、P95/P99。</p><h2 id=监控与优化闭环才是稳定的灵魂>监控与优化：闭环才是稳定的灵魂<a hidden class=anchor aria-hidden=true href=#监控与优化闭环才是稳定的灵魂>#</a></h2><p>没有数据，调参就像摸黑走路。最少要有这些：入/出流量、当前并发、排队深度、批量大小、超时与重试次数、P95/P99 延迟。出事故时，一眼能看到“哪一段在发红”。有了指标，才谈得上自动化：SLO 警报触发后，临时把入口速率下调 20%，或把批处理等待时间减少 30%，顶住高峰再恢复。</p><h2 id=最后一锤稳不是慢而是让快有序发生>最后一锤：稳不是慢，而是让快有序发生<a hidden class=anchor aria-hidden=true href=#最后一锤稳不是慢而是让快有序发生>#</a></h2><p>今天你要做的，就是给关键接口装上四道闸门。把闸门装在入口，别让洪水直接冲进厨房。然后你会发现，流量再大，系统也只是“忙而不乱”。</p><p>关注梦兽编程微信公众号，解锁更多黑科技</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/tokio/>Tokio</a></li><li><a href=https://rexai.top/tags/axum/>Axum</a></li><li><a href=https://rexai.top/tags/tower/>Tower</a></li><li><a href=https://rexai.top/tags/rate-limiting/>Rate-Limiting</a></li><li><a href=https://rexai.top/tags/backpressure/>Backpressure</a></li><li><a href=https://rexai.top/tags/batching/>Batching</a></li><li><a href=https://rexai.top/tags/middleware/>Middleware</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

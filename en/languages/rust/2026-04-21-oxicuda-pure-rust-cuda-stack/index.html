@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/en/languages/rust/2026-04-21-oxicuda-pure-rust-cuda-stack/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -28,15 +28,15 @@ I use regularly—it covers content formatting, material processing, and efficie
 that integrates various AI coding capabilities. Worth checking out if you&rsquo;re into AI programming.</p><p>If you want to see more tool reviews and AI coding实战, follow my公众号「梦兽编程交个朋友」—new posts every week.</p><h2 id=faq>FAQ<a hidden class=anchor aria-hidden=true href=#faq>#</a></h2><p><strong>Q: Is OxiCUDA slower than native CUDA?</strong>
 No public benchmark data available. Runtime PTX generation might introduce slight overhead in some scenarios, but Rust&rsquo;s zero-cost abstractions keep the gap minimal. Test with your specific workload.</p><p><strong>Q: Can it fully replace CUDA?</strong>
 No. For scenarios requiring latest GPU features, native CUDA remains the best choice. OxiCUDA works well as an alternative, especially when you need cross-platform support or want to avoid NVIDIA SDK dependency.</p><p><strong>Q: Is the project stable?</strong>
-Currently v0.1.0—production use requires caution. Test on non-critical paths first before committing.</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/en/tags/rust/>Rust</a></li><li><a href=https://rexai.top/en/tags/cuda/>CUDA</a></li><li><a href=https://rexai.top/en/tags/gpu-programming/>GPU Programming</a></li><li><a href=https://rexai.top/en/tags/oxicuda/>OxiCUDA</a></li><li><a href=https://rexai.top/en/tags/high-performance-computing/>High Performance Computing</a></li><li><a href=https://rexai.top/en/tags/ptx/>PTX</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+Currently v0.1.0—production use requires caution. Test on non-critical paths first before committing.</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/en/tags/rust/>Rust</a></li><li><a href=https://rexai.top/en/tags/cuda/>CUDA</a></li><li><a href=https://rexai.top/en/tags/gpu-programming/>GPU Programming</a></li><li><a href=https://rexai.top/en/tags/oxicuda/>OxiCUDA</a></li><li><a href=https://rexai.top/en/tags/high-performance-computing/>High Performance Computing</a></li><li><a href=https://rexai.top/en/tags/ptx/>PTX</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'en-US',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,

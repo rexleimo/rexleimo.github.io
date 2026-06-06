@@ -16,7 +16,7 @@
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
 <span class=waline-pageview-count data-path=/languages/rust/2026-02-04-oxidize-pdf-rust-4k-pages/>-</span>
 </span><script type=module>
-  import { pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+  import { pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   pageviewCount({
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
@@ -50,15 +50,15 @@
 </span></span><span style=display:flex><span>oxidize-pdf = <span style=color:#a31515>&#34;1.6.8&#34;</span>
 </span></span><span style=display:flex><span><span style=color:green># 如果需要OCR：</span>
 </span></span><span style=display:flex><span><span style=color:green># oxidize-pdf = { version = &#34;1.6.8&#34;, features = [&#34;ocr-tesseract&#34;] }</span>
-</span></span></code></pre></div><p>第二步，先做三个端点练练手：</p><ul><li><code>/generate</code>：JSON转PDF字节流或者presigned URL</li><li><code>/rag/chunk</code>：PDF转分块结果带页码范围</li><li><code>/invoice/extract</code>：PDF转字段结果带置信度</li></ul><p>第三步，部署一个极简容器，OCR sidecar后面再按需加上。</p><p>第四步，监控起来：每秒页数、失败原因，用数据调参。</p><p>第五步，等业务需要了再扩展拆分、合并、旋转、加密这些功能。</p><p>整个流程就是：<strong>小步快跑，用数据说话，按需扩展</strong>。</p><hr><h2 id=最后的大实话>最后的大实话<a hidden class=anchor aria-hidden=true href=#最后的大实话>#</a></h2><p>如果你正在被那些笨重的PDF工具折磨得死去活来，oxidize-pdf提供了一个非常舒服的trade-off：速度、安全、80%功能覆盖95%的业务场景。</p><p>RAG和发票提取这两条路它都给你铺好了，而且是<strong>原生支持</strong>，不用自己折腾。</p><p>我的建议是：先小规模试试，用真实数据跑一下，看看它在你这个场景下表现怎么样。如果OK，再逐步把更多功能加进来。OCR和企业级特性什么时候加？等数据告诉你需要的时候再加。</p><p>别一开始就ALL IN，也别一开始就否定。先跑起来，用结果说话。</p><p>GitHub地址我放在这里了：https://github.com/bzsanti/oxidizePdf</p><hr><p>如果这篇文章帮到了你，点个赞或者转发给需要的朋友。你在处理PDF时踩过什么坑？评论区聊聊，说不定能帮到其他人。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/pdf/>PDF</a></li><li><a href=https://rexai.top/tags/%E5%BC%80%E6%BA%90/>开源</a></li><li><a href=https://rexai.top/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/>性能优化</a></li><li><a href=https://rexai.top/tags/%E5%B7%A5%E5%85%B7%E5%BA%93/>工具库</a></li></ul></footer><link rel=stylesheet href=https://unpkg.com/@waline/client@v3/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
-  import { init, pageviewCount } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+</span></span></code></pre></div><p>第二步，先做三个端点练练手：</p><ul><li><code>/generate</code>：JSON转PDF字节流或者presigned URL</li><li><code>/rag/chunk</code>：PDF转分块结果带页码范围</li><li><code>/invoice/extract</code>：PDF转字段结果带置信度</li></ul><p>第三步，部署一个极简容器，OCR sidecar后面再按需加上。</p><p>第四步，监控起来：每秒页数、失败原因，用数据调参。</p><p>第五步，等业务需要了再扩展拆分、合并、旋转、加密这些功能。</p><p>整个流程就是：<strong>小步快跑，用数据说话，按需扩展</strong>。</p><hr><h2 id=最后的大实话>最后的大实话<a hidden class=anchor aria-hidden=true href=#最后的大实话>#</a></h2><p>如果你正在被那些笨重的PDF工具折磨得死去活来，oxidize-pdf提供了一个非常舒服的trade-off：速度、安全、80%功能覆盖95%的业务场景。</p><p>RAG和发票提取这两条路它都给你铺好了，而且是<strong>原生支持</strong>，不用自己折腾。</p><p>我的建议是：先小规模试试，用真实数据跑一下，看看它在你这个场景下表现怎么样。如果OK，再逐步把更多功能加进来。OCR和企业级特性什么时候加？等数据告诉你需要的时候再加。</p><p>别一开始就ALL IN，也别一开始就否定。先跑起来，用结果说话。</p><p>GitHub地址我放在这里了：https://github.com/bzsanti/oxidizePdf</p><hr><p>如果这篇文章帮到了你，点个赞或者转发给需要的朋友。你在处理PDF时踩过什么坑？评论区聊聊，说不定能帮到其他人。</p></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/rust/>Rust</a></li><li><a href=https://rexai.top/tags/pdf/>PDF</a></li><li><a href=https://rexai.top/tags/%E5%BC%80%E6%BA%90/>开源</a></li><li><a href=https://rexai.top/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/>性能优化</a></li><li><a href=https://rexai.top/tags/%E5%B7%A5%E5%85%B7%E5%BA%93/>工具库</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   
   init({
     el: '#waline-container',
     serverURL: 'https:\/\/waline-rex.vercel.app\/',
     lang: 'zh-CN',
-    emoji: ["//unpkg.com/@waline/emojis@1.2.0/weibo"],
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis/dist/weibo"],
     requiredMeta: ["nick","mail"],
     pageSize:  10 ,
     wordLimit:  0 ,
