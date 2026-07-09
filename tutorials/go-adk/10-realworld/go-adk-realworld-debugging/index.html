@@ -1,241 +1,236 @@
-<!doctype html><html lang=zh-cn dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>踩坑记录与性能调优：常见问题与解决方案 | 梦兽编程</title><meta name=keywords content="Go,ADK,踩坑,性能调优,教程"><meta name=description content="汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><link rel=mask-icon href=https://rexai.top/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/><link rel=preload href=/css/extended/bundle.min.a20868422b54813950226072705cc4e0993086364f38f32c1779a3c436162578.css as=style integrity="sha256-oghoQitUgTlQImBycFzE4JkwhjZPOPMsF3mjxDYWJXg="><link rel=stylesheet href=/css/extended/bundle.min.a20868422b54813950226072705cc4e0993086364f38f32c1779a3c436162578.css integrity="sha256-oghoQitUgTlQImBycFzE4JkwhjZPOPMsF3mjxDYWJXg="><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="踩坑记录与性能调优：常见问题与解决方案"><meta property="og:description" content="汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T04:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T04:00:00+08:00"><meta property="article:author" content="梦兽编程"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="踩坑"><meta property="article:tag" content="性能调优"><meta property="article:tag" content="教程"><meta name=twitter:card content="summary"><meta name=twitter:title content="踩坑记录与性能调优：常见问题与解决方案"><meta name=twitter:description content="汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。"><meta name=twitter:label1 content="Written by"><meta name=twitter:data1 content="梦兽编程"><meta name=twitter:label2 content="Reading time"><meta name=twitter:data2 content="8 minutes"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 10：实战综合","item":"https://rexai.top/tutorials/go-adk/10-realworld/"},{"@type":"ListItem","position":4,"name":"踩坑记录与性能调优：常见问题与解决方案","item":"https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"踩坑记录与性能调优：常见问题与解决方案","name":"踩坑记录与性能调优：常见问题与解决方案","description":"汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。","keywords":["Go","ADK","踩坑","性能调优","教程"],"articleBody":"踩坑记录与性能调优：常见问题与解决方案 本章汇总了在真实生产环境中使用 Go ADK 开发 Agent 系统时遇到的典型问题、踩坑经验和性能调优方案。这些内容来源于多个项目的实战总结，涵盖了从开发调试到生产运维的全生命周期。每一个问题都附有根因分析、解决方案和预防措施，力求让读者\"踩一次坑，长一辈子智\"。\nAPI 层常见问题 错误 1：UNAUTHORIZED —— 认证失败 现象：Agent 启动或运行时返回 UNAUTHORIZED 错误，提示 API Key 无效。\n根因分析：\n环境变量未加载：.env 文件存在但未正确加载到进程环境 Key 格式错误：复制时包含了多余空格或换行符 Key 权限不足：API Key 未开通对应模型或服务的访问权限 Key 已过期/被撤销：在 Google Cloud Console 中手动撤销或达到使用期限 多项目配置冲突：GOOGLE_APPLICATION_CREDENTIALS 与 GOOGLE_API_KEY 指向不同项目 解决方案：\npackage main import ( \"fmt\" \"os\" \"strings\" ) func validateAPIKey() error { key := os.Getenv(\"GOOGLE_API_KEY\") if key == \"\" { return fmt.Errorf(\"GOOGLE_API_KEY 未设置\") } // 去除首尾空白字符 key = strings.TrimSpace(key) // 基础格式校验（Gemini API Key 通常为 39 位） if len(key) \u003c 20 { return fmt.Errorf(\"GOOGLE_API_KEY 格式异常，长度过短: %d\", len(key)) } // 检查是否包含非法字符 if strings.ContainsAny(key, \"\\n\\r\\t\") { return fmt.Errorf(\"GOOGLE_API_KEY 包含非法空白字符\") } // 设置回环境变量（去除空白后） os.Setenv(\"GOOGLE_API_KEY\", key) return nil } func main() { // 优先加载 .env 文件 if err := loadEnvFile(\".env\"); err != nil { log.Printf(\"加载 .env 文件失败（可能不存在）: %v\", err) } if err := validateAPIKey(); err != nil { log.Fatalf(\"API Key 验证失败: %v\", err) } // 继续初始化... } func loadEnvFile(path string) error { data, err := os.ReadFile(path) if err != nil { return err } for _, line := range strings.Split(string(data), \"\\n\") { line = strings.TrimSpace(line) if line == \"\" || strings.HasPrefix(line, \"#\") { continue } parts := strings.SplitN(line, \"=\", 2) if len(parts) != 2 { continue } key := strings.TrimSpace(parts[0]) value := strings.TrimSpace(parts[1]) // 去除可能的引号包裹 value = strings.Trim(value, `\"'`) os.Setenv(key, value) } return nil } 预防措施：\n在 CI/CD 流程中加入 API Key 格式校验步骤 使用 Secret Manager（如 Google Secret Manager、AWS Secrets Manager）而非环境变量存储密钥 实现 Key 健康检查端点，定期验证 Key 有效性 错误 2：RESOURCE_EXHAUSTED —— 配额耗尽 现象：请求返回 RESOURCE_EXHAUSTED，提示已达到速率限制或配额上限。\n根因分析：\nRPM（Requests Per Minute）超限：突发流量超过 API 的每分钟请求限制 TPD（Tokens Per Day）超限：日 Token 消耗达到上限 并发连接数超限：同时建立的连接数超过限制 项目级配额未调整：默认配额较低，未根据业务需求申请提升 解决方案：\npackage ratelimit import ( \"context\" \"fmt\" \"sync\" \"time\" \"golang.org/x/time/rate\" ) // AdaptiveRateLimiter 自适应限流器 type AdaptiveRateLimiter struct { limiter *rate.Limiter mu sync.RWMutex currentRPM int minRPM int maxRPM int backoffUntil time.Time } func NewAdaptiveRateLimiter(minRPM, maxRPM int) *AdaptiveRateLimiter { return \u0026AdaptiveRateLimiter{ limiter: rate.NewLimiter(rate.Every(time.Minute/time.Duration(maxRPM)), maxRPM), currentRPM: maxRPM, minRPM: minRPM, maxRPM: maxRPM, } } func (a *AdaptiveRateLimiter) Wait(ctx context.Context) error { a.mu.RLock() backoff := a.backoffUntil a.mu.RUnlock() if time.Now().Before(backoff) { select { case \u003c-time.After(time.Until(backoff)): case \u003c-ctx.Done(): return ctx.Err() } } return a.limiter.Wait(ctx) } func (a *AdaptiveRateLimiter) OnSuccess() { a.mu.Lock() defer a.mu.Unlock() // 成功时缓慢恢复速率 if a.currentRPM \u003c a.maxRPM { a.currentRPM = min(a.currentRPM+1, a.maxRPM) a.limiter.SetLimit(rate.Every(time.Minute / time.Duration(a.currentRPM))) } } func (a *AdaptiveRateLimiter) OnRateLimit() { a.mu.Lock() defer a.mu.Unlock() // 触发限流时，降低速率并进入退避期 a.currentRPM = max(a.currentRPM/2, a.minRPM) a.limiter.SetLimit(rate.Every(time.Minute / time.Duration(a.currentRPM))) a.backoffUntil = time.Now().Add(30 * time.Second) log.Printf(\"触发速率限制，降级至 %d RPM，退避 30 秒\", a.currentRPM) } // 在 Agent 调用处使用 func callWithRateLimit(ctx context.Context, limiter *AdaptiveRateLimiter, fn func() error) error { if err := limiter.Wait(ctx); err != nil { return err } err := fn() if err != nil { if isRateLimitError(err) { limiter.OnRateLimit() } return err } limiter.OnSuccess() return nil } 长期策略：\n申请提升配额（Google Cloud Console → Quotas） 实现多层缓存减少对 API 的依赖 使用模型降级策略：高峰期自动切换到更轻量的模型 错误 3：context deadline exceeded —— 请求超时 现象：请求超时，上下文被取消。\n根因分析：\nLLM 推理耗时过长：复杂推理或长上下文导致模型响应慢 Tool 执行阻塞：数据库查询、外部 API 调用未设置超时 级联超时：外层超时设置过短，内层操作未完成就被取消 网络抖动：与 LLM API 之间的网络不稳定 解决方案：\npackage timeout import ( \"context\" \"fmt\" \"time\" ) // LayeredTimeout 分层超时管理 type LayeredTimeout struct { TotalTimeout time.Duration // 用户感知的总超时 ModelTimeout time.Duration // LLM 调用超时 ToolTimeout time.Duration // 单个 Tool 超时 StreamChunkTimeout time.Duration // 流式输出单块超时 } func DefaultLayeredTimeout() LayeredTimeout { return LayeredTimeout{ TotalTimeout: 30 * time.Second, ModelTimeout: 20 * time.Second, ToolTimeout: 5 * time.Second, StreamChunkTimeout: 2 * time.Second, } } func (lt LayeredTimeout) Execute(ctx context.Context, fn func(context.Context) error) error { ctx, cancel := context.WithTimeout(ctx, lt.TotalTimeout) defer cancel() done := make(chan error, 1) go func() { done \u003c- fn(ctx) }() select { case err := \u003c-done: return err case \u003c-ctx.Done(): return fmt.Errorf(\"请求总超时 (%v): %w\", lt.TotalTimeout, ctx.Err()) } } // Tool 调用包装器 func CallToolWithTimeout(ctx context.Context, toolName string, timeout time.Duration, fn func(context.Context) (string, error)) (string, error) { ctx, cancel := context.WithTimeout(ctx, timeout) defer cancel() result, err := fn(ctx) if err != nil { if ctx.Err() == context.DeadlineExceeded { return fmt.Sprintf(\"[%s 查询超时，请稍后重试]\", toolName), nil } return \"\", err } return result, nil } 关键原则：总超时 \u003e 模型超时 + Tool 超时 × 最大 Tool 调用次数，并预留 20% 缓冲。\n性能问题诊断与调优 问题 1：响应延迟高 诊断流程：\n用户感知延迟高 ↓ [分解延迟] 使用分布式追踪（OpenTelemetry）拆解各阶段耗时 ↓ ├─ 网络传输延迟？→ 检查 CDN、就近部署、连接池 ├─ 模型推理延迟？→ 模型降级、Context Caching、Prompt 优化 ├─ Tool 调用延迟？→ Tool 并行化、缓存、超时优化 ├─ 路由决策延迟？→ 简化分类逻辑、缓存路由结果 └─ 序列化/反序列化？→ 使用更高效的协议（如 protobuf） 模型推理优化：\n// 1. Context Caching：缓存系统指令和重复上下文 func (a *Agent) buildPromptWithCache(ctx context.Context, userInput string) (string, error) { cacheKey := a.config.Instruction + a.session.GetSummary() if cached, ok := a.promptCache.Get(cacheKey); ok { // 复用缓存的上下文前缀，只追加用户输入 return cached.(string) + \"\\nUser: \" + userInput, nil } fullPrompt := a.config.Instruction + \"\\n\" + a.session.GetHistory() + \"\\nUser: \" + userInput a.promptCache.Set(cacheKey, fullPrompt, 10*time.Minute) return fullPrompt, nil } // 2. 模型选择策略：根据查询复杂度动态选择模型 func selectModel(query string, history []Message) string { // 简单查询使用轻量模型 if isSimpleQuery(query) \u0026\u0026 len(history) \u003c 3 { return \"gemini-2.0-flash\" // 更快、更便宜 } // 复杂推理使用专业模型 if requiresComplexReasoning(query) { return \"gemini-2.0-pro\" } // 默认使用平衡型 return \"gemini-2.0-flash\" } Tool 调用并行化：\nfunc (a *Agent) callToolsParallel(ctx context.Context, toolCalls []ToolCall) []ToolResult { var wg sync.WaitGroup results := make([]ToolResult, len(toolCalls)) for i, tc := range toolCalls { wg.Add(1) go func(index int, call ToolCall) { defer wg.Done() result, err := a.executeTool(ctx, call) results[index] = ToolResult{ ToolName: call.Name, Result: result, Error: err, } }(i, tc) } wg.Wait() return results } 问题 2：内存暴涨与 OOM 根因分析：\nSession 堆积：未清理的会话对象持续累积 State 膨胀：用户在 State 中存储大量数据（如完整对话历史） ** goroutine 泄漏**：未正确关闭的流式连接或后台任务 缓存无限增长：未设置容量上限的缓存 解决方案：\npackage memory import ( \"runtime\" \"time\" \"github.com/shirou/gopsutil/mem\" ) // MemoryGuard 内存守护 type MemoryGuard struct { maxMemoryMB uint64 gcThreshold float64 sessionLimit int checkInterval time.Duration } func (g *MemoryGuard) Start(sessionManager *SessionManager) { ticker := time.NewTicker(g.checkInterval) go func() { for range ticker.C { v, _ := mem.VirtualMemory() usedPercent := v.UsedPercent if usedPercent \u003e g.gcThreshold { log.Printf(\"内存使用率 %.1f%% 超过阈值 %.1f%%，触发清理\", usedPercent, g.gcThreshold) // 1. 强制 GC runtime.GC() // 2. 清理过期 Session evicted := sessionManager.EvictExpired(30 * time.Minute) log.Printf(\"已清理 %d 个过期会话\", evicted) // 3. 如果仍然紧张，清理最久未使用的 Session if v, _ := mem.VirtualMemory(); v.UsedPercent \u003e g.gcThreshold { lruEvicted := sessionManager.EvictLRU(g.sessionLimit / 2) log.Printf(\"LRU 清理 %d 个会话\", lruEvicted) } } } }() } // SessionManager 实现 type SessionManager struct { sessions map[string]*Session mu sync.RWMutex maxSize int maxStateSize int // 单个 State 最大大小（字节） } func (sm *SessionManager) SetState(sessionID string, key string, value interface{}) error { sm.mu.Lock() defer sm.mu.Unlock() session, ok := sm.sessions[sessionID] if !ok { return fmt.Errorf(\"会话不存在: %s\", sessionID) } // 检查 State 大小限制 data, _ := json.Marshal(value) if len(data) \u003e sm.maxStateSize { return fmt.Errorf(\"State 数据过大: %d bytes，最大允许 %d\", len(data), sm.maxStateSize) } session.State[key] = value session.LastActive = time.Now() return nil } 问题 3： goroutine 泄漏 常见泄漏场景：\n// 错误示例：未关闭的流式通道 func badStream() { ch := make(chan string) go func() { for { select { case msg := \u003c-someSource: ch \u003c- msg // 如果消费者已离开，这里会永远阻塞 } } }() return ch } // 正确示例：使用 context 控制生命周期 func goodStream(ctx context.Context) \u003c-chan string { ch := make(chan string) go func() { defer close(ch) for { select { case msg := \u003c-someSource: select { case ch \u003c- msg: case \u003c-ctx.Done(): return } case \u003c-ctx.Done(): return } } }() return ch } 检测方法：\nimport \"runtime\" // 监控 goroutine 数量 func monitorGoroutines() { ticker := time.NewTicker(1 * time.Minute) go func() { baseline := runtime.NumGoroutine() for range ticker.C { current := runtime.NumGoroutine() if current \u003e baseline*2 { log.Printf(\"[ALERT] goroutine 数量异常: %d (基线: %d)\", current, baseline) // 输出 goroutine 堆栈用于分析 buf := make([]byte, 1\u003c\u003c20) n := runtime.Stack(buf, true) log.Printf(\"当前 goroutine 堆栈:\\n%s\", buf[:n]) } } }() } 调试技巧与工具 结构化日志 package logging import ( \"context\" \"encoding/json\" \"log\" \"os\" \"time\" ) type AgentLogger struct { logger *log.Logger level LogLevel } type LogLevel int const ( DEBUG LogLevel = iota INFO WARN ERROR ) type LogEntry struct { Timestamp time.Time `json:\"timestamp\"` Level string `json:\"level\"` Agent string `json:\"agent\"` SessionID string `json:\"session_id\"` Phase string `json:\"phase\"` Message string `json:\"message\"` Duration int64 `json:\"duration_ms,omitempty\"` Error string `json:\"error,omitempty\"` Metadata map[string]interface{} `json:\"metadata,omitempty\"` } func (l *AgentLogger) Log(ctx context.Context, level LogLevel, phase, message string, metadata map[string]interface{}) { if level \u003c l.level { return } entry := LogEntry{ Timestamp: time.Now(), Level: level.String(), Agent: ctx.Value(\"agent_name\").(string), SessionID: ctx.Value(\"session_id\").(string), Phase: phase, Message: message, Metadata: metadata, } if duration, ok := metadata[\"duration\"]; ok { entry.Duration = duration.(int64) delete(metadata, \"duration\") } if err, ok := metadata[\"error\"]; ok { entry.Error = err.(error).Error() delete(metadata, \"error\") } data, _ := json.Marshal(entry) l.logger.Println(string(data)) } // 使用示例 func init() { logger := \u0026AgentLogger{ logger: log.New(os.Stdout, \"\", 0), level: INFO, } // 在 Callback 中使用 callback.BeforeRun(func(ctx context.Context, input *callback.RunInput) { logger.Log(ctx, INFO, \"before_run\", \"开始处理用户请求\", map[string]interface{}{ \"input_length\": len(input.Text), }) }) } 本地调试配置 // debug.go // +build debug package main import ( \"net/http\" _ \"net/http/pprof\" ) func init() { go func() { log.Println(\"启动 pprof 调试服务: http://localhost:6060\") http.ListenAndServe(\"localhost:6060\", nil) }() } 启动调试版本：go run -tags debug ./cmd/server\n请求追踪 func traceMiddleware(next http.Handler) http.Handler { return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { requestID := r.Header.Get(\"X-Request-ID\") if requestID == \"\" { requestID = generateRequestID() } ctx := context.WithValue(r.Context(), \"request_id\", requestID) ctx = context.WithValue(ctx, \"start_time\", time.Now()) w.Header().Set(\"X-Request-ID\", requestID) next.ServeHTTP(w, r.WithContext(ctx)) duration := time.Since(ctx.Value(\"start_time\").(time.Time)) log.Printf(\"[%s] %s %s - %v\", requestID, r.Method, r.URL.Path, duration) }) } 部署与运维陷阱 陷阱：配置漂移 开发环境、测试环境和生产环境使用不同的配置方式（环境变量、配置文件、硬编码），导致\"在我机器上能跑\"的问题。\n解决方案：使用统一的配置管理\ntype Config struct { Environment string `env:\"ENV\" envDefault:\"development\"` Port int `env:\"PORT\" envDefault:\"8080\"` GoogleAPIKey string `env:\"GOOGLE_API_KEY\" required:\"true\"` RedisURL string `env:\"REDIS_URL\" envDefault:\"redis://localhost:6379\"` LogLevel string `env:\"LOG_LEVEL\" envDefault:\"info\"` MaxConcurrency int `env:\"MAX_CONCURRENCY\" envDefault:\"100\"` // 模型配置 Model string `env:\"MODEL\" envDefault:\"gemini-2.0-flash\"` ModelTimeout int `env:\"MODEL_TIMEOUT_SEC\" envDefault:\"30\"` // 限流配置 RateLimitRPM int `env:\"RATE_LIMIT_RPM\" envDefault:\"60\"` } func LoadConfig() (*Config, error) { var cfg Config if err := env.Parse(\u0026cfg); err != nil { return nil, fmt.Errorf(\"配置解析失败: %w\", err) } return \u0026cfg, nil } 陷阱：优雅退出缺失 Agent 服务在部署更新时直接终止，导致进行中的请求被中断。\n解决方案：\nfunc main() { // ... 初始化 ... srv := \u0026http.Server{ Addr: fmt.Sprintf(\":%d\", cfg.Port), Handler: router, } // 启动服务 go func() { if err := srv.ListenAndServe(); err != nil \u0026\u0026 err != http.ErrServerClosed { log.Fatalf(\"服务启动失败: %v\", err) } }() // 等待中断信号 quit := make(chan os.Signal, 1) signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM) \u003c-quit log.Println(\"正在优雅关闭服务...\") // 给进行中的请求 30 秒完成 ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second) defer cancel() if err := srv.Shutdown(ctx); err != nil { log.Printf(\"服务关闭异常: %v\", err) } // 关闭 Plugin for _, p := range plugins { p.Shutdown(ctx) } log.Println(\"服务已安全关闭\") } 小结 踩坑记录完成。本章涵盖的核心经验：\nAPI 层：认证、配额、超时是最常见的三类错误，需要系统性的防御机制 性能层：延迟优化需要端到端的追踪分析，内存管理需要主动监控和清理 调试层：结构化日志、分布式追踪、pprof 是排查问题的三大利器 运维层：统一配置管理和优雅退出是生产部署的基本要求 接下来进入最后一个主题——Evaluation：Agent 效果评估。\n← 端到端项目实战 | Evaluation → 想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"1588","inLanguage":"zh-cn","datePublished":"2026-05-29T04:00:00+08:00","dateModified":"2026-05-29T04:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class="header apple-header" role=banner><nav class="nav apple-header__nav" aria-label="Primary navigation"><div class=apple-header__left><div class=logo><a href=https://rexai.top/ accesskey=h title="梦兽编程 (Alt + H)"><span class=logo-text><span class=logo-text-full>梦兽编程</span>
-<span class=logo-text-short>梦兽编程</span></span></a></div></div><div class=apple-header__center><ul id=menu role=menubar><li role=none><a href=https://rexai.top/ title=首页 role=menuitem><span class=apple-header__menu-label>首页</span></a></li><li class=has-submenu role=none><a href=https://rexai.top/tutorials/ title=教程 role=menuitem><span class=apple-header__menu-label>教程</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tutorials/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/tutorials/smart-contracts/ title=智能合约 role=menuitem>智能合约</a></li><li role=none><a href=https://rexai.top/tutorials/ai/ title=AI编程 role=menuitem>AI编程</a></li><li role=none><a href=https://rexai.top/tutorials/go-adk/ title="Go ADK" role=menuitem>Go ADK</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/ai/ title=AI role=menuitem><span class=apple-header__menu-label>AI</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/ai/claude-code/ title="Claude Code" role=menuitem>Claude Code</a></li><li role=none><a href=https://rexai.top/ai/codex/ title=Codex role=menuitem>Codex</a></li><li role=none><a href=https://rexai.top/ai/llm/ title=LLM role=menuitem>LLM</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/languages/ title=开发 role=menuitem><span class=apple-header__menu-label>开发</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/languages/rust/ title=Rust role=menuitem>Rust</a></li><li role=none><a href=https://rexai.top/languages/go/ title=Go role=menuitem>Go</a></li><li role=none><a href=https://rexai.top/languages/python/ title=Python role=menuitem>Python</a></li><li role=none><a href=https://rexai.top/frontend/ title=前端 role=menuitem>前端</a></li><li role=none><a href=https://rexai.top/infrastructure/ title=基础设施 role=menuitem>基础设施</a></li></ul></li><li class=has-submenu role=none><a href=https://rexai.top/tools/ title="工具 (Alt + /)" accesskey='/role="menuitem"'><span class=apple-header__menu-label>工具</span><span class=submenu-toggle aria-hidden=true>▾</span></a><ul class=submenu role=menu><li role=none><a href=https://rexai.top/tools/rexai-tool-directory/ title="AI 工具导航" role=menuitem>AI 工具导航</a></li><li role=none><a href=https://tool.rexai.top/ title="Rex 工具集" target=_blank rel="noopener noreferrer" role=menuitem>Rex 工具集</a></li></ul></li><li role=none><a href=https://rexai.top/marketing/ title=VPN网络链 role=menuitem><span class=apple-header__menu-label>VPN网络链</span></a></li><li role=none><a href=https://rexai.top/tags/ title=标签 role=menuitem><span class=apple-header__menu-label>标签</span></a></li><li role=none><a href=https://rexai.top/categories/ title=分类 role=menuitem><span class=apple-header__menu-label>分类</span></a></li></ul></div><div class=apple-header__right><div class=apple-header__actions><div class=nav-controls><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
-<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><ul class=lang-switch aria-label="Language switcher"><li><a href=https://rexai.top/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/ title=En aria-label=En>En</a></li></ul></div></div><button class=menu-toggle id=devdrawer-toggle aria-label=菜单 aria-expanded=false aria-controls=devdrawer>
-<span class=menu-toggle-bar></span>
-<span class=menu-toggle-bar></span>
-<span class=menu-toggle-bar></span></button></div></nav></header><div class=devdrawer-overlay id=devdrawer-overlay aria-hidden=true></div><aside class=devdrawer id=devdrawer role=dialog aria-modal=true aria-hidden=true aria-label=导航菜单><div class=devdrawer__header><div><p class=devdrawer__eyebrow>导航</p><h3>导航菜单</h3></div><button class=devdrawer__close id=devdrawer-close aria-label=关闭>×</button></div><ul class=devdrawer__menu><li><div class=devdrawer__item-content><a href=https://rexai.top/ class=devdrawer__link><span class=devdrawer__link-text>首页</span></a></div></li><li class=has-submenu><div class=devdrawer__item-content><a href=https://rexai.top/tutorials/ class=devdrawer__link><span class=devdrawer__link-text>教程</span>
-</a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tutorials/rust/>Rust</a></li><li><a href=https://rexai.top/tutorials/smart-contracts/>智能合约</a></li><li><a href=https://rexai.top/tutorials/ai/>AI编程</a></li><li><a href=https://rexai.top/tutorials/go-adk/>Go ADK</a></li></ul></li><li class=has-submenu><div class=devdrawer__item-content><a href=https://rexai.top/ai/ class=devdrawer__link><span class=devdrawer__link-text>AI</span>
-</a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/ai/claude-code/>Claude Code</a></li><li><a href=https://rexai.top/ai/codex/>Codex</a></li><li><a href=https://rexai.top/ai/llm/>LLM</a></li></ul></li><li class=has-submenu><div class=devdrawer__item-content><a href=https://rexai.top/languages/ class=devdrawer__link><span class=devdrawer__link-text>开发</span>
-</a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/languages/rust/>Rust</a></li><li><a href=https://rexai.top/languages/go/>Go</a></li><li><a href=https://rexai.top/languages/python/>Python</a></li><li><a href=https://rexai.top/frontend/>前端</a></li><li><a href=https://rexai.top/infrastructure/>基础设施</a></li></ul></li><li class=has-submenu><div class=devdrawer__item-content><a href=https://rexai.top/tools/ class=devdrawer__link><span class=devdrawer__link-text>工具</span>
-</a><button type=button class=devdrawer__toggle aria-label=展开子菜单 aria-expanded=false>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div><ul class=devdrawer__submenu><li><a href=https://rexai.top/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li></ul></li><li><div class=devdrawer__item-content><a href=https://rexai.top/marketing/ class=devdrawer__link><span class=devdrawer__link-text>VPN网络链</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/tags/ class=devdrawer__link><span class=devdrawer__link-text>标签</span></a></div></li><li><div class=devdrawer__item-content><a href=https://rexai.top/categories/ class=devdrawer__link><span class=devdrawer__link-text>分类</span></a></div></li></ul><div class=devdrawer__i18n aria-label="Language switcher"><p class=devdrawer__eyebrow>语言</p><ul class=devdrawer__submenu><li><a href=https://rexai.top/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/>En</a>En</a></li></ul></div></aside><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class="main apple-container page-content"><aside class="apple-untranslated apple-untranslated--hidden" id=apple-untranslated-notice><p class=apple-untranslated__title>未翻译<span class=apple-untranslated__badge id=apple-untranslated-badge>未翻译</span></p><p class=apple-untranslated__desc id=apple-untranslated-desc>正在显示默认语言内容</p></aside><style>.apple-untranslated--hidden{display:none!important}.apple-untranslated{background:var(--rex-primary-subtle);border:1px solid var(--rex-primary);border-radius:var(--rex-radius-md);padding:var(--rex-space-3)var(--rex-space-4);margin-bottom:var(--rex-space-4);font-size:var(--rex-text-sm);color:var(--rex-primary)}.apple-untranslated__title{font-weight:600;margin:0}.apple-untranslated__badge{display:none;font-size:var(--rex-text-xs);background:var(--rex-primary);color:#fff;padding:1px 6px;border-radius:var(--rex-radius-sm);margin-left:6px}.apple-untranslated__desc{margin:var(--rex-space-1)0 0;color:var(--rex-text-secondary)}</style><script>(()=>{const t=document.getElementById("apple-untranslated-notice"),e=document.getElementById("apple-untranslated-badge");if(!t)return;const n=()=>{const s=(window.location.hash||"").replace(/^#/,""),o=new URLSearchParams(s),n=o.get("untranslated");if(!n){t.classList.add("apple-untranslated--hidden"),e&&(e.style.display="none");return}t.classList.remove("apple-untranslated--hidden"),e&&(e.style.display="inline-block",e.textContent=n.toUpperCase())};window.addEventListener("hashchange",n),n()})()</script><article class="post-single apple-typography"><header class="post-header giz-post-header"><h1 class="post-title entry-hint-parent">踩坑记录与性能调优：常见问题与解决方案</h1><div class=post-description>汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。</div><div class=post-meta><span title='2026-05-29 04:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;1588 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/ style=margin-left:.5rem>
+<!doctype html><html lang=zh-cn dir=auto class=js><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>踩坑记录与性能调优：常见问题与解决方案 | 梦兽编程</title><meta name=keywords content="Go,ADK,踩坑,性能调优,教程"><meta name=description content="汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.d905ea94e5f67fb9b8417957a242d4d639b68e838ac142e843338a684a578cc3.css integrity="sha256-2QXqlOX2f7m4QXlXokLU1jm2joOKwULoQzOKaEpXjMM=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","author":{"@type":"Person","name":"梦兽编程","url":"https://rexai.top/"},"dateModified":"2026-05-29","datePublished":"2026-05-29","description":"汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。","headline":"踩坑记录与性能调优：常见问题与解决方案","keywords":"Go,ADK,踩坑,性能调优,教程","mainEntityOfPage":{"@id":"https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/","@type":"WebPage"},"publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.svg"},"name":"梦兽编程"}}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="踩坑记录与性能调优：常见问题与解决方案"><meta property="og:description" content="汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T04:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T04:00:00+08:00"><meta property="article:author" content="梦兽编程"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="踩坑"><meta property="article:tag" content="性能调优"><meta property="article:tag" content="教程"><meta name=twitter:card content="summary"><meta name=twitter:title content="踩坑记录与性能调优：常见问题与解决方案"><meta name=twitter:description content="汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。"><meta name=twitter:label1 content="Written by"><meta name=twitter:data1 content="梦兽编程"><meta name=twitter:label2 content="Reading time"><meta name=twitter:data2 content="8 minutes"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"教程","item":"https://rexai.top/tutorials/"},{"@type":"ListItem","position":2,"name":"Go ADK 实战完全指南","item":"https://rexai.top/tutorials/go-adk/"},{"@type":"ListItem","position":3,"name":"模块 10：实战综合","item":"https://rexai.top/tutorials/go-adk/10-realworld/"},{"@type":"ListItem","position":4,"name":"踩坑记录与性能调优：常见问题与解决方案","item":"https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"踩坑记录与性能调优：常见问题与解决方案","name":"踩坑记录与性能调优：常见问题与解决方案","description":"汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。","keywords":["Go","ADK","踩坑","性能调优","教程"],"articleBody":"踩坑记录与性能调优：常见问题与解决方案 本章汇总了在真实生产环境中使用 Go ADK 开发 Agent 系统时遇到的典型问题、踩坑经验和性能调优方案。这些内容来源于多个项目的实战总结，涵盖了从开发调试到生产运维的全生命周期。每一个问题都附有根因分析、解决方案和预防措施，力求让读者\"踩一次坑，长一辈子智\"。\nAPI 层常见问题 错误 1：UNAUTHORIZED —— 认证失败 现象：Agent 启动或运行时返回 UNAUTHORIZED 错误，提示 API Key 无效。\n根因分析：\n环境变量未加载：.env 文件存在但未正确加载到进程环境 Key 格式错误：复制时包含了多余空格或换行符 Key 权限不足：API Key 未开通对应模型或服务的访问权限 Key 已过期/被撤销：在 Google Cloud Console 中手动撤销或达到使用期限 多项目配置冲突：GOOGLE_APPLICATION_CREDENTIALS 与 GOOGLE_API_KEY 指向不同项目 解决方案：\npackage main import ( \"fmt\" \"os\" \"strings\" ) func validateAPIKey() error { key := os.Getenv(\"GOOGLE_API_KEY\") if key == \"\" { return fmt.Errorf(\"GOOGLE_API_KEY 未设置\") } // 去除首尾空白字符 key = strings.TrimSpace(key) // 基础格式校验（Gemini API Key 通常为 39 位） if len(key) \u003c 20 { return fmt.Errorf(\"GOOGLE_API_KEY 格式异常，长度过短: %d\", len(key)) } // 检查是否包含非法字符 if strings.ContainsAny(key, \"\\n\\r\\t\") { return fmt.Errorf(\"GOOGLE_API_KEY 包含非法空白字符\") } // 设置回环境变量（去除空白后） os.Setenv(\"GOOGLE_API_KEY\", key) return nil } func main() { // 优先加载 .env 文件 if err := loadEnvFile(\".env\"); err != nil { log.Printf(\"加载 .env 文件失败（可能不存在）: %v\", err) } if err := validateAPIKey(); err != nil { log.Fatalf(\"API Key 验证失败: %v\", err) } // 继续初始化... } func loadEnvFile(path string) error { data, err := os.ReadFile(path) if err != nil { return err } for _, line := range strings.Split(string(data), \"\\n\") { line = strings.TrimSpace(line) if line == \"\" || strings.HasPrefix(line, \"#\") { continue } parts := strings.SplitN(line, \"=\", 2) if len(parts) != 2 { continue } key := strings.TrimSpace(parts[0]) value := strings.TrimSpace(parts[1]) // 去除可能的引号包裹 value = strings.Trim(value, `\"'`) os.Setenv(key, value) } return nil } 预防措施：\n在 CI/CD 流程中加入 API Key 格式校验步骤 使用 Secret Manager（如 Google Secret Manager、AWS Secrets Manager）而非环境变量存储密钥 实现 Key 健康检查端点，定期验证 Key 有效性 错误 2：RESOURCE_EXHAUSTED —— 配额耗尽 现象：请求返回 RESOURCE_EXHAUSTED，提示已达到速率限制或配额上限。\n根因分析：\nRPM（Requests Per Minute）超限：突发流量超过 API 的每分钟请求限制 TPD（Tokens Per Day）超限：日 Token 消耗达到上限 并发连接数超限：同时建立的连接数超过限制 项目级配额未调整：默认配额较低，未根据业务需求申请提升 解决方案：\npackage ratelimit import ( \"context\" \"fmt\" \"sync\" \"time\" \"golang.org/x/time/rate\" ) // AdaptiveRateLimiter 自适应限流器 type AdaptiveRateLimiter struct { limiter *rate.Limiter mu sync.RWMutex currentRPM int minRPM int maxRPM int backoffUntil time.Time } func NewAdaptiveRateLimiter(minRPM, maxRPM int) *AdaptiveRateLimiter { return \u0026AdaptiveRateLimiter{ limiter: rate.NewLimiter(rate.Every(time.Minute/time.Duration(maxRPM)), maxRPM), currentRPM: maxRPM, minRPM: minRPM, maxRPM: maxRPM, } } func (a *AdaptiveRateLimiter) Wait(ctx context.Context) error { a.mu.RLock() backoff := a.backoffUntil a.mu.RUnlock() if time.Now().Before(backoff) { select { case \u003c-time.After(time.Until(backoff)): case \u003c-ctx.Done(): return ctx.Err() } } return a.limiter.Wait(ctx) } func (a *AdaptiveRateLimiter) OnSuccess() { a.mu.Lock() defer a.mu.Unlock() // 成功时缓慢恢复速率 if a.currentRPM \u003c a.maxRPM { a.currentRPM = min(a.currentRPM+1, a.maxRPM) a.limiter.SetLimit(rate.Every(time.Minute / time.Duration(a.currentRPM))) } } func (a *AdaptiveRateLimiter) OnRateLimit() { a.mu.Lock() defer a.mu.Unlock() // 触发限流时，降低速率并进入退避期 a.currentRPM = max(a.currentRPM/2, a.minRPM) a.limiter.SetLimit(rate.Every(time.Minute / time.Duration(a.currentRPM))) a.backoffUntil = time.Now().Add(30 * time.Second) log.Printf(\"触发速率限制，降级至 %d RPM，退避 30 秒\", a.currentRPM) } // 在 Agent 调用处使用 func callWithRateLimit(ctx context.Context, limiter *AdaptiveRateLimiter, fn func() error) error { if err := limiter.Wait(ctx); err != nil { return err } err := fn() if err != nil { if isRateLimitError(err) { limiter.OnRateLimit() } return err } limiter.OnSuccess() return nil } 长期策略：\n申请提升配额（Google Cloud Console → Quotas） 实现多层缓存减少对 API 的依赖 使用模型降级策略：高峰期自动切换到更轻量的模型 错误 3：context deadline exceeded —— 请求超时 现象：请求超时，上下文被取消。\n根因分析：\nLLM 推理耗时过长：复杂推理或长上下文导致模型响应慢 Tool 执行阻塞：数据库查询、外部 API 调用未设置超时 级联超时：外层超时设置过短，内层操作未完成就被取消 网络抖动：与 LLM API 之间的网络不稳定 解决方案：\npackage timeout import ( \"context\" \"fmt\" \"time\" ) // LayeredTimeout 分层超时管理 type LayeredTimeout struct { TotalTimeout time.Duration // 用户感知的总超时 ModelTimeout time.Duration // LLM 调用超时 ToolTimeout time.Duration // 单个 Tool 超时 StreamChunkTimeout time.Duration // 流式输出单块超时 } func DefaultLayeredTimeout() LayeredTimeout { return LayeredTimeout{ TotalTimeout: 30 * time.Second, ModelTimeout: 20 * time.Second, ToolTimeout: 5 * time.Second, StreamChunkTimeout: 2 * time.Second, } } func (lt LayeredTimeout) Execute(ctx context.Context, fn func(context.Context) error) error { ctx, cancel := context.WithTimeout(ctx, lt.TotalTimeout) defer cancel() done := make(chan error, 1) go func() { done \u003c- fn(ctx) }() select { case err := \u003c-done: return err case \u003c-ctx.Done(): return fmt.Errorf(\"请求总超时 (%v): %w\", lt.TotalTimeout, ctx.Err()) } } // Tool 调用包装器 func CallToolWithTimeout(ctx context.Context, toolName string, timeout time.Duration, fn func(context.Context) (string, error)) (string, error) { ctx, cancel := context.WithTimeout(ctx, timeout) defer cancel() result, err := fn(ctx) if err != nil { if ctx.Err() == context.DeadlineExceeded { return fmt.Sprintf(\"[%s 查询超时，请稍后重试]\", toolName), nil } return \"\", err } return result, nil } 关键原则：总超时 \u003e 模型超时 + Tool 超时 × 最大 Tool 调用次数，并预留 20% 缓冲。\n性能问题诊断与调优 问题 1：响应延迟高 诊断流程：\n用户感知延迟高 ↓ [分解延迟] 使用分布式追踪（OpenTelemetry）拆解各阶段耗时 ↓ ├─ 网络传输延迟？→ 检查 CDN、就近部署、连接池 ├─ 模型推理延迟？→ 模型降级、Context Caching、Prompt 优化 ├─ Tool 调用延迟？→ Tool 并行化、缓存、超时优化 ├─ 路由决策延迟？→ 简化分类逻辑、缓存路由结果 └─ 序列化/反序列化？→ 使用更高效的协议（如 protobuf） 模型推理优化：\n// 1. Context Caching：缓存系统指令和重复上下文 func (a *Agent) buildPromptWithCache(ctx context.Context, userInput string) (string, error) { cacheKey := a.config.Instruction + a.session.GetSummary() if cached, ok := a.promptCache.Get(cacheKey); ok { // 复用缓存的上下文前缀，只追加用户输入 return cached.(string) + \"\\nUser: \" + userInput, nil } fullPrompt := a.config.Instruction + \"\\n\" + a.session.GetHistory() + \"\\nUser: \" + userInput a.promptCache.Set(cacheKey, fullPrompt, 10*time.Minute) return fullPrompt, nil } // 2. 模型选择策略：根据查询复杂度动态选择模型 func selectModel(query string, history []Message) string { // 简单查询使用轻量模型 if isSimpleQuery(query) \u0026\u0026 len(history) \u003c 3 { return \"gemini-2.0-flash\" // 更快、更便宜 } // 复杂推理使用专业模型 if requiresComplexReasoning(query) { return \"gemini-2.0-pro\" } // 默认使用平衡型 return \"gemini-2.0-flash\" } Tool 调用并行化：\nfunc (a *Agent) callToolsParallel(ctx context.Context, toolCalls []ToolCall) []ToolResult { var wg sync.WaitGroup results := make([]ToolResult, len(toolCalls)) for i, tc := range toolCalls { wg.Add(1) go func(index int, call ToolCall) { defer wg.Done() result, err := a.executeTool(ctx, call) results[index] = ToolResult{ ToolName: call.Name, Result: result, Error: err, } }(i, tc) } wg.Wait() return results } 问题 2：内存暴涨与 OOM 根因分析：\nSession 堆积：未清理的会话对象持续累积 State 膨胀：用户在 State 中存储大量数据（如完整对话历史） ** goroutine 泄漏**：未正确关闭的流式连接或后台任务 缓存无限增长：未设置容量上限的缓存 解决方案：\npackage memory import ( \"runtime\" \"time\" \"github.com/shirou/gopsutil/mem\" ) // MemoryGuard 内存守护 type MemoryGuard struct { maxMemoryMB uint64 gcThreshold float64 sessionLimit int checkInterval time.Duration } func (g *MemoryGuard) Start(sessionManager *SessionManager) { ticker := time.NewTicker(g.checkInterval) go func() { for range ticker.C { v, _ := mem.VirtualMemory() usedPercent := v.UsedPercent if usedPercent \u003e g.gcThreshold { log.Printf(\"内存使用率 %.1f%% 超过阈值 %.1f%%，触发清理\", usedPercent, g.gcThreshold) // 1. 强制 GC runtime.GC() // 2. 清理过期 Session evicted := sessionManager.EvictExpired(30 * time.Minute) log.Printf(\"已清理 %d 个过期会话\", evicted) // 3. 如果仍然紧张，清理最久未使用的 Session if v, _ := mem.VirtualMemory(); v.UsedPercent \u003e g.gcThreshold { lruEvicted := sessionManager.EvictLRU(g.sessionLimit / 2) log.Printf(\"LRU 清理 %d 个会话\", lruEvicted) } } } }() } // SessionManager 实现 type SessionManager struct { sessions map[string]*Session mu sync.RWMutex maxSize int maxStateSize int // 单个 State 最大大小（字节） } func (sm *SessionManager) SetState(sessionID string, key string, value interface{}) error { sm.mu.Lock() defer sm.mu.Unlock() session, ok := sm.sessions[sessionID] if !ok { return fmt.Errorf(\"会话不存在: %s\", sessionID) } // 检查 State 大小限制 data, _ := json.Marshal(value) if len(data) \u003e sm.maxStateSize { return fmt.Errorf(\"State 数据过大: %d bytes，最大允许 %d\", len(data), sm.maxStateSize) } session.State[key] = value session.LastActive = time.Now() return nil } 问题 3： goroutine 泄漏 常见泄漏场景：\n// 错误示例：未关闭的流式通道 func badStream() { ch := make(chan string) go func() { for { select { case msg := \u003c-someSource: ch \u003c- msg // 如果消费者已离开，这里会永远阻塞 } } }() return ch } // 正确示例：使用 context 控制生命周期 func goodStream(ctx context.Context) \u003c-chan string { ch := make(chan string) go func() { defer close(ch) for { select { case msg := \u003c-someSource: select { case ch \u003c- msg: case \u003c-ctx.Done(): return } case \u003c-ctx.Done(): return } } }() return ch } 检测方法：\nimport \"runtime\" // 监控 goroutine 数量 func monitorGoroutines() { ticker := time.NewTicker(1 * time.Minute) go func() { baseline := runtime.NumGoroutine() for range ticker.C { current := runtime.NumGoroutine() if current \u003e baseline*2 { log.Printf(\"[ALERT] goroutine 数量异常: %d (基线: %d)\", current, baseline) // 输出 goroutine 堆栈用于分析 buf := make([]byte, 1\u003c\u003c20) n := runtime.Stack(buf, true) log.Printf(\"当前 goroutine 堆栈:\\n%s\", buf[:n]) } } }() } 调试技巧与工具 结构化日志 package logging import ( \"context\" \"encoding/json\" \"log\" \"os\" \"time\" ) type AgentLogger struct { logger *log.Logger level LogLevel } type LogLevel int const ( DEBUG LogLevel = iota INFO WARN ERROR ) type LogEntry struct { Timestamp time.Time `json:\"timestamp\"` Level string `json:\"level\"` Agent string `json:\"agent\"` SessionID string `json:\"session_id\"` Phase string `json:\"phase\"` Message string `json:\"message\"` Duration int64 `json:\"duration_ms,omitempty\"` Error string `json:\"error,omitempty\"` Metadata map[string]interface{} `json:\"metadata,omitempty\"` } func (l *AgentLogger) Log(ctx context.Context, level LogLevel, phase, message string, metadata map[string]interface{}) { if level \u003c l.level { return } entry := LogEntry{ Timestamp: time.Now(), Level: level.String(), Agent: ctx.Value(\"agent_name\").(string), SessionID: ctx.Value(\"session_id\").(string), Phase: phase, Message: message, Metadata: metadata, } if duration, ok := metadata[\"duration\"]; ok { entry.Duration = duration.(int64) delete(metadata, \"duration\") } if err, ok := metadata[\"error\"]; ok { entry.Error = err.(error).Error() delete(metadata, \"error\") } data, _ := json.Marshal(entry) l.logger.Println(string(data)) } // 使用示例 func init() { logger := \u0026AgentLogger{ logger: log.New(os.Stdout, \"\", 0), level: INFO, } // 在 Callback 中使用 callback.BeforeRun(func(ctx context.Context, input *callback.RunInput) { logger.Log(ctx, INFO, \"before_run\", \"开始处理用户请求\", map[string]interface{}{ \"input_length\": len(input.Text), }) }) } 本地调试配置 // debug.go // +build debug package main import ( \"net/http\" _ \"net/http/pprof\" ) func init() { go func() { log.Println(\"启动 pprof 调试服务: http://localhost:6060\") http.ListenAndServe(\"localhost:6060\", nil) }() } 启动调试版本：go run -tags debug ./cmd/server\n请求追踪 func traceMiddleware(next http.Handler) http.Handler { return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { requestID := r.Header.Get(\"X-Request-ID\") if requestID == \"\" { requestID = generateRequestID() } ctx := context.WithValue(r.Context(), \"request_id\", requestID) ctx = context.WithValue(ctx, \"start_time\", time.Now()) w.Header().Set(\"X-Request-ID\", requestID) next.ServeHTTP(w, r.WithContext(ctx)) duration := time.Since(ctx.Value(\"start_time\").(time.Time)) log.Printf(\"[%s] %s %s - %v\", requestID, r.Method, r.URL.Path, duration) }) } 部署与运维陷阱 陷阱：配置漂移 开发环境、测试环境和生产环境使用不同的配置方式（环境变量、配置文件、硬编码），导致\"在我机器上能跑\"的问题。\n解决方案：使用统一的配置管理\ntype Config struct { Environment string `env:\"ENV\" envDefault:\"development\"` Port int `env:\"PORT\" envDefault:\"8080\"` GoogleAPIKey string `env:\"GOOGLE_API_KEY\" required:\"true\"` RedisURL string `env:\"REDIS_URL\" envDefault:\"redis://localhost:6379\"` LogLevel string `env:\"LOG_LEVEL\" envDefault:\"info\"` MaxConcurrency int `env:\"MAX_CONCURRENCY\" envDefault:\"100\"` // 模型配置 Model string `env:\"MODEL\" envDefault:\"gemini-2.0-flash\"` ModelTimeout int `env:\"MODEL_TIMEOUT_SEC\" envDefault:\"30\"` // 限流配置 RateLimitRPM int `env:\"RATE_LIMIT_RPM\" envDefault:\"60\"` } func LoadConfig() (*Config, error) { var cfg Config if err := env.Parse(\u0026cfg); err != nil { return nil, fmt.Errorf(\"配置解析失败: %w\", err) } return \u0026cfg, nil } 陷阱：优雅退出缺失 Agent 服务在部署更新时直接终止，导致进行中的请求被中断。\n解决方案：\nfunc main() { // ... 初始化 ... srv := \u0026http.Server{ Addr: fmt.Sprintf(\":%d\", cfg.Port), Handler: router, } // 启动服务 go func() { if err := srv.ListenAndServe(); err != nil \u0026\u0026 err != http.ErrServerClosed { log.Fatalf(\"服务启动失败: %v\", err) } }() // 等待中断信号 quit := make(chan os.Signal, 1) signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM) \u003c-quit log.Println(\"正在优雅关闭服务...\") // 给进行中的请求 30 秒完成 ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second) defer cancel() if err := srv.Shutdown(ctx); err != nil { log.Printf(\"服务关闭异常: %v\", err) } // 关闭 Plugin for _, p := range plugins { p.Shutdown(ctx) } log.Println(\"服务已安全关闭\") } 小结 踩坑记录完成。本章涵盖的核心经验：\nAPI 层：认证、配额、超时是最常见的三类错误，需要系统性的防御机制 性能层：延迟优化需要端到端的追踪分析，内存管理需要主动监控和清理 调试层：结构化日志、分布式追踪、pprof 是排查问题的三大利器 运维层：统一配置管理和优雅退出是生产部署的基本要求 接下来进入最后一个主题——Evaluation：Agent 效果评估。\n← 端到端项目实战 | Evaluation → 想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。\n","wordCount":"1588","inLanguage":"zh-cn","datePublished":"2026-05-29T04:00:00+08:00","dateModified":"2026-05-29T04:00:00+08:00","author":{"@type":"Person","name":"梦兽编程"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://rexai.top/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/"},"publisher":{"@type":"Organization","name":"梦兽编程","logo":{"@type":"ImageObject","url":"https://rexai.top/favicon.ico"}}}</script></head><body class=site-body><header class=site-header id=site-header><div class=site-header__inner><button id=nav-toggle class="icon-btn nav-toggle" aria-label=菜单 aria-expanded=false aria-controls=mobile-menu>
+<span></span><span></span><span></span>
+</button>
+<a class=brand href=/ aria-label=梦兽编程><span class=brand__mark>梦</span>
+<span class=brand__text>梦兽编程</span></a><nav class=site-nav aria-label=主导航><ul class=site-nav__list><li class=site-nav__item><a href=/ class=site-nav__link>首页</a></li><li class="site-nav__item has-child"><a href=/tutorials/ class=site-nav__link>教程</a><ul class=site-nav__sub><li><a href=/tutorials/smart-contracts/>智能合约</a></li><li><a href=/tutorials/go-adk/>Go ADK</a></li></ul></li><li class="site-nav__item has-child"><a href=/ai/ class=site-nav__link>AI</a><ul class=site-nav__sub><li><a href=/ai/claude-code/>Claude Code</a></li><li><a href=/ai/codex/>Codex</a></li><li><a href=/ai/llm/>LLM</a></li></ul></li><li class="site-nav__item has-child"><a href=/languages/ class=site-nav__link>开发</a><ul class=site-nav__sub><li><a href=/languages/rust/>Rust</a></li><li><a href=/languages/go/>Go</a></li><li><a href=/languages/python/>Python</a></li><li><a href=/frontend/>前端</a></li><li><a href=/infrastructure/>基础设施</a></li></ul></li><li class="site-nav__item has-child"><a href=/tools/ class=site-nav__link>工具</a><ul class=site-nav__sub><li><a href=/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li><li><a href=/marketing/>VPN网络链</a></li></ul></li><li class="site-nav__item has-child"><a href=/categories/ class=site-nav__link>探索</a><ul class=site-nav__sub><li><a href=/tags/>标签</a></li><li><a href=/categories/>分类</a></li></ul></li><li class=site-nav__item><a href=/about/ class=site-nav__link>关于</a></li></ul></nav><div class=site-header__actions><button id=theme-toggle class=icon-btn title=切换主题 aria-label=切换主题>
+<svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button><ul class=lang-switch aria-label=语言切换><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/>En</a></li></ul></div></div><div id=mobile-overlay class=mobile-overlay></div><aside id=mobile-menu class=mobile-menu aria-hidden=true aria-label=移动端导航><ul><li><a href=/>首页</a></li><li><a href=/tutorials/>教程</a><ul class=mobile-sub><li><a href=/tutorials/smart-contracts/>智能合约</a></li><li><a href=/tutorials/go-adk/>Go ADK</a></li></ul></li><li><a href=/ai/>AI</a><ul class=mobile-sub><li><a href=/ai/claude-code/>Claude Code</a></li><li><a href=/ai/codex/>Codex</a></li><li><a href=/ai/llm/>LLM</a></li></ul></li><li><a href=/languages/>开发</a><ul class=mobile-sub><li><a href=/languages/rust/>Rust</a></li><li><a href=/languages/go/>Go</a></li><li><a href=/languages/python/>Python</a></li><li><a href=/frontend/>前端</a></li><li><a href=/infrastructure/>基础设施</a></li></ul></li><li><a href=/tools/>工具</a><ul class=mobile-sub><li><a href=/tools/rexai-tool-directory/>AI 工具导航</a></li><li><a href=https://tool.rexai.top/ target=_blank rel="noopener noreferrer">Rex 工具集</a></li><li><a href=/marketing/>VPN网络链</a></li></ul></li><li><a href=/categories/>探索</a><ul class=mobile-sub><li><a href=/tags/>标签</a></li><li><a href=/categories/>分类</a></li></ul></li><li><a href=/about/>关于</a></li></ul><div class=mobile-lang><a class="btn btn--ghost" href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/>En</a></div></aside></header><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class=glass-main><article class=post-single><header class=page-head><h1 class="post-title entry-hint-parent">踩坑记录与性能调优：常见问题与解决方案</h1><p class=post-description>汇总 Go ADK 开发中的常见问题、踩坑记录和性能调优经验——来自真实项目的实战总结。</p><div class=post-meta><span title='2026-05-29 04:00:00 +0800 +0800'>May 29, 2026</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;1588 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/ style=margin-left:.5rem>
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
-<span class=waline-pageview-number id=waline-pv-338f371e5b2e5d95c738328dbcd2fe30642393d1c29d3f143cdafa3c1e959832 data-path=/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/>-</span>
-</span>&nbsp;|&nbsp;<span class=rex-translations>
-<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3.0 014 10 15.3 15.3.0 01-4 10A15.3 15.3.0 018 12a15.3 15.3.0 014-10z"/></svg>
-<span class=rex-translations__links><a href=https://rexai.top/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/ class=rex-translations__link>English</a></span></span></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#%e8%b8%a9%e5%9d%91%e8%ae%b0%e5%bd%95%e4%b8%8e%e6%80%a7%e8%83%bd%e8%b0%83%e4%bc%98%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88 aria-label=踩坑记录与性能调优：常见问题与解决方案>踩坑记录与性能调优：常见问题与解决方案</a><ul><li><a href=#api-%e5%b1%82%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98 aria-label="API 层常见问题">API 层常见问题</a><ul><li><a href=#%e9%94%99%e8%af%af-1unauthorized--%e8%ae%a4%e8%af%81%e5%a4%b1%e8%b4%a5 aria-label="错误 1：UNAUTHORIZED —— 认证失败">错误 1：UNAUTHORIZED —— 认证失败</a></li><li><a href=#%e9%94%99%e8%af%af-2resource_exhausted--%e9%85%8d%e9%a2%9d%e8%80%97%e5%b0%bd aria-label="错误 2：RESOURCE_EXHAUSTED —— 配额耗尽">错误 2：RESOURCE_EXHAUSTED —— 配额耗尽</a></li><li><a href=#%e9%94%99%e8%af%af-3context-deadline-exceeded--%e8%af%b7%e6%b1%82%e8%b6%85%e6%97%b6 aria-label="错误 3：context deadline exceeded —— 请求超时">错误 3：context deadline exceeded —— 请求超时</a></li></ul></li><li><a href=#%e6%80%a7%e8%83%bd%e9%97%ae%e9%a2%98%e8%af%8a%e6%96%ad%e4%b8%8e%e8%b0%83%e4%bc%98 aria-label=性能问题诊断与调优>性能问题诊断与调优</a><ul><li><a href=#%e9%97%ae%e9%a2%98-1%e5%93%8d%e5%ba%94%e5%bb%b6%e8%bf%9f%e9%ab%98 aria-label="问题 1：响应延迟高">问题 1：响应延迟高</a></li><li><a href=#%e9%97%ae%e9%a2%98-2%e5%86%85%e5%ad%98%e6%9a%b4%e6%b6%a8%e4%b8%8e-oom aria-label="问题 2：内存暴涨与 OOM">问题 2：内存暴涨与 OOM</a></li><li><a href=#%e9%97%ae%e9%a2%98-3-goroutine-%e6%b3%84%e6%bc%8f aria-label="问题 3： goroutine 泄漏">问题 3： goroutine 泄漏</a></li></ul></li><li><a href=#%e8%b0%83%e8%af%95%e6%8a%80%e5%b7%a7%e4%b8%8e%e5%b7%a5%e5%85%b7 aria-label=调试技巧与工具>调试技巧与工具</a><ul><li><a href=#%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97 aria-label=结构化日志>结构化日志</a></li><li><a href=#%e6%9c%ac%e5%9c%b0%e8%b0%83%e8%af%95%e9%85%8d%e7%bd%ae aria-label=本地调试配置>本地调试配置</a></li><li><a href=#%e8%af%b7%e6%b1%82%e8%bf%bd%e8%b8%aa aria-label=请求追踪>请求追踪</a></li></ul></li><li><a href=#%e9%83%a8%e7%bd%b2%e4%b8%8e%e8%bf%90%e7%bb%b4%e9%99%b7%e9%98%b1 aria-label=部署与运维陷阱>部署与运维陷阱</a><ul><li><a href=#%e9%99%b7%e9%98%b1%e9%85%8d%e7%bd%ae%e6%bc%82%e7%a7%bb aria-label=陷阱：配置漂移>陷阱：配置漂移</a></li><li><a href=#%e9%99%b7%e9%98%b1%e4%bc%98%e9%9b%85%e9%80%80%e5%87%ba%e7%bc%ba%e5%a4%b1 aria-label=陷阱：优雅退出缺失>陷阱：优雅退出缺失</a></li></ul></li><li><a href=#%e5%b0%8f%e7%bb%93 aria-label=小结>小结</a></li></ul></li></ul></div></details></div><div class=post-content><h1 id=踩坑记录与性能调优常见问题与解决方案>踩坑记录与性能调优：常见问题与解决方案<a hidden class=anchor aria-hidden=true href=#踩坑记录与性能调优常见问题与解决方案>#</a></h1><p>本章汇总了在真实生产环境中使用 Go ADK 开发 Agent 系统时遇到的典型问题、踩坑经验和性能调优方案。这些内容来源于多个项目的实战总结，涵盖了从开发调试到生产运维的全生命周期。每一个问题都附有根因分析、解决方案和预防措施，力求让读者"踩一次坑，长一辈子智"。</p><h2 id=api-层常见问题>API 层常见问题<a hidden class=anchor aria-hidden=true href=#api-层常见问题>#</a></h2><h3 id=错误-1unauthorized--认证失败>错误 1：<code>UNAUTHORIZED</code> —— 认证失败<a hidden class=anchor aria-hidden=true href=#错误-1unauthorized--认证失败>#</a></h3><p><strong>现象</strong>：Agent 启动或运行时返回 <code>UNAUTHORIZED</code> 错误，提示 API Key 无效。</p><p><strong>根因分析</strong>：</p><ol><li><strong>环境变量未加载</strong>：<code>.env</code> 文件存在但未正确加载到进程环境</li><li><strong>Key 格式错误</strong>：复制时包含了多余空格或换行符</li><li><strong>Key 权限不足</strong>：API Key 未开通对应模型或服务的访问权限</li><li><strong>Key 已过期/被撤销</strong>：在 Google Cloud Console 中手动撤销或达到使用期限</li><li><strong>多项目配置冲突</strong>：<code>GOOGLE_APPLICATION_CREDENTIALS</code> 与 <code>GOOGLE_API_KEY</code> 指向不同项目</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>package</span> main
+<span class=waline-pageview-number id=waline-pv-338f371e5b2e5d95c738328dbcd2fe30642393d1c29d3f143cdafa3c1e959832 data-path=/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/>-</span></span></div></header><div class=post-layout><div class=post-main><div class=post-content><h1 id=踩坑记录与性能调优常见问题与解决方案>踩坑记录与性能调优：常见问题与解决方案<a hidden class=anchor aria-hidden=true href=#踩坑记录与性能调优常见问题与解决方案>#</a></h1><p>本章汇总了在真实生产环境中使用 Go ADK 开发 Agent 系统时遇到的典型问题、踩坑经验和性能调优方案。这些内容来源于多个项目的实战总结，涵盖了从开发调试到生产运维的全生命周期。每一个问题都附有根因分析、解决方案和预防措施，力求让读者"踩一次坑，长一辈子智"。</p><h2 id=api-层常见问题>API 层常见问题<a hidden class=anchor aria-hidden=true href=#api-层常见问题>#</a></h2><h3 id=错误-1unauthorized--认证失败>错误 1：<code>UNAUTHORIZED</code> —— 认证失败<a hidden class=anchor aria-hidden=true href=#错误-1unauthorized--认证失败>#</a></h3><p><strong>现象</strong>：Agent 启动或运行时返回 <code>UNAUTHORIZED</code> 错误，提示 API Key 无效。</p><p><strong>根因分析</strong>：</p><ol><li><strong>环境变量未加载</strong>：<code>.env</code> 文件存在但未正确加载到进程环境</li><li><strong>Key 格式错误</strong>：复制时包含了多余空格或换行符</li><li><strong>Key 权限不足</strong>：API Key 未开通对应模型或服务的访问权限</li><li><strong>Key 已过期/被撤销</strong>：在 Google Cloud Console 中手动撤销或达到使用期限</li><li><strong>多项目配置冲突</strong>：<code>GOOGLE_APPLICATION_CREDENTIALS</code> 与 <code>GOOGLE_API_KEY</code> 指向不同项目</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;os&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;strings&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;os&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;strings&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> validateAPIKey() <span style=color:#2b91af>error</span> {
-</span></span><span style=display:flex><span>    key := os.Getenv(<span style=color:#a31515>&#34;GOOGLE_API_KEY&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>validateAPIKey</span>() <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    key <span style=color:#ff79c6>:=</span> os.<span style=color:#50fa7b>Getenv</span>(<span style=color:#f1fa8c>&#34;GOOGLE_API_KEY&#34;</span>)
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> key == <span style=color:#a31515>&#34;&#34;</span> {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;GOOGLE_API_KEY 未设置&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> key <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#34;&#34;</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;GOOGLE_API_KEY 未设置&#34;</span>)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 去除首尾空白字符</span>
-</span></span><span style=display:flex><span>    key = strings.TrimSpace(key)
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 去除首尾空白字符</span>
+</span></span><span style=display:flex><span>    key = strings.<span style=color:#50fa7b>TrimSpace</span>(key)
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 基础格式校验（Gemini API Key 通常为 39 位）</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> len(key) &lt; 20 {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;GOOGLE_API_KEY 格式异常，长度过短: %d&#34;</span>, len(key))
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 基础格式校验（Gemini API Key 通常为 39 位）</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(key) &lt; <span style=color:#bd93f9>20</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;GOOGLE_API_KEY 格式异常，长度过短: %d&#34;</span>, <span style=color:#8be9fd;font-style:italic>len</span>(key))
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 检查是否包含非法字符</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> strings.ContainsAny(key, <span style=color:#a31515>&#34;\n\r\t&#34;</span>) {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;GOOGLE_API_KEY 包含非法空白字符&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 检查是否包含非法字符</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> strings.<span style=color:#50fa7b>ContainsAny</span>(key, <span style=color:#f1fa8c>&#34;\n\r\t&#34;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;GOOGLE_API_KEY 包含非法空白字符&#34;</span>)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 设置回环境变量（去除空白后）</span>
-</span></span><span style=display:flex><span>    os.Setenv(<span style=color:#a31515>&#34;GOOGLE_API_KEY&#34;</span>, key)
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 设置回环境变量（去除空白后）</span>
+</span></span><span style=display:flex><span>    os.<span style=color:#50fa7b>Setenv</span>(<span style=color:#f1fa8c>&#34;GOOGLE_API_KEY&#34;</span>, key)
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> main() {
-</span></span><span style=display:flex><span>    <span style=color:green>// 优先加载 .env 文件</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := loadEnvFile(<span style=color:#a31515>&#34;.env&#34;</span>); err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        log.Printf(<span style=color:#a31515>&#34;加载 .env 文件失败（可能不存在）: %v&#34;</span>, err)
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 优先加载 .env 文件</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>loadEnvFile</span>(<span style=color:#f1fa8c>&#34;.env&#34;</span>); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;加载 .env 文件失败（可能不存在）: %v&#34;</span>, err)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := validateAPIKey(); err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        log.Fatalf(<span style=color:#a31515>&#34;API Key 验证失败: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>validateAPIKey</span>(); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatalf</span>(<span style=color:#f1fa8c>&#34;API Key 验证失败: %v&#34;</span>, err)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 继续初始化...</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 继续初始化...</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> loadEnvFile(path <span style=color:#2b91af>string</span>) <span style=color:#2b91af>error</span> {
-</span></span><span style=display:flex><span>    data, err := os.ReadFile(path)
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> err
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>loadEnvFile</span>(path <span style=color:#8be9fd>string</span>) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    data, err <span style=color:#ff79c6>:=</span> os.<span style=color:#50fa7b>ReadFile</span>(path)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> err
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> _, line := <span style=color:#00f>range</span> strings.Split(string(data), <span style=color:#a31515>&#34;\n&#34;</span>) {
-</span></span><span style=display:flex><span>        line = strings.TrimSpace(line)
-</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> line == <span style=color:#a31515>&#34;&#34;</span> || strings.HasPrefix(line, <span style=color:#a31515>&#34;#&#34;</span>) {
-</span></span><span style=display:flex><span>            <span style=color:#00f>continue</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, line <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> strings.<span style=color:#50fa7b>Split</span>(<span style=color:#8be9fd;font-style:italic>string</span>(data), <span style=color:#f1fa8c>&#34;\n&#34;</span>) {
+</span></span><span style=display:flex><span>        line = strings.<span style=color:#50fa7b>TrimSpace</span>(line)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> line <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#34;&#34;</span> <span style=color:#ff79c6>||</span> strings.<span style=color:#50fa7b>HasPrefix</span>(line, <span style=color:#f1fa8c>&#34;#&#34;</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>continue</span>
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        parts := strings.SplitN(line, <span style=color:#a31515>&#34;=&#34;</span>, 2)
-</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> len(parts) != 2 {
-</span></span><span style=display:flex><span>            <span style=color:#00f>continue</span>
+</span></span><span style=display:flex><span>        parts <span style=color:#ff79c6>:=</span> strings.<span style=color:#50fa7b>SplitN</span>(line, <span style=color:#f1fa8c>&#34;=&#34;</span>, <span style=color:#bd93f9>2</span>)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(parts) <span style=color:#ff79c6>!=</span> <span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>continue</span>
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        key := strings.TrimSpace(parts[0])
-</span></span><span style=display:flex><span>        value := strings.TrimSpace(parts[1])
+</span></span><span style=display:flex><span>        key <span style=color:#ff79c6>:=</span> strings.<span style=color:#50fa7b>TrimSpace</span>(parts[<span style=color:#bd93f9>0</span>])
+</span></span><span style=display:flex><span>        value <span style=color:#ff79c6>:=</span> strings.<span style=color:#50fa7b>TrimSpace</span>(parts[<span style=color:#bd93f9>1</span>])
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:green>// 去除可能的引号包裹</span>
-</span></span><span style=display:flex><span>        value = strings.Trim(value, <span style=color:#a31515>`&#34;&#39;`</span>)
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 去除可能的引号包裹</span>
+</span></span><span style=display:flex><span>        value = strings.<span style=color:#50fa7b>Trim</span>(value, <span style=color:#f1fa8c>`&#34;&#39;`</span>)
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        os.Setenv(key, value)
+</span></span><span style=display:flex><span>        os.<span style=color:#50fa7b>Setenv</span>(key, value)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><strong>预防措施</strong>：</p><ul><li>在 CI/CD 流程中加入 API Key 格式校验步骤</li><li>使用 Secret Manager（如 Google Secret Manager、AWS Secrets Manager）而非环境变量存储密钥</li><li>实现 Key 健康检查端点，定期验证 Key 有效性</li></ul><h3 id=错误-2resource_exhausted--配额耗尽>错误 2：<code>RESOURCE_EXHAUSTED</code> —— 配额耗尽<a hidden class=anchor aria-hidden=true href=#错误-2resource_exhausted--配额耗尽>#</a></h3><p><strong>现象</strong>：请求返回 <code>RESOURCE_EXHAUSTED</code>，提示已达到速率限制或配额上限。</p><p><strong>根因分析</strong>：</p><ol><li><strong>RPM（Requests Per Minute）超限</strong>：突发流量超过 API 的每分钟请求限制</li><li><strong>TPD（Tokens Per Day）超限</strong>：日 Token 消耗达到上限</li><li><strong>并发连接数超限</strong>：同时建立的连接数超过限制</li><li><strong>项目级配额未调整</strong>：默认配额较低，未根据业务需求申请提升</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>package</span> ratelimit
+</span></span></code></pre></div><p><strong>预防措施</strong>：</p><ul><li>在 CI/CD 流程中加入 API Key 格式校验步骤</li><li>使用 Secret Manager（如 Google Secret Manager、AWS Secrets Manager）而非环境变量存储密钥</li><li>实现 Key 健康检查端点，定期验证 Key 有效性</li></ul><h3 id=错误-2resource_exhausted--配额耗尽>错误 2：<code>RESOURCE_EXHAUSTED</code> —— 配额耗尽<a hidden class=anchor aria-hidden=true href=#错误-2resource_exhausted--配额耗尽>#</a></h3><p><strong>现象</strong>：请求返回 <code>RESOURCE_EXHAUSTED</code>，提示已达到速率限制或配额上限。</p><p><strong>根因分析</strong>：</p><ol><li><strong>RPM（Requests Per Minute）超限</strong>：突发流量超过 API 的每分钟请求限制</li><li><strong>TPD（Tokens Per Day）超限</strong>：日 Token 消耗达到上限</li><li><strong>并发连接数超限</strong>：同时建立的连接数超过限制</li><li><strong>项目级配额未调整</strong>：默认配额较低，未根据业务需求申请提升</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> ratelimit
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;sync&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;sync&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;golang.org/x/time/rate&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;golang.org/x/time/rate&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// AdaptiveRateLimiter 自适应限流器</span>
-</span></span><span style=display:flex><span><span style=color:#00f>type</span> AdaptiveRateLimiter <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    limiter      *rate.Limiter
+</span></span><span style=display:flex><span><span style=color:#6272a4>// AdaptiveRateLimiter 自适应限流器</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AdaptiveRateLimiter <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    limiter      <span style=color:#ff79c6>*</span>rate.Limiter
 </span></span><span style=display:flex><span>    mu           sync.RWMutex
-</span></span><span style=display:flex><span>    currentRPM   <span style=color:#2b91af>int</span>
-</span></span><span style=display:flex><span>    minRPM       <span style=color:#2b91af>int</span>
-</span></span><span style=display:flex><span>    maxRPM       <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span>    currentRPM   <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    minRPM       <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    maxRPM       <span style=color:#8be9fd>int</span>
 </span></span><span style=display:flex><span>    backoffUntil time.Time
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> NewAdaptiveRateLimiter(minRPM, maxRPM <span style=color:#2b91af>int</span>) *AdaptiveRateLimiter {
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;AdaptiveRateLimiter{
-</span></span><span style=display:flex><span>        limiter:    rate.NewLimiter(rate.Every(time.Minute/time.Duration(maxRPM)), maxRPM),
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>NewAdaptiveRateLimiter</span>(minRPM, maxRPM <span style=color:#8be9fd>int</span>) <span style=color:#ff79c6>*</span>AdaptiveRateLimiter {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>AdaptiveRateLimiter{
+</span></span><span style=display:flex><span>        limiter:    rate.<span style=color:#50fa7b>NewLimiter</span>(rate.<span style=color:#50fa7b>Every</span>(time.Minute<span style=color:#ff79c6>/</span>time.<span style=color:#50fa7b>Duration</span>(maxRPM)), maxRPM),
 </span></span><span style=display:flex><span>        currentRPM: maxRPM,
 </span></span><span style=display:flex><span>        minRPM:     minRPM,
 </span></span><span style=display:flex><span>        maxRPM:     maxRPM,
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (a *AdaptiveRateLimiter) Wait(ctx context.Context) <span style=color:#2b91af>error</span> {
-</span></span><span style=display:flex><span>    a.mu.RLock()
-</span></span><span style=display:flex><span>    backoff := a.backoffUntil
-</span></span><span style=display:flex><span>    a.mu.RUnlock()
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (a <span style=color:#ff79c6>*</span>AdaptiveRateLimiter) <span style=color:#50fa7b>Wait</span>(ctx context.Context) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    a.mu.<span style=color:#50fa7b>RLock</span>()
+</span></span><span style=display:flex><span>    backoff <span style=color:#ff79c6>:=</span> a.backoffUntil
+</span></span><span style=display:flex><span>    a.mu.<span style=color:#50fa7b>RUnlock</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> time.Now().Before(backoff) {
-</span></span><span style=display:flex><span>        <span style=color:#00f>select</span> {
-</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-time.After(time.Until(backoff)):
-</span></span><span style=display:flex><span>        <span style=color:#00f>case</span> &lt;-ctx.Done():
-</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> ctx.Err()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> time.<span style=color:#50fa7b>Now</span>().<span style=color:#50fa7b>Before</span>(backoff) {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>time.<span style=color:#50fa7b>After</span>(time.<span style=color:#50fa7b>Until</span>(backoff)):
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> ctx.<span style=color:#50fa7b>Err</span>()
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> a.limiter.Wait(ctx)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> a.limiter.<span style=color:#50fa7b>Wait</span>(ctx)
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (a *AdaptiveRateLimiter) OnSuccess() {
-</span></span><span style=display:flex><span>    a.mu.Lock()
-</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> a.mu.Unlock()
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (a <span style=color:#ff79c6>*</span>AdaptiveRateLimiter) <span style=color:#50fa7b>OnSuccess</span>() {
+</span></span><span style=display:flex><span>    a.mu.<span style=color:#50fa7b>Lock</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> a.mu.<span style=color:#50fa7b>Unlock</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 成功时缓慢恢复速率</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> a.currentRPM &lt; a.maxRPM {
-</span></span><span style=display:flex><span>        a.currentRPM = min(a.currentRPM+1, a.maxRPM)
-</span></span><span style=display:flex><span>        a.limiter.SetLimit(rate.Every(time.Minute / time.Duration(a.currentRPM)))
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 成功时缓慢恢复速率</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> a.currentRPM &lt; a.maxRPM {
+</span></span><span style=display:flex><span>        a.currentRPM = <span style=color:#8be9fd;font-style:italic>min</span>(a.currentRPM<span style=color:#ff79c6>+</span><span style=color:#bd93f9>1</span>, a.maxRPM)
+</span></span><span style=display:flex><span>        a.limiter.<span style=color:#50fa7b>SetLimit</span>(rate.<span style=color:#50fa7b>Every</span>(time.Minute <span style=color:#ff79c6>/</span> time.<span style=color:#50fa7b>Duration</span>(a.currentRPM)))
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (a *AdaptiveRateLimiter) OnRateLimit() {
-</span></span><span style=display:flex><span>    a.mu.Lock()
-</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> a.mu.Unlock()
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (a <span style=color:#ff79c6>*</span>AdaptiveRateLimiter) <span style=color:#50fa7b>OnRateLimit</span>() {
+</span></span><span style=display:flex><span>    a.mu.<span style=color:#50fa7b>Lock</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> a.mu.<span style=color:#50fa7b>Unlock</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 触发限流时，降低速率并进入退避期</span>
-</span></span><span style=display:flex><span>    a.currentRPM = max(a.currentRPM/2, a.minRPM)
-</span></span><span style=display:flex><span>    a.limiter.SetLimit(rate.Every(time.Minute / time.Duration(a.currentRPM)))
-</span></span><span style=display:flex><span>    a.backoffUntil = time.Now().Add(30 * time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 触发限流时，降低速率并进入退避期</span>
+</span></span><span style=display:flex><span>    a.currentRPM = <span style=color:#8be9fd;font-style:italic>max</span>(a.currentRPM<span style=color:#ff79c6>/</span><span style=color:#bd93f9>2</span>, a.minRPM)
+</span></span><span style=display:flex><span>    a.limiter.<span style=color:#50fa7b>SetLimit</span>(rate.<span style=color:#50fa7b>Every</span>(time.Minute <span style=color:#ff79c6>/</span> time.<span style=color:#50fa7b>Duration</span>(a.currentRPM)))
+</span></span><span style=display:flex><span>    a.backoffUntil = time.<span style=color:#50fa7b>Now</span>().<span style=color:#50fa7b>Add</span>(<span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second)
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    log.Printf(<span style=color:#a31515>&#34;触发速率限制，降级至 %d RPM，退避 30 秒&#34;</span>, a.currentRPM)
+</span></span><span style=display:flex><span>    log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;触发速率限制，降级至 %d RPM，退避 30 秒&#34;</span>, a.currentRPM)
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// 在 Agent 调用处使用</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> callWithRateLimit(ctx context.Context, limiter *AdaptiveRateLimiter, fn <span style=color:#00f>func</span>() <span style=color:#2b91af>error</span>) <span style=color:#2b91af>error</span> {
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := limiter.Wait(ctx); err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> err
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 在 Agent 调用处使用</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>callWithRateLimit</span>(ctx context.Context, limiter <span style=color:#ff79c6>*</span>AdaptiveRateLimiter, fn <span style=color:#8be9fd;font-style:italic>func</span>() <span style=color:#8be9fd>error</span>) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> limiter.<span style=color:#50fa7b>Wait</span>(ctx); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> err
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    err := fn()
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> isRateLimitError(err) {
-</span></span><span style=display:flex><span>            limiter.OnRateLimit()
+</span></span><span style=display:flex><span>    err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>fn</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> <span style=color:#50fa7b>isRateLimitError</span>(err) {
+</span></span><span style=display:flex><span>            limiter.<span style=color:#50fa7b>OnRateLimit</span>()
 </span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> err
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> err
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    limiter.OnSuccess()
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    limiter.<span style=color:#50fa7b>OnSuccess</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><strong>长期策略</strong>：</p><ol><li>申请提升配额（Google Cloud Console → Quotas）</li><li>实现多层缓存减少对 API 的依赖</li><li>使用模型降级策略：高峰期自动切换到更轻量的模型</li></ol><h3 id=错误-3context-deadline-exceeded--请求超时>错误 3：<code>context deadline exceeded</code> —— 请求超时<a hidden class=anchor aria-hidden=true href=#错误-3context-deadline-exceeded--请求超时>#</a></h3><p><strong>现象</strong>：请求超时，上下文被取消。</p><p><strong>根因分析</strong>：</p><ol><li><strong>LLM 推理耗时过长</strong>：复杂推理或长上下文导致模型响应慢</li><li><strong>Tool 执行阻塞</strong>：数据库查询、外部 API 调用未设置超时</li><li><strong>级联超时</strong>：外层超时设置过短，内层操作未完成就被取消</li><li><strong>网络抖动</strong>：与 LLM API 之间的网络不稳定</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>package</span> timeout
+</span></span></code></pre></div><p><strong>长期策略</strong>：</p><ol><li>申请提升配额（Google Cloud Console → Quotas）</li><li>实现多层缓存减少对 API 的依赖</li><li>使用模型降级策略：高峰期自动切换到更轻量的模型</li></ol><h3 id=错误-3context-deadline-exceeded--请求超时>错误 3：<code>context deadline exceeded</code> —— 请求超时<a hidden class=anchor aria-hidden=true href=#错误-3context-deadline-exceeded--请求超时>#</a></h3><p><strong>现象</strong>：请求超时，上下文被取消。</p><p><strong>根因分析</strong>：</p><ol><li><strong>LLM 推理耗时过长</strong>：复杂推理或长上下文导致模型响应慢</li><li><strong>Tool 执行阻塞</strong>：数据库查询、外部 API 调用未设置超时</li><li><strong>级联超时</strong>：外层超时设置过短，内层操作未完成就被取消</li><li><strong>网络抖动</strong>：与 LLM API 之间的网络不稳定</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> timeout
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;fmt&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// LayeredTimeout 分层超时管理</span>
-</span></span><span style=display:flex><span><span style=color:#00f>type</span> LayeredTimeout <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    TotalTimeout    time.Duration  <span style=color:green>// 用户感知的总超时</span>
-</span></span><span style=display:flex><span>    ModelTimeout    time.Duration  <span style=color:green>// LLM 调用超时</span>
-</span></span><span style=display:flex><span>    ToolTimeout     time.Duration  <span style=color:green>// 单个 Tool 超时</span>
-</span></span><span style=display:flex><span>    StreamChunkTimeout time.Duration <span style=color:green>// 流式输出单块超时</span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// LayeredTimeout 分层超时管理</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> LayeredTimeout <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    TotalTimeout    time.Duration  <span style=color:#6272a4>// 用户感知的总超时</span>
+</span></span><span style=display:flex><span>    ModelTimeout    time.Duration  <span style=color:#6272a4>// LLM 调用超时</span>
+</span></span><span style=display:flex><span>    ToolTimeout     time.Duration  <span style=color:#6272a4>// 单个 Tool 超时</span>
+</span></span><span style=display:flex><span>    StreamChunkTimeout time.Duration <span style=color:#6272a4>// 流式输出单块超时</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> DefaultLayeredTimeout() LayeredTimeout {
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> LayeredTimeout{
-</span></span><span style=display:flex><span>        TotalTimeout:       30 * time.Second,
-</span></span><span style=display:flex><span>        ModelTimeout:       20 * time.Second,
-</span></span><span style=display:flex><span>        ToolTimeout:        5 * time.Second,
-</span></span><span style=display:flex><span>        StreamChunkTimeout: 2 * time.Second,
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>DefaultLayeredTimeout</span>() LayeredTimeout {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> LayeredTimeout{
+</span></span><span style=display:flex><span>        TotalTimeout:       <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        ModelTimeout:       <span style=color:#bd93f9>20</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        ToolTimeout:        <span style=color:#bd93f9>5</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        StreamChunkTimeout: <span style=color:#bd93f9>2</span> <span style=color:#ff79c6>*</span> time.Second,
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (lt LayeredTimeout) Execute(ctx context.Context, fn <span style=color:#00f>func</span>(context.Context) <span style=color:#2b91af>error</span>) <span style=color:#2b91af>error</span> {
-</span></span><span style=display:flex><span>    ctx, cancel := context.WithTimeout(ctx, lt.TotalTimeout)
-</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> cancel()
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (lt LayeredTimeout) <span style=color:#50fa7b>Execute</span>(ctx context.Context, fn <span style=color:#8be9fd;font-style:italic>func</span>(context.Context) <span style=color:#8be9fd>error</span>) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    ctx, cancel <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>WithTimeout</span>(ctx, lt.TotalTimeout)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> <span style=color:#50fa7b>cancel</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    done := make(<span style=color:#00f>chan</span> <span style=color:#2b91af>error</span>, 1)
-</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
-</span></span><span style=display:flex><span>        done &lt;- fn(ctx)
+</span></span><span style=display:flex><span>    done <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> <span style=color:#8be9fd>error</span>, <span style=color:#bd93f9>1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        done <span style=color:#ff79c6>&lt;-</span> <span style=color:#50fa7b>fn</span>(ctx)
 </span></span><span style=display:flex><span>    }()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>select</span> {
-</span></span><span style=display:flex><span>    <span style=color:#00f>case</span> err := &lt;-done:
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> err
-</span></span><span style=display:flex><span>    <span style=color:#00f>case</span> &lt;-ctx.Done():
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;请求总超时 (%v): %w&#34;</span>, lt.TotalTimeout, ctx.Err())
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> err <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&lt;-</span>done:
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> err
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;请求总超时 (%v): %w&#34;</span>, lt.TotalTimeout, ctx.<span style=color:#50fa7b>Err</span>())
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// Tool 调用包装器</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> CallToolWithTimeout(ctx context.Context, toolName <span style=color:#2b91af>string</span>, timeout time.Duration, fn <span style=color:#00f>func</span>(context.Context) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>)) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
-</span></span><span style=display:flex><span>    ctx, cancel := context.WithTimeout(ctx, timeout)
-</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> cancel()
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Tool 调用包装器</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>CallToolWithTimeout</span>(ctx context.Context, toolName <span style=color:#8be9fd>string</span>, timeout time.Duration, fn <span style=color:#8be9fd;font-style:italic>func</span>(context.Context) (<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>)) (<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    ctx, cancel <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>WithTimeout</span>(ctx, timeout)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> <span style=color:#50fa7b>cancel</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    result, err := fn(ctx)
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> ctx.Err() == context.DeadlineExceeded {
-</span></span><span style=display:flex><span>            <span style=color:#00f>return</span> fmt.Sprintf(<span style=color:#a31515>&#34;[%s 查询超时，请稍后重试]&#34;</span>, toolName), <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    result, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>fn</span>(ctx)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> ctx.<span style=color:#50fa7b>Err</span>() <span style=color:#ff79c6>==</span> context.DeadlineExceeded {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;[%s 查询超时，请稍后重试]&#34;</span>, toolName), <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;&#34;</span>, err
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, err
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> result, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> result, <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><strong>关键原则</strong>：总超时 > 模型超时 + Tool 超时 × 最大 Tool 调用次数，并预留 20% 缓冲。</p><h2 id=性能问题诊断与调优>性能问题诊断与调优<a hidden class=anchor aria-hidden=true href=#性能问题诊断与调优>#</a></h2><h3 id=问题-1响应延迟高>问题 1：响应延迟高<a hidden class=anchor aria-hidden=true href=#问题-1响应延迟高>#</a></h3><p><strong>诊断流程</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>用户感知延迟高
+</span></span></code></pre></div><p><strong>关键原则</strong>：总超时 > 模型超时 + Tool 超时 × 最大 Tool 调用次数，并预留 20% 缓冲。</p><h2 id=性能问题诊断与调优>性能问题诊断与调优<a hidden class=anchor aria-hidden=true href=#性能问题诊断与调优>#</a></h2><h3 id=问题-1响应延迟高>问题 1：响应延迟高<a hidden class=anchor aria-hidden=true href=#问题-1响应延迟高>#</a></h3><p><strong>诊断流程</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>用户感知延迟高
 </span></span><span style=display:flex><span>    ↓
 </span></span><span style=display:flex><span>[分解延迟] 使用分布式追踪（OpenTelemetry）拆解各阶段耗时
 </span></span><span style=display:flex><span>    ↓
@@ -244,45 +239,45 @@
 </span></span><span style=display:flex><span>├─ Tool 调用延迟？→ Tool 并行化、缓存、超时优化
 </span></span><span style=display:flex><span>├─ 路由决策延迟？→ 简化分类逻辑、缓存路由结果
 </span></span><span style=display:flex><span>└─ 序列化/反序列化？→ 使用更高效的协议（如 protobuf）
-</span></span></code></pre></div><p><strong>模型推理优化</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// 1. Context Caching：缓存系统指令和重复上下文</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (a *Agent) buildPromptWithCache(ctx context.Context, userInput <span style=color:#2b91af>string</span>) (<span style=color:#2b91af>string</span>, <span style=color:#2b91af>error</span>) {
-</span></span><span style=display:flex><span>    cacheKey := a.config.Instruction + a.session.GetSummary()
+</span></span></code></pre></div><p><strong>模型推理优化</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 1. Context Caching：缓存系统指令和重复上下文</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (a <span style=color:#ff79c6>*</span>Agent) <span style=color:#50fa7b>buildPromptWithCache</span>(ctx context.Context, userInput <span style=color:#8be9fd>string</span>) (<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    cacheKey <span style=color:#ff79c6>:=</span> a.config.Instruction <span style=color:#ff79c6>+</span> a.session.<span style=color:#50fa7b>GetSummary</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> cached, ok := a.promptCache.Get(cacheKey); ok {
-</span></span><span style=display:flex><span>        <span style=color:green>// 复用缓存的上下文前缀，只追加用户输入</span>
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> cached.(<span style=color:#2b91af>string</span>) + <span style=color:#a31515>&#34;\nUser: &#34;</span> + userInput, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> cached, ok <span style=color:#ff79c6>:=</span> a.promptCache.<span style=color:#50fa7b>Get</span>(cacheKey); ok {
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 复用缓存的上下文前缀，只追加用户输入</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> cached.(<span style=color:#8be9fd>string</span>) <span style=color:#ff79c6>+</span> <span style=color:#f1fa8c>&#34;\nUser: &#34;</span> <span style=color:#ff79c6>+</span> userInput, <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    fullPrompt := a.config.Instruction + <span style=color:#a31515>&#34;\n&#34;</span> + a.session.GetHistory() + <span style=color:#a31515>&#34;\nUser: &#34;</span> + userInput
-</span></span><span style=display:flex><span>    a.promptCache.Set(cacheKey, fullPrompt, 10*time.Minute)
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> fullPrompt, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    fullPrompt <span style=color:#ff79c6>:=</span> a.config.Instruction <span style=color:#ff79c6>+</span> <span style=color:#f1fa8c>&#34;\n&#34;</span> <span style=color:#ff79c6>+</span> a.session.<span style=color:#50fa7b>GetHistory</span>() <span style=color:#ff79c6>+</span> <span style=color:#f1fa8c>&#34;\nUser: &#34;</span> <span style=color:#ff79c6>+</span> userInput
+</span></span><span style=display:flex><span>    a.promptCache.<span style=color:#50fa7b>Set</span>(cacheKey, fullPrompt, <span style=color:#bd93f9>10</span><span style=color:#ff79c6>*</span>time.Minute)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> fullPrompt, <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// 2. 模型选择策略：根据查询复杂度动态选择模型</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> selectModel(query <span style=color:#2b91af>string</span>, history []Message) <span style=color:#2b91af>string</span> {
-</span></span><span style=display:flex><span>    <span style=color:green>// 简单查询使用轻量模型</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> isSimpleQuery(query) &amp;&amp; len(history) &lt; 3 {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;gemini-2.0-flash&#34;</span>  <span style=color:green>// 更快、更便宜</span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 2. 模型选择策略：根据查询复杂度动态选择模型</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>selectModel</span>(query <span style=color:#8be9fd>string</span>, history []Message) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 简单查询使用轻量模型</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#50fa7b>isSimpleQuery</span>(query) <span style=color:#ff79c6>&amp;&amp;</span> <span style=color:#8be9fd;font-style:italic>len</span>(history) &lt; <span style=color:#bd93f9>3</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;gemini-2.0-flash&#34;</span>  <span style=color:#6272a4>// 更快、更便宜</span>
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 复杂推理使用专业模型</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> requiresComplexReasoning(query) {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#a31515>&#34;gemini-2.0-pro&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 复杂推理使用专业模型</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#50fa7b>requiresComplexReasoning</span>(query) {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;gemini-2.0-pro&#34;</span>
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 默认使用平衡型</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#a31515>&#34;gemini-2.0-flash&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 默认使用平衡型</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;gemini-2.0-flash&#34;</span>
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><strong>Tool 调用并行化</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>func</span> (a *Agent) callToolsParallel(ctx context.Context, toolCalls []ToolCall) []ToolResult {
-</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> wg sync.WaitGroup
-</span></span><span style=display:flex><span>    results := make([]ToolResult, len(toolCalls))
+</span></span></code></pre></div><p><strong>Tool 调用并行化</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (a <span style=color:#ff79c6>*</span>Agent) <span style=color:#50fa7b>callToolsParallel</span>(ctx context.Context, toolCalls []ToolCall) []ToolResult {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> wg sync.WaitGroup
+</span></span><span style=display:flex><span>    results <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>([]ToolResult, <span style=color:#8be9fd;font-style:italic>len</span>(toolCalls))
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> i, tc := <span style=color:#00f>range</span> toolCalls {
-</span></span><span style=display:flex><span>        wg.Add(1)
-</span></span><span style=display:flex><span>        <span style=color:#00f>go</span> <span style=color:#00f>func</span>(index <span style=color:#2b91af>int</span>, call ToolCall) {
-</span></span><span style=display:flex><span>            <span style=color:#00f>defer</span> wg.Done()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> i, tc <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> toolCalls {
+</span></span><span style=display:flex><span>        wg.<span style=color:#50fa7b>Add</span>(<span style=color:#bd93f9>1</span>)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>(index <span style=color:#8be9fd>int</span>, call ToolCall) {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>defer</span> wg.<span style=color:#50fa7b>Done</span>()
 </span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            result, err := a.executeTool(ctx, call)
+</span></span><span style=display:flex><span>            result, err <span style=color:#ff79c6>:=</span> a.<span style=color:#50fa7b>executeTool</span>(ctx, call)
 </span></span><span style=display:flex><span>            results[index] = ToolResult{
 </span></span><span style=display:flex><span>                ToolName: call.Name,
 </span></span><span style=display:flex><span>                Result:   result,
@@ -291,309 +286,309 @@
 </span></span><span style=display:flex><span>        }(i, tc)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    wg.Wait()
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> results
+</span></span><span style=display:flex><span>    wg.<span style=color:#50fa7b>Wait</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> results
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=问题-2内存暴涨与-oom>问题 2：内存暴涨与 OOM<a hidden class=anchor aria-hidden=true href=#问题-2内存暴涨与-oom>#</a></h3><p><strong>根因分析</strong>：</p><ol><li><strong>Session 堆积</strong>：未清理的会话对象持续累积</li><li><strong>State 膨胀</strong>：用户在 State 中存储大量数据（如完整对话历史）</li><li>** goroutine 泄漏**：未正确关闭的流式连接或后台任务</li><li><strong>缓存无限增长</strong>：未设置容量上限的缓存</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>package</span> memory
+</span></span></code></pre></div><h3 id=问题-2内存暴涨与-oom>问题 2：内存暴涨与 OOM<a hidden class=anchor aria-hidden=true href=#问题-2内存暴涨与-oom>#</a></h3><p><strong>根因分析</strong>：</p><ol><li><strong>Session 堆积</strong>：未清理的会话对象持续累积</li><li><strong>State 膨胀</strong>：用户在 State 中存储大量数据（如完整对话历史）</li><li>** goroutine 泄漏**：未正确关闭的流式连接或后台任务</li><li><strong>缓存无限增长</strong>：未设置容量上限的缓存</li></ol><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> memory
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;runtime&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;runtime&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;github.com/shirou/gopsutil/mem&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/shirou/gopsutil/mem&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// MemoryGuard 内存守护</span>
-</span></span><span style=display:flex><span><span style=color:#00f>type</span> MemoryGuard <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    maxMemoryMB      <span style=color:#2b91af>uint64</span>
-</span></span><span style=display:flex><span>    gcThreshold      <span style=color:#2b91af>float64</span>
-</span></span><span style=display:flex><span>    sessionLimit     <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// MemoryGuard 内存守护</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> MemoryGuard <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    maxMemoryMB      <span style=color:#8be9fd>uint64</span>
+</span></span><span style=display:flex><span>    gcThreshold      <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    sessionLimit     <span style=color:#8be9fd>int</span>
 </span></span><span style=display:flex><span>    checkInterval    time.Duration
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (g *MemoryGuard) Start(sessionManager *SessionManager) {
-</span></span><span style=display:flex><span>    ticker := time.NewTicker(g.checkInterval)
-</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#00f>for</span> <span style=color:#00f>range</span> ticker.C {
-</span></span><span style=display:flex><span>            v, _ := mem.VirtualMemory()
-</span></span><span style=display:flex><span>            usedPercent := v.UsedPercent
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (g <span style=color:#ff79c6>*</span>MemoryGuard) <span style=color:#50fa7b>Start</span>(sessionManager <span style=color:#ff79c6>*</span>SessionManager) {
+</span></span><span style=display:flex><span>    ticker <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>NewTicker</span>(g.checkInterval)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> <span style=color:#ff79c6>range</span> ticker.C {
+</span></span><span style=display:flex><span>            v, _ <span style=color:#ff79c6>:=</span> mem.<span style=color:#50fa7b>VirtualMemory</span>()
+</span></span><span style=display:flex><span>            usedPercent <span style=color:#ff79c6>:=</span> v.UsedPercent
 </span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> usedPercent &gt; g.gcThreshold {
-</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;内存使用率 %.1f%% 超过阈值 %.1f%%，触发清理&#34;</span>, usedPercent, g.gcThreshold)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> usedPercent &gt; g.gcThreshold {
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;内存使用率 %.1f%% 超过阈值 %.1f%%，触发清理&#34;</span>, usedPercent, g.gcThreshold)
 </span></span><span style=display:flex><span>                
-</span></span><span style=display:flex><span>                <span style=color:green>// 1. 强制 GC</span>
-</span></span><span style=display:flex><span>                runtime.GC()
+</span></span><span style=display:flex><span>                <span style=color:#6272a4>// 1. 强制 GC</span>
+</span></span><span style=display:flex><span>                runtime.<span style=color:#50fa7b>GC</span>()
 </span></span><span style=display:flex><span>                
-</span></span><span style=display:flex><span>                <span style=color:green>// 2. 清理过期 Session</span>
-</span></span><span style=display:flex><span>                evicted := sessionManager.EvictExpired(30 * time.Minute)
-</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;已清理 %d 个过期会话&#34;</span>, evicted)
+</span></span><span style=display:flex><span>                <span style=color:#6272a4>// 2. 清理过期 Session</span>
+</span></span><span style=display:flex><span>                evicted <span style=color:#ff79c6>:=</span> sessionManager.<span style=color:#50fa7b>EvictExpired</span>(<span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Minute)
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;已清理 %d 个过期会话&#34;</span>, evicted)
 </span></span><span style=display:flex><span>                
-</span></span><span style=display:flex><span>                <span style=color:green>// 3. 如果仍然紧张，清理最久未使用的 Session</span>
-</span></span><span style=display:flex><span>                <span style=color:#00f>if</span> v, _ := mem.VirtualMemory(); v.UsedPercent &gt; g.gcThreshold {
-</span></span><span style=display:flex><span>                    lruEvicted := sessionManager.EvictLRU(g.sessionLimit / 2)
-</span></span><span style=display:flex><span>                    log.Printf(<span style=color:#a31515>&#34;LRU 清理 %d 个会话&#34;</span>, lruEvicted)
+</span></span><span style=display:flex><span>                <span style=color:#6272a4>// 3. 如果仍然紧张，清理最久未使用的 Session</span>
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>if</span> v, _ <span style=color:#ff79c6>:=</span> mem.<span style=color:#50fa7b>VirtualMemory</span>(); v.UsedPercent &gt; g.gcThreshold {
+</span></span><span style=display:flex><span>                    lruEvicted <span style=color:#ff79c6>:=</span> sessionManager.<span style=color:#50fa7b>EvictLRU</span>(g.sessionLimit <span style=color:#ff79c6>/</span> <span style=color:#bd93f9>2</span>)
+</span></span><span style=display:flex><span>                    log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;LRU 清理 %d 个会话&#34;</span>, lruEvicted)
 </span></span><span style=display:flex><span>                }
 </span></span><span style=display:flex><span>            }
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>    }()
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// SessionManager 实现</span>
-</span></span><span style=display:flex><span><span style=color:#00f>type</span> SessionManager <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    sessions    <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]*Session
+</span></span><span style=display:flex><span><span style=color:#6272a4>// SessionManager 实现</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> SessionManager <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    sessions    <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#ff79c6>*</span>Session
 </span></span><span style=display:flex><span>    mu          sync.RWMutex
-</span></span><span style=display:flex><span>    maxSize     <span style=color:#2b91af>int</span>
-</span></span><span style=display:flex><span>    maxStateSize <span style=color:#2b91af>int</span>  <span style=color:green>// 单个 State 最大大小（字节）</span>
+</span></span><span style=display:flex><span>    maxSize     <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    maxStateSize <span style=color:#8be9fd>int</span>  <span style=color:#6272a4>// 单个 State 最大大小（字节）</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (sm *SessionManager) SetState(sessionID <span style=color:#2b91af>string</span>, key <span style=color:#2b91af>string</span>, value <span style=color:#00f>interface</span>{}) <span style=color:#2b91af>error</span> {
-</span></span><span style=display:flex><span>    sm.mu.Lock()
-</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> sm.mu.Unlock()
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (sm <span style=color:#ff79c6>*</span>SessionManager) <span style=color:#50fa7b>SetState</span>(sessionID <span style=color:#8be9fd>string</span>, key <span style=color:#8be9fd>string</span>, value <span style=color:#8be9fd;font-style:italic>interface</span>{}) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    sm.mu.<span style=color:#50fa7b>Lock</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> sm.mu.<span style=color:#50fa7b>Unlock</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    session, ok := sm.sessions[sessionID]
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> !ok {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;会话不存在: %s&#34;</span>, sessionID)
+</span></span><span style=display:flex><span>    session, ok <span style=color:#ff79c6>:=</span> sm.sessions[sessionID]
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> !ok {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;会话不存在: %s&#34;</span>, sessionID)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 检查 State 大小限制</span>
-</span></span><span style=display:flex><span>    data, _ := json.Marshal(value)
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> len(data) &gt; sm.maxStateSize {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> fmt.Errorf(<span style=color:#a31515>&#34;State 数据过大: %d bytes，最大允许 %d&#34;</span>, len(data), sm.maxStateSize)
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 检查 State 大小限制</span>
+</span></span><span style=display:flex><span>    data, _ <span style=color:#ff79c6>:=</span> json.<span style=color:#50fa7b>Marshal</span>(value)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(data) &gt; sm.maxStateSize {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;State 数据过大: %d bytes，最大允许 %d&#34;</span>, <span style=color:#8be9fd;font-style:italic>len</span>(data), sm.maxStateSize)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
 </span></span><span style=display:flex><span>    session.State[key] = value
-</span></span><span style=display:flex><span>    session.LastActive = time.Now()
+</span></span><span style=display:flex><span>    session.LastActive = time.<span style=color:#50fa7b>Now</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=问题-3-goroutine-泄漏>问题 3： goroutine 泄漏<a hidden class=anchor aria-hidden=true href=#问题-3-goroutine-泄漏>#</a></h3><p><strong>常见泄漏场景</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// 错误示例：未关闭的流式通道</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> badStream() {
-</span></span><span style=display:flex><span>    ch := make(<span style=color:#00f>chan</span> <span style=color:#2b91af>string</span>)
-</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#00f>for</span> {
-</span></span><span style=display:flex><span>            <span style=color:#00f>select</span> {
-</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> msg := &lt;-someSource:
-</span></span><span style=display:flex><span>                ch &lt;- msg  <span style=color:green>// 如果消费者已离开，这里会永远阻塞</span>
+</span></span></code></pre></div><h3 id=问题-3-goroutine-泄漏>问题 3： goroutine 泄漏<a hidden class=anchor aria-hidden=true href=#问题-3-goroutine-泄漏>#</a></h3><p><strong>常见泄漏场景</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 错误示例：未关闭的流式通道</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>badStream</span>() {
+</span></span><span style=display:flex><span>    ch <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> <span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> msg <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&lt;-</span>someSource:
+</span></span><span style=display:flex><span>                ch <span style=color:#ff79c6>&lt;-</span> msg  <span style=color:#6272a4>// 如果消费者已离开，这里会永远阻塞</span>
 </span></span><span style=display:flex><span>            }
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>    }()
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> ch
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> ch
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// 正确示例：使用 context 控制生命周期</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> goodStream(ctx context.Context) &lt;-<span style=color:#00f>chan</span> <span style=color:#2b91af>string</span> {
-</span></span><span style=display:flex><span>    ch := make(<span style=color:#00f>chan</span> <span style=color:#2b91af>string</span>)
-</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#00f>defer</span> close(ch)
-</span></span><span style=display:flex><span>        <span style=color:#00f>for</span> {
-</span></span><span style=display:flex><span>            <span style=color:#00f>select</span> {
-</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> msg := &lt;-someSource:
-</span></span><span style=display:flex><span>                <span style=color:#00f>select</span> {
-</span></span><span style=display:flex><span>                <span style=color:#00f>case</span> ch &lt;- msg:
-</span></span><span style=display:flex><span>                <span style=color:#00f>case</span> &lt;-ctx.Done():
-</span></span><span style=display:flex><span>                    <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 正确示例：使用 context 控制生命周期</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>goodStream</span>(ctx context.Context) <span style=color:#ff79c6>&lt;-</span><span style=color:#8be9fd;font-style:italic>chan</span> <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    ch <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> <span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>defer</span> <span style=color:#8be9fd;font-style:italic>close</span>(ch)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> msg <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&lt;-</span>someSource:
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>case</span> ch <span style=color:#ff79c6>&lt;-</span> msg:
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>return</span>
 </span></span><span style=display:flex><span>                }
-</span></span><span style=display:flex><span>            <span style=color:#00f>case</span> &lt;-ctx.Done():
-</span></span><span style=display:flex><span>                <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span>
 </span></span><span style=display:flex><span>            }
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>    }()
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> ch
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> ch
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><strong>检测方法</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>import</span> <span style=color:#a31515>&#34;runtime&#34;</span>
+</span></span></code></pre></div><p><strong>检测方法</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>import</span> <span style=color:#f1fa8c>&#34;runtime&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// 监控 goroutine 数量</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> monitorGoroutines() {
-</span></span><span style=display:flex><span>    ticker := time.NewTicker(1 * time.Minute)
-</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
-</span></span><span style=display:flex><span>        baseline := runtime.NumGoroutine()
-</span></span><span style=display:flex><span>        <span style=color:#00f>for</span> <span style=color:#00f>range</span> ticker.C {
-</span></span><span style=display:flex><span>            current := runtime.NumGoroutine()
-</span></span><span style=display:flex><span>            <span style=color:#00f>if</span> current &gt; baseline*2 {
-</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;[ALERT] goroutine 数量异常: %d (基线: %d)&#34;</span>, current, baseline)
-</span></span><span style=display:flex><span>                <span style=color:green>// 输出 goroutine 堆栈用于分析</span>
-</span></span><span style=display:flex><span>                buf := make([]<span style=color:#2b91af>byte</span>, 1&lt;&lt;20)
-</span></span><span style=display:flex><span>                n := runtime.Stack(buf, <span style=color:#00f>true</span>)
-</span></span><span style=display:flex><span>                log.Printf(<span style=color:#a31515>&#34;当前 goroutine 堆栈:\n%s&#34;</span>, buf[:n])
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 监控 goroutine 数量</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>monitorGoroutines</span>() {
+</span></span><span style=display:flex><span>    ticker <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>NewTicker</span>(<span style=color:#bd93f9>1</span> <span style=color:#ff79c6>*</span> time.Minute)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        baseline <span style=color:#ff79c6>:=</span> runtime.<span style=color:#50fa7b>NumGoroutine</span>()
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> <span style=color:#ff79c6>range</span> ticker.C {
+</span></span><span style=display:flex><span>            current <span style=color:#ff79c6>:=</span> runtime.<span style=color:#50fa7b>NumGoroutine</span>()
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> current &gt; baseline<span style=color:#ff79c6>*</span><span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;[ALERT] goroutine 数量异常: %d (基线: %d)&#34;</span>, current, baseline)
+</span></span><span style=display:flex><span>                <span style=color:#6272a4>// 输出 goroutine 堆栈用于分析</span>
+</span></span><span style=display:flex><span>                buf <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>([]<span style=color:#8be9fd>byte</span>, <span style=color:#bd93f9>1</span><span style=color:#ff79c6>&lt;&lt;</span><span style=color:#bd93f9>20</span>)
+</span></span><span style=display:flex><span>                n <span style=color:#ff79c6>:=</span> runtime.<span style=color:#50fa7b>Stack</span>(buf, <span style=color:#ff79c6>true</span>)
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;当前 goroutine 堆栈:\n%s&#34;</span>, buf[:n])
 </span></span><span style=display:flex><span>            }
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>    }()
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=调试技巧与工具>调试技巧与工具<a hidden class=anchor aria-hidden=true href=#调试技巧与工具>#</a></h2><h3 id=结构化日志>结构化日志<a hidden class=anchor aria-hidden=true href=#结构化日志>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>package</span> logging
+</span></span></code></pre></div><h2 id=调试技巧与工具>调试技巧与工具<a hidden class=anchor aria-hidden=true href=#调试技巧与工具>#</a></h2><h3 id=结构化日志>结构化日志<a hidden class=anchor aria-hidden=true href=#结构化日志>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> logging
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;context&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;encoding/json&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;log&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;os&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;time&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;log&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;os&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>type</span> AgentLogger <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    logger *log.Logger
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AgentLogger <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    logger <span style=color:#ff79c6>*</span>log.Logger
 </span></span><span style=display:flex><span>    level  LogLevel
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>type</span> LogLevel <span style=color:#2b91af>int</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> LogLevel <span style=color:#8be9fd>int</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>const</span> (
-</span></span><span style=display:flex><span>    DEBUG LogLevel = <span style=color:#00f>iota</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>const</span> (
+</span></span><span style=display:flex><span>    DEBUG LogLevel = <span style=color:#ff79c6>iota</span>
 </span></span><span style=display:flex><span>    INFO
 </span></span><span style=display:flex><span>    WARN
 </span></span><span style=display:flex><span>    ERROR
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>type</span> LogEntry <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    Timestamp   time.Time              <span style=color:#a31515>`json:&#34;timestamp&#34;`</span>
-</span></span><span style=display:flex><span>    Level       <span style=color:#2b91af>string</span>                 <span style=color:#a31515>`json:&#34;level&#34;`</span>
-</span></span><span style=display:flex><span>    Agent       <span style=color:#2b91af>string</span>                 <span style=color:#a31515>`json:&#34;agent&#34;`</span>
-</span></span><span style=display:flex><span>    SessionID   <span style=color:#2b91af>string</span>                 <span style=color:#a31515>`json:&#34;session_id&#34;`</span>
-</span></span><span style=display:flex><span>    Phase       <span style=color:#2b91af>string</span>                 <span style=color:#a31515>`json:&#34;phase&#34;`</span>
-</span></span><span style=display:flex><span>    Message     <span style=color:#2b91af>string</span>                 <span style=color:#a31515>`json:&#34;message&#34;`</span>
-</span></span><span style=display:flex><span>    Duration    <span style=color:#2b91af>int64</span>                  <span style=color:#a31515>`json:&#34;duration_ms,omitempty&#34;`</span>
-</span></span><span style=display:flex><span>    Error       <span style=color:#2b91af>string</span>                 <span style=color:#a31515>`json:&#34;error,omitempty&#34;`</span>
-</span></span><span style=display:flex><span>    Metadata    <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{} <span style=color:#a31515>`json:&#34;metadata,omitempty&#34;`</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> LogEntry <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Timestamp   time.Time              <span style=color:#f1fa8c>`json:&#34;timestamp&#34;`</span>
+</span></span><span style=display:flex><span>    Level       <span style=color:#8be9fd>string</span>                 <span style=color:#f1fa8c>`json:&#34;level&#34;`</span>
+</span></span><span style=display:flex><span>    Agent       <span style=color:#8be9fd>string</span>                 <span style=color:#f1fa8c>`json:&#34;agent&#34;`</span>
+</span></span><span style=display:flex><span>    SessionID   <span style=color:#8be9fd>string</span>                 <span style=color:#f1fa8c>`json:&#34;session_id&#34;`</span>
+</span></span><span style=display:flex><span>    Phase       <span style=color:#8be9fd>string</span>                 <span style=color:#f1fa8c>`json:&#34;phase&#34;`</span>
+</span></span><span style=display:flex><span>    Message     <span style=color:#8be9fd>string</span>                 <span style=color:#f1fa8c>`json:&#34;message&#34;`</span>
+</span></span><span style=display:flex><span>    Duration    <span style=color:#8be9fd>int64</span>                  <span style=color:#f1fa8c>`json:&#34;duration_ms,omitempty&#34;`</span>
+</span></span><span style=display:flex><span>    Error       <span style=color:#8be9fd>string</span>                 <span style=color:#f1fa8c>`json:&#34;error,omitempty&#34;`</span>
+</span></span><span style=display:flex><span>    Metadata    <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{} <span style=color:#f1fa8c>`json:&#34;metadata,omitempty&#34;`</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> (l *AgentLogger) Log(ctx context.Context, level LogLevel, phase, message <span style=color:#2b91af>string</span>, metadata <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}) {
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> level &lt; l.level {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (l <span style=color:#ff79c6>*</span>AgentLogger) <span style=color:#50fa7b>Log</span>(ctx context.Context, level LogLevel, phase, message <span style=color:#8be9fd>string</span>, metadata <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> level &lt; l.level {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span>
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    entry := LogEntry{
-</span></span><span style=display:flex><span>        Timestamp: time.Now(),
-</span></span><span style=display:flex><span>        Level:     level.String(),
-</span></span><span style=display:flex><span>        Agent:     ctx.Value(<span style=color:#a31515>&#34;agent_name&#34;</span>).(<span style=color:#2b91af>string</span>),
-</span></span><span style=display:flex><span>        SessionID: ctx.Value(<span style=color:#a31515>&#34;session_id&#34;</span>).(<span style=color:#2b91af>string</span>),
+</span></span><span style=display:flex><span>    entry <span style=color:#ff79c6>:=</span> LogEntry{
+</span></span><span style=display:flex><span>        Timestamp: time.<span style=color:#50fa7b>Now</span>(),
+</span></span><span style=display:flex><span>        Level:     level.<span style=color:#50fa7b>String</span>(),
+</span></span><span style=display:flex><span>        Agent:     ctx.<span style=color:#50fa7b>Value</span>(<span style=color:#f1fa8c>&#34;agent_name&#34;</span>).(<span style=color:#8be9fd>string</span>),
+</span></span><span style=display:flex><span>        SessionID: ctx.<span style=color:#50fa7b>Value</span>(<span style=color:#f1fa8c>&#34;session_id&#34;</span>).(<span style=color:#8be9fd>string</span>),
 </span></span><span style=display:flex><span>        Phase:     phase,
 </span></span><span style=display:flex><span>        Message:   message,
 </span></span><span style=display:flex><span>        Metadata:  metadata,
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> duration, ok := metadata[<span style=color:#a31515>&#34;duration&#34;</span>]; ok {
-</span></span><span style=display:flex><span>        entry.Duration = duration.(<span style=color:#2b91af>int64</span>)
-</span></span><span style=display:flex><span>        delete(metadata, <span style=color:#a31515>&#34;duration&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> duration, ok <span style=color:#ff79c6>:=</span> metadata[<span style=color:#f1fa8c>&#34;duration&#34;</span>]; ok {
+</span></span><span style=display:flex><span>        entry.Duration = duration.(<span style=color:#8be9fd>int64</span>)
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>delete</span>(metadata, <span style=color:#f1fa8c>&#34;duration&#34;</span>)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err, ok := metadata[<span style=color:#a31515>&#34;error&#34;</span>]; ok {
-</span></span><span style=display:flex><span>        entry.Error = err.(<span style=color:#2b91af>error</span>).Error()
-</span></span><span style=display:flex><span>        delete(metadata, <span style=color:#a31515>&#34;error&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err, ok <span style=color:#ff79c6>:=</span> metadata[<span style=color:#f1fa8c>&#34;error&#34;</span>]; ok {
+</span></span><span style=display:flex><span>        entry.Error = err.(<span style=color:#8be9fd>error</span>).<span style=color:#50fa7b>Error</span>()
+</span></span><span style=display:flex><span>        <span style=color:#8be9fd;font-style:italic>delete</span>(metadata, <span style=color:#f1fa8c>&#34;error&#34;</span>)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    data, _ := json.Marshal(entry)
-</span></span><span style=display:flex><span>    l.logger.Println(string(data))
+</span></span><span style=display:flex><span>    data, _ <span style=color:#ff79c6>:=</span> json.<span style=color:#50fa7b>Marshal</span>(entry)
+</span></span><span style=display:flex><span>    l.logger.<span style=color:#50fa7b>Println</span>(<span style=color:#8be9fd;font-style:italic>string</span>(data))
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:green>// 使用示例</span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> init() {
-</span></span><span style=display:flex><span>    logger := &amp;AgentLogger{
-</span></span><span style=display:flex><span>        logger: log.New(os.Stdout, <span style=color:#a31515>&#34;&#34;</span>, 0),
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 使用示例</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>init</span>() {
+</span></span><span style=display:flex><span>    logger <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>AgentLogger{
+</span></span><span style=display:flex><span>        logger: log.<span style=color:#50fa7b>New</span>(os.Stdout, <span style=color:#f1fa8c>&#34;&#34;</span>, <span style=color:#bd93f9>0</span>),
 </span></span><span style=display:flex><span>        level:  INFO,
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 在 Callback 中使用</span>
-</span></span><span style=display:flex><span>    callback.BeforeRun(<span style=color:#00f>func</span>(ctx context.Context, input *callback.RunInput) {
-</span></span><span style=display:flex><span>        logger.Log(ctx, INFO, <span style=color:#a31515>&#34;before_run&#34;</span>, <span style=color:#a31515>&#34;开始处理用户请求&#34;</span>, <span style=color:#00f>map</span>[<span style=color:#2b91af>string</span>]<span style=color:#00f>interface</span>{}{
-</span></span><span style=display:flex><span>            <span style=color:#a31515>&#34;input_length&#34;</span>: len(input.Text),
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 在 Callback 中使用</span>
+</span></span><span style=display:flex><span>    callback.<span style=color:#50fa7b>BeforeRun</span>(<span style=color:#8be9fd;font-style:italic>func</span>(ctx context.Context, input <span style=color:#ff79c6>*</span>callback.RunInput) {
+</span></span><span style=display:flex><span>        logger.<span style=color:#50fa7b>Log</span>(ctx, INFO, <span style=color:#f1fa8c>&#34;before_run&#34;</span>, <span style=color:#f1fa8c>&#34;开始处理用户请求&#34;</span>, <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;input_length&#34;</span>: <span style=color:#8be9fd;font-style:italic>len</span>(input.Text),
 </span></span><span style=display:flex><span>        })
 </span></span><span style=display:flex><span>    })
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=本地调试配置>本地调试配置<a hidden class=anchor aria-hidden=true href=#本地调试配置>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:green>// debug.go</span>
-</span></span><span style=display:flex><span><span style=color:green>// +build debug</span>
+</span></span></code></pre></div><h3 id=本地调试配置>本地调试配置<a hidden class=anchor aria-hidden=true href=#本地调试配置>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// debug.go</span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// +build debug</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>package</span> main
+</span></span><span style=display:flex><span><span style=color:#ff79c6>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>import</span> (
-</span></span><span style=display:flex><span>    <span style=color:#a31515>&#34;net/http&#34;</span>
-</span></span><span style=display:flex><span>    _ <span style=color:#a31515>&#34;net/http/pprof&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;net/http&#34;</span>
+</span></span><span style=display:flex><span>    _ <span style=color:#f1fa8c>&#34;net/http/pprof&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> init() {
-</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
-</span></span><span style=display:flex><span>        log.Println(<span style=color:#a31515>&#34;启动 pprof 调试服务: http://localhost:6060&#34;</span>)
-</span></span><span style=display:flex><span>        http.ListenAndServe(<span style=color:#a31515>&#34;localhost:6060&#34;</span>, <span style=color:#00f>nil</span>)
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>init</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Println</span>(<span style=color:#f1fa8c>&#34;启动 pprof 调试服务: http://localhost:6060&#34;</span>)
+</span></span><span style=display:flex><span>        http.<span style=color:#50fa7b>ListenAndServe</span>(<span style=color:#f1fa8c>&#34;localhost:6060&#34;</span>, <span style=color:#ff79c6>nil</span>)
 </span></span><span style=display:flex><span>    }()
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>启动调试版本：<code>go run -tags debug ./cmd/server</code></p><h3 id=请求追踪>请求追踪<a hidden class=anchor aria-hidden=true href=#请求追踪>#</a></h3><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>func</span> traceMiddleware(next http.Handler) http.Handler {
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> http.HandlerFunc(<span style=color:#00f>func</span>(w http.ResponseWriter, r *http.Request) {
-</span></span><span style=display:flex><span>        requestID := r.Header.Get(<span style=color:#a31515>&#34;X-Request-ID&#34;</span>)
-</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> requestID == <span style=color:#a31515>&#34;&#34;</span> {
-</span></span><span style=display:flex><span>            requestID = generateRequestID()
+</span></span></code></pre></div><p>启动调试版本：<code>go run -tags debug ./cmd/server</code></p><h3 id=请求追踪>请求追踪<a hidden class=anchor aria-hidden=true href=#请求追踪>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>traceMiddleware</span>(next http.Handler) http.Handler {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> http.<span style=color:#50fa7b>HandlerFunc</span>(<span style=color:#8be9fd;font-style:italic>func</span>(w http.ResponseWriter, r <span style=color:#ff79c6>*</span>http.Request) {
+</span></span><span style=display:flex><span>        requestID <span style=color:#ff79c6>:=</span> r.Header.<span style=color:#50fa7b>Get</span>(<span style=color:#f1fa8c>&#34;X-Request-ID&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> requestID <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#34;&#34;</span> {
+</span></span><span style=display:flex><span>            requestID = <span style=color:#50fa7b>generateRequestID</span>()
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        ctx := context.WithValue(r.Context(), <span style=color:#a31515>&#34;request_id&#34;</span>, requestID)
-</span></span><span style=display:flex><span>        ctx = context.WithValue(ctx, <span style=color:#a31515>&#34;start_time&#34;</span>, time.Now())
+</span></span><span style=display:flex><span>        ctx <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>WithValue</span>(r.<span style=color:#50fa7b>Context</span>(), <span style=color:#f1fa8c>&#34;request_id&#34;</span>, requestID)
+</span></span><span style=display:flex><span>        ctx = context.<span style=color:#50fa7b>WithValue</span>(ctx, <span style=color:#f1fa8c>&#34;start_time&#34;</span>, time.<span style=color:#50fa7b>Now</span>())
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        w.Header().Set(<span style=color:#a31515>&#34;X-Request-ID&#34;</span>, requestID)
+</span></span><span style=display:flex><span>        w.<span style=color:#50fa7b>Header</span>().<span style=color:#50fa7b>Set</span>(<span style=color:#f1fa8c>&#34;X-Request-ID&#34;</span>, requestID)
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        next.ServeHTTP(w, r.WithContext(ctx))
+</span></span><span style=display:flex><span>        next.<span style=color:#50fa7b>ServeHTTP</span>(w, r.<span style=color:#50fa7b>WithContext</span>(ctx))
 </span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        duration := time.Since(ctx.Value(<span style=color:#a31515>&#34;start_time&#34;</span>).(time.Time))
-</span></span><span style=display:flex><span>        log.Printf(<span style=color:#a31515>&#34;[%s] %s %s - %v&#34;</span>, requestID, r.Method, r.URL.Path, duration)
+</span></span><span style=display:flex><span>        duration <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>Since</span>(ctx.<span style=color:#50fa7b>Value</span>(<span style=color:#f1fa8c>&#34;start_time&#34;</span>).(time.Time))
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;[%s] %s %s - %v&#34;</span>, requestID, r.Method, r.URL.Path, duration)
 </span></span><span style=display:flex><span>    })
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=部署与运维陷阱>部署与运维陷阱<a hidden class=anchor aria-hidden=true href=#部署与运维陷阱>#</a></h2><h3 id=陷阱配置漂移>陷阱：配置漂移<a hidden class=anchor aria-hidden=true href=#陷阱配置漂移>#</a></h3><p>开发环境、测试环境和生产环境使用不同的配置方式（环境变量、配置文件、硬编码），导致"在我机器上能跑"的问题。</p><p><strong>解决方案</strong>：使用统一的配置管理</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>type</span> Config <span style=color:#00f>struct</span> {
-</span></span><span style=display:flex><span>    Environment     <span style=color:#2b91af>string</span> <span style=color:#a31515>`env:&#34;ENV&#34; envDefault:&#34;development&#34;`</span>
-</span></span><span style=display:flex><span>    Port            <span style=color:#2b91af>int</span>    <span style=color:#a31515>`env:&#34;PORT&#34; envDefault:&#34;8080&#34;`</span>
-</span></span><span style=display:flex><span>    GoogleAPIKey    <span style=color:#2b91af>string</span> <span style=color:#a31515>`env:&#34;GOOGLE_API_KEY&#34; required:&#34;true&#34;`</span>
-</span></span><span style=display:flex><span>    RedisURL        <span style=color:#2b91af>string</span> <span style=color:#a31515>`env:&#34;REDIS_URL&#34; envDefault:&#34;redis://localhost:6379&#34;`</span>
-</span></span><span style=display:flex><span>    LogLevel        <span style=color:#2b91af>string</span> <span style=color:#a31515>`env:&#34;LOG_LEVEL&#34; envDefault:&#34;info&#34;`</span>
-</span></span><span style=display:flex><span>    MaxConcurrency  <span style=color:#2b91af>int</span>    <span style=color:#a31515>`env:&#34;MAX_CONCURRENCY&#34; envDefault:&#34;100&#34;`</span>
+</span></span></code></pre></div><h2 id=部署与运维陷阱>部署与运维陷阱<a hidden class=anchor aria-hidden=true href=#部署与运维陷阱>#</a></h2><h3 id=陷阱配置漂移>陷阱：配置漂移<a hidden class=anchor aria-hidden=true href=#陷阱配置漂移>#</a></h3><p>开发环境、测试环境和生产环境使用不同的配置方式（环境变量、配置文件、硬编码），导致"在我机器上能跑"的问题。</p><p><strong>解决方案</strong>：使用统一的配置管理</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> Config <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Environment     <span style=color:#8be9fd>string</span> <span style=color:#f1fa8c>`env:&#34;ENV&#34; envDefault:&#34;development&#34;`</span>
+</span></span><span style=display:flex><span>    Port            <span style=color:#8be9fd>int</span>    <span style=color:#f1fa8c>`env:&#34;PORT&#34; envDefault:&#34;8080&#34;`</span>
+</span></span><span style=display:flex><span>    GoogleAPIKey    <span style=color:#8be9fd>string</span> <span style=color:#f1fa8c>`env:&#34;GOOGLE_API_KEY&#34; required:&#34;true&#34;`</span>
+</span></span><span style=display:flex><span>    RedisURL        <span style=color:#8be9fd>string</span> <span style=color:#f1fa8c>`env:&#34;REDIS_URL&#34; envDefault:&#34;redis://localhost:6379&#34;`</span>
+</span></span><span style=display:flex><span>    LogLevel        <span style=color:#8be9fd>string</span> <span style=color:#f1fa8c>`env:&#34;LOG_LEVEL&#34; envDefault:&#34;info&#34;`</span>
+</span></span><span style=display:flex><span>    MaxConcurrency  <span style=color:#8be9fd>int</span>    <span style=color:#f1fa8c>`env:&#34;MAX_CONCURRENCY&#34; envDefault:&#34;100&#34;`</span>
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 模型配置</span>
-</span></span><span style=display:flex><span>    Model           <span style=color:#2b91af>string</span> <span style=color:#a31515>`env:&#34;MODEL&#34; envDefault:&#34;gemini-2.0-flash&#34;`</span>
-</span></span><span style=display:flex><span>    ModelTimeout    <span style=color:#2b91af>int</span>    <span style=color:#a31515>`env:&#34;MODEL_TIMEOUT_SEC&#34; envDefault:&#34;30&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 模型配置</span>
+</span></span><span style=display:flex><span>    Model           <span style=color:#8be9fd>string</span> <span style=color:#f1fa8c>`env:&#34;MODEL&#34; envDefault:&#34;gemini-2.0-flash&#34;`</span>
+</span></span><span style=display:flex><span>    ModelTimeout    <span style=color:#8be9fd>int</span>    <span style=color:#f1fa8c>`env:&#34;MODEL_TIMEOUT_SEC&#34; envDefault:&#34;30&#34;`</span>
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 限流配置</span>
-</span></span><span style=display:flex><span>    RateLimitRPM    <span style=color:#2b91af>int</span>    <span style=color:#a31515>`env:&#34;RATE_LIMIT_RPM&#34; envDefault:&#34;60&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 限流配置</span>
+</span></span><span style=display:flex><span>    RateLimitRPM    <span style=color:#8be9fd>int</span>    <span style=color:#f1fa8c>`env:&#34;RATE_LIMIT_RPM&#34; envDefault:&#34;60&#34;`</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#00f>func</span> LoadConfig() (*Config, <span style=color:#2b91af>error</span>) {
-</span></span><span style=display:flex><span>    <span style=color:#00f>var</span> cfg Config
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := env.Parse(&amp;cfg); err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        <span style=color:#00f>return</span> <span style=color:#00f>nil</span>, fmt.Errorf(<span style=color:#a31515>&#34;配置解析失败: %w&#34;</span>, err)
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>LoadConfig</span>() (<span style=color:#ff79c6>*</span>Config, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> cfg Config
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> env.<span style=color:#50fa7b>Parse</span>(<span style=color:#ff79c6>&amp;</span>cfg); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;配置解析失败: %w&#34;</span>, err)
 </span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#00f>return</span> &amp;cfg, <span style=color:#00f>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>cfg, <span style=color:#ff79c6>nil</span>
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=陷阱优雅退出缺失>陷阱：优雅退出缺失<a hidden class=anchor aria-hidden=true href=#陷阱优雅退出缺失>#</a></h3><p>Agent 服务在部署更新时直接终止，导致进行中的请求被中断。</p><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#00f>func</span> main() {
-</span></span><span style=display:flex><span>    <span style=color:green>// ... 初始化 ...</span>
+</span></span></code></pre></div><h3 id=陷阱优雅退出缺失>陷阱：优雅退出缺失<a hidden class=anchor aria-hidden=true href=#陷阱优雅退出缺失>#</a></h3><p>Agent 服务在部署更新时直接终止，导致进行中的请求被中断。</p><p><strong>解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// ... 初始化 ...</span>
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    srv := &amp;http.Server{
-</span></span><span style=display:flex><span>        Addr:    fmt.Sprintf(<span style=color:#a31515>&#34;:%d&#34;</span>, cfg.Port),
+</span></span><span style=display:flex><span>    srv <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>http.Server{
+</span></span><span style=display:flex><span>        Addr:    fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;:%d&#34;</span>, cfg.Port),
 </span></span><span style=display:flex><span>        Handler: router,
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 启动服务</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>go</span> <span style=color:#00f>func</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#00f>if</span> err := srv.ListenAndServe(); err != <span style=color:#00f>nil</span> &amp;&amp; err != http.ErrServerClosed {
-</span></span><span style=display:flex><span>            log.Fatalf(<span style=color:#a31515>&#34;服务启动失败: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 启动服务</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> srv.<span style=color:#50fa7b>ListenAndServe</span>(); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> <span style=color:#ff79c6>&amp;&amp;</span> err <span style=color:#ff79c6>!=</span> http.ErrServerClosed {
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Fatalf</span>(<span style=color:#f1fa8c>&#34;服务启动失败: %v&#34;</span>, err)
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>    }()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 等待中断信号</span>
-</span></span><span style=display:flex><span>    quit := make(<span style=color:#00f>chan</span> os.Signal, 1)
-</span></span><span style=display:flex><span>    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-</span></span><span style=display:flex><span>    &lt;-quit
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 等待中断信号</span>
+</span></span><span style=display:flex><span>    quit <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> os.Signal, <span style=color:#bd93f9>1</span>)
+</span></span><span style=display:flex><span>    signal.<span style=color:#50fa7b>Notify</span>(quit, syscall.SIGINT, syscall.SIGTERM)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>&lt;-</span>quit
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    log.Println(<span style=color:#a31515>&#34;正在优雅关闭服务...&#34;</span>)
+</span></span><span style=display:flex><span>    log.<span style=color:#50fa7b>Println</span>(<span style=color:#f1fa8c>&#34;正在优雅关闭服务...&#34;</span>)
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 给进行中的请求 30 秒完成</span>
-</span></span><span style=display:flex><span>    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-</span></span><span style=display:flex><span>    <span style=color:#00f>defer</span> cancel()
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 给进行中的请求 30 秒完成</span>
+</span></span><span style=display:flex><span>    ctx, cancel <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>WithTimeout</span>(context.<span style=color:#50fa7b>Background</span>(), <span style=color:#bd93f9>30</span><span style=color:#ff79c6>*</span>time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> <span style=color:#50fa7b>cancel</span>()
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#00f>if</span> err := srv.Shutdown(ctx); err != <span style=color:#00f>nil</span> {
-</span></span><span style=display:flex><span>        log.Printf(<span style=color:#a31515>&#34;服务关闭异常: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> srv.<span style=color:#50fa7b>Shutdown</span>(ctx); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;服务关闭异常: %v&#34;</span>, err)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:green>// 关闭 Plugin</span>
-</span></span><span style=display:flex><span>    <span style=color:#00f>for</span> _, p := <span style=color:#00f>range</span> plugins {
-</span></span><span style=display:flex><span>        p.Shutdown(ctx)
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 关闭 Plugin</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, p <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> plugins {
+</span></span><span style=display:flex><span>        p.<span style=color:#50fa7b>Shutdown</span>(ctx)
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    log.Println(<span style=color:#a31515>&#34;服务已安全关闭&#34;</span>)
+</span></span><span style=display:flex><span>    log.<span style=color:#50fa7b>Println</span>(<span style=color:#f1fa8c>&#34;服务已安全关闭&#34;</span>)
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><h2 id=小结>小结<a hidden class=anchor aria-hidden=true href=#小结>#</a></h2><p>踩坑记录完成。本章涵盖的核心经验：</p><ol><li><strong>API 层</strong>：认证、配额、超时是最常见的三类错误，需要系统性的防御机制</li><li><strong>性能层</strong>：延迟优化需要端到端的追踪分析，内存管理需要主动监控和清理</li><li><strong>调试层</strong>：结构化日志、分布式追踪、pprof 是排查问题的三大利器</li><li><strong>运维层</strong>：统一配置管理和优雅退出是生产部署的基本要求</li></ol><p>接下来进入最后一个主题——Evaluation：Agent 效果评估。</p><p>← <a href=/tutorials/go-adk/10-realworld/go-adk-realworld-full/>端到端项目实战</a>
-| <a href=/tutorials/go-adk/10-realworld/go-adk-realworld-evaluation/>Evaluation →</a></p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=https://rexai.top/tags/go/>Go</a></li><li><a href=https://rexai.top/tags/adk/>ADK</a></li><li><a href=https://rexai.top/tags/%E8%B8%A9%E5%9D%91/>踩坑</a></li><li><a href=https://rexai.top/tags/%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/>性能调优</a></li><li><a href=https://rexai.top/tags/%E6%95%99%E7%A8%8B/>教程</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+| <a href=/tutorials/go-adk/10-realworld/go-adk-realworld-evaluation/>Evaluation →</a></p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><footer class=post-footer><ul class=post-tags><li><a href=/tags/go/>#Go</a></li><li><a href=/tags/adk/>#ADK</a></li><li><a href=/tags/%E8%B8%A9%E5%9D%91/>#踩坑</a></li><li><a href=/tags/%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/>#性能调优</a></li><li><a href=/tags/%E6%95%99%E7%A8%8B/>#教程</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
   import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
 
   init({
@@ -620,14 +615,15 @@
     path: window.location.pathname,
     update: false,
   });
-</script><style>#waline-container{background:var(--rex-bg);padding:var(--rex-space-5);border-radius:var(--rex-radius-xl);border:1px solid var(--rex-border)}@media screen and (max-width:768px){#waline-container{padding:var(--rex-space-4)}}.wl-editor{border-radius:var(--rex-radius-lg)}.wl-btn{border-radius:var(--rex-radius-lg);transition:all .3s ease}.wl-btn:hover{transform:translateY(-1px)}.wl-reaction{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--rex-border)}.wl-reaction-title{font-weight:600;margin-bottom:1rem}.wl-reaction-img{transition:transform .2s ease}.wl-reaction-img:hover{transform:scale(1.2)}.wl-card{border:1px solid var(--rex-border);border-radius:var(--rex-radius-lg);background:var(--rex-bg)}.wl-card:hover{border-color:var(--rex-border-bold)}</style></article></main><button class=back-to-top id=backToTop aria-label="Back to top" aria-hidden=true tabindex=-1>
+</script><style>#waline-container{background:var(--rex-bg);padding:var(--rex-space-5);border-radius:var(--rex-radius-xl);border:1px solid var(--rex-border)}@media screen and (max-width:768px){#waline-container{padding:var(--rex-space-4)}}.wl-editor{border-radius:var(--rex-radius-lg)}.wl-btn{border-radius:var(--rex-radius-lg);transition:all .3s ease}.wl-btn:hover{transform:translateY(-1px)}.wl-reaction{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--rex-border)}.wl-reaction-title{font-weight:600;margin-bottom:1rem}.wl-reaction-img{transition:transform .2s ease}.wl-reaction-img:hover{transform:scale(1.2)}.wl-card{border:1px solid var(--rex-border);border-radius:var(--rex-radius-lg);background:var(--rex-bg)}.wl-card:hover{border-color:var(--rex-border-bold)}</style></div><aside class=toc-col><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#%e8%b8%a9%e5%9d%91%e8%ae%b0%e5%bd%95%e4%b8%8e%e6%80%a7%e8%83%bd%e8%b0%83%e4%bc%98%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88 aria-label=踩坑记录与性能调优：常见问题与解决方案>踩坑记录与性能调优：常见问题与解决方案</a><ul><li><a href=#api-%e5%b1%82%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98 aria-label="API 层常见问题">API 层常见问题</a><ul><li><a href=#%e9%94%99%e8%af%af-1unauthorized--%e8%ae%a4%e8%af%81%e5%a4%b1%e8%b4%a5 aria-label="错误 1：UNAUTHORIZED —— 认证失败">错误 1：UNAUTHORIZED —— 认证失败</a></li><li><a href=#%e9%94%99%e8%af%af-2resource_exhausted--%e9%85%8d%e9%a2%9d%e8%80%97%e5%b0%bd aria-label="错误 2：RESOURCE_EXHAUSTED —— 配额耗尽">错误 2：RESOURCE_EXHAUSTED —— 配额耗尽</a></li><li><a href=#%e9%94%99%e8%af%af-3context-deadline-exceeded--%e8%af%b7%e6%b1%82%e8%b6%85%e6%97%b6 aria-label="错误 3：context deadline exceeded —— 请求超时">错误 3：context deadline exceeded —— 请求超时</a></li></ul></li><li><a href=#%e6%80%a7%e8%83%bd%e9%97%ae%e9%a2%98%e8%af%8a%e6%96%ad%e4%b8%8e%e8%b0%83%e4%bc%98 aria-label=性能问题诊断与调优>性能问题诊断与调优</a><ul><li><a href=#%e9%97%ae%e9%a2%98-1%e5%93%8d%e5%ba%94%e5%bb%b6%e8%bf%9f%e9%ab%98 aria-label="问题 1：响应延迟高">问题 1：响应延迟高</a></li><li><a href=#%e9%97%ae%e9%a2%98-2%e5%86%85%e5%ad%98%e6%9a%b4%e6%b6%a8%e4%b8%8e-oom aria-label="问题 2：内存暴涨与 OOM">问题 2：内存暴涨与 OOM</a></li><li><a href=#%e9%97%ae%e9%a2%98-3-goroutine-%e6%b3%84%e6%bc%8f aria-label="问题 3： goroutine 泄漏">问题 3： goroutine 泄漏</a></li></ul></li><li><a href=#%e8%b0%83%e8%af%95%e6%8a%80%e5%b7%a7%e4%b8%8e%e5%b7%a5%e5%85%b7 aria-label=调试技巧与工具>调试技巧与工具</a><ul><li><a href=#%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97 aria-label=结构化日志>结构化日志</a></li><li><a href=#%e6%9c%ac%e5%9c%b0%e8%b0%83%e8%af%95%e9%85%8d%e7%bd%ae aria-label=本地调试配置>本地调试配置</a></li><li><a href=#%e8%af%b7%e6%b1%82%e8%bf%bd%e8%b8%aa aria-label=请求追踪>请求追踪</a></li></ul></li><li><a href=#%e9%83%a8%e7%bd%b2%e4%b8%8e%e8%bf%90%e7%bb%b4%e9%99%b7%e9%98%b1 aria-label=部署与运维陷阱>部署与运维陷阱</a><ul><li><a href=#%e9%99%b7%e9%98%b1%e9%85%8d%e7%bd%ae%e6%bc%82%e7%a7%bb aria-label=陷阱：配置漂移>陷阱：配置漂移</a></li><li><a href=#%e9%99%b7%e9%98%b1%e4%bc%98%e9%9b%85%e9%80%80%e5%87%ba%e7%bc%ba%e5%a4%b1 aria-label=陷阱：优雅退出缺失>陷阱：优雅退出缺失</a></li></ul></li><li><a href=#%e5%b0%8f%e7%bb%93 aria-label=小结>小结</a></li></ul></li></ul></div></details></div></aside></div></article></main><footer class=site-footer><div class=site-footer__inner><div class=site-footer__brand><a class=brand href=/ aria-label=梦兽编程><span class=brand__mark>梦</span>
+<span class=brand__text>梦兽编程</span></a><p>梦兽编程专注AI编程与Rust语言教程，提供从零基础到实战项目的完整学习路径。涵盖人工智能开发、Rust Web开发、异步编程等热门技术，配套代码示例与在线指导，助您快速掌握未来编程技能。</p></div><div><h4>导航</h4><ul class=site-footer__links><li><a href=/tutorials/>教程</a></li><li><a href=/ai/>AI 编程</a></li><li><a href=/languages/>编程语言</a></li><li><a href=/tools/>工具</a></li><li><a href=/about/>关于</a></li></ul></div><div><h4>专题</h4><ul class=site-footer__links><li><a href=/tags/>标签</a></li><li><a href=/categories/>分类</a></li><li><a href=/tutorials/rust/>Rust</a></li><li><a href=/tutorials/ai/>AI 教程</a></li></ul></div></div><div class=site-footer__bottom><span>© 2026 梦兽编程. 由代码与好奇心驱动。</span>
+<span>基于 <a href=https://gohugo.io target=_blank rel=noopener>Hugo</a> 构建</span></div><a class="rex-cta bottom-right" href="https://rexai.top/tools/cc-codex-portal/?utm_source=site&amp;utm_medium=fab&amp;utm_campaign=floating_cta" target=_blank rel=noopener aria-label="AI 套装"><span class=cta-icon aria-hidden=true>⚡️</span>
+<span class=cta-text><strong>AI 套装</strong></span></a><aside class=wechat-floating id=wechat-floating><div class=wechat-floating__panel><strong>扫码关注公众号</strong>
+<img src=https://rexai.top/images/wechat-qr.jpg alt=微信公众号二维码 loading=lazy>
+<small>每周 Rust / AI 干货 · 社群答疑 · 专属福利</small></div><button class=wechat-floating__btn id=wechat-floating-btn aria-label=公众号>
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38.0 01-.9 3.8A8.5 8.5.0 0112.5 20a8.38 8.38.0 01-3.8-.9L3 21l1.9-5.7A8.38 8.38.0 014 11.5a8.5 8.5.0 014.7-7.6 8.38 8.38.0 013.8-.9h.5a8.48 8.48.0 018 8v.5z"/></svg>
+<span class=wf-label>公众号</span></button></aside><script>(function(){var e=document.getElementById("wechat-floating"),t=document.getElementById("wechat-floating-btn");e&&t&&t.addEventListener("click",function(t){t.stopPropagation(),e.classList.toggle("open")}),document.addEventListener("click",function(t){e&&!e.contains(t.target)&&e.classList.remove("open")})})()</script></footer><button class=back-to-top id=backToTop aria-label="Back to top" aria-hidden=true tabindex=-1>
 <svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48"><circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/><circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-<svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button><footer class=footer><span>© <a href=https://rexai.top/>梦兽编程</a></span> ·
-<span>Powered by
-<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
-<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
-</a><a class="rex-cta bottom-left" href="https://rexai.top/tools/cc-codex-portal/?utm_source=site&amp;utm_medium=fab&amp;utm_campaign=floating_cta" target=_blank rel=noopener aria-label="高性价比 AI 套装"><span class=cta-icon aria-hidden=true>⚡️</span>
-<span class=cta-text><strong>高性价比 AI 套装</strong>
-<em>每月不到一杯咖啡，效率翻倍 →</em>
-</span></a><script>(function(){var e=document.querySelector(".rex-cta");if(!e)return;e.addEventListener("click",function(){window.gtag&&gtag("event","click",{event_category:"cta",event_label:"floating_cta"})})})()</script><div class="wechat-fixed wechat-fixed--bottom-right"><div class=wechat-fixed__card><div class=wechat-fixed__header><svg class="wechat-fixed__icon" viewBox="0 0 24 24" fill="none"><path d="M8.5 11C9.32843 11 10 10.3284 10 9.5 10 8.67157 9.32843 8 8.5 8 7.67157 8 7 8.67157 7 9.5c0 .8284.67157 1.5 1.5 1.5z" stroke="currentColor" stroke-width="1.5"/><path d="M16.5 11C17.3284 11 18 10.3284 18 9.5 18 8.67157 17.3284 8 16.5 8 15.6716 8 15 8.67157 15 9.5c0 .8284.6716 1.5 1.5 1.5z" stroke="currentColor" stroke-width="1.5"/><path d="M3 12c0-4.97056 4.02944-9 9-9 4.9706.0 9 4.02944 9 9 0 4.9706-4.0294 9-9 9-4.97056.0-9-4.0294-9-9z" stroke="currentColor" stroke-width="1.5"/><path d="M12 3V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 6.5S10.5 8 12 8s2.5-1.5 2.5-1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7 15.5c.5 1.5 1.5 2.5 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M17 15.5c-.5 1.5-1.5 2.5-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10.5 15.5l.5 3s.5 1.5 1 1.5 1-1.5 1-1.5l.5-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span class=wechat-fixed__title>扫码关注公众号</span></div><img src=/images/wechat-qr.jpg alt=微信公众号二维码 class=wechat-fixed__qr><p class=wechat-fixed__tip>每周 Rust / AI 干货 · 社群答疑 · 专属福利</p></div></div><script defer src=/js/mobile-menu.min.858920de1944b90e8663f4c1ebb6d7c4b21ce5631e6a283d52e6b169268922a4.js integrity="sha256-hYkg3hlEuQ6GY/TB67bXxLIc5WMeaig9UuaxaSaJIqQ=" crossorigin=anonymous></script><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script><script src=https://rexai.top/js/reading-progress.js></script></body></html>
+<svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button><script type=module src=/js/three-scene.js></script>
+<script src=/js/theme.js defer></script><script src=/js/reveal.js defer></script><script src=/js/mobile-nav.js defer></script><script>(function(){var e=document.getElementById("backToTop"),t=e?e.querySelector(".back-to-top__ring-progress"):null;if(!e)return;window.addEventListener("scroll",function(){var s,n=document.documentElement.scrollTop||document.body.scrollTop;n>400?(e.classList.add("is-visible"),e.setAttribute("aria-hidden","false"),e.removeAttribute("tabindex"),t&&(s=document.documentElement.scrollHeight-window.innerHeight,t.style.strokeDashoffset=125.6*(1-n/s))):(e.classList.remove("is-visible"),e.setAttribute("aria-hidden","true"),e.setAttribute("tabindex","-1"))},{passive:!0}),e.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})})()</script></body></html>
