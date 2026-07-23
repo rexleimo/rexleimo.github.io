@@ -1,333 +1,222 @@
-<section style="max-width:677px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#2c2c2c;padding:0 12px;box-sizing:border-box;">
+<section style="max-width:677px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#333;padding:0 16px;box-sizing:border-box;">
 
-<!-- ==================== HERO HEADER ==================== -->
-<div style="background:linear-gradient(135deg,#0b0b0f 0%,#1a1025 40%,#0f1a2e 100%);border-radius:12px;padding:32px 20px 24px;margin:0 0 24px;text-align:center;position:relative;overflow:hidden;">
-  <div style="position:absolute;top:-60px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(224,87,60,0.12);filter:blur(40px);"></div>
-  <div style="position:absolute;bottom:-50px;left:-30px;width:140px;height:140px;border-radius:50%;background:rgba(167,139,250,0.10);filter:blur(35px);"></div>
-  <p style="position:relative;display:inline-block;margin:0 0 14px;padding:4px 14px;border-radius:20px;background:rgba(224,87,60,0.15);border:1px solid rgba(224,87,60,0.28);color:#f0795c;font-size:12px;font-weight:600;letter-spacing:1px;">AI 推理框架 · 深度选型</p>
-  <h1 style="position:relative;margin:0 0 10px;font-family:'Times New Roman','Songti SC','STSong',serif;font-size:24px;font-weight:700;color:#f4f1ea;line-height:1.3;letter-spacing:-0.5px;">三强争霸还是各取所需？</h1>
-  <p style="position:relative;margin:0;font-size:17px;color:#b6b0a6;line-height:1.5;">llama.cpp · vLLM · SGLang 推理框架深度对比</p>
-  <p style="position:relative;margin:14px 0 0;font-size:12px;color:#8a8479;">梦兽编程 · 2026年7月</p>
+<!-- title -->
+<h1 style="font-size:22px;font-weight:700;color:#111;line-height:1.4;margin:24px 0 8px;">三强争霸还是各取所需？llama.cpp、vLLM 与 SGLang 推理框架深度选型</h1>
+<p style="font-size:13px;color:#999;margin:0 0 28px;">梦兽编程 · 2026年7月</p>
+
+<!-- intro -->
+<p style="margin:0 0 14px;"><strong>框架性能不是常数，而是你流量的函数。</strong></p>
+<p style="margin:0 0 14px;color:#555;">同样跑 Llama 3.3 70B，vLLM 和 SGLang 的吞吐差距在纯净负载下只有 <strong>1-4%</strong>。但在 Agent 多轮负载下，SGLang 能把后续请求延迟从 <strong>1.8 秒压到 0.35 秒</strong>。差距不是「谁更快」，而是「你的流量长什么样，决定谁的快对你有效」。</p>
+
+<!-- quote -->
+<div style="border-left:3px solid #d0d0d0;padding:10px 16px;margin:20px 0;background:#fafafa;">
+  <p style="margin:0;font-size:14px;color:#666;">本文不列参数表。只追问一个问题：当你面对这三个框架时，什么才是真正影响你决策的变量？</p>
 </div>
 
-<!-- ==================== INTRODUCTION ==================== -->
-<p style="font-size:17px;font-weight:700;color:#1a1a1a;margin:28px 0 12px;">框架性能不是常数，而是你流量的函数。</p>
+<!-- three frameworks -->
+<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">三强定位速览</h2>
 
-<p style="margin:0 0 14px;color:#3a3a3a;">如果你在 2026 年问任何一个做过自托管推理的工程师「哪个框架最强」，你大概率会得到三种完全不同的答案——<strong>而且他们都没有撒谎。</strong></p>
-
-<p style="margin:0 0 14px;color:#3a3a3a;">同样跑 Llama 3.3 70B，vLLM 和 SGLang 的吞吐差距在纯净负载下只有 <strong style="color:#e0573c;">1-4%</strong>——落在运行间噪声范围内。但在 Agent 多轮负载下，SGLang 能把后续请求延迟从 <strong style="color:#e0573c;">1.8 秒压到 0.35 秒</strong>。差距不是「谁更快」，而是「你的流量长什么样，决定谁的快对你有效」。</p>
-
-<div style="background:#fdf6f0;border-left:4px solid #e0573c;border-radius:0 8px 8px 0;padding:14px 18px;margin:18px 0;">
-  <p style="margin:0;font-size:14px;color:#8b4513;font-weight:600;">💡 本文不列参数表。只追问一个问题：<br>当你面对这三个框架时，什么才是真正影响你决策的变量？</p>
-</div>
-
-<!-- ==================== THREE FRAMEWORKS CARDS ==================== -->
-<h2 style="font-family:'Times New Roman','Songti SC',serif;font-size:21px;font-weight:700;color:#1a1a1a;margin:32px 0 18px;text-align:center;position:relative;">
-  <span style="position:relative;display:inline-block;padding:0 20px;">
-    <span style="position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(224,87,60,0.15);"></span>
-    <span style="position:relative;">三强定位速览</span>
-  </span>
-</h2>
-
-<!-- Card 1: llama.cpp -->
-<div style="background:linear-gradient(135deg,#1a1408,#261f0c);border:1px solid rgba(251,191,36,0.3);border-radius:10px;padding:20px 18px;margin:0 0 14px;position:relative;overflow:hidden;">
-  <div style="position:absolute;top:-40px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(251,191,36,0.08);filter:blur(20px);"></div>
-  <p style="position:relative;margin:0 0 6px;font-size:18px;font-weight:700;color:#fbbf24;">🦙 llama.cpp</p>
-  <p style="position:relative;margin:0 0 12px;font-size:11px;color:#fcd34d;">MIT · C/C++ · 11.8 万 Stars</p>
-  <p style="position:relative;margin:0 0 4px;font-size:13px;line-height:1.7;color:#d4c8a0;">
-    <strong style="color:#fcd34d;">核心：</strong>GGUF 量化 + ggml 可移植运行时<br>
-    <strong style="color:#fcd34d;">缓存：</strong>基础分页 · 无连续批处理<br>
-    <strong style="color:#fcd34d;">适用：</strong>个人验证 / 消费级硬件 / 隐私场景
+<div style="border:1px solid #e8e8e8;border-radius:4px;padding:16px;margin:0 0 10px;">
+  <p style="margin:0 0 4px;font-size:16px;font-weight:700;">🦙 llama.cpp</p>
+  <p style="margin:0 0 8px;font-size:11px;color:#999;">MIT · C/C++ · 11.8 万 Stars</p>
+  <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
+    <strong>核心：</strong>GGUF 量化 + ggml 可移植运行时<br>
+    <strong>缓存：</strong>基础分页 · 无连续批处理<br>
+    <strong>适用：</strong>个人验证 / 消费级硬件 / 隐私场景
   </p>
 </div>
 
-<!-- Card 2: vLLM -->
-<div style="background:linear-gradient(135deg,#061a12,#0a2218);border:1px solid rgba(52,211,153,0.3);border-radius:10px;padding:20px 18px;margin:0 0 14px;position:relative;overflow:hidden;">
-  <div style="position:absolute;top:-40px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(52,211,153,0.08);filter:blur(20px);"></div>
-  <p style="position:relative;margin:0 0 6px;font-size:18px;font-weight:700;color:#34d399;">⚡ vLLM</p>
-  <p style="position:relative;margin:0 0 12px;font-size:11px;color:#6ee7b7;">Apache 2.0 · Python/C++ · 7.8 万 Stars</p>
-  <p style="position:relative;margin:0 0 4px;font-size:13px;line-height:1.7;color:#a8d8c0;">
-    <strong style="color:#6ee7b7;">核心：</strong>PagedAttention + 连续批处理<br>
-    <strong style="color:#6ee7b7;">缓存：</strong>16-token 块级分页 · 显存浪费 &lt;4%<br>
-    <strong style="color:#6ee7b7;">适用：</strong>高并发 API / 生产推理 / 多硬件
+<div style="border:1px solid #e8e8e8;border-radius:4px;padding:16px;margin:0 0 10px;">
+  <p style="margin:0 0 4px;font-size:16px;font-weight:700;">⚡ vLLM</p>
+  <p style="margin:0 0 8px;font-size:11px;color:#999;">Apache 2.0 · Python/C++ · 7.8 万 Stars</p>
+  <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
+    <strong>核心：</strong>PagedAttention + 连续批处理<br>
+    <strong>缓存：</strong>16-token 块级分页 · 显存浪费 &lt;4%<br>
+    <strong>适用：</strong>高并发 API / 生产推理 / 多硬件
   </p>
 </div>
 
-<!-- Card 3: SGLang -->
-<div style="background:linear-gradient(135deg,#0f0822,#170d2e);border:1px solid rgba(167,139,250,0.3);border-radius:10px;padding:20px 18px;margin:0 0 14px;position:relative;overflow:hidden;">
-  <div style="position:absolute;top:-40px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(167,139,250,0.08);filter:blur(20px);"></div>
-  <p style="position:relative;margin:0 0 6px;font-size:18px;font-weight:700;color:#a78bfa;">🧠 SGLang</p>
-  <p style="position:relative;margin:0 0 12px;font-size:11px;color:#c4b5fd;">Apache 2.0 · Python+Rust · 2.7 万 Stars</p>
-  <p style="position:relative;margin:0 0 4px;font-size:13px;line-height:1.7;color:#c4b8e0;">
-    <strong style="color:#c4b5fd;">核心：</strong>RadixAttention + 零开销调度<br>
-    <strong style="color:#c4b5fd;">缓存：</strong>token 级基数树 · 任意重叠命中<br>
-    <strong style="color:#c4b5fd;">适用：</strong>多 Agent / 前缀密集 / RL 后端
+<div style="border:1px solid #e8e8e8;border-radius:4px;padding:16px;margin:0 0 10px;">
+  <p style="margin:0 0 4px;font-size:16px;font-weight:700;">🧠 SGLang</p>
+  <p style="margin:0 0 8px;font-size:11px;color:#999;">Apache 2.0 · Python+Rust · 2.7 万 Stars</p>
+  <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
+    <strong>核心：</strong>RadixAttention + 零开销调度<br>
+    <strong>缓存：</strong>token 级基数树 · 任意重叠命中<br>
+    <strong>适用：</strong>多 Agent / 前缀密集 / RL 后端
   </p>
 </div>
 
-<!-- ==================== KV CACHE COMPARISON TABLE ==================== -->
-<h2 style="font-family:'Times New Roman','Songti SC',serif;font-size:21px;font-weight:700;color:#1a1a1a;margin:32px 0 18px;text-align:center;position:relative;">
-  <span style="position:relative;display:inline-block;padding:0 20px;">
-    <span style="position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(224,87,60,0.15);"></span>
-    <span style="position:relative;">KV 缓存的三条哲学路线</span>
-  </span>
-</h2>
-
-<p style="margin:0 0 16px;color:#3a3a3a;">KV 缓存管理是推理框架的灵魂——它决定了同样一张 GPU 能同时服务多少个请求。三个框架在这个问题上走出了三条截然不同的道路：</p>
+<!-- KV cache table -->
+<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">KV 缓存的三条哲学路线</h2>
+<p style="margin:0 0 14px;color:#555;">KV 缓存管理是推理框架的灵魂——它决定了同样一张 GPU 能同时服务多少个请求。</p>
 
 <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13px;">
-  <thead>
-    <tr>
-      <th style="padding:10px 8px;background:#f8f4f0;border-bottom:2px solid #e0573c;text-align:left;font-weight:700;color:#1a1a1a;">框架</th>
-      <th style="padding:10px 8px;background:#f8f4f0;border-bottom:2px solid #e0573c;text-align:left;font-weight:700;color:#1a1a1a;">KV 缓存策略</th>
-      <th style="padding:10px 8px;background:#f8f4f0;border-bottom:2px solid #e0573c;text-align:left;font-weight:700;color:#1a1a1a;">设计哲学</th>
-      <th style="padding:10px 8px;background:#f8f4f0;border-bottom:2px solid #e0573c;text-align:left;font-weight:700;color:#1a1a1a;">并发上限</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;color:#b8860b;">🦙 llama.cpp</td>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;">基础分页</td>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;">"够用就行"</td>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:700;color:#e0573c;">~16 槽位</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;color:#059669;">⚡ vLLM</td>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;">PagedAttention 块级分页</td>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;">"榨干每一字节显存"</td>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:700;color:#059669;">百级并发</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 8px;font-weight:600;color:#7c3aed;">🧠 SGLang</td>
-      <td style="padding:10px 8px;">RadixAttention 基数树</td>
-      <td style="padding:10px 8px;">"缓存是一等公民"</td>
-      <td style="padding:10px 8px;font-weight:700;color:#7c3aed;">百级 + 前缀复用</td>
-    </tr>
-  </tbody>
+  <tr style="background:#f5f5f5;">
+    <th style="padding:10px 8px;text-align:left;font-weight:600;">框架</th>
+    <th style="padding:10px 8px;text-align:left;font-weight:600;">KV 缓存策略</th>
+    <th style="padding:10px 8px;text-align:left;font-weight:600;">设计哲学</th>
+    <th style="padding:10px 8px;text-align:left;font-weight:600;">并发上限</th>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">🦙 llama.cpp</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">基础分页</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">"够用就行"</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;">~16 槽位</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">⚡ vLLM</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">PagedAttention 块级分页</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">"榨干每一字节显存"</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;">百级并发</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;">🧠 SGLang</td>
+    <td style="padding:10px 8px;">RadixAttention 基数树</td>
+    <td style="padding:10px 8px;">"缓存是一等公民"</td>
+    <td style="padding:10px 8px;font-weight:600;">百级 + 前缀复用</td>
+  </tr>
 </table>
 
-<!-- ==================== PREFIX OVERLAP RATE ==================== -->
-<h2 style="font-family:'Times New Roman','Songti SC',serif;font-size:21px;font-weight:700;color:#1a1a1a;margin:32px 0 18px;text-align:center;position:relative;">
-  <span style="position:relative;display:inline-block;padding:0 20px;">
-    <span style="position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(224,87,60,0.15);"></span>
-    <span style="position:relative;">一个你大概率没测过、但决定了一切的指标</span>
-  </span>
-</h2>
+<!-- prefix overlap rate -->
+<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">最关键的选型指标：前缀重叠率</h2>
 
-<div style="background:linear-gradient(135deg,#fff5f5,#fff0e8);border:1px solid rgba(224,87,60,0.25);border-radius:10px;padding:22px 18px;margin:16px 0 20px;text-align:center;">
-  <p style="margin:0 0 4px;font-size:12px;color:#e0573c;font-weight:700;letter-spacing:2px;">⚡ 关键指标</p>
-  <p style="margin:0;font-size:28px;font-weight:800;color:#1a1a1a;font-family:'Times New Roman',serif;">前缀重叠率</p>
-  <p style="margin:6px 0 0;font-size:13px;color:#8a8479;">= 流量中多少比例的请求共享了相同的开头 token</p>
+<div style="text-align:center;padding:20px;margin:16px 0;background:#fafafa;border-radius:4px;">
+  <p style="margin:0 0 4px;font-size:26px;font-weight:800;color:#111;">前缀重叠率</p>
+  <p style="margin:0;font-size:13px;color:#999;">= 流量中多少比例的请求共享了相同的开头 token</p>
 </div>
 
-<!-- Three threshold cards -->
-<table style="width:100%;margin:0 0 20px;font-size:13px;border-collapse:separate;border-spacing:0 10px;">
+<table style="width:100%;margin:0 0 16px;font-size:13px;">
   <tr>
-    <td style="background:#f0f9f4;border-left:3px solid #34d399;border-radius:6px;padding:14px 14px;vertical-align:top;width:33%;">
-      <p style="margin:0 0 4px;font-weight:700;font-size:18px;color:#059669;">&lt; 40%</p>
-      <p style="margin:0;color:#555;line-height:1.6;">vLLM 与 SGLang<br>性能等价<br>→ 选 vLLM</p>
+    <td style="padding:14px;background:#fafafa;border-left:3px solid #b0b0b0;width:33%;vertical-align:top;">
+      <p style="margin:0 0 6px;font-weight:700;font-size:16px;">&lt; 40%</p>
+      <p style="margin:0;color:#555;">vLLM 与 SGLang 性能等价 → 选 vLLM</p>
     </td>
     <td style="width:8px;"></td>
-    <td style="background:#fef7ed;border-left:3px solid #f59e0b;border-radius:6px;padding:14px 14px;vertical-align:top;width:33%;">
-      <p style="margin:0 0 4px;font-weight:700;font-size:18px;color:#d97706;">40–60%</p>
-      <p style="margin:0;color:#555;line-height:1.6;">SGLang 收益<br>开始显现<br>→ 值得测试</p>
+    <td style="padding:14px;background:#fafafa;border-left:3px solid #b0b0b0;width:33%;vertical-align:top;">
+      <p style="margin:0 0 6px;font-weight:700;font-size:16px;">40–60%</p>
+      <p style="margin:0;color:#555;">SGLang 收益开始显现 → 值得测试</p>
     </td>
     <td style="width:8px;"></td>
-    <td style="background:#fef2f2;border-left:3px solid #e0573c;border-radius:6px;padding:14px 14px;vertical-align:top;width:33%;">
-      <p style="margin:0 0 4px;font-weight:700;font-size:18px;color:#dc2626;">&gt; 60%</p>
-      <p style="margin:0;color:#555;line-height:1.6;">TTFT 降 37%<br>成本降 30%<br>→ 选 SGLang</p>
+    <td style="padding:14px;background:#fafafa;border-left:3px solid #b0b0b0;width:33%;vertical-align:top;">
+      <p style="margin:0 0 6px;font-weight:700;font-size:16px;">&gt; 60%</p>
+      <p style="margin:0;color:#555;">TTFT 降 37% · 成本降 30% → 选 SGLang</p>
     </td>
   </tr>
 </table>
 
-<div style="background:#fff8f5;border:1px solid #fed7cd;border-radius:8px;padding:16px 16px;margin:0 0 20px;">
-  <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#c2410c;">🔍 为什么大多数团队没测这个？</p>
-  <p style="margin:0;font-size:13px;color:#555;line-height:1.7;">他们测了吞吐、延迟、并发上限——但没测那个真正决定「SGLang 的 RadixAttention 值不值得额外运维复杂度」的指标。</p>
-  <p style="margin:8px 0 0;font-size:13px;color:#555;line-height:1.7;">结果：用 vLLM 跑 Agent 抱怨延迟高，用 SGLang 跑代码补全抱怨「怎么跟 vLLM 差不多还多了一套路由要维护」。</p>
+<div style="border-left:3px solid #e8e8e8;padding:10px 16px;margin:16px 0;background:#fafafa;">
+  <p style="margin:0;font-size:13px;color:#555;">大多数团队没测这个——他们测了吞吐、延迟、并发上限，但没测那个真正决定「SGLang 值不值得」的指标。结果：用 vLLM 跑 Agent 抱怨延迟高，用 SGLang 跑代码补全抱怨没区别。</p>
 </div>
 
-<!-- ==================== REAL BENCHMARK DATA ==================== -->
-<h2 style="font-family:'Times New Roman','Songti SC',serif;font-size:21px;font-weight:700;color:#1a1a1a;margin:32px 0 18px;text-align:center;position:relative;">
-  <span style="position:relative;display:inline-block;padding:0 20px;">
-    <span style="position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(224,87,60,0.15);"></span>
-    <span style="position:relative;">生产基准数据</span>
-  </span>
-</h2>
-
-<p style="margin:0 0 12px;font-size:12px;color:#8a8479;">数据来源：Spheron 2026.06 · 单卡 H100 SXM5 80GB · Llama 3.3 70B FP8 · 仅供参考，请自测</p>
+<!-- benchmark data -->
+<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">生产基准数据</h2>
+<p style="font-size:12px;color:#999;margin:0 0 12px;">Spheron 2026.06 · H100 SXM5 · Llama 3.3 70B FP8 · 仅供参考</p>
 
 <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13px;">
-  <thead>
-    <tr>
-      <th style="padding:12px 6px;background:#2c2c2c;border-bottom:1px solid #444;text-align:left;font-weight:600;color:#f4f1ea;">场景</th>
-      <th style="padding:12px 6px;background:#2c2c2c;border-bottom:1px solid #444;text-align:center;font-weight:600;color:#f4f1ea;">vLLM</th>
-      <th style="padding:12px 6px;background:#2c2c2c;border-bottom:1px solid #444;text-align:center;font-weight:600;color:#f4f1ea;">SGLang</th>
-      <th style="padding:12px 6px;background:#2c2c2c;border-bottom:1px solid #444;text-align:center;font-weight:600;color:#f4f1ea;">差距</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr style="background:#f8f8f8;">
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;">纯净负载吞吐 (并发100)</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">2,010 tok/s</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">2,050 tok/s</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;color:#888;">~2%</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;">前缀负载 TTFT p50 (并发50)</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">310ms</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">195ms</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;color:#e0573c;font-weight:700;">SGLang -37%</td>
-    </tr>
-    <tr style="background:#f8f8f8;">
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;">前缀负载 TTFT p95 (并发50)</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">620ms</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">370ms</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;color:#e0573c;font-weight:700;">SGLang -41%</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;">Agent 工作流延迟 (后续请求)</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">1.8s</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;font-weight:600;">0.35s</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #ddd;text-align:center;color:#e0573c;font-weight:700;">SGLang ~5x</td>
-    </tr>
-    <tr style="background:#f8f8f8;">
-      <td style="padding:10px 6px;">70B 冷启动加载</td>
-      <td style="padding:10px 6px;text-align:center;">~62s</td>
-      <td style="padding:10px 6px;text-align:center;">~58s</td>
-      <td style="padding:10px 6px;text-align:center;color:#888;">~6%</td>
-    </tr>
-  </tbody>
+  <tr style="background:#f5f5f5;">
+    <th style="padding:10px 8px;text-align:left;font-weight:600;">场景</th>
+    <th style="padding:10px 8px;text-align:center;font-weight:600;">vLLM</th>
+    <th style="padding:10px 8px;text-align:center;font-weight:600;">SGLang</th>
+    <th style="padding:10px 8px;text-align:center;font-weight:600;">差距</th>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">纯净吞吐 (并发100)</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">2,010 tok/s</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">2,050 tok/s</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;color:#999;">~2%</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">前缀 TTFT p50 (并发50)</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">310ms</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">195ms</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang -37%</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">前缀 TTFT p95 (并发50)</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">620ms</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">370ms</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang -41%</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;">Agent 工作流后续延迟</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">1.8s</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">0.35s</td>
+    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang ~5x</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 8px;">70B 冷启动加载</td>
+    <td style="padding:10px 8px;text-align:center;">~62s</td>
+    <td style="padding:10px 8px;text-align:center;">~58s</td>
+    <td style="padding:10px 8px;text-align:center;color:#999;">~6%</td>
+  </tr>
 </table>
 
-<!-- ==================== DECISION MATRIX ==================== -->
-<h2 style="font-family:'Times New Roman','Songti SC',serif;font-size:21px;font-weight:700;color:#1a1a1a;margin:32px 0 18px;text-align:center;position:relative;">
-  <span style="position:relative;display:inline-block;padding:0 20px;">
-    <span style="position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(224,87,60,0.15);"></span>
-    <span style="position:relative;">一表定音：你的场景该选谁</span>
-  </span>
-</h2>
+<!-- decision matrix -->
+<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">一表定音：你的场景该选谁</h2>
 
 <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:12px;">
-  <thead>
-    <tr>
-      <th style="padding:10px 6px;background:#f8f4f0;border-bottom:2px solid #e0573c;text-align:left;font-weight:700;color:#1a1a1a;">你的情况</th>
-      <th style="padding:10px 6px;background:#f8f4f0;border-bottom:2px solid #e0573c;text-align:center;font-weight:700;color:#1a1a1a;">推荐</th>
-      <th style="padding:10px 6px;background:#f8f4f0;border-bottom:2px solid #e0573c;text-align:left;font-weight:700;color:#1a1a1a;">原因</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;">个人验证 · 消费级硬件</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:700;color:#b8860b;">🦙 llama.cpp</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;font-size:11px;">唯一 CPU 可用 · 5分钟上手</td>
-    </tr>
-    <tr style="background:#f8f8f8;">
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;">Apple Silicon 本地推理</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:700;color:#b8860b;">🦙 llama.cpp</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;font-size:11px;">Metal 后端 · 7B Q4 达 62 tok/s</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;">新建生产平台 · 流量不明</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:700;color:#059669;">⚡ vLLM</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;font-size:11px;">文档最厚 · 生产履历最厚</td>
-    </tr>
-    <tr style="background:#f8f8f8;">
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;">高并发通用 API 服务</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:700;color:#059669;">⚡ vLLM</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;font-size:11px;">连续批处理 · llm-d K8s</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;">多开 AI Agent · 多轮对话</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:700;color:#7c3aed;">🧠 SGLang</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;font-size:11px;">Agent 负载 5x 加速 · 命中率 75-95%</td>
-    </tr>
-    <tr style="background:#f8f8f8;">
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;">RAG / 共享系统提示词</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:700;color:#7c3aed;">🧠 SGLang</td>
-      <td style="padding:10px 6px;border-bottom:1px solid #eee;font-size:11px;">TTFT 降 37% · 成本降 30%</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 6px;">多硬件战略 (AMD/TPU)</td>
-      <td style="padding:10px 6px;text-align:center;font-weight:700;color:#059669;">⚡ vLLM</td>
-      <td style="padding:10px 6px;font-size:11px;">硬件覆盖面最宽</td>
-    </tr>
-    <tr style="background:#f8f8f8;">
-      <td style="padding:10px 6px;">RL 训练 rollout 后端</td>
-      <td style="padding:10px 6px;text-align:center;font-weight:700;color:#7c3aed;">🧠 SGLang</td>
-      <td style="padding:10px 6px;font-size:11px;">verl/slime/AReaL 原生集成</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 6px;">隐私 / 离线 / 气隙环境</td>
-      <td style="padding:10px 6px;text-align:center;font-weight:700;color:#b8860b;">🦙 llama.cpp</td>
-      <td style="padding:10px 6px;font-size:11px;">零外部依赖 · 单二进制</td>
-    </tr>
-  </tbody>
+  <tr style="background:#f5f5f5;">
+    <th style="padding:10px 6px;text-align:left;font-weight:600;">你的情况</th>
+    <th style="padding:10px 6px;text-align:center;font-weight:600;">推荐</th>
+    <th style="padding:10px 6px;text-align:left;font-weight:600;">原因</th>
+  </tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">个人验证 · 消费级硬件</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🦙 llama.cpp</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">唯一 CPU 可用 · 5分钟上手</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">Apple Silicon 本地</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🦙 llama.cpp</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">Metal 后端 · 7B 达 62 tok/s</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">新建生产平台 · 流量不明</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">⚡ vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">文档最厚 · 生产履历最厚</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">高并发通用 API</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">⚡ vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">连续批处理 · llm-d K8s</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">多开 Agent · 多轮对话</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🧠 SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">Agent 负载 5x · 命中率 75-95%</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">RAG / 共享系统提示词</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🧠 SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">TTFT -37% · 成本 -30%</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">多硬件 (AMD/TPU)</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">⚡ vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">硬件覆盖面最宽</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">RL 训练 rollout</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🧠 SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">verl/slime 原生集成</td></tr>
+  <tr><td style="padding:8px 6px;">隐私 / 离线 / 气隙</td><td style="padding:8px 6px;text-align:center;font-weight:600;">🦙 llama.cpp</td><td style="padding:8px 6px;font-size:11px;">零外部依赖 · 单二进制</td></tr>
 </table>
 
-<!-- ==================== GROWTH PATH ==================== -->
-<h2 style="font-family:'Times New Roman','Songti SC',serif;font-size:21px;font-weight:700;color:#1a1a1a;margin:32px 0 18px;text-align:center;position:relative;">
-  <span style="position:relative;display:inline-block;padding:0 20px;">
-    <span style="position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(224,87,60,0.15);"></span>
-    <span style="position:relative;">推荐成长路径</span>
-  </span>
-</h2>
-
+<!-- growth path -->
+<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">推荐成长路径</h2>
 <p style="margin:0 0 16px;text-align:center;font-size:14px;color:#555;">不是「三选一」，而是「三段式」</p>
 
 <div style="text-align:center;margin:0 0 8px;">
-  <span style="display:inline-block;padding:10px 20px;border-radius:20px;background:#fff8e8;border:1px solid #fbbf24;margin:0 4px 8px;font-size:13px;font-weight:600;color:#b8860b;">① llama.cpp 验证想法</span>
-  <span style="display:inline-block;padding:4px 8px;color:#aaa;font-size:18px;margin:0 2px;">→</span>
-  <span style="display:inline-block;padding:10px 20px;border-radius:20px;background:#ecfdf5;border:1px solid #34d399;margin:0 4px 8px;font-size:13px;font-weight:600;color:#059669;">② vLLM 承载生产流量</span>
-  <span style="display:inline-block;padding:4px 8px;color:#aaa;font-size:18px;margin:0 2px;">→</span>
-  <span style="display:inline-block;padding:10px 20px;border-radius:20px;background:#f5f0ff;border:1px solid #a78bfa;margin:0 4px 8px;font-size:13px;font-weight:600;color:#7c3aed;">③ SGLang 优化 Agent 流量</span>
+  <span style="display:inline-block;padding:8px 16px;border:1px solid #ddd;border-radius:4px;margin:0 4px 8px;font-size:12px;font-weight:600;color:#555;">① llama.cpp<br>验证想法</span>
+  <span style="color:#ccc;font-size:16px;margin:0 2px;">→</span>
+  <span style="display:inline-block;padding:8px 16px;border:1px solid #ddd;border-radius:4px;margin:0 4px 8px;font-size:12px;font-weight:600;color:#555;">② vLLM<br>承载生产</span>
+  <span style="color:#ccc;font-size:16px;margin:0 2px;">→</span>
+  <span style="display:inline-block;padding:8px 16px;border:1px solid #ddd;border-radius:4px;margin:0 4px 8px;font-size:12px;font-weight:600;color:#555;">③ SGLang<br>优化 Agent</span>
+</div>
+<p style="margin:0 0 20px;text-align:center;font-size:12px;color:#999;">验证看「能不能跑」· 生产看「稳不稳定」· 优化看「快了多少」</p>
+
+<!-- three principles -->
+<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">三个可带走的原则</h2>
+
+<div style="margin:0 0 10px;">
+  <p style="margin:0 0 4px;font-weight:700;">1. 前缀重叠率是你最应该测、但大概率没测的指标</p>
+  <p style="margin:0;font-size:13px;color:#555;">比任何第三方 benchmark 都更能预测框架在你流量上的表现。抓几千条 prompt，统计请求间的 LCP 分布。</p>
+</div>
+<div style="margin:0 0 10px;">
+  <p style="margin:0 0 4px;font-weight:700;">2. 「先 vLLM 后 SGLang」不是保守，是唯一不靠猜的路径</p>
+  <p style="margin:0;font-size:13px;color:#555;">vLLM 兜底「第一次部署」的所有坑；SGLang 的加速比需在你的流量上复测。两者都兼容 OpenAI API，迁移只需改 base URL。</p>
+</div>
+<div style="margin:0 0 24px;">
+  <p style="margin:0 0 4px;font-weight:700;">3. 框架不是「选一次」的决策，是「持续评估」的过程</p>
+  <p style="margin:0;font-size:13px;color:#555;">三框架均以周为单位迭代。成熟团队不是在选框架，而是在建路由——按模型与负载类型在网关层共存。</p>
 </div>
 
-<p style="margin:0 0 20px;text-align:center;font-size:12px;color:#8a8479;">三个阶段有三个评估标准：验证期看「能不能跑」，生产期看「稳不稳定」，优化期看「快了多少」</p>
-
-<!-- ==================== THREE PRINCIPLES ==================== -->
-<h2 style="font-family:'Times New Roman','Songti SC',serif;font-size:21px;font-weight:700;color:#1a1a1a;margin:32px 0 18px;text-align:center;position:relative;">
-  <span style="position:relative;display:inline-block;padding:0 20px;">
-    <span style="position:absolute;left:0;right:0;bottom:2px;height:8px;background:rgba(224,87,60,0.15);"></span>
-    <span style="position:relative;">三个可带走的原则</span>
-  </span>
-</h2>
-
-<div style="background:linear-gradient(135deg,#fefefe,#f8f8f8);border:1px solid #e8e8e8;border-radius:10px;padding:6px 0;margin:0 0 24px;">
-
-  <div style="padding:16px 18px;border-bottom:1px solid #eee;">
-    <p style="margin:0 0 4px;font-weight:700;font-size:15px;color:#1a1a1a;">1. 前缀重叠率是你最应该测、但大概率没测的指标</p>
-    <p style="margin:0;font-size:13px;color:#666;line-height:1.7;">比任何第三方 benchmark 都更能预测框架在你流量上的表现。测法：抓几千条 prompt，统计请求间的 LCP 分布。</p>
-  </div>
-
-  <div style="padding:16px 18px;border-bottom:1px solid #eee;">
-    <p style="margin:0 0 4px;font-weight:700;font-size:15px;color:#1a1a1a;">2. 「先 vLLM 后 SGLang」不是保守，是唯一不靠猜的路径</p>
-    <p style="margin:0;font-size:13px;color:#666;line-height:1.7;">vLLM 的文档和生产履历能兜底所有「第一次部署」的坑；SGLang 的加速比需要在你的流量上复测才能确认。两者都是 OpenAI 兼容 API，迁移只需改 base URL。</p>
-  </div>
-
-  <div style="padding:16px 18px;">
-    <p style="margin:0 0 4px;font-weight:700;font-size:15px;color:#1a1a1a;">3. 框架不是「选一次」的决策，是「持续评估」的过程</p>
-    <p style="margin:0;font-size:13px;color:#666;line-height:1.7;">三框架均以周为单位迭代。成熟的团队不是在选框架，而是在建路由——按模型与负载类型在网关层共存。</p>
-  </div>
-
-</div>
-
-<!-- ==================== CTA ==================== -->
-<div style="background:linear-gradient(135deg,#0b0b0f,#1a1025);border-radius:12px;padding:28px 20px;margin:28px 0 12px;text-align:center;">
-  <p style="margin:0 0 8px;font-size:20px;font-weight:700;color:#f4f1ea;font-family:'Times New Roman',serif;">🎯 还在纠结推理框架怎么选？</p>
-  <p style="margin:0 0 16px;font-size:13px;color:#b6b0a6;line-height:1.7;">
+<!-- cta -->
+<div style="border:1px solid #e0e0e0;border-radius:4px;padding:24px 20px;margin:28px 0 12px;text-align:center;background:#fafafa;">
+  <p style="margin:0 0 8px;font-size:17px;font-weight:700;color:#111;">🎯 还在纠结推理框架怎么选？</p>
+  <p style="margin:0 0 14px;font-size:13px;color:#666;line-height:1.7;">
     不知道自己的流量前缀重叠率怎么测？<br>
     想找人帮你搭一套「先 vLLM 后 SGLang」的生产管线？
   </p>
-  <p style="margin:0;font-size:14px;color:#f0795c;font-weight:600;">
+  <p style="margin:0;font-size:14px;color:#555;">
     📬 扫码关注「梦兽编程」公众号<br>
-    <span style="font-size:12px;color:#8a8479;">发送「推理框架」获取选型检查清单与部署 SOP</span>
+    <span style="font-size:11px;color:#999;">发送「推理框架」获取选型检查清单与部署 SOP</span>
   </p>
 </div>
 
-<!-- ==================== FOOTER ==================== -->
+<!-- footer -->
 <div style="text-align:center;padding:16px 0;border-top:1px solid #eee;margin-top:20px;">
-  <p style="margin:0 0 4px;font-size:11px;color:#aaa;">本文性能数据来自 Spheron、LLM Academy、n4n AI 等第三方独立基准测试（2026.04-07）</p>
-  <p style="margin:0;font-size:11px;color:#aaa;">框架迭代以周计，选型前务必在目标硬件与真实流量上独立复测</p>
+  <p style="margin:0 0 4px;font-size:11px;color:#bbb;">数据来源：Spheron、LLM Academy、n4n AI 等第三方独立基准测试（2026.04-07）</p>
+  <p style="margin:0;font-size:11px;color:#bbb;">框架迭代以周计，选型前务必在目标硬件与真实流量上独立复测</p>
   <p style="margin:12px 0 0;font-size:11px;color:#ccc;">全栈之巅 · 梦兽编程 | rexai.top</p>
 </div>
 
