@@ -1,223 +1,116 @@
-<section style="max-width:677px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#333;padding:0 16px;box-sizing:border-box;">
+<section style="max-width:677px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.85;color:#333;padding:0 16px;box-sizing:border-box;">
 
-<!-- title -->
-<h1 style="font-size:22px;font-weight:700;color:#111;line-height:1.4;margin:24px 0 8px;">三强争霸还是各取所需？llama.cpp、vLLM 与 SGLang 推理框架深度选型</h1>
+<h1 style="font-size:21px;font-weight:700;color:#111;line-height:1.5;margin:24px 0 8px;">llama.cpp、vLLM、SGLang：三个推理框架，三段完全不同的路</h1>
 <p style="font-size:13px;color:#999;margin:0 0 28px;">梦兽编程 · 2026年7月</p>
 
-<!-- intro -->
-<p style="margin:0 0 14px;"><strong>框架性能不是常数，而是你流量的函数。</strong></p>
-<p style="margin:0 0 14px;color:#555;">同样跑 Llama 3.3 70B，vLLM 和 SGLang 的吞吐差距在纯净负载下只有 <strong>1-4%</strong>。但在 Agent 多轮负载下，SGLang 能把后续请求延迟从 <strong>1.8 秒压到 0.35 秒</strong>。差距不是「谁更快」，而是「你的流量长什么样，决定谁的快对你有效」。</p>
+<p style="margin:0 0 16px;">去年底我开始把一部分 API 请求从 OpenAI 切到自托管。最开始就一个想法：省钱。后来发现这事远不止省钱——不同的推理框架对同一种负载的表现可以差好几倍，而且差的不是「谁优化得好」，是「你的流量到底长什么样」。</p>
 
-<!-- quote -->
-<div style="border-left:3px solid #d0d0d0;padding:10px 16px;margin:20px 0;background:#fafafa;">
-  <p style="margin:0;font-size:14px;color:#666;">本文不列参数表。只追问一个问题：当你面对这三个框架时，什么才是真正影响你决策的变量？</p>
-</div>
+<p style="margin:0 0 16px;">这里聊三个我用过或者深度测过的框架：llama.cpp、vLLM、SGLang。不说谁更好，就说它们各自适合什么场景，以及我踩过的坑。</p>
 
-<!-- three frameworks -->
-<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">三强定位速览</h2>
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;">llama.cpp：先别想服务的事，它让你先跑起来</h2>
 
-<div style="border:1px solid #e8e8e8;border-radius:4px;padding:16px;margin:0 0 10px;">
-  <p style="margin:0 0 4px;font-size:16px;font-weight:700;">🦙 llama.cpp</p>
-  <p style="margin:0 0 8px;font-size:11px;color:#999;">MIT · C/C++ · 11.8 万 Stars</p>
-  <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
-    <strong>核心：</strong>GGUF 量化 + ggml 可移植运行时<br>
-    <strong>缓存：</strong>基础分页 · 无连续批处理<br>
-    <strong>适用：</strong>个人验证 / 消费级硬件 / 隐私场景
-  </p>
-</div>
+<p style="margin:0 0 16px;">llama.cpp 的设计目标非常单纯：让大模型能在任何设备上跑。纯 C/C++，不依赖 Python，不依赖 CUDA。编译出来就一个 50MB 的二进制，拷到 U 盘里插上就能用。</p>
 
-<div style="border:1px solid #e8e8e8;border-radius:4px;padding:16px;margin:0 0 10px;">
-  <p style="margin:0 0 4px;font-size:16px;font-weight:700;">⚡ vLLM</p>
-  <p style="margin:0 0 8px;font-size:11px;color:#999;">Apache 2.0 · Python/C++ · 7.8 万 Stars</p>
-  <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
-    <strong>核心：</strong>PagedAttention + 连续批处理<br>
-    <strong>缓存：</strong>16-token 块级分页 · 显存浪费 &lt;4%<br>
-    <strong>适用：</strong>高并发 API / 生产推理 / 多硬件
-  </p>
-</div>
+<p style="margin:0 0 16px;">这个定位决定了它所有的技术选择。KV 缓存是最基础的分页，没有连续批处理，服务端并发大概 16 个槽位就到头了。它不是为了高并发设计的——是在你用一台 MacBook 或者树莓派跑 7B 模型的时候，保证不 OOM。</p>
 
-<div style="border:1px solid #e8e8e8;border-radius:4px;padding:16px;margin:0 0 10px;">
-  <p style="margin:0 0 4px;font-size:16px;font-weight:700;">🧠 SGLang</p>
-  <p style="margin:0 0 8px;font-size:11px;color:#999;">Apache 2.0 · Python+Rust · 2.7 万 Stars</p>
-  <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
-    <strong>核心：</strong>RadixAttention + 零开销调度<br>
-    <strong>缓存：</strong>token 级基数树 · 任意重叠命中<br>
-    <strong>适用：</strong>多 Agent / 前缀密集 / RL 后端
-  </p>
-</div>
+<p style="margin:0 0 16px;">GGUF 量化是 llama.cpp 最被低估的东西。Q4_K_M 大概保留 92% 的模型质量，70B 压缩到 40GB，能塞进一张 RTX 4090。啥意思呢，就是你在自己电脑上跑的模型质量，跟云端托管 API 的差距其实没那么大。</p>
 
-<!-- KV cache table -->
-<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">KV 缓存的三条哲学路线</h2>
-<p style="margin:0 0 14px;color:#555;">KV 缓存管理是推理框架的灵魂——它决定了同样一张 GPU 能同时服务多少个请求。</p>
+<p style="margin:0 0 16px;">什么情况下用它：个人折腾、本地隐私推理、离线环境、给一两个朋友搭个 API 玩玩。什么情况下别用：你想开 20 个并发。llama.cpp 不是小版 vLLM，它的架构和 vLLM 是两条路。等「扛不住」再换基本就是重来。</p>
 
-<table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13px;">
+<p style="margin:0;padding:12px 16px;background:#f9f9f9;border-left:3px solid #ddd;font-size:13px;color:#666;">单流速度参考：RTX 4090 跑 Llama 3 70B Q4_K_M 约 45-55 tok/s。M4 Mac mini 跑 7B Q4 约 35 tok/s。够用，但别拿去给一群人做 API。</p>
+
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;">vLLM：生产环境的安全牌</h2>
+
+<p style="margin:0 0 16px;">vLLM 的核心创新是 PagedAttention——把 KV 缓存切成 16 token 的固定块，按需分配，不要求连续内存。这个思路直接照搬了操作系统的虚拟内存分页。做出来以后，同样的显存能塞进 4-5 倍的并发请求。</p>
+
+<p style="margin:0 0 16px;">但 vLLM 真正厉害的不是技术，是生态。Amazon Rufus 购物助手服务 2.5 亿客户用的就是 vLLM，LinkedIn 有 50 多个生成式 AI 用例跑在上面，Roblox 用它做全平台推理引擎。大多数生产环境的坑都有人踩过了，GitHub Issue 一搜就有答案。</p>
+
+<p style="margin:0 0 16px;">我的实际体验：不确定选什么的时候选 vLLM，至少不会翻车。它的文档是三个框架里最厚的，从 TGI 迁移过来大概一到三天。关键参数像 max-num-seqs、gpu-memory-utilization 都有成熟的社区经验值。</p>
+
+<p style="margin:0 0 16px;">但有个事值得注意：vLLM 的前缀缓存是选配的（--enable-prefix-caching），默认没开。如果你跑的是 Agent 负载——每个请求都带同样的系统提示词和工具定义——不开缓存等于每次都把相同的前缀算一遍。</p>
+
+<p style="margin:0;padding:12px 16px;background:#f9f9f9;border-left:3px solid #ddd;font-size:13px;color:#666;">2026 年 1 月，vLLM 核心维护者创立商业公司 Inferact，拿了 1.5 亿美元种子轮。他们承诺 Apache 2.0 许可不变。对选型来说这是个好消息：核心依赖项目不会突然失速。</p>
+
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;">SGLang：它是给 Agent 场景专门设计的，不是「全面更快」</h2>
+
+<p style="margin:0 0 16px;">SGLang 的卖点是 RadixAttention：用基数树管理 KV 缓存，新请求进来先查树，找到最长匹配前缀就直接复用。不像 vLLM 那样要求前缀正好对齐 16 token 的块边界——任意长度的部分重叠都能命中。</p>
+
+<p style="margin:0 0 16px;">这个设计在 Agent 场景下特别有用。每个 Agent 每一步都带着系统提示词、工具 schema、多轮历史——这三样东西加起来动辄几千 token，而且每个实例都一样。SGLang 让你只算一次，后面全部命中缓存。</p>
+
+<p style="margin:0 0 16px;">但这里有个很容易被忽略的坑：RadixAttention 的收益不是白给的。它依赖你的流量有足够多的重复前缀。如果你的流量是代码补全——每次上下文都不一样——那它不仅没加速，反而因为维护基数树和权重的显存竞争倒贴开销。</p>
+
+<p style="margin:0 0 16px;">看一组真实数据。Spheron 今年 6 月在单卡 H100 上测 Llama 3.3 70B：</p>
+
+<table style="width:100%;border-collapse:collapse;margin:0 0 16px;font-size:12px;">
   <tr style="background:#f5f5f5;">
-    <th style="padding:10px 8px;text-align:left;font-weight:600;">框架</th>
-    <th style="padding:10px 8px;text-align:left;font-weight:600;">KV 缓存策略</th>
-    <th style="padding:10px 8px;text-align:left;font-weight:600;">设计哲学</th>
-    <th style="padding:10px 8px;text-align:left;font-weight:600;">并发上限</th>
+    <th style="padding:8px;text-align:left;font-weight:600;">场景</th>
+    <th style="padding:8px;text-align:center;font-weight:600;">vLLM</th>
+    <th style="padding:8px;text-align:center;font-weight:600;">SGLang</th>
+    <th style="padding:8px;text-align:center;font-weight:600;">差距</th>
   </tr>
-  <tr>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">🦙 llama.cpp</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">基础分页</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">"够用就行"</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;">~16 槽位</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">⚡ vLLM</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">PagedAttention 块级分页</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">"榨干每一字节显存"</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:600;">百级并发</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 8px;">🧠 SGLang</td>
-    <td style="padding:10px 8px;">RadixAttention 基数树</td>
-    <td style="padding:10px 8px;">"缓存是一等公民"</td>
-    <td style="padding:10px 8px;font-weight:600;">百级 + 前缀复用</td>
-  </tr>
+  <tr><td style="padding:8px;border-bottom:1px solid #eee;">纯净吞吐（并发100）</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">2,010 tok/s</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">2,050 tok/s</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;color:#999;">差不多</td></tr>
+  <tr><td style="padding:8px;border-bottom:1px solid #eee;">有前缀复用的 TTFT（并发50）</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">310ms</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">195ms</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang 快 37%</td></tr>
+  <tr><td style="padding:8px;">Agent 多轮后续延迟</td><td style="padding:8px;text-align:center;">1.8s</td><td style="padding:8px;text-align:center;">0.35s</td><td style="padding:8px;text-align:center;font-weight:600;">SGLang 快 5 倍</td></tr>
 </table>
 
-<!-- prefix overlap rate -->
-<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">最关键的选型指标：前缀重叠率</h2>
+<p style="margin:0 0 16px;">注意第一行：没有前缀复用的时候，两者几乎一样。SGLang 的加速完全取决于你的流量有重复前缀——没有重复的时候它就是普通推理引擎。</p>
 
-<div style="text-align:center;padding:20px;margin:16px 0;background:#fafafa;border-radius:4px;">
-  <p style="margin:0 0 4px;font-size:26px;font-weight:800;color:#111;">前缀重叠率</p>
-  <p style="margin:0;font-size:13px;color:#999;">= 流量中多少比例的请求共享了相同的开头 token</p>
-</div>
+<p style="margin:0;padding:12px 16px;background:#f9f9f9;border-left:3px solid #ddd;font-size:13px;color:#666;margin-bottom:16px;">SGLang 2026 年上半年集中爆了好几个高危漏洞，包括 CVSS 9.8 的未授权 RCE。如果你只用 vLLM 不需要操心安全补丁节奏，SGLang 需要。这不是说它不好，是说它更适合有专人维护的团队。</p>
 
-<table style="width:100%;margin:0 0 16px;font-size:13px;">
-  <tr>
-    <td style="padding:14px;background:#fafafa;border-left:3px solid #b0b0b0;width:33%;vertical-align:top;">
-      <p style="margin:0 0 6px;font-weight:700;font-size:16px;">&lt; 40%</p>
-      <p style="margin:0;color:#555;">vLLM 与 SGLang 性能等价 → 选 vLLM</p>
-    </td>
-    <td style="width:8px;"></td>
-    <td style="padding:14px;background:#fafafa;border-left:3px solid #b0b0b0;width:33%;vertical-align:top;">
-      <p style="margin:0 0 6px;font-weight:700;font-size:16px;">40–60%</p>
-      <p style="margin:0;color:#555;">SGLang 收益开始显现 → 值得测试</p>
-    </td>
-    <td style="width:8px;"></td>
-    <td style="padding:14px;background:#fafafa;border-left:3px solid #b0b0b0;width:33%;vertical-align:top;">
-      <p style="margin:0 0 6px;font-weight:700;font-size:16px;">&gt; 60%</p>
-      <p style="margin:0;color:#555;">TTFT 降 37% · 成本降 30% → 选 SGLang</p>
-    </td>
-  </tr>
-</table>
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;">一个比 benchmark 更重要的问题：你测过前缀重叠率吗</h2>
 
-<div style="border-left:3px solid #e8e8e8;padding:10px 16px;margin:16px 0;background:#fafafa;">
-  <p style="margin:0;font-size:13px;color:#555;">大多数团队没测这个——他们测了吞吐、延迟、并发上限，但没测那个真正决定「SGLang 值不值得」的指标。结果：用 vLLM 跑 Agent 抱怨延迟高，用 SGLang 跑代码补全抱怨没区别。</p>
-</div>
+<p style="margin:0 0 16px;">大多数人选框架会先跑一堆 benchmark。吞吐、延迟、并发上限全测一遍。然后拿着数字做决定。</p>
 
-<!-- benchmark data -->
-<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">生产基准数据</h2>
-<p style="font-size:12px;color:#999;margin:0 0 12px;">Spheron 2026.06 · H100 SXM5 · Llama 3.3 70B FP8 · 仅供参考</p>
+<p style="margin:0 0 16px;">但有个指标比所有这些都更关键，而且大部分人没测过：你的流量里，有多少请求共享了相同的前缀 token。</p>
 
-<table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:13px;">
-  <tr style="background:#f5f5f5;">
-    <th style="padding:10px 8px;text-align:left;font-weight:600;">场景</th>
-    <th style="padding:10px 8px;text-align:center;font-weight:600;">vLLM</th>
-    <th style="padding:10px 8px;text-align:center;font-weight:600;">SGLang</th>
-    <th style="padding:10px 8px;text-align:center;font-weight:600;">差距</th>
-  </tr>
-  <tr>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">纯净吞吐 (并发100)</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">2,010 tok/s</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">2,050 tok/s</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;color:#999;">~2%</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">前缀 TTFT p50 (并发50)</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">310ms</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">195ms</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang -37%</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">前缀 TTFT p95 (并发50)</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">620ms</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">370ms</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang -41%</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;">Agent 工作流后续延迟</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">1.8s</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;">0.35s</td>
-    <td style="padding:10px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang ~5x</td>
-  </tr>
-  <tr>
-    <td style="padding:10px 8px;">70B 冷启动加载</td>
-    <td style="padding:10px 8px;text-align:center;">~62s</td>
-    <td style="padding:10px 8px;text-align:center;">~58s</td>
-    <td style="padding:10px 8px;text-align:center;color:#999;">~6%</td>
-  </tr>
-</table>
+<p style="margin:0 0 16px;">这个数字直接决定 SGLang 的 RadixAttention 对你的流量到底有没有用。低于 40%，vLLM 和 SGLang 没区别，选文档更厚的 vLLM。40% 到 60%，SGLang 开始有明显优势。超过 60%，SGLang 的 TTFT 能降 37%，成本能降 30%。</p>
 
-<!-- decision matrix -->
-<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">一表定音：你的场景该选谁</h2>
+<p style="margin:0 0 16px;">怎么测：抓几千条生产请求的 prompt，算请求之间的最长公共前缀分布。如果中位数超过几百 token 而且覆盖大量请求，你应该认真考虑 SGLang。如果几乎每条 prompt 都不一样，选 vLLM 就行，没必要多维护一套路由。</p>
+
+<p style="margin:0 0 16px;">我一直觉得这是工程上最被低估的事情：花一个下午搞清楚自己的流量结构，比花一周跑 20 组 benchmark 有用得多。</p>
+
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;">我的推荐路径</h2>
+
+<p style="margin:0 0 14px;">不复杂，就三步：</p>
+
+<p style="margin:0 0 8px;"><strong>第一步，用 vLLM 搭生产基线。</strong>不确定选什么的时候，选 vLLM。文档最厚，问题最好查，参数调优的经验值最成熟。先跑起来，把监控搭好。</p>
+
+<p style="margin:0 0 8px;"><strong>第二步，测前缀重叠率。</strong>跑一个月的真实流量，抓几千条 prompt 做前缀分析。</p>
+
+<p style="margin:0 0 14px;"><strong>第三步，如果重叠率稳定超过 60%，把 Agent 型流量切到 SGLang。</strong>vLLM 和 SGLang 都是 OpenAI 兼容 API，切流量就是改一个 base URL。真正的成本在重建基准和调参。</p>
+
+<p style="margin:0 0 16px;">对三人以上的团队，更实际的做法是在网关层按模型和负载类型路由：llama.cpp 负责开发机和边缘设备，vLLM 跑通用生产流量，SGLang 专攻 Agent 和前缀密集场景。三个框架共存不是什么过度工程，是成熟团队的常态。</p>
+
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;">几个直接能用的判断</h2>
 
 <table style="width:100%;border-collapse:collapse;margin:0 0 20px;font-size:12px;">
   <tr style="background:#f5f5f5;">
-    <th style="padding:10px 6px;text-align:left;font-weight:600;">你的情况</th>
-    <th style="padding:10px 6px;text-align:center;font-weight:600;">推荐</th>
-    <th style="padding:10px 6px;text-align:left;font-weight:600;">原因</th>
+    <th style="padding:8px 6px;text-align:left;font-weight:600;">你的情况</th>
+    <th style="padding:8px 6px;text-align:center;font-weight:600;">用哪个</th>
+    <th style="padding:8px 6px;text-align:left;font-weight:600;">为什么</th>
   </tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">个人验证 · 消费级硬件</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🦙 llama.cpp</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">唯一 CPU 可用 · 5分钟上手</td></tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">Apple Silicon 本地</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🦙 llama.cpp</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">Metal 后端 · 7B 达 62 tok/s</td></tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">新建生产平台 · 流量不明</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">⚡ vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">文档最厚 · 生产履历最厚</td></tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">高并发通用 API</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">⚡ vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">连续批处理 · llm-d K8s</td></tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">多开 Agent · 多轮对话</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🧠 SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">Agent 负载 5x · 命中率 75-95%</td></tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">RAG / 共享系统提示词</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🧠 SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">TTFT -37% · 成本 -30%</td></tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">多硬件 (AMD/TPU)</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">⚡ vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">硬件覆盖面最宽</td></tr>
-  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">RL 训练 rollout</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">🧠 SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;font-size:11px;">verl/slime 原生集成</td></tr>
-  <tr><td style="padding:8px 6px;">隐私 / 离线 / 气隙</td><td style="padding:8px 6px;text-align:center;font-weight:600;">🦙 llama.cpp</td><td style="padding:8px 6px;font-size:11px;">零外部依赖 · 单二进制</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">个人验证 · 本地跑跑</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">llama.cpp</td><td style="padding:8px 6px;border-bottom:1px solid #eee;">唯一不需要 GPU 的选择，5 分钟上手</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">Mac 本地推理</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">llama.cpp</td><td style="padding:8px 6px;border-bottom:1px solid #eee;">Metal 后端成熟，7B 能跑到 62 tok/s</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">搭生产 API · 还不清楚流量特征</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;">文档最厚，出问题最好查</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">通用聊天 API 服务</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;">连续批处理成熟，llm-d 可以上 K8s</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">跑很多个 Agent 同时干活</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;">Agent 负载能快好几倍，系统提示词和工具定义只算一次</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">RAG · 固定语料反复问</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">SGLang</td><td style="padding:8px 6px;border-bottom:1px solid #eee;">前缀复用率高的时候 TTFT 降 37%</td></tr>
+  <tr><td style="padding:8px 6px;border-bottom:1px solid #eee;">要兼容 AMD / TPU</td><td style="padding:8px 6px;border-bottom:1px solid #eee;text-align:center;font-weight:600;">vLLM</td><td style="padding:8px 6px;border-bottom:1px solid #eee;">硬件覆盖最广</td></tr>
+  <tr><td style="padding:8px 6px;">RL 训练需要推理后端</td><td style="padding:8px 6px;text-align:center;font-weight:600;">SGLang</td><td style="padding:8px 6px;">verl、slime 这些框架都原生支持</td></tr>
 </table>
 
-<!-- growth path -->
-<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">推荐成长路径</h2>
-<p style="margin:0 0 16px;text-align:center;font-size:14px;color:#555;">不是「三选一」，而是「三段式」</p>
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;">最后</h2>
 
-<div style="text-align:center;margin:0 0 8px;">
-  <span style="display:inline-block;padding:8px 16px;border:1px solid #ddd;border-radius:4px;margin:0 4px 8px;font-size:12px;font-weight:600;color:#555;">① llama.cpp<br>验证想法</span>
-  <span style="color:#ccc;font-size:16px;margin:0 2px;">→</span>
-  <span style="display:inline-block;padding:8px 16px;border:1px solid #ddd;border-radius:4px;margin:0 4px 8px;font-size:12px;font-weight:600;color:#555;">② vLLM<br>承载生产</span>
-  <span style="color:#ccc;font-size:16px;margin:0 2px;">→</span>
-  <span style="display:inline-block;padding:8px 16px;border:1px solid #ddd;border-radius:4px;margin:0 4px 8px;font-size:12px;font-weight:600;color:#555;">③ SGLang<br>优化 Agent</span>
-</div>
-<p style="margin:0 0 20px;text-align:center;font-size:12px;color:#999;">验证看「能不能跑」· 生产看「稳不稳定」· 优化看「快了多少」</p>
+<p style="margin:0 0 16px;">推理框架以周为单位在迭代。vLLM 的 MRv2 正在默认化，SGLang 在搞分层缓存和 PD 分离，llama.cpp 的服务端能力也在慢慢加。今天写的东西三个月后可能就过时了。</p>
 
-<!-- three principles -->
-<h2 style="font-size:18px;font-weight:700;color:#111;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #eee;">三个可带走的原则</h2>
+<p style="margin:0 0 16px;">但有一点不怎么变：框架选型最核心的问题不是「哪个最快」，是你的流量到底长什么样。搞清楚这个，比跑多少 benchmark 都管用。</p>
 
-<div style="margin:0 0 10px;">
-  <p style="margin:0 0 4px;font-weight:700;">1. 前缀重叠率是你最应该测、但大概率没测的指标</p>
-  <p style="margin:0;font-size:13px;color:#555;">比任何第三方 benchmark 都更能预测框架在你流量上的表现。抓几千条 prompt，统计请求间的 LCP 分布。</p>
-</div>
-<div style="margin:0 0 10px;">
-  <p style="margin:0 0 4px;font-weight:700;">2. 「先 vLLM 后 SGLang」不是保守，是唯一不靠猜的路径</p>
-  <p style="margin:0;font-size:13px;color:#555;">vLLM 兜底「第一次部署」的所有坑；SGLang 的加速比需在你的流量上复测。两者都兼容 OpenAI API，迁移只需改 base URL。</p>
-</div>
-<div style="margin:0 0 24px;">
-  <p style="margin:0 0 4px;font-weight:700;">3. 框架不是「选一次」的决策，是「持续评估」的过程</p>
-  <p style="margin:0;font-size:13px;color:#555;">三框架均以周为单位迭代。成熟团队不是在选框架，而是在建路由——按模型与负载类型在网关层共存。</p>
+<div style="border:1px solid #e0e0e0;border-radius:4px;padding:20px;margin:28px 0 12px;text-align:center;">
+  <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#111;">想找人帮你搭推理管线？</p>
+  <p style="margin:0 0 10px;font-size:13px;color:#666;">扫码关注「梦兽编程」公众号，发送「推理框架」获取选型清单。</p>
+  <p style="margin:0;font-size:12px;color:#999;">全栈之巅 · 梦兽编程 | rexai.top</p>
 </div>
 
-<!-- cta -->
-<div style="border:1px solid #e0e0e0;border-radius:4px;padding:24px 20px;margin:28px 0 12px;text-align:center;background:#fafafa;">
-  <p style="margin:0 0 8px;font-size:17px;font-weight:700;color:#111;">🎯 还在纠结推理框架怎么选？</p>
-  <p style="margin:0 0 14px;font-size:13px;color:#666;line-height:1.7;">
-    不知道自己的流量前缀重叠率怎么测？<br>
-    想找人帮你搭一套「先 vLLM 后 SGLang」的生产管线？
-  </p>
-  <p style="margin:0;font-size:14px;color:#555;">
-    📬 扫码关注「梦兽编程」公众号<br>
-    <span style="font-size:11px;color:#999;">发送「推理框架」获取选型检查清单与部署 SOP</span>
-  </p>
-</div>
-
-<!-- footer -->
-<div style="text-align:center;padding:16px 0;border-top:1px solid #eee;margin-top:20px;">
-  <p style="margin:0 0 4px;font-size:11px;color:#bbb;">数据来源：Spheron、LLM Academy、n4n AI 等第三方独立基准测试（2026.04-07）</p>
-  <p style="margin:0;font-size:11px;color:#bbb;">框架迭代以周计，选型前务必在目标硬件与真实流量上独立复测</p>
-  <p style="margin:12px 0 0;font-size:11px;color:#ccc;">全栈之巅 · 梦兽编程 | rexai.top</p>
-</div>
+<p style="margin:0;font-size:11px;color:#bbb;text-align:center;">性能数据来自 Spheron、LLM Academy、n4n AI 独立基准测试（2026.04-07）。选型前请在目标硬件和真实流量上复测。</p>
 
 </section>
