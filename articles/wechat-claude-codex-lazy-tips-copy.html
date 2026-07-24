@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>复制到微信公众号 - Claude Code 与 Codex CLI 偷懒技巧</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: #f5f5f7;
+    margin: 0;
+    padding: 20px;
+  }
+  .toolbar {
+    max-width: 760px;
+    margin: 0 auto 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    text-align: center;
+  }
+  .toolbar h1 {
+    font-size: 18px;
+    color: #111;
+    margin: 0 0 16px;
+  }
+  .btn {
+    display: inline-block;
+    background: #07c160;
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.9; }
+  .tip {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #888;
+  }
+  .preview-label {
+    max-width: 760px;
+    margin: 0 auto 8px;
+    font-size: 13px;
+    color: #666;
+  }
+  #wechat-content {
+    max-width: 760px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <h1>Claude Code 与 Codex CLI 的 6 个偷懒技巧</h1>
+  <button class="btn" onclick="copyToClipboard()">📋 复制全文（带样式）</button>
+  <p class="tip">点击后，在微信公众号编辑器里直接 Ctrl+V / Cmd+V 粘贴即可</p>
+</div>
+
+<p class="preview-label">下方是预览效果，复制时会自动去掉页面本身的样式：</p>
+
+<div id="wechat-content">
+<section style="max-width:677px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.85;color:#333;padding:0 16px;box-sizing:border-box;">
+
+<h1 style="font-size:22px;font-weight:700;color:#111;line-height:1.4;margin:24px 0 10px;">Claude Code 与 Codex CLI 的 6 个偷懒技巧：让 AI 少花钱、多办事</h1>
+<p style="font-size:13px;color:#999;margin:0 0 28px;">梦兽编程 · 2026年7月</p>
+
+<p style="margin:0 0 16px;">ChatGPT、Claude 这类对话式 AI 让我们习惯了"你一句我一句"。但 Claude Code 和 OpenAI Codex CLI 是<strong style="font-weight:700;color:#111;">Agentic Coding 环境</strong>——你描述目标，它们自己读文件、跑命令、改代码、debug。听起来很爽，但用久了就会发现一个尴尬的真相：<strong style="font-weight:700;color:#111;">最贵的不是模型调用，而是被你浪费掉的上下文窗口</strong>。</p>
+<p style="margin:0 0 16px;">Anthropic 官方把这一点挑得很明：</p>
+<blockquote style="margin:0 0 16px;padding:12px 16px;background:#f9f9f9;border-left:3px solid #ddd;font-size:14px;color:#666;">
+<p style="margin:0 0 16px;">"Most best practices are based on one constraint: Claude's context window fills up fast, and performance degrades as it fills."</p>
+</blockquote>
+<p style="margin:0 0 16px;">上下文窗口就像你雇了一位记忆力有限的工程师。前 20 轮对话它记得清清楚楚；到第 80 轮，你早期叮嘱的"不要改这个文件"可能已经被遗忘了。于是 AI 开始重复犯错、重新探索你已经解释过的东西、给出越来越不稳的答案。</p>
+<p style="margin:0 0 16px;">"偷懒"其实不是让 AI 少干活，而是<strong style="font-weight:700;color:#111;">让你花的每一分钱都产生复利</strong>：一次配置，长期复用；一次验证，自动巡航；一次清晰的指令，少三轮返工。</p>
+<p style="margin:0 0 16px;">这篇文章从我们实际使用 Claude Code 和 Codex CLI 的经验出发，总结 6 个真正能省 token、省时间、省血压的技巧。</p>
+<h2>一、给 AI 写一本"上岗手册"：CLAUDE.md / AGENTS.md</h2>
+<p style="margin:0 0 16px;">如果你每次开新会话都要重复"我们用 ESLint、测试跑 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">npm test</code>、提交前要打 tag"，那你已经在浪费了。</p>
+<p style="margin:0 0 16px;">Claude Code 会读取项目根目录下的 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">CLAUDE.md</code>，Codex CLI 则会读 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">AGENTS.md</code>。它们相当于给 AI 的<strong style="font-weight:700;color:#111;">入职培训手册</strong>，放在代码仓库里还能和团队共享。</p>
+<p style="margin:0 0 16px;">但不要把它写成维基百科。Claude 官方对 CLAUDE.md 的取舍建议非常直白：</p>
+<table style="width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px;color:#333;">
+<thead>
+<tr>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">✅ 应该写</th>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">❌ 不要写</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">AI 自己猜不到的 Bash 命令</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">标准语言规范（AI 本来就知道）</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">项目特有的代码风格</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">长篇 API 文档</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">测试命令和偏好的 runner</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">逐文件描述代码库</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">环境变量、密钥配置、分支命名规则</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">"写干净代码"这种废话</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">常见坑和非显而易见的约定</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">频繁变动的信息</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 16px;">一个够用的 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">CLAUDE.md</code> 通常只有 100～300 行。原则是：<strong style="font-weight:700;color:#111;">删掉任何一行，如果 AI 依然不会做错，就删</strong>。Bloated 的上下文不如没有上下文。</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;"># CLAUDE.md
+
+## Commands
+- Type check: `npm run typecheck`
+- Run single test: `npm test -- --grep &quot;pattern&quot;` (prefer single tests over full suite)
+- Build: `npm run build`
+
+## Code style
+- Use ES modules, not CommonJS
+- Prefer destructuring imports
+- Use `const` until proven otherwise
+
+## Workflow
+- Create a failing test before fixing a bug
+- Run lint and typecheck before committing
+- Don&#x27;t modify files outside the requested scope
+</code></pre>
+<p style="margin:0 0 16px;">Codex CLI 的 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">AGENTS.md</code> 格式类似。关键是：<strong style="font-weight:700;color:#111;">每次新会话自动加载，而不是你每次口述</strong>。</p>
+<p style="margin:0 0 16px;">写完可以用 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/context</code>（Claude）或 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">codex --context</code> 检查 AI 是否真的加载了。</p>
+<h2>二、把线索给足：具体 prompt 是最高效的省钱方式</h2>
+<p style="margin:0 0 16px;">模糊的指令不是省字数，而是 expensive 的返工启动器。</p>
+<p style="margin:0 0 16px;">Claude Code 官方举过一个典型例子：</p>
+<table style="width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px;color:#333;">
+<thead>
+<tr>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">低效 prompt</th>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">高效 prompt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">implement a function that validates email addresses</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">write a <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">validateEmail</code> function. example test cases: <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">user@example.com</code> is true, <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">invalid</code> is false, <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">user@.com</code> is false. run the tests after implementing</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">fix the login bug</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">users report login fails after session timeout. check the auth flow in <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">src/auth/</code>, especially token refresh. write a failing test that reproduces the issue, then fix it</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">the build is failing</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">the build fails with this error: [paste error]. fix it and verify the build succeeds. address the root cause, don't suppress the error</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 16px;">对 Codex CLI 也是一样。如果你只写 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">codex &quot;refactor this&quot;</code>，它会自己探索。但如果你写：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">codex &quot;refactor src/auth/login.ts to extract token refresh into a pure function. keep the public API unchanged. update tests in src/auth/__tests__/login.test.ts. run the test suite at the end.&quot;
+</code></pre>
+<p style="margin:0 0 16px;">AI 的探索范围就被你框住了，token 花在刀刃上。</p>
+<p style="margin:0 0 16px;">另一个省上下文的小技巧是：用 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">@</code> 引用文件，而不是描述文件在哪。Claude Code 会提前读取文件，保证你不必在 prompt 里重复其内容。Codex CLI 也支持用 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">@file</code> 把文件直接喂进去。</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">claude &quot;@src/auth/login.ts extract the token refresh logic&quot;
+codex &quot;@src/auth/login.ts @src/auth/__tests__/login.test.ts refactor token refresh&quot;
+</code></pre>
+<h2>三、让 AI 自己当 QA：给每条路径一个 pass/fail 检查</h2>
+<p style="margin:0 0 16px;">AI 写代码和人类写代码有一个共同点：写完都觉得能跑。但<strong style="font-weight:700;color:#111;">没有检查，"看起来对"就是最容易翻车的地方</strong>。</p>
+<p style="margin:0 0 16px;">Claude Code 的 best practice 里有一句话值得贴在显示器上：</p>
+<blockquote style="margin:0 0 16px;padding:12px 16px;background:#f9f9f9;border-left:3px solid #ddd;font-size:14px;color:#666;">
+<p style="margin:0 0 16px;">"Give Claude a check it can run: tests, a build, a screenshot to compare. It's the difference between a session you watch and one you can walk away from."</p>
+</blockquote>
+<p style="margin:0 0 16px;">比如你做前端改动，prompt 里加上：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">take a screenshot of the result and compare it to the original.
+list differences and fix them.
+</code></pre>
+<p style="margin:0 0 16px;">不同力度的检查方式：</p>
+<table style="width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px;color:#333;">
+<thead>
+<tr>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">力度</th>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">适合场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">单 prompt 检查</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">小改动："写完后跑 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">npm test</code>"</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/goal</code> 条件</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">整个会话的目标约束，AI 每轮后自检查</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">Stop hook</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">每次编辑后自动跑 lint / typecheck / tests</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">子代理 review</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">重要改动让另一个独立上下文复核</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 16px;">Codex CLI 也支持 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">--approval-mode full-auto</code> 配合测试命令运行，但建议你<strong style="font-weight:700;color:#111;">只在有验证闭环的地方开 full-auto</strong>。没有 stop gate 的 autonomy 不叫效率，叫赌博。</p>
+<p style="margin:0 0 16px;">我们内部一个简单但有效的习惯是：<strong style="font-weight:700;color:#111;">每个 feature 修改，prompt 结尾都带一句 "run tests and confirm all green before finishing"</strong>。AI 会自己跑，错误信息直接进入下一轮上下文，省掉你手动复制粘贴 debug 日志的步骤。</p>
+<h2>四、任务拆分：用子代理/worktree 保护主上下文</h2>
+<p style="margin:0 0 16px;">上下文窗口是最大的稀缺资源。你让 AI 去探索一个陌生模块，它可能读 50 个文件才回来——这些文件内容全部塞进你的主会话，后续你想让它写代码时，上下文已经脏了。</p>
+<p style="margin:0 0 16px;">Claude Code 的解法是 <strong style="font-weight:700;color:#111;">subagents</strong>（子代理）。比如：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">use subagents to investigate how our authentication system handles token refresh,
+and whether we have any existing OAuth utilities I should reuse.
+</code></pre>
+<p style="margin:0 0 16px;">子代理在独立的上下文窗口里完成调研，只把结论带回来。你的主会话保持干净，专注于实现。</p>
+<p style="margin:0 0 16px;">Codex CLI 目前没有内置 subagent，但它的强项是<strong style="font-weight:700;color:#111;">可脚本化、可并行化</strong>：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;"># 用 worktree 隔离并行实验
+git worktree add ../codex-experiment feature-x
+cd ../codex-experiment
+codex -p &quot;try approach A: replace sync loop with async batching. run tests.&quot;
+</code></pre>
+<p style="margin:0 0 16px;">更复杂的批量任务可以写 shell loop：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">for file in $(cat files-to-migrate.txt); do
+  codex -p &quot;Migrate $file from commonjs to esm. Return OK or FAIL.&quot; \
+    --allowedTools &quot;Edit,Bash(git commit *)&quot;
+done
+</code></pre>
+<p style="margin:0 0 16px;">这里有两个省钱的点：</p>
+<ol style="padding-left:20px;margin:0 0 16px;">
+<li style="margin:0 0 8px;"><strong style="font-weight:700;color:#111;">做研究的会话和做实现的会话分开</strong>。</li>
+<li style="margin:0 0 8px;"><strong style="font-weight:700;color:#111;">并行跑多个独立任务，而不是让一个会话串行处理</strong>。</li>
+</ol>
+<h2>五、狂暴清理上下文：/clear、/compact、/rewind 是好朋友</h2>
+<p style="margin:0 0 16px;">如果你已经和这个 AI 聊了 50 轮，前面还有 5 个不相关的任务没清掉，那现在的性能下降不是 AI 的问题，是你会话管理的问题。</p>
+<p style="margin:0 0 16px;">Claude Code 提供一组上下文管理工具：</p>
+<table style="width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px;color:#333;">
+<thead>
+<tr>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">命令</th>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">作用</th>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">什么时候用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/clear</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;">清空整个会话上下文</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">切换到不相关的任务前</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/compact</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;">把历史对话压缩成摘要</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">需要保留部分上下文但窗口快满</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/compact focus on API changes</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;">指定压缩时要保留的重点</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">长编码会话中期</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/rewind</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;">回滚到历史 checkpoint</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">发现 AI 走偏，要回退</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/btw</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;">临时提问，不进入上下文</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">临时查个函数签名</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 16px;">规则很简单：<strong style="font-weight:700;color:#111;">只要任务不相关，就先 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/clear</code></strong>。</p>
+<p style="margin:0 0 16px;">我们发现一个有趣的指标：如果一个会话里你纠正了 AI 超过两次还没好，大概率是上下文被失败尝试污染了。这时候最划算的动作不是继续修，而是 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/clear</code> 后写一段更清晰、整合了教训的新 prompt。</p>
+<p style="margin:0 0 16px;">Codex CLI 的会话是 stateless 的，每次 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">codex -p</code> 就是一个干净的上下文。这本身就是它的优势：<strong style="font-weight:700;color:#111;">一个问题一个命令，不要在一个长对话里解决所有事</strong>。</p>
+<h2>六、能自动化就别交互：full-auto / -p / CI</h2>
+<p style="margin:0 0 16px;">最后的高级版"偷懒"，是让 AI 在后台自己跑。</p>
+<p style="margin:0 0 16px;">Claude Code 支持非交互模式：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">claude -p &quot;list all API endpoints in this repo&quot; --output-format json
+claude -p &quot;analyze this log file&quot; --output-format stream-json --verbose
+</code></pre>
+<p style="margin:0 0 16px;">Codex CLI 本来就是命令优先：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">codex -p &quot;fix all lint errors&quot; --approval-mode auto
+</code></pre>
+<p style="margin:0 0 16px;">并且可以用 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">--allowedTools</code> 限定权限：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;">codex -p &quot;migrate src/*.ts to esm&quot; --allowedTools &quot;Edit,Bash(npm test)&quot;
+</code></pre>
+<p style="margin:0 0 16px;">把这些接入 CI：</p>
+<pre style="background:#f8f8f8;padding:12px;border:1px solid #e8e8e8;border-radius:4px;overflow-x:auto;font-family:monospace;font-size:13px;line-height:1.5;margin:0 0 16px;"><code style="background:transparent;padding:0;color:#333;"># .github/workflows/codex.yml
+- name: Auto-fix lint
+  run: codex -p &quot;fix lint errors and commit if changed&quot; --approval-mode auto
+</code></pre>
+<p style="margin:0 0 16px;">但再次强调：<strong style="font-weight:700;color:#111;">自动化只在有验证闭环时值得</strong>。如果 AI 改完没有测试反馈，它可能会把 bug 也自动化进去。</p>
+<h2>Claude Code vs Codex CLI：两张图的对比</h2>
+<table style="width:100%;border-collapse:collapse;margin:0 0 16px;font-size:13px;color:#333;">
+<thead>
+<tr>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">维度</th>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">Claude Code</th>
+<th style="background:#f5f5f5;border:1px solid #e0e0e0;padding:8px;text-align:left;font-weight:600;">Codex CLI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">项目级指令</td>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">CLAUDE.md</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">AGENTS.md</code></td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">非交互模式</td>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">claude -p</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">codex -p</code></td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">自动批准</td>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">auto mode</code> 分类器</td>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">--approval-mode auto/full-auto</code></td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">子代理</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">内置 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">.claude/agents/</code></td>
+<td style="border:1px solid #e0e0e0;padding:8px;">暂无内置，可用脚本+worktree 模拟</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">会话管理</td>
+<td style="border:1px solid #e0e0e0;padding:8px;"><code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/clear</code>, <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/compact</code>, <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">/rewind</code>, resume</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">每次 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">-p</code> 新开上下文</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">可扩展点</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">skills, hooks, MCP servers, plugins</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">skills, slash commands, execpolicy</td>
+</tr>
+<tr>
+<td style="border:1px solid #e0e0e0;padding:8px;">最适合</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">深度、长周期、需要记忆的复杂任务</td>
+<td style="border:1px solid #e0e0e0;padding:8px;">可脚本化、批量、CI 集成</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 16px;">两种工具不是非此即彼。我们的实际用法：<strong style="font-weight:700;color:#111;">复杂 feature 用 Claude Code 长期对话完成；标准化批量任务用 Codex CLI 脚本跑</strong>。</p>
+<p style="margin:0 0 16px;">就拿我们维护这个 Hugo 站点来说：</p>
+<ul style="padding-left:20px;margin:0 0 16px;">
+<li style="margin:0 0 8px;">写长文、改模板、多语言同步 → <strong style="font-weight:700;color:#111;">Claude Code</strong>，因为需要持续上下文。</li>
+<li style="margin:0 0 8px;">批量更新 front matter、跑 lint、生成缩略 → <strong style="font-weight:700;color:#111;">Codex CLI <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">-p</code> 脚本</strong>，一次执行，不占用主会话。</li>
+</ul>
+<h2 style="font-size:17px;font-weight:700;color:#111;margin:28px 0 10px;border-bottom:1px solid #eee;padding-bottom:6px;">总结：偷懒的底层公式</h2>
+<p style="margin:0 0 16px;">回到开头那个约束：上下文窗口会满，满了就会变蠢。所有技巧本质上都在做三件事：</p>
+<ol style="padding-left:20px;margin:0 0 16px;">
+<li style="margin:0 0 8px;"><strong style="font-weight:700;color:#111;">少看点</strong>：用 <code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">CLAUDE.md</code>/<code style="background:#f4f4f4;padding:2px 5px;border-radius:3px;font-family:monospace;font-size:13px;color:#c7254e;">AGENTS.md</code> 和精确 prompt，让 AI 不需要反复猜。</li>
+<li style="margin:0 0 8px;"><strong style="font-weight:700;color:#111;">少返工</strong>：给每个任务一个可运行的检查，让错误就地解决。</li>
+<li style="margin:0 0 8px;"><strong style="font-weight:700;color:#111;">少堆在一个篮子里</strong>：session 隔离、subagent、worktree、CI 脚本，把上下文当稀缺资源来分配。</li>
+</ol>
+<p style="margin:0 0 16px;">这不是让你变得更"懒"，而是让你从一个盯着 AI 干活的监工，变成一个设计好系统后让它自己跑的人。</p>
+
+<p style="margin:28px 0 16px;padding:16px;background:#fafafa;border:1px solid #e8e8e8;font-size:14px;color:#555;"><strong style="color:#111;">如果你也在用 AI Coding Agent</strong><br/>你最想省的是 token、时间、还是血压？欢迎在评论区分享你的实战技巧。</p>
+
+</section>
+</div>
+
+<script>
+function cleanForWeChat(html) {
+  // Remove script/style tags and id attributes
+  html = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+  html = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+  html = html.replace(/\bid="[^"]*"/g, '');
+  // Trim empty paragraphs
+  html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
+  return html.trim();
+}
+
+function copyToClipboard() {
+  const container = document.getElementById('wechat-content');
+  let html = cleanForWeChat(container.innerHTML);
+
+  if (!html) {
+    alert('没有可复制的内容');
+    return;
+  }
+
+  // Use Clipboard API with text/html MIME type
+  if (navigator.clipboard && window.ClipboardItem) {
+    const blob = new Blob([html], { type: 'text/html' });
+    const item = new ClipboardItem({ 'text/html': blob });
+    navigator.clipboard.write([item]).then(() => {
+      alert('✅ 已复制带样式 HTML，请到公众号编辑器粘贴');
+    }).catch(err => {
+      console.error(err);
+      fallbackCopy(html);
+    });
+  } else {
+    fallbackCopy(html);
+  }
+}
+
+function fallbackCopy(html) {
+  // Create hidden editable, select it and copy
+  const el = document.createElement('div');
+  el.contentEditable = true;
+  el.innerHTML = html;
+  el.style.position = 'fixed';
+  el.style.left = '-9999px';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+
+  try {
+    document.execCommand('copy');
+    alert('✅ 已复制带样式 HTML，请到公众号编辑器粘贴');
+  } catch (e) {
+    alert('复制失败，请手动选中下方内容复制');
+  }
+  sel.removeAllRanges();
+  document.body.removeChild(el);
+}
+</script>
+
+</body>
+</html>
