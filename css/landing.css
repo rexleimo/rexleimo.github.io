@@ -308,6 +308,12 @@ body:has(.lp) .wp2-business { display: none; }
 .lp .lp-product, .lp-price, .lp-model, .lp-feature { transition: background .2s ease, color .2s ease; }
 .lp-product:hover, .lp-price:hover, .lp-model:hover, .lp-feature:hover { transform: none; border-color: var(--lp-border); background: var(--lp-text); color: var(--lp-bg); box-shadow: none; }
 .lp-product:hover .lp-product__tagline, .lp-price:hover .lp-price__perks li, .lp-model:hover .lp-model__desc, .lp-feature:hover p { color: #C9C4B4; }
+/* Pricing cards keep their paper palette on hover so every price and label remains legible. */
+.lp .lp-price:hover { background: var(--lp-surface); color: var(--lp-text); }
+.lp .lp-price--featured:hover { background: var(--lp-accent-wash); }
+.lp .lp-price:hover .lp-price__name, .lp .lp-price:hover .lp-price__period, .lp .lp-price:hover .lp-price__perks li, .lp .lp-price:hover .lp-price__shield { color: var(--lp-text-soft); }
+.lp .lp-price:hover .lp-price__amount { color: var(--lp-text); }
+.lp .lp-price:hover .lp-price__amount sub { color: var(--lp-text-soft); }
 .lp-product__img { border-bottom: 2px solid var(--lp-border); border-radius: 0; }
 .lp-product__plate { position: relative; overflow: hidden; background: var(--lp-sand, #E8E4D8); }
 .lp-plate__label { position: absolute; z-index: 3; top: 14px; left: 16px; color: var(--lp-text); font: 700 10px var(--lp-sans); letter-spacing: 1px; }
