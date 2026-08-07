@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#171a21"/>
+      <stop offset="1" stop-color="#0e1015"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e5484d"/>
+      <stop offset="1" stop-color="#b02a2f"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f0795c"/>
+      <stop offset="1" stop-color="#d95f43"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#8892a6"/>
+    </marker>
+    <marker id="arrowred" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#e5484d"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- Header -->
+  <text x="80" y="70" font-family="Consolas, monospace" font-size="26" fill="#f0795c" font-weight="bold">MISCOMPILATION ROOT CAUSE</text>
+  <text x="80" y="112" font-family="Microsoft YaHei, sans-serif" font-size="40" fill="#ffffff" font-weight="bold">误编译是怎么发生的</text>
+  <text x="80" y="150" font-family="Microsoft YaHei, sans-serif" font-size="20" fill="#8892a6">x86 / x64 专属 · 优化构建（-O）下触发</text>
+
+  <!-- Box 1: rustc change -->
+  <rect x="80" y="210" width="420" height="250" rx="14" fill="#1f2430" stroke="#f0795c" stroke-width="2"/>
+  <rect x="80" y="210" width="420" height="52" rx="14" fill="url(#orange)"/>
+  <rect x="80" y="246" width="420" height="16" fill="url(#orange)"/>
+  <text x="110" y="246" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#ffffff" font-weight="bold">1. rustc 1.97.0 的改动</text>
+  <text x="110" y="310" font-family="Consolas, monospace" font-size="22" fill="#f0795c">PR #155850</text>
+  <text x="110" y="350" font-family="Microsoft YaHei, sans-serif" font-size="21" fill="#e6e9ef">Option::None 的存储 tag</text>
+  <text x="110" y="392" font-family="Consolas, monospace" font-size="24" fill="#ffffff">2  →  -1</text>
+  <text x="110" y="434" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#8892a6">（bool-like 判别式布局优化）</text>
+
+  <!-- Arrow 1 -->
+  <line x1="500" y1="335" x2="600" y2="335" stroke="#8892a6" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- Box 2: LLVM IR -->
+  <rect x="600" y="210" width="460" height="250" rx="14" fill="#1f2430" stroke="#8892a6" stroke-width="2"/>
+  <rect x="600" y="210" width="460" height="52" rx="14" fill="#2a3140"/>
+  <rect x="600" y="246" width="460" height="16" fill="#2a3140"/>
+  <text x="630" y="246" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#ffffff" font-weight="bold">2. LLVM IR 优化</text>
+  <text x="630" y="310" font-family="Consolas, monospace" font-size="21" fill="#e6e9ef">%1 = trunc nuw i64 %0 to i1</text>
+  <text x="630" y="350" font-family="Microsoft YaHei, sans-serif" font-size="20" fill="#e6e9ef">tag = -1 = 0xFF...FF</text>
+  <text x="630" y="392" font-family="Microsoft YaHei, sans-serif" font-size="20" fill="#e6e9ef">截断位全非零 → 违反 nuw</text>
+  <text x="630" y="434" font-family="Consolas, monospace" font-size="20" fill="#e5484d">poison</text>
+
+  <!-- Arrow 2 -->
+  <line x1="1060" y1="335" x2="1160" y2="335" stroke="#e5484d" stroke-width="3" marker-end="url(#arrowred)"/>
+
+  <!-- Box 3: result -->
+  <rect x="1160" y="210" width="360" height="250" rx="14" fill="#1f2430" stroke="#e5484d" stroke-width="2"/>
+  <rect x="1160" y="210" width="360" height="52" rx="14" fill="url(#red)"/>
+  <rect x="1160" y="246" width="360" height="16" fill="url(#red)"/>
+  <text x="1190" y="246" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#ffffff" font-weight="bold">3. 结果</text>
+  <text x="1190" y="310" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#e5484d">地址计算错乱</text>
+  <text x="1190" y="352" font-family="Microsoft YaHei, sans-serif" font-size="24" fill="#ffffff" font-weight="bold">Segmentation Fault</text>
+  <text x="1190" y="398" font-family="Consolas, monospace" font-size="20" fill="#8892a6">exit 139</text>
+
+  <!-- Footer band -->
+  <rect x="80" y="520" width="1440" height="150" rx="14" fill="#1f2430" stroke="#2a3140" stroke-width="1"/>
+  <text x="110" y="566" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#ffffff" font-weight="bold">修复（1.97.1）</text>
+  <text x="110" y="606" font-family="Microsoft YaHei, sans-serif" font-size="20" fill="#e6e9ef">LLVM 上游修复 backport + 回滚 rustc 侧触发改动（双保险）</text>
+  <text x="110" y="646" font-family="Microsoft YaHei, sans-serif" font-size="20" fill="#e6e9ef">底层 bug 从 Rust 1.87（LLVM 20）就存在 · aarch64 / riscv64 不受影响</text>
+
+  <!-- Footer -->
+  <text x="80" y="840" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#5c6474">梦兽编程 · 全栈之巅  |  Windows x64 MSVC 实测：1.97.0 崩溃 / 1.97.1 正常</text>
+</svg>

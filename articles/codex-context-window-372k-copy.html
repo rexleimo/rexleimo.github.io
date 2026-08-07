@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>复制到微信公众号 - Codex 372K 上下文窗口实验</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; padding:20px; color:#333; background:#f5f5f7; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; }
+  .toolbar,.cover-box,#wechat-content { max-width:720px; margin:0 auto 16px; background:#fff; border:1px solid #e8e8e8; border-radius:8px; }
+  .toolbar { padding:18px 20px; }
+  .toolbar h1 { margin:0 0 8px; text-align:center; color:#111; font-size:17px; font-weight:700; }
+  .steps { margin:0 0 14px; padding-left:20px; color:#666; font-size:13px; line-height:1.75; }
+  .btn-row,.cover-actions { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .btn { display:inline-block; min-width:180px; padding:12px 20px; border:0; border-radius:6px; color:#fff; background:#07c160; text-align:center; text-decoration:none; font-size:15px; cursor:pointer; }
+  .btn:hover { background:#06ad56; }
+  .btn.secondary { color:#111; background:#fff; border:1px solid #d0d0d0; }
+  .btn.secondary:hover { background:#fafafa; }
+  .btn.ok { background:#07c160; }
+  .btn.err { background:#d93025; }
+  .tip { margin:10px 0 0; color:#999; text-align:center; font-size:12px; line-height:1.6; }
+  .cover-box { padding:16px; }
+  .cover-box h2 { margin:0 0 10px; color:#111; font-size:14px; }
+  .cover-box img { display:block; width:100%; height:auto; border:1px solid #eee; border-radius:4px; }
+  .cover-actions { margin-top:10px; }
+  .preview-label { max-width:720px; margin:0 auto 8px; color:#666; font-size:13px; }
+  #wechat-content { overflow:hidden; }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>Codex CLI 0.146.0 上下文窗口实验</h1>
+    <ol class="steps">
+      <li>先下载封面，上传到公众号封面位</li>
+      <li>点击“复制正文（带样式+配图）”</li>
+      <li>打开公众号编辑器，使用 Ctrl+V / Cmd+V 粘贴</li>
+    </ol>
+    <div class="btn-row">
+      <button id="copy-btn" class="btn" type="button">复制正文（带样式+配图）</button>
+      <button id="copy-title-btn" class="btn secondary" type="button">复制标题</button>
+      <a class="btn secondary" href="https://rexai.top/ai/codex/codex-context-window-372k/cover-v3.png" download="codex-context-window-372k-cover.png">下载封面 PNG</a>
+    </div>
+    <p class="tip">封面不嵌入正文，避免公众号编辑器卡顿；正文中的 3 张解释图会尝试以内嵌图片一起复制。</p>
+  </div>
+
+  <div class="cover-box">
+    <h2>封面预览（单独上传到公众号封面位）</h2>
+    <img src="https://rexai.top/ai/codex/codex-context-window-372k/cover-v3.png" alt="Codex 总是忘记前面的代码？372K 上下文实验">
+    <div class="cover-actions">
+      <a class="btn secondary" href="https://rexai.top/ai/codex/codex-context-window-372k/cover-v3.png" download="codex-context-window-372k-cover.png">下载封面</a>
+    </div>
+  </div>
+
+  <p class="preview-label">下方是公众号正文预览。复制按钮只复制正文区域，不带工具栏和封面区。</p>
+
+  <div id="wechat-content">
+    <section style="max-width:677px;margin:0 auto;padding:0 16px;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.85;color:#333;">
+      <h1 style="margin:24px 0 10px;color:#111;font-size:22px;line-height:1.4;font-weight:700;">Codex 总是忘记前面的代码？372K 上下文到底有没有用</h1>
+      <p style="margin:0 0 28px;color:#999;font-size:13px;">梦兽编程 · Codex CLI 0.146.0 上下文窗口实验</p>
+
+      <p style="margin:0 0 16px;">Codex 做大型项目做到一半，开始忘记前面改过的文件；刚刚解释过的架构，它又重新问一遍；终端里还出现了上下文压缩。</p>
+      <p style="margin:0 0 16px;">很多人第一反应是：把上下文窗口调大不就行了？</p>
+      <p style="margin:0 0 16px;"><strong style="color:#111;">这篇文章用 Codex CLI 0.146.0 做了一次实验：默认 272K，实验配置 372K，95% 有效窗口对应 353400。</strong></p>
+      <p style="margin:0 0 22px;padding:14px 16px;background:#fff8e8;border-left:4px solid #f0a000;color:#6b4d16;"><strong>先说结论：</strong>这不是模型升级，也不是让服务端凭空获得更大的上下文能力。它修改的是 Codex 客户端读取到的模型元数据和上下文预算。</p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">一、当前 Codex CLI 的默认值</h2>
+      <p style="margin:0 0 16px;">先确认本机版本：</p>
+      <pre style="margin:0 0 16px;padding:12px;overflow-x:auto;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;white-space:pre-wrap;"><code>codex --version</code></pre>
+      <p style="margin:0 0 16px;">本文实测版本：</p>
+      <pre style="margin:0 0 16px;padding:12px;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;"><code>codex-cli 0.146.0</code></pre>
+      <p style="margin:0 0 16px;">再查看当前模型目录：</p>
+      <pre style="margin:0 0 16px;padding:12px;overflow-x:auto;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;white-space:pre-wrap;"><code>codex debug models</code></pre>
+      <p style="margin:0 0 16px;">GPT-5.6-Sol 的默认元数据类似：</p>
+      <pre style="margin:0 0 16px;padding:12px;overflow-x:auto;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;white-space:pre-wrap;"><code>{
+  "slug": "gpt-5.6-sol",
+  "context_window": 272000,
+  "max_context_window": 272000,
+  "effective_context_window_percent": 95,
+  "multi_agent_version": "v2"
+}</code></pre>
+      <p style="margin:0 0 16px;">默认有效窗口大约是：</p>
+      <p style="margin:0 0 22px;padding:13px 16px;background:#f0f8ff;border-left:4px solid #3291ff;color:#174a78;font-size:18px;font-weight:700;text-align:center;">272000 × 95% = 258400</p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">二、372000 和 353400 分别是什么？</h2>
+      <p style="margin:0 0 16px;">实验配置将本地模型目录中的窗口改成：</p>
+      <pre style="margin:0 0 16px;padding:12px;overflow-x:auto;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;white-space:pre-wrap;"><code>{
+  "context_window": 372000,
+  "max_context_window": 372000,
+  "effective_context_window_percent": 95
+}</code></pre>
+      <p style="margin:0 0 16px;">于是得到：</p>
+      <p style="margin:0 0 22px;padding:13px 16px;background:#effcf5;border-left:4px solid #14a866;color:#17663e;font-size:18px;font-weight:700;text-align:center;">372000 × 95% = 353400</p>
+      <p style="margin:0 0 16px;">95% 是 Codex 为系统提示词、工具调用和模型输出预留空间后，认为可以用于输入的比例。</p>
+      <p style="margin:0 0 16px;"><strong style="color:#111;">353400 是 Codex 客户端计算出来的有效窗口，不等于服务端模型一定支持 353400 tokens。</strong></p>
+      <p style="text-align:center;margin:20px 0;"><img src="https://rexai.top/ai/codex/codex-context-window-372k/window-comparison.png" alt="272K 与 372K 上下文窗口对比" style="display:block;width:100%;height:auto;border-radius:6px;"></p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">三、它到底能解决什么问题？</h2>
+      <p style="margin:0 0 10px;">如果任务经常接近上下文上限，这项配置可能带来一些帮助：</p>
+      <ul style="margin:0 0 16px;padding-left:22px;"><li>更晚触发上下文压缩；</li><li>大型代码仓库分析时保留更多文件；</li><li>长日志排查时减少前文丢失；</li><li>长时间运行的 Agent 任务更从容。</li></ul>
+      <p style="margin:0 0 10px;">但它不会改变：</p>
+      <ul style="margin:0 0 16px;padding-left:22px;"><li>GPT 模型本身的推理能力；</li><li>服务端真实上下文上限；</li><li>不同任务之间的永久记忆；</li><li>模型理解超长内容时的注意力分配。</li></ul>
+      <p style="margin:0 0 22px;padding:13px 16px;background:#f7f7f7;border-left:4px solid #999;color:#444;"><strong>更准确的表述：</strong>它可能扩大 Codex 的“上下文预算”，但不会扩大模型的“理解能力”。</p>
+      <p style="text-align:center;margin:20px 0;"><img src="https://rexai.top/ai/codex/codex-context-window-372k/context-layers.png" alt="Codex 上下文窗口的三层限制" style="display:block;width:100%;height:auto;border-radius:6px;"></p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">四、为什么要同时修改 max_context_window？</h2>
+      <p style="margin:0 0 16px;">Codex 客户端通常会把运行时配置和模型元数据的最大值进行比较：</p>
+      <p style="margin:0 0 22px;padding:13px 16px;background:#f0f8ff;border-left:4px solid #3291ff;color:#174a78;text-align:center;font-weight:700;">最终窗口 = min(配置值, max_context_window)</p>
+      <p style="margin:0 0 16px;">如果只在 <code style="padding:2px 5px;background:#f4f4f4;border-radius:3px;color:#c7254e;">config.toml</code> 中设置 372000，但模型目录仍然是 272000，配置可能会被限制回 272000。</p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">五、配置前先备份</h2>
+      <p style="margin:0 0 16px;">Windows PowerShell 示例：</p>
+      <pre style="margin:0 0 16px;padding:12px;overflow-x:auto;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:12px/1.55 Consolas,Monaco,monospace;white-space:pre-wrap;word-break:break-all;"><code>$codexHome = if ($env:CODEX_HOME) {
+    $env:CODEX_HOME
+} else {
+    Join-Path $HOME ".codex"
+}
+
+$backupDir = Join-Path $codexHome ("backups\context-window-" + (Get-Date -Format "yyyyMMdd-HHmmss"))
+New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+
+foreach ($name in @("config.toml", "custom_models.json")) {
+    $source = Join-Path $codexHome $name
+    if (Test-Path -LiteralPath $source) {
+        Copy-Item -LiteralPath $source -Destination (Join-Path $backupDir $name) -ErrorAction Stop
+    }
+}</code></pre>
+      <p style="margin:0 0 16px;">如果当前没有 <code style="padding:2px 5px;background:#f4f4f4;border-radius:3px;color:#c7254e;">custom_models.json</code>，不要直接创建一个不完整的 JSON 文件，应该从当前模型目录生成完整文件。</p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">六、修改配置并验证</h2>
+      <p style="margin:0 0 16px;">在 <code style="padding:2px 5px;background:#f4f4f4;border-radius:3px;color:#c7254e;">~/.codex/config.toml</code> 顶层设置：</p>
+      <pre style="margin:0 0 16px;padding:12px;overflow-x:auto;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;"><code>model = "gpt-5.6-sol"
+model_context_window = 372000
+model_catalog_json = "~/.codex/custom_models.json"</code></pre>
+      <p style="margin:0 0 16px;">然后重新执行：</p>
+      <pre style="margin:0 0 16px;padding:12px;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;"><code>codex debug models</code></pre>
+      <p style="margin:0 0 16px;">如果 Sol 显示 372000，说明本地模型目录被读取。注意：这还不能证明服务端支持 353400。</p>
+      <p style="text-align:center;margin:20px 0;"><img src="https://rexai.top/ai/codex/codex-context-window-372k/verification-flow.png" alt="Codex 上下文窗口验证流程" style="display:block;width:100%;height:auto;border-radius:6px;"></p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">七、必须做长任务对照测试</h2>
+      <p style="margin:0 0 16px;">新建一个 Codex 任务，不要继续使用旧任务。用同一个项目、同一个模型和同一个提示词，比较默认配置与实验配置：</p>
+      <ul style="margin:0 0 16px;padding-left:22px;"><li>第一次上下文压缩发生在哪一轮；</li><li>最大 token 使用量；</li><li>是否出现 <code style="padding:2px 5px;background:#f4f4f4;border-radius:3px;color:#c7254e;">context length exceeded</code>；</li><li>任务耗时和输出质量；</li><li>是否出现服务端截断。</li></ul>
+      <p style="margin:0 0 16px;">本地事件中的：</p>
+      <pre style="margin:0 0 16px;padding:12px;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;"><code>task_started.model_context_window
+token_count.info.model_context_window</code></pre>
+      <p style="margin:0 0 22px;padding:13px 16px;background:#fff8e8;border-left:4px solid #f0a000;color:#6b4d16;"><strong>验证标准：</strong>客户端显示 353400，只能证明本地配置生效；真实长任务结果，才能证明配置有用。</p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">八、如何回滚</h2>
+      <p style="margin:0 0 16px;">关闭 Codex，恢复备份的 <code style="padding:2px 5px;background:#f4f4f4;border-radius:3px;color:#c7254e;">config.toml</code> 和 <code style="padding:2px 5px;background:#f4f4f4;border-radius:3px;color:#c7254e;">custom_models.json</code>，然后重新执行：</p>
+      <pre style="margin:0 0 16px;padding:12px;border:1px solid #e8e8e8;border-radius:5px;background:#f8f8f8;font:13px/1.55 Consolas,Monaco,monospace;"><code>codex debug models</code></pre>
+      <p style="margin:0 0 22px;">如果服务端报错，不要继续提高数值，直接回滚到默认配置。</p>
+
+      <h2 style="margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid #eee;color:#111;font-size:18px;">最终结论</h2>
+      <p style="margin:0 0 16px;">这项配置不是模型升级、无限上下文、永久记忆或服务端限制突破。</p>
+      <p style="margin:0 0 16px;"><strong style="color:#111;">它更接近：修改 Codex CLI 本地模型元数据，尝试让客户端使用更大的上下文预算。</strong></p>
+      <p style="margin:0 0 16px;">对于大型代码仓库、长时间运行的 Agent 任务、频繁触发上下文压缩的用户，这种调整可能有帮助；对于普通短任务，基本没有明显收益。</p>
+      <p style="margin:0 0 16px;">最终请记住：</p>
+      <p style="margin:0 0 24px;padding:15px 16px;background:#f0f8ff;border-left:4px solid #3291ff;color:#174a78;font-size:17px;font-weight:700;text-align:center;">本地元数据变大，不等于服务端真实上限变大。</p>
+      <p style="margin:0 0 30px;color:#777;font-size:13px;">相关源码：openai/codex 的模型元数据、上下文窗口计算和配置覆盖逻辑。</p>
+    </section>
+  </div>
+
+<script>
+(function() {
+  var content = document.getElementById('wechat-content');
+  var copyBtn = document.getElementById('copy-btn');
+  var titleBtn = document.getElementById('copy-title-btn');
+  var title = 'Codex 总是忘记前面的代码？372K 上下文到底有没有用';
+
+  function cleanClone(root) {
+    var clone = root.cloneNode(true);
+    clone.querySelectorAll('script,style').forEach(function(n) { n.remove(); });
+    clone.querySelectorAll('[id],[class]').forEach(function(n) {
+      n.removeAttribute('id');
+      n.removeAttribute('class');
+    });
+    return clone;
+  }
+
+  function toDataUrl(blob) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onloadend = function() { resolve(reader.result); };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function embedImages(clone) {
+    var images = Array.from(clone.querySelectorAll('img'));
+    await Promise.all(images.map(async function(img) {
+      var src = img.getAttribute('src');
+      if (!src || src.indexOf('data:') === 0) return;
+      try {
+        var response = await fetch(new URL(src, window.location.href).href);
+        if (response.ok) img.setAttribute('src', await toDataUrl(await response.blob()));
+      } catch (e) {}
+    }));
+  }
+
+  function fallbackCopy(htmlStr) {
+    var box = document.createElement('div');
+    box.contentEditable = 'true';
+    box.style.position = 'fixed';
+    box.style.left = '-9999px';
+    box.innerHTML = htmlStr;
+    document.body.appendChild(box);
+    var range = document.createRange();
+    range.selectNodeContents(box);
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    var ok = document.execCommand('copy');
+    selection.removeAllRanges();
+    document.body.removeChild(box);
+    return ok;
+  }
+
+  async function copyRich(button) {
+    button.disabled = true;
+    var old = button.textContent;
+    try {
+      var clone = cleanClone(content);
+      await embedImages(clone);
+      var htmlStr = clone.innerHTML;
+      var text = clone.innerText;
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([htmlStr], {type:'text/html'}),
+          'text/plain': new Blob([text], {type:'text/plain'})
+        })]);
+      } else if (!fallbackCopy(htmlStr)) {
+        throw new Error('copy failed');
+      }
+      button.textContent = '已复制，去公众号粘贴';
+      button.classList.add('ok');
+    } catch (e) {
+      button.textContent = '复制失败，请手动选择正文';
+      button.classList.add('err');
+    }
+    setTimeout(function() {
+      button.textContent = old;
+      button.classList.remove('ok','err');
+      button.disabled = false;
+    }, 2200);
+  }
+
+  copyBtn.addEventListener('click', function() { copyRich(copyBtn); });
+  titleBtn.addEventListener('click', async function() {
+    try {
+      await navigator.clipboard.writeText(title);
+    } catch (e) {
+      var area = document.createElement('textarea');
+      area.value = title; area.style.position = 'fixed'; area.style.left = '-9999px';
+      document.body.appendChild(area); area.select(); document.execCommand('copy'); area.remove();
+    }
+    var old = titleBtn.textContent;
+    titleBtn.textContent = '标题已复制';
+    setTimeout(function() { titleBtn.textContent = old; }, 1500);
+  });
+})();
+</script>
+</body>
+</html>

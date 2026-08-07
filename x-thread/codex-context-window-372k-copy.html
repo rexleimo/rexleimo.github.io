@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex 372K 上下文窗口实验 - X 发布稿</title>
+  <style>
+    :root { --ink:#172033; --muted:#687386; --accent:#1d9bf0; --wash:#f4f6f8; --line:#dce3eb; --card:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
+    .wrap { max-width:960px; margin:0 auto; padding:32px 18px 72px; }
+    header { background:linear-gradient(135deg,#101827,#12364e); color:#fff; border-radius:18px; padding:28px 30px; margin-bottom:24px; }
+    header h1 { margin:0 0 8px; font-size:26px; }
+    header p { margin:0; color:#cbdff0; }
+    .notice { margin:18px 0 26px; padding:14px 18px; border-left:4px solid var(--accent); background:#edf7ff; border-radius:8px; color:#254b69; }
+    .thread { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:24px; margin:24px 0; box-shadow:0 4px 16px rgba(23,32,51,.05); }
+    .thread h2 { margin:0 0 4px; font-size:21px; }
+    .thread-sub { margin:0 0 18px; color:var(--muted); }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+    button,.download { border:0; border-radius:8px; padding:9px 14px; background:var(--accent); color:#fff; cursor:pointer; font-weight:600; text-decoration:none; display:inline-block; }
+    button.secondary { background:#eef1f5; color:var(--ink); }
+    .post { border-top:1px solid var(--line); padding:18px 0; }
+    .post:first-of-type { border-top:0; }
+    .post-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px; }
+    .num { color:var(--accent); font-weight:700; }
+    .copy-source { white-space:pre-wrap; background:#f8fafc; border:1px solid #e8edf2; border-radius:9px; padding:15px; font-size:15px; line-height:1.6; }
+    .media-grid { display:flex; gap:12px; flex-wrap:wrap; margin-top:14px; }
+    .media { width:210px; }
+    .media img { display:block; width:210px; height:118px; object-fit:cover; border-radius:8px; border:1px solid var(--line); background:#eee; }
+    .footer { color:var(--muted); font-size:13px; margin-top:28px; }
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Codex CLI 0.146.0：372K 上下文窗口实验</h1>
+    <p>复制单条帖子或整条 Thread，按顺序粘贴到 X；封面和正文配图可单独下载。</p>
+  </header>
+  <div class="notice">建议先发布第 1 条，再逐条点击 X 的“+”继续。本文不宣称服务端官方支持 372K，Thread 中保留了实验边界和风险说明。</div>
+
+  <section class="thread" data-thread="main">
+    <h2>Thread · Codex 372K 上下文窗口</h2>
+    <p class="thread-sub">主线：痛点 → 数字 → 边界 → 验证 → 回滚</p>
+    <div class="toolbar">
+      <button class="copy-thread" type="button">复制整条 Thread</button>
+      <button class="secondary copy-title" type="button">复制首帖</button>
+      <a class="download" download href="https://rexai.top/ai/codex/codex-context-window-372k/cover-v3.png">下载封面</a>
+    </div>
+
+    <article class="post"><div class="post-head"><span class="num">1/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">Codex 总是做到一半就忘记前面的代码？
+
+我在 Codex CLI 0.146.0 上做了一次上下文窗口实验：把 GPT-5.6-Sol 的本地模型元数据从 272K 调整到 372K。
+
+先说结论：这不是模型升级，也不是无限上下文。
+
+🧵</div><div class="media-grid"><div class="media"><img src="https://rexai.top/ai/codex/codex-context-window-372k/cover-v3.png" alt="Codex 372K 上下文窗口实验封面"></div></div></article>
+
+    <article class="post"><div class="post-head"><span class="num">2/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">当前默认值大致是：
+
+context_window: 272000
+max_context_window: 272000
+effective: 95%
+
+所以有效窗口约为：
+
+272000 × 95% = 258400</div></article>
+
+    <article class="post"><div class="post-head"><span class="num">3/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">实验配置：
+
+context_window: 372000
+max_context_window: 372000
+effective: 95%
+
+计算结果：
+
+372000 × 95% = 353400
+
+但这只是 Codex 客户端计算出的有效预算。</div></article>
+
+    <article class="post"><div class="post-head"><span class="num">4/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">最容易误解的地方：
+
+本地模型元数据变大，不代表服务端真的支持 372K。
+
+客户端显示 353400，只能证明本地配置被读取；服务端是否接受这么大的请求，要用真实长任务验证。</div></article>
+
+    <article class="post"><div class="post-head"><span class="num">5/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">它可能帮助：
+
+- 更晚触发上下文压缩
+- 大型代码仓库分析
+- 长日志排查
+- 长时间运行的 Agent 任务
+
+它不会改变模型的推理能力，也不会增加跨任务永久记忆。</div><div class="media-grid"><div class="media"><img src="https://rexai.top/ai/codex/codex-context-window-372k/context-layers.png" alt="Codex 上下文窗口三层限制"></div><div class="media"><img src="https://rexai.top/ai/codex/codex-context-window-372k/window-comparison.png" alt="272K 与 372K 对比"></div></div></article>
+
+    <article class="post"><div class="post-head"><span class="num">6/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">验证不能只看配置文件。
+
+codex debug models 只能证明本地模型目录被读取。还要用同一个项目、同一个任务做对照测试，观察：
+
+- 第一次压缩轮次
+- 最大 token 使用量
+- context length exceeded
+- 任务耗时和输出质量</div></article>
+
+    <article class="post"><div class="post-head"><span class="num">7/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">如果服务端真实上限更低，可能出现：
+
+- 请求被拒绝
+- 上下文被截断
+- 任务中途失败
+- 延迟和消耗增加
+
+所以一定要先备份，并使用非敏感项目测试。报错就回滚，不要继续把数字往上改。</div><div class="media-grid"><div class="media"><img src="https://rexai.top/ai/codex/codex-context-window-372k/verification-flow.png" alt="Codex 配置验证流程"></div></div></article>
+
+    <article class="post"><div class="post-head"><span class="num">8/8</span><button class="copy-post" type="button">复制本条</button></div><div class="copy-source">完整文章包含：
+
+- Codex CLI 0.146.0 配置方法
+- custom_models.json 修改方式
+- 本地验证命令
+- 长任务对照测试
+- 回滚方法
+- 服务端限制说明
+
+[文章链接]
+
+#Codex #AI编程 #OpenAI</div></article>
+  </section>
+
+  <p class="footer">发布建议：第 1 条配封面；第 5、7 条可配图。不要在公开帖中粘贴 API Key、Cookie、Token 或私有代码。</p>
+</main>
+<script>
+  function postText(post) { return post.querySelector('.copy-source').innerText.trim(); }
+  async function copyText(text, button) {
+    var old = button.textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      var area = document.createElement('textarea');
+      area.value = text; area.style.position = 'fixed'; area.style.left = '-9999px'; area.style.opacity = '0';
+      document.body.appendChild(area); area.focus(); area.select(); document.execCommand('copy'); area.remove();
+    }
+    button.textContent = '已复制';
+    setTimeout(function() { button.textContent = old; }, 1300);
+  }
+  document.querySelectorAll('.copy-post').forEach(function(button) {
+    button.addEventListener('click', function() { copyText(postText(button.closest('.post')), button); });
+  });
+  document.querySelectorAll('.copy-thread').forEach(function(button) {
+    button.addEventListener('click', function() {
+      var thread = button.closest('.thread');
+      var text = Array.from(thread.querySelectorAll('.post')).map(postText).join('\n\n---\n\n');
+      copyText(text, button);
+    });
+  });
+  document.querySelectorAll('.copy-title').forEach(function(button) {
+    button.addEventListener('click', function() { copyText('Codex 总是做到一半就忘记前面的代码？我在 Codex CLI 0.146.0 上做了 372K 上下文窗口实验。', button); });
+  });
+</script>
+</body>
+</html>
