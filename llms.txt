@@ -1,0 +1,22 @@
+# Rex AI — Rust & AI Engineering
+> A bilingual (zh-CN / English) engineering blog focused on Rust systems programming, AI agents, and developer tooling. Practical, runnable tutorials with real code and production caveats.
+
+## Rust Tutorials (flagship)
+- [Ditch Arduino: Rust + Embassy on RP2040 (zh-CN)](https://rexai.top/tutorials/rust/rust-embassy-embedded-rp2040/): Bare-metal `no_std` async blink with the Embassy framework on a Raspberry Pi Pico — full project, Cargo.toml, memory.x, and 5 beginner pitfalls.
+- [Ditch Arduino: Rust + Embassy on RP2040 (English)](https://rexai.top/en/tutorials/rust/rust-embassy-embedded-rp2040/): Same guide in English.
+- [Stop Hand-Rolling JWT Validation: OIDC + Axum Auth (zh-CN)](https://rexai.top/tutorials/rust/rust-oidc-axum-auth/): Production-grade Bearer-token validation middleware in Axum — JWKS fetching, algorithm whitelist, iss/aud checks, clock-skew tolerance.
+- [Stop Hand-Rolling JWT Validation: OIDC + Axum Auth (English)](https://rexai.top/en/tutorials/rust/rust-oidc-axum-auth/): Same guide in English.
+- [A 1000x Gap: Rust Memory Safety vs C/C++ CVEs (zh-CN)](https://rexai.top/tutorials/rust/rust-memory-safety-cve/): Google's 2025 data showing Rust cuts memory-safety bugs ~1000x, with a C/Rust use-after-free comparison and an actionable checklist.
+- [A 1000x Gap: Rust Memory Safety vs C/C++ CVEs (English)](https://rexai.top/en/tutorials/rust/rust-memory-safety-cve/): Same analysis in English.
+
+## Coverage
+- Rust: async/await, ownership & borrow checker, embedded (`no_std` / Embassy), web (Axum), security (OIDC / JWT), memory safety.
+- AI: agents, LLMs, coding agents, terminal UIs.
+- Engineering: systems programming, performance, best practices.
+
+## Languages
+- 中文 (default): https://rexai.top/
+- English: https://rexai.top/en/
+
+## Full index
+For the complete article set, use the sitemap: https://rexai.top/sitemap.xml

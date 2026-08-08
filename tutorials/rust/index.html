@@ -11,68 +11,68 @@
 <button type=button data-theme-toggle>切换主题</button></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/><span itemprop=name>教程</span></a>
 <meta itemprop=position content="2"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/rust/><span itemprop=name>Rust</span></a>
-<meta itemprop=position content="3"></li></ol></nav><p>[ SECTION / TUTORIALS ]</p><h1>Rust 教程</h1><div>Rust语言从入门到精通，涵盖异步编程、Web开发、Actor模型等进阶内容。通过实战项目和案例分析，帮助您掌握内存安全、高性能并发编程技巧。</div><span>43 篇内容</span></header><div class=wp2-list__intro-grid><div class="wp2-list__intro post-content"><p>欢迎来到 Rust 教程专栏！这里收录了 Rust 编程语言的实用教程与最佳实践，包括错误处理、生命周期等常见难题的详细解析。无论你是初学者还是有经验的开发者，都能在这里找到提升 Rust 技能的内容。</p></div><aside class=wp2-list__aside><p>[ 学习索引 / 43 ]</p><a href=/tutorials/rust/async-rust-why-so-hard/><b>01</b><span>Async Rust 为什么用起来这么别扭？——写给被 async/await 折磨过的你</span><i>↗</i></a>
-<a href=/tutorials/rust/sse-vs-websocket-guide/><b>02</b><span>WebSocket vs SSE 实测复盘：10万连接下 SSE 节省 40% 内存</span><i>↗</i></a>
-<a href=/tutorials/rust/s-clear-borrow-error/><b>03</b><span>Rust 编译器报错 'cannot borrow as mutable'？把 s.clear() 当成“撕书”你就懂了</span><i>↗</i></a>
-<a href=/tutorials/rust/rust-ecs-vs-actor-model-architecture-showdown/><b>04</b><span>Rust ECS vs Actor模型：并发架构的世纪对决</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/tutorials/rust/async-rust-why-so-hard/><b>01</b>
+<meta itemprop=position content="3"></li></ol></nav><p>[ SECTION / TUTORIALS ]</p><h1>Rust 教程</h1><div>Rust语言从入门到精通，涵盖异步编程、Web开发、Actor模型等进阶内容。通过实战项目和案例分析，帮助您掌握内存安全、高性能并发编程技巧。</div><span>46 篇内容</span></header><div class=wp2-list__intro-grid><div class="wp2-list__intro post-content"><p>欢迎来到 Rust 教程专栏！这里收录了 Rust 编程语言的实用教程与最佳实践，包括错误处理、生命周期等常见难题的详细解析。无论你是初学者还是有经验的开发者，都能在这里找到提升 Rust 技能的内容。</p></div><aside class=wp2-list__aside><p>[ 学习索引 / 46 ]</p><a href=/tutorials/rust/rust-embassy-embedded-rp2040/><b>01</b><span>扔掉 Arduino：用 Rust + Embassy 写单片机，一个 LED 闪烁入门 async 裸机编程</span><i>↗</i></a>
+<a href=/tutorials/rust/rust-oidc-axum-auth/><b>02</b><span>别再手写 JWT 校验：用 OIDC + Axum 给 Rust API 加上生产级身份认证</span><i>↗</i></a>
+<a href=/tutorials/rust/rust-memory-safety-cve/><b>03</b><span>1000 倍差距：Google 用 Rust 把内存安全漏洞压到 20% 以下，这份作业你可以抄</span><i>↗</i></a>
+<a href=/tutorials/rust/async-rust-why-so-hard/><b>04</b><span>Async Rust 为什么用起来这么别扭？——写给被 async/await 折磨过的你</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/tutorials/rust/rust-embassy-embedded-rp2040/><b>01</b>
+<span class="wp2-list__image is-empty">//</span>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.08.08 / 2 MIN</small>
+<strong>扔掉 Arduino：用 Rust + Embassy 写单片机，一个 LED 闪烁入门 async 裸机编程</strong>
+<em>Arduino 用 C++，内存小、容易写出越界。本文用树莓派 Pico（RP2040）带你跑通 Rust 裸机（no_std）+ Embassy 异步框架：从工具链、Cargo.toml、memory.x 到 async 闪烁，附 5 条新手避坑指南。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/tutorials/rust/rust-oidc-axum-auth/><b>02</b>
+<span class="wp2-list__image is-empty">//</span>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.08.08 / 3 MIN</small>
+<strong>别再手写 JWT 校验：用 OIDC + Axum 给 Rust API 加上生产级身份认证</strong>
+<em>自己解析 JWT 很容易踩 alg=none、密钥写死、不校验 aud/iss 的坑。本文基于 Axum 实写一个 OIDC Bearer Token 校验中间件：JWKS 公钥拉取、alg 白名单、iss/aud 校验、时钟漂移容忍，并给出接入 Keycloak/Auth0 的最简方案。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/tutorials/rust/rust-memory-safety-cve/><b>03</b>
+<span class="wp2-list__image is-empty">//</span>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.08.08 / 1 MIN</small>
+<strong>1000 倍差距：Google 用 Rust 把内存安全漏洞压到 20% 以下，这份作业你可以抄</strong>
+<em>Google 2025 年披露：Android 内存安全漏洞占比首次跌破 20%，Rust 代码漏洞密度比 C/C++ 低约 1000 倍。本文拆解背后的原理，用一段 use-after-free 的 C/Rust 对照说明所有权如何消灭整类漏洞，并给出可落地的行动清单。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/tutorials/rust/async-rust-why-so-hard/><b>04</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/async-rust-why-so-hard/cover.png alt loading=lazy></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.24 / 2 MIN</small>
 <strong>Async Rust 为什么用起来这么别扭？——写给被 async/await 折磨过的你</strong>
 <em>Async Rust 性能强悍，但为什么写起来总让人怀疑人生？从生态碎片化、Pin/Unpin 到取消安全和性能陷阱，用生活化的比喻拆解那些官方文档不会告诉你的真实痛点。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/sse-vs-websocket-guide/><b>02</b>
+</a><a class=wp2-list__row href=/tutorials/rust/sse-vs-websocket-guide/><b>05</b>
 <span class="wp2-list__image is-empty">//</span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.17 / 2 MIN</small>
 <strong>WebSocket vs SSE 实测复盘：10万连接下 SSE 节省 40% 内存</strong>
 <em>Ark Protocol 团队在 10万并发连接下实测 WebSocket 与 SSE 的性能差异，SSE 节省 40% 内存。本文给出实战选型决策指南。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/s-clear-borrow-error/><b>03</b>
+</a><a class=wp2-list__row href=/tutorials/rust/s-clear-borrow-error/><b>06</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/s-clear-borrow-error/cover.png alt loading=lazy></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.02.01 / 2 MIN</small>
 <strong>Rust 编译器报错 'cannot borrow as mutable'？把 s.clear() 当成“撕书”你就懂了</strong>
 <em>为什么在 s.clear() 时会报 mutable borrow 错误？本文用“图书馆借书”的生活类比，带你彻底搞懂 Rust 的借用规则和生命周期冲突。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/rust-ecs-vs-actor-model-architecture-showdown/><b>04</b>
+</a><a class=wp2-list__row href=/tutorials/rust/rust-ecs-vs-actor-model-architecture-showdown/><b>07</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/tutorials/rust/rust-ecs-vs-actor-model-architecture-showdown/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2025.12.14 / 2 MIN</small>
 <strong>Rust ECS vs Actor模型：并发架构的世纪对决</strong>
 <em>深入对比 Rust ECS 和 Actor模型两种并发架构的优缺点，通过数据导向设计和消息传递两种思路，帮你选择最适合的 Rust架构方案。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/rust-linux-6-19-module-parameters/><b>05</b>
+</a><a class=wp2-list__row href=/tutorials/rust/rust-linux-6-19-module-parameters/><b>08</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/tutorials/rust/rust-linux-6-19-module-parameters/images/1.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2025.12.09 / 1 MIN</small>
 <strong>Linux 6.19 Rust模块参数支持详解：Rust驱动开发正式进入生产阶段</strong>
 <em>Linux 6.19内核为Rust驱动程序提供完整的模块参数支持，标志着Rust在内核开发中从实验走向生产。本文详细解析module_param!宏的用法、与C语言的对比、内存安全优势，以及Rust驱动开发的未来趋势。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/6-rust-tools-every-developer-needs-to-try-before-2026/><b>06</b>
+</a><a class=wp2-list__row href=/tutorials/rust/6-rust-tools-every-developer-needs-to-try-before-2026/><b>09</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/tutorials/rust/6-rust-tools-every-developer-needs-to-try-before-2026/images/rust-tools-main.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2025.12.09 / 2 MIN</small>
 <strong>6个Rust神器：2026年前不试会后悔的开发利器</strong>
 <em>最近技术圈是不是都在聊Rust？别担心，我帮你从海量工具里筛出了这6个宝藏。它们就像厨房里的多功能料理机，一个顶十个！</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/rust-1.90-upgrade-survival-guide/><b>07</b>
+</a><a class=wp2-list__row href=/tutorials/rust/rust-1.90-upgrade-survival-guide/><b>10</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/tutorials/rust/rust-1.90-upgrade-survival-guide/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2025.12.07 / 2 MIN</small>
 <strong>Rust 1.90 升级翻车实录：我的代码库没能活下来</strong>
 <em>升级Rust 1.90后性能暴跌？这篇文章告诉你为什么，以及怎么救回来</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/rust-windows-async-afd-deep-dive/><b>08</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/featured.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>TUTORIALS / 2025.12.02 / 3 MIN</small>
-<strong>Windows 上跑 Rust 异步？聊聊那个藏在衣柜里的小恶魔 Device Afd</strong>
-<em>为什么 Rust 异步在 Windows 上能跑起来？揭秘微软不公开的 AFD 驱动，用生活化类比带你理解 Windows 异步编程的底层魔法</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/rust-gpu-ecosystem-beginner-guide/><b>09</b>
-<span class="wp2-list__image is-empty">//</span>
-<span class=wp2-list__copy><small>TUTORIALS / 2025.11.06 / 3 MIN</small>
-<strong>Rust GPU 安全入门：用 WGPU、Naga 和 Rust-GPU 三步上手</strong>
-<em>从零开始理解 Rust GPU 生态：用生活类比讲清 WGPU、Naga、Rust-GPU，给小白一条安全可复现的图形计算路线。</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/tutorials/rust/rust-design-patterns-2025/><b>10</b>
-<span class="wp2-list__image is-empty">//</span>
-<span class=wp2-list__copy><small>TUTORIALS / 2025.11.05 / 5 MIN</small>
-<strong>2025 Rust 设计模式新手速通：10 个组合拳一次打包</strong>
-<em>跟着这篇入门教程，把 Rust 最常用的 10 个设计模式串成能跑的案例，避开新手踩坑，把代码写得既安全又好维护。</em>
 </span><i>↗</i></a></div><nav class=wp2-list__pagination aria-label=Pagination><span>1 / 5</span><a href=/tutorials/rust/page/2/>NEXT →</a></nav></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
 <a href=/posts/>文章</a>
 <a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
