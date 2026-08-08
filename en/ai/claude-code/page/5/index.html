@@ -1,4 +1,4 @@
-<!doctype html><html lang=en dir=ltr class=js><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Claude Code | 梦兽编程</title><meta name=keywords content><meta name=description content="Claude Code tips, internals, and practical guides."><meta name=author content="Rexai Programming"><link rel=canonical href=https://rexai.top/en/ai/claude-code/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.46e28ba4e8a8174849c98cfb05764737ead0f69d77f1030fef25d3c8102e4064.css integrity="sha256-RuKLpOioF0hJyYz7BXZHN+rQ9p138QMP7yXTyBAuQGQ=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/en/ai/claude-code/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/ai/claude-code/><link rel=alternate hreflang=en href=https://rexai.top/en/ai/claude-code/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+<!doctype html><html lang=en dir=ltr class=js><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Claude Code | 梦兽编程</title><meta name=keywords content><meta name=description content="Claude Code tips, internals, and practical guides."><meta name=author content="Rexai Programming"><link rel=canonical href=https://rexai.top/en/ai/claude-code/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.47853a9153ec2066bfa5d1860cc79eed1f076855b9522638d6270fbe2f133298.css integrity="sha256-R4U6kVPsIGa/pdGGDMee7R8HaFW5UiY41icPvi8TMpg=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/en/ai/claude-code/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/ai/claude-code/><link rel=alternate hreflang=en href=https://rexai.top/en/ai/claude-code/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
@@ -11,37 +11,43 @@
 <button type=button data-theme-toggle>TOGGLE_THEME</button></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/ai/><span itemprop=name>Ai</span></a>
 <meta itemprop=position content="3"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/ai/claude-code/><span itemprop=name>Claude Code</span></a>
-<meta itemprop=position content="4"></li></ol></nav><p>[ SECTION / AI ]</p><h1>Claude Code</h1><div>Claude Code tips, internals, and practical guides.</div><span>46 POSTS</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/en/ai/claude-code/claude-code-agents-teams-guide/><b>01</b>
+<meta itemprop=position content="4"></li></ol></nav><p>[ SECTION / AI ]</p><h1>Claude Code</h1><div>Claude Code tips, internals, and practical guides.</div><span>47 POSTS</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/en/ai/claude-code/claude-code-multi-ai-collaboration/><b>01</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/claude-code-multi-ai-collaboration/cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>AI / 2026.02.12 / 16 MIN</small>
+<strong>Stop Making Claude Work Alone! 4 Ways to Bring Codex CLI and Gemini CLI Into the Mix</strong>
+<em>A hands-on tutorial for multi-AI collaboration in Claude Code. From MCP integration to the claude-octopus plugin, here are 4 methods to get Codex CLI and Gemini CLI …</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/en/ai/claude-code/claude-code-agents-teams-guide/><b>02</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/claude-code-agents-teams-guide/cover.png alt loading=lazy></span>
 <span class=wp2-list__copy><small>AI / 2026.02.12 / 19 MIN</small>
 <strong>Claude Code Agents & Teams Practical Guide: Config Done But Don't Know How to Use? This Article Explains It All</strong>
 <em>A practical guide for operating Claude Code Subagents and Agent Teams from creation to triggering. Includes Subagent YAML configuration templates, 4 trigger Prompt …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/en/ai/claude-code/claude-rag-search-retrieval-guide/><b>02</b>
+</a><a class=wp2-list__row href=/en/ai/claude-code/claude-rag-search-retrieval-guide/><b>03</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/claude-rag-search-retrieval-guide/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>AI / 2026.02.10 / 10 MIN</small>
 <strong>RAG in Practice: Stop Making Your LLM Take Closed-Book Exams</strong>
 <em>A practical RAG tutorial: build an enterprise knowledge base Q&A system in 4 steps using embedding vector search and Claude. Contextual Retrieval cuts retrieval failure …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/en/ai/claude-code/claude-code-lsp/><b>03</b>
+</a><a class=wp2-list__row href=/en/ai/claude-code/claude-code-lsp/><b>04</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/claude-code-lsp/cover.png alt loading=lazy></span>
 <span class=wp2-list__copy><small>AI / 2025.12.31 / 7 MIN</small>
 <strong>How Claude Code LSP Makes AI Coding Feel Like Turn-by-Turn Navigation</strong>
 <em>Claude Code 2.0.74 now has native LSP support—it can jump to definitions and find references just like VS Code, no more blind grep searches</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/en/ai/claude-code/claude-code-ai-programming-assistant/><b>04</b>
+</a><a class=wp2-list__row href=/en/ai/claude-code/claude-code-ai-programming-assistant/><b>05</b>
 <span class="wp2-list__image is-empty">//</span>
 <span class=wp2-list__copy><small>AI / 2025.09.30 / 8 MIN</small>
 <strong>Claude Code: The AI Programming Assistant That's Like Having a 24/7 Personal Butler for Your Code</strong>
 <em>Deep dive into Claude Code AI programming assistant - from local execution to natural language interaction, see how this Claude 4-based tool transforms developers' daily …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/en/ai/claude-code/claude-4-5-sonnet-worlds-strongest-coding-model/><b>05</b>
+</a><a class=wp2-list__row href=/en/ai/claude-code/claude-4-5-sonnet-worlds-strongest-coding-model/><b>06</b>
 <span class="wp2-list__image is-empty">//</span>
 <span class=wp2-list__copy><small>AI / 2025.09.30 / 4 MIN</small>
 <strong>Claude 4.5 Sonnet Launch: Claiming to Be the World's Strongest Coding Model</strong>
 <em>Anthropic releases Claude 4.5 Sonnet, claiming world's strongest coding capabilities, 77.2% benchmark score, 30-hour continuous runtime, with Claude Code upgrade and new …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/en/ai/claude-code/claude-code-superpowers-beginner-guide/><b>06</b>
+</a><a class=wp2-list__row href=/en/ai/claude-code/claude-code-superpowers-beginner-guide/><b>07</b>
 <span class="wp2-list__image is-empty">//</span>
 <span class=wp2-list__copy><small>AI / 2025.01.12 / 9 MIN</small>
 <strong>Superpowers 101: How This Thing Made My AI Coding Assistant Finally 'Get It'</strong>
