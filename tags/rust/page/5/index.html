@@ -11,7 +11,10 @@
 <button type=button data-theme-toggle>切换主题</button></div></div><main id=main-content class=glass-main><header class=page-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tags/><span itemprop=name>Tags</span></a>
 <meta itemprop=position content="2"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tags/rust/><span itemprop=name>Rust</span></a>
-<meta itemprop=position content="3"></li></ol></nav><h1 class=post-title>#Rust</h1><p class=post-meta><span>140 篇文章</span></p></header><div class="card-grid card-grid--cards"><article class="post-card reveal"><a href=/languages/rust/2026-02-25-rust-arc-mutex-message-passing/ class=post-card__link><div class=post-card__media><span class=post-card__ph aria-hidden=true>R</span>
+<meta itemprop=position content="3"></li></ol></nav><h1 class=post-title>#Rust</h1><p class=post-meta><span>141 篇文章</span></p></header><div class="card-grid card-grid--cards"><article class="post-card reveal"><a href=/tools/2026-03-08-ki-editor-ast-multi-cursor/ class=post-card__link><div class=post-card__media><span class=post-card__ph aria-hidden=true>K</span>
+<img src=https://rexai.top/images/ki-editor-ast-multi-cursor/cover.png alt="Ki Editor：一个把代码当乐高玩的编辑器" loading=lazy onerror='this.style.display="none"'></div><div class=post-card__body><div class=post-card__meta><span class=post-card__cat>开发工具</span>
+<time datetime=2026-03-08>2026-03-08</time>
+<span>2 分钟</span></div><h3 class=post-card__title>Ki Editor：一个把代码当乐高玩的编辑器</h3><p class=post-card__excerpt>Ki Editor 不是让你写字的，是让你搭积木的。它直接操作代码的语法树（AST），光标可以在表达式、函数、整个代码块之间跳跃。多光标编辑不再靠肉眼对齐，而是靠语法结构。用了一周，我再也不想回到纯文本编辑器了。</p></div></a></article><article class="post-card reveal"><a href=/languages/rust/2026-02-25-rust-arc-mutex-message-passing/ class=post-card__link><div class=post-card__media><span class=post-card__ph aria-hidden=true>R</span>
 <img src=https://rexai.top/images/rust-arc-mutex-message-passing/cover.png alt="Rust 里到处都是 Arc<Mutex<T>>？你可能把 Java 的架构搬过来了" loading=lazy onerror='this.style.display="none"'></div><div class=post-card__body><div class=post-card__meta><span class=post-card__cat>Rust</span>
 <time datetime=2026-02-25>2026-02-25</time>
 <span>2 分钟</span></div><h3 class=post-card__title>Rust 里到处都是 Arc&lt;Mutex&lt;T>>？你可能把 Java 的架构搬过来了</h3><p class=post-card__excerpt>Arc</p></div></a></article><article class="post-card reveal"><a href=/languages/rust/2026-02-21-rust-tokio-1-8m-gateway-scaling/ class=post-card__link><div class=post-card__media><span class=post-card__ph aria-hidden=true>从</span>
@@ -38,15 +41,12 @@
 <span>2 分钟</span></div><h3 class=post-card__title>PostgreSQL 查询解析慢成狗？PgDog 把 Protobuf 扔了，直接快 5 倍</h3><p class=post-card__excerpt>PgDog 是一个用 Rust 写的 PostgreSQL 代理，他们发现解析 SQL 查询时，Protobuf 序列化居然是性能杀手。于是他们做了一个骚操作：直接抛弃 Protobuf，用原生 Rust 绑定 C 代码 …</p></div></a></article><article class="post-card reveal"><a href=/tutorials/rust/s-clear-borrow-error/ class=post-card__link><div class=post-card__media><span class=post-card__ph aria-hidden=true>R</span>
 <img src=https://rexai.top/images/s-clear-borrow-error/cover.png alt="Rust 编译器报错 'cannot borrow as mutable'？把 s.clear() 当成“撕书”你就懂了" loading=lazy onerror='this.style.display="none"'></div><div class=post-card__body><div class=post-card__meta><span class=post-card__cat>Rust</span>
 <time datetime=2026-02-01>2026-02-01</time>
-<span>2 分钟</span></div><h3 class=post-card__title>Rust 编译器报错 'cannot borrow as mutable'？把 s.clear() 当成“撕书”你就懂了</h3><p class=post-card__excerpt>为什么在 s.clear() 时会报 mutable borrow 错误？本文用“图书馆借书”的生活类比，带你彻底搞懂 Rust 的借用规则和生命周期冲突。</p></div></a></article><article class="post-card reveal"><a href=/languages/rust/brave-rust-adblock-memory-optimization/ class=post-card__link><div class=post-card__media><span class=post-card__ph aria-hidden=true>B</span>
-<img src=https://rexai.top/images/brave-rust-memory-optimization/cover.png alt="Brave 浏览器用 Rust 重写广告拦截器，内存直降 75%" loading=lazy onerror='this.style.display="none"'></div><div class=post-card__body><div class=post-card__meta><span class=post-card__cat>前端资讯</span>
-<time datetime=2026-01-30>2026-01-30</time>
-<span>2 分钟</span></div><h3 class=post-card__title>Brave 浏览器用 Rust 重写广告拦截器，内存直降 75%</h3><p class=post-card__excerpt>Brave 1.85 版本通过 Rust 和 FlatBuffers 技术重写广告拦截引擎，内存占用从 60MB 降到 15MB。这篇文章带你看看他们是怎么做到的。</p></div></a></article></div><nav class=glass-pagination aria-label=分页><a href=/tags/rust/page/4/ rel=prev aria-label=上一页>«</a>
+<span>2 分钟</span></div><h3 class=post-card__title>Rust 编译器报错 'cannot borrow as mutable'？把 s.clear() 当成“撕书”你就懂了</h3><p class=post-card__excerpt>为什么在 s.clear() 时会报 mutable borrow 错误？本文用“图书馆借书”的生活类比，带你彻底搞懂 Rust 的借用规则和生命周期冲突。</p></div></a></article></div><nav class=glass-pagination aria-label=分页><a href=/tags/rust/page/4/ rel=prev aria-label=上一页>«</a>
 <a href=/tags/rust/>1</a>
 <a href=/tags/rust/page/4/>4</a>
 <span class=current aria-current=page>5</span>
 <a href=/tags/rust/page/6/>6</a>
-<a href=/tags/rust/page/14/>14</a><a href=/tags/rust/page/6/ rel=next aria-label=下一页>»</a></nav></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
+<a href=/tags/rust/page/15/>15</a><a href=/tags/rust/page/6/ rel=next aria-label=下一页>»</a></nav></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
 <a href=/posts/>文章</a>
 <a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
 <a href=/languages/>编程语言</a>
