@@ -1,15 +1,50 @@
-# Google 和 Bing 爬虫规则
+# ── Primary crawlers ──
 User-agent: Googlebot
 User-agent: Bingbot
 Allow: /
-
-# 其他爬虫
-User-agent: *
-Allow: /
-
-# 不需要索引的路径
+Allow: /ads/
 Disallow: /admin/
 Disallow: /private/
 
-# 站点地图
+# ── Other crawlers ──
+User-agent: *
+Allow: /
+Allow: /ads/
+Disallow: /admin/
+Disallow: /private/
+
+# ── Generative-engine / AI crawlers (GEO) ──
+User-agent: GPTBot
+Allow: /
+Allow: /ads/
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /ads/
+
+User-agent: Google-Extended
+Allow: /
+Allow: /ads/
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /ads/
+
+User-agent: anthropic-ai
+Allow: /
+Allow: /ads/
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /ads/
+
+User-agent: Applebot
+Allow: /
+Allow: /ads/
+
+User-agent: Meta-ExternalAgent
+Allow: /
+Allow: /ads/
+
+# ── Sitemaps ──
 Sitemap: https://rexai.top/sitemap.xml
