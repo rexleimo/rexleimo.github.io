@@ -1,0 +1,75 @@
+<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>DevOps 与运维 | 梦兽编程</title><meta name=keywords content="DevOps,Linux,Docker,云基础设施,部署"><meta name=description content="涵盖 Linux、容器、部署、云基础设施和开发者工作流的实战内容。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/infrastructure/devops/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.d73308bd46d3149fede1fffb460cb816f4d0890fcc3662f20dee8218e44ccf8e.css integrity="sha256-1zMIvUbTFJ/t4f/7Rgy4FvTQiQ/MNmLyDe6CGORMz44=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/infrastructure/devops/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/infrastructure/devops/><link rel=alternate hreflang=en href=https://rexai.top/en/infrastructure/devops/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/infrastructure/devops/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="DevOps 与运维"><meta property="og:description" content="涵盖 Linux、容器、部署、云基础设施和开发者工作流的实战内容。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="website"><meta name=twitter:card content="summary"><meta name=twitter:title content="DevOps 与运维"><meta name=twitter:description content="涵盖 Linux、容器、部署、云基础设施和开发者工作流的实战内容。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"梦兽编程","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/infrastructure\/devops\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/infrastructure/","name":"Infrastructure"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/infrastructure/devops/","name":"Devops"},"position":3}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/ aria-label=梦兽编程>梦兽编程<sup>™</sup></a><nav class=wp2-header__links aria-label=主导航><div class=wp2-header__nav-item><a href=/products/>产品</a></div><div class=wp2-header__nav-item><a href=/tutorials/>教程 <span>▾</span></a><div class=wp2-header__submenu><a href=/tutorials/smart-contracts/>智能合约 <span>→</span></a><a href=/tutorials/go-adk/>Go ADK <span>→</span></a></div></div><div class=wp2-header__nav-item><a href=/ai/>AI <span>▾</span></a><div class=wp2-header__submenu><a href=/ai/claude-code/>Claude Code <span>→</span></a><a href=/ai/codex/>Codex <span>→</span></a><a href=/ai/llm/>LLM <span>→</span></a></div></div><div class=wp2-header__nav-item><a href=/languages/>开发 <span>▾</span></a><div class=wp2-header__submenu><a href=/languages/rust/>Rust <span>→</span></a><a href=/languages/go/>Go <span>→</span></a><a href=/languages/python/>Python <span>→</span></a><a href=/frontend/>前端 <span>→</span></a><a href=/infrastructure/>基础设施 <span>→</span></a></div></div><div class=wp2-header__nav-item><a href=/tools/rexai-tool-directory/>工具 <span>▾</span></a><div class=wp2-header__submenu><a href=/tools/rexai-tool-directory/>AI 工具导航 <span>→</span></a><a href=https://tool.rexai.top/>Rex 工具集 <span>→</span></a><a href=/marketing/>VPN网络链 <span>→</span></a></div></div><div class=wp2-header__nav-item><a href=/categories/>探索 <span>▾</span></a><div class=wp2-header__submenu><a href=/tags/>标签 <span>→</span></a><a href=/categories/>分类 <span>→</span></a></div></div><div class=wp2-header__nav-item><a href=/about/>关于</a></div></nav><div class=wp2-header__spacer></div><a class=wp2-header__cta href=/tools/cc-codex-portal/>AI 套装 <span>↗</span></a>
+<button class=wp2-header__menu type=button aria-expanded=false aria-controls=wp2-mobile-menu data-wp2-menu data-open-label=打开菜单 data-close-label=关闭菜单>
+<span class=wp2-header__menu-mark aria-hidden=true><i></i><i></i><i></i></span>
+<span class=wp2-header__menu-label data-wp2-menu-label>打开菜单</span></button></header><div id=wp2-mobile-menu class=wp2-menu-panel hidden><div class=wp2-menu-panel__meta><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div><nav class=wp2-menu-panel__grid aria-label=全站导航><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/products/><strong>产品</strong><span>→</span></a><p>了解梦兽编程的内容方向与服务入口。</p></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tutorials/><strong>教程</strong><span>→</span></a><div class=wp2-menu-panel__children><a href=/tutorials/smart-contracts/>智能合约 <span>↗</span></a><a href=/tutorials/go-adk/>Go ADK <span>↗</span></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/ai/><strong>AI</strong><span>→</span></a><div class=wp2-menu-panel__children><a href=/ai/claude-code/>Claude Code <span>↗</span></a><a href=/ai/codex/>Codex <span>↗</span></a><a href=/ai/llm/>LLM <span>↗</span></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/languages/><strong>开发</strong><span>→</span></a><div class=wp2-menu-panel__children><a href=/languages/rust/>Rust <span>↗</span></a><a href=/languages/go/>Go <span>↗</span></a><a href=/languages/python/>Python <span>↗</span></a><a href=/frontend/>前端 <span>↗</span></a><a href=/infrastructure/>基础设施 <span>↗</span></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tools/rexai-tool-directory/><strong>工具</strong><span>→</span></a><div class=wp2-menu-panel__children><a href=/tools/rexai-tool-directory/>AI 工具导航 <span>↗</span></a><a href=https://tool.rexai.top/>Rex 工具集 <span>↗</span></a><a href=/marketing/>VPN网络链 <span>↗</span></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/categories/><strong>探索</strong><span>→</span></a><div class=wp2-menu-panel__children><a href=/tags/>标签 <span>↗</span></a><a href=/categories/>分类 <span>↗</span></a></div></section><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/about/><strong>关于</strong><span>→</span></a><p>了解梦兽编程的内容方向与服务入口。</p></section></nav><div class=wp2-menu-panel__utility><span>实用工具</span><a href=/en/>EN ↗</a>
+<button type=button data-theme-toggle>切换主题</button></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
+<meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/infrastructure/><span itemprop=name>Infrastructure</span></a>
+<meta itemprop=position content="2"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/infrastructure/devops/><span itemprop=name>Devops</span></a>
+<meta itemprop=position content="3"></li></ol></nav><p>[ SECTION / INFRASTRUCTURE ]</p><h1>DevOps 与运维</h1><div>涵盖 Linux、容器、部署、云基础设施和开发者工作流的实战内容。</div><span>8 篇内容</span></header><div class=wp2-list__intro-grid><div class="wp2-list__intro post-content"><p>本栏目聚焦 DevOps 与基础设施实践，包括 Linux 工作流、容器化、部署、可靠性和开发环境优化。内容面向需要把应用稳定交付到真实环境的开发者。</p></div><aside class=wp2-list__aside><p>[ 学习索引 / 8 ]</p><a href=/infrastructure/devops/omarchy-quattro/><b>01</b><span>Omarchy Quattro 上手体验：DHH 把 Linux 桌面做成了</span><i>↗</i></a>
+<a href=/infrastructure/devops/2026-02-25-webtop-docker-linux-desktop-browser/><b>02</b><span>Webtop教程：用Docker在浏览器里跑完整Linux桌面</span><i>↗</i></a>
+<a href=/infrastructure/devops/c10m-problem-2026/><b>03</b><span>Linux内核的C10M困境：为啥你的128核服务器还是扛不住每秒千万级数据包</span><i>↗</i></a>
+<a href=/infrastructure/devops/manjaro-26-release/><b>04</b><span>Manjaro 26.0 发布了，来聊聊这个 Linux 发行版</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/infrastructure/devops/omarchy-quattro/><b>01</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/infrastructure/devops/omarchy-quattro/images/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2026.08.16 / 2 MIN</small>
+<strong>Omarchy Quattro 上手体验：DHH 把 Linux 桌面做成了</strong>
+<em>Omarchy 4（Quattro）发布，整个桌面壳用 Quickshell 重写。从安装到日常使用，聊聊这个由 DHH 主导、基于 Arch + Hyprland 的 Linux 发行版真实体验。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/infrastructure/devops/2026-02-25-webtop-docker-linux-desktop-browser/><b>02</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/webtop-docker-linux-desktop-browser/cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2026.02.25 / 1 MIN</small>
+<strong>Webtop教程：用Docker在浏览器里跑完整Linux桌面</strong>
+<em>Webtop是LinuxServer.io推出的Docker镜像，让你在浏览器里运行完整的Linux桌面环境。本文介绍Webtop的安装配置、使用场景和安全注意事项，对比传统VNC/RDP方案的优劣。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/infrastructure/devops/c10m-problem-2026/><b>03</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/c10m-problem-2026/c10m-network-bottleneck-cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2026.01.24 / 2 MIN</small>
+<strong>Linux内核的C10M困境：为啥你的128核服务器还是扛不住每秒千万级数据包</strong>
+<em>C10M问题：当每秒数据包突破200万时，Linux内核网络栈就躺平了。DPDK和XDP如何帮你突破网络性能优化瓶颈？聊聊内核绕过的那些事儿。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/infrastructure/devops/manjaro-26-release/><b>04</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/posts/manjaro-26-release/0.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2026.01.13 / 1 MIN</small>
+<strong>Manjaro 26.0 发布了，来聊聊这个 Linux 发行版</strong>
+<em>Manjaro 26.0 正式发布，带来 KDE Plasma 6.5、Linux 6.18 内核等重大更新，一起来看看这个对新手友好的 Arch 系发行版有什么新变化</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/infrastructure/devops/systemd-enough/><b>05</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/systemd-enough/systemd-kubernetes-comparison-cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2025.12.29 / 1 MIN</small>
+<strong>服务器只有三台，你上什么Kubernetes？</strong>
+<em>Kubernetes是给谷歌用的，systemd才是给咱们普通人准备的。聊聊那个花了三个月学K8s，最后发现一个配置文件就搞定的故事。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/infrastructure/devops/linux-workflow-double-efficiency/><b>06</b>
+<span class="wp2-list__image is-empty">//</span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2025.12.28 / 1 MIN</small>
+<strong>让我效率翻倍的Linux工作流：不是更快的手速，而是更少的纠结</strong>
+<em>几个看起来平平无奇的Linux习惯，却让日常开发效率提升了一倍。秘诀不在于敲键盘更快，而在于让大脑少做决定。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/infrastructure/devops/europe-governments-ditching-microsoft-linux/><b>07</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/infrastructure/devops/europe-governments-ditching-microsoft-linux/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2025.12.08 / 1 MIN</small>
+<strong>欧洲政府纷纷抛弃微软投奔Linux，这波操作你怎么看？</strong>
+<em>德国、丹麦、西班牙等欧洲国家政府正在大规模从Windows迁移到Linux，这不是演习，是真的在发生。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/infrastructure/devops/macos-death/><b>08</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/macos-death/cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>INFRASTRUCTURE / 2025.01.04 / 1 MIN</small>
+<strong>macOS 还是你认识的那个 macOS 吗？一个老用户的真心话</strong>
+<em>从 High Sierra 到 Sequoia，macOS 从一个还算自由的操作系统，变成了一个封闭受控的 iOS 延伸。这不是进步，这是倒退。</em>
+</span><i>↗</i></a></div></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
+<a href=/posts/>文章</a>
+<a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
+<a href=/languages/>编程语言</a>
+<a href=/infrastructure/>基础设施</a></section><section><p class=wp2-footer__label>联系</p><a href=/about/>关于梦兽</a>
+<a href=/contact/>联系我们</a>
+<a href=/privacy/>隐私政策</a>
+<a href=/tools/>工具精选</a>
+<a href=/tags/>标签索引</a></section><section><p class=wp2-footer__label>订阅</p><a href=/search/>搜索文章</a>
+<a href=/categories/>分类</a>
+<span>© 2026 梦兽编程</span></section></div><div class=wp2-footer__bar><span>由代码与好奇心驱动</span>
+<span>V.2026.08 / 系统正常</span></div><div class=wp2-footer__wordmark>梦兽编程</div></footer><script src=/js/theme.js defer></script><script src="/js/wp2-shell.js?v=wp2-20260802d" defer></script></body></html>
