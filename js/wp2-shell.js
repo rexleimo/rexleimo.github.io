@@ -31,6 +31,57 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  var submenuButtons = document.querySelectorAll("[data-wp2-submenu-toggle]");
+
+  function setSubmenu(button, open) {
+    var item = button.closest("[data-wp2-nav-item]");
+    var panel = document.getElementById(button.getAttribute("aria-controls"));
+    if (!item || !panel) return;
+
+    button.setAttribute("aria-expanded", String(open));
+    panel.hidden = !open;
+    item.classList.toggle("is-open", open);
+  }
+
+  function closeSubmenus(exceptButton) {
+    submenuButtons.forEach(function (button) {
+      if (button !== exceptButton) setSubmenu(button, false);
+    });
+  }
+
+  submenuButtons.forEach(function (button) {
+    var item = button.closest("[data-wp2-nav-item]");
+    if (!item) return;
+
+    button.addEventListener("click", function () {
+      var open = button.getAttribute("aria-expanded") !== "true";
+      closeSubmenus(button);
+      setSubmenu(button, open);
+    });
+
+    item.addEventListener("focusin", function (event) {
+      if (event.target === button) return;
+      closeSubmenus(button);
+      setSubmenu(button, true);
+    });
+
+    item.addEventListener("focusout", function () {
+      window.setTimeout(function () {
+        if (!item.contains(document.activeElement)) setSubmenu(button, false);
+      }, 0);
+    });
+
+  });
+
+  if (submenuButtons.length) {
+    document.addEventListener("click", function (event) {
+      if (!event.target.closest("[data-wp2-nav-item]")) closeSubmenus(null);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeSubmenus(null);
+    });
+  }
+
   document.querySelectorAll("[data-wp2-card-image]").forEach(function (image) {
     function replaceBrokenImage() {
       var frame = image.parentElement;
