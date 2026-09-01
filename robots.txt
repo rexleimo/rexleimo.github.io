@@ -2,14 +2,45 @@
 User-agent: Googlebot
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
+Disallow: /private/
 
 # 其他爬虫
 User-agent: *
 Allow: /
-
-# 不需要索引的路径
 Disallow: /admin/
 Disallow: /private/
+
+# ── Generative-engine / AI crawlers (GEO) ──
+
+# AI search / answer crawlers — allow
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# AI training crawlers — disallow
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
 
 # 站点地图
 Sitemap: https://rexai.top/sitemap.xml
