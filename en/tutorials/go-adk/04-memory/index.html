@@ -30,38 +30,38 @@
 <meta itemprop=position content="3"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/><span itemprop=name>Go Adk</span></a>
 <meta itemprop=position content="4"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/04-memory/><span itemprop=name>04 Memory</span></a>
 <meta itemprop=position content="5"></li></ol></nav><p>[ SECTION / TUTORIALS ]</p><h1>Module 4: Memory & Context</h1><div>Session, State, Event, Caching, Compression, Rewind</div><span>6 POSTS</span></header><div class=wp2-list__intro-grid><div class="wp2-list__intro post-content"><h1 id=module-4-memory--context>Module 4: Memory & Context</h1><p>ADK&rsquo;s most core differentiator — understand how Agent &ldquo;remembers&rdquo; conversations, manages state, and optimizes context. From Session lifecycle to session rewind.</p><h2 id=articles>Articles</h2><div class=table-wrapper><table><thead><tr><th>#</th><th>Article</th><th>Case</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><a href=/en/tutorials/go-adk/04-memory/go-adk-session/>Session Management: Creation, Persistence and Recovery</a></td><td><code>adk-go-memory-session</code></td><td>🔄 In Progress</td></tr><tr><td>2</td><td><a href=/en/tutorials/go-adk/04-memory/go-adk-state/>State Read/Write: Agent Internal State</a></td><td><code>adk-go-memory-state</code></td><td>🔄 In Progress</td></tr><tr><td>3</td><td><a href=/en/tutorials/go-adk/04-memory/go-adk-event/>Event System: Understanding Agent Event Flow</a></td><td><code>adk-go-memory-event</code></td><td>🔄 In Progress</td></tr><tr><td>4</td><td><a href=/en/tutorials/go-adk/04-memory/go-adk-context-caching/>Context Caching: Large Context Optimization</a></td><td><code>adk-go-memory-context-caching</code></td><td>🔄 In Progress</td></tr><tr><td>5</td><td><a href=/en/tutorials/go-adk/04-memory/go-adk-context-compression/>Context Compression: Keep Context Lean</a></td><td><code>adk-go-memory-context-compression</code></td><td>🔄 In Progress</td></tr><tr><td>6</td><td><a href=/en/tutorials/go-adk/04-memory/go-adk-rewind/>Rewind Sessions: Session Rewind</a></td><td><code>adk-go-memory-rewind</code></td><td>🔄 In Progress</td></tr></tbody></table></div><hr><h2 id=prerequisites>Prerequisites</h2><ul><li>Completed <a href=/en/tutorials/go-adk/03-tools/>Module 3: Tool Usage</a></li><li>Understand Agent and Tool basics</li></ul><h2 id=learning-objectives>Learning Objectives</h2><p>After completing this module, you will:</p><ul><li>Master Session creation, persistence and recovery</li><li>Understand State read/write API and cross-turn sharing</li><li>Listen and handle various Agent events</li><li>Optimize with context caching and compression</li><li>Know when to use session rewind</li></ul><h2 id=learning-path>Learning Path</h2><p>Complete these six articles in order before proceeding to the &ldquo;Multi-Agent Collaboration&rdquo; module.</p><p>← <a href=/en/tutorials/go-adk/03-tools/>Module 3: Tool Usage</a>
-| <a href=/en/tutorials/go-adk/05-multi-agent/>Module 5: Multi-Agent Collaboration →</a></p></div><aside class=wp2-list__aside><p>[ LEARNING_INDEX / 6 ]</p><a href=/en/tutorials/go-adk/04-memory/go-adk-rewind/><b>01</b><span>Rewind Sessions: Session Rewind, Let Agent Try Again</span><i>↗</i></a>
-<a href=/en/tutorials/go-adk/04-memory/go-adk-context-compression/><b>02</b><span>Context Compression: Compress Context, Keep Conversation Lean</span><i>↗</i></a>
-<a href=/en/tutorials/go-adk/04-memory/go-adk-context-caching/><b>03</b><span>Context Caching: Large Context Optimization, Reduce Token Consumption</span><i>↗</i></a>
-<a href=/en/tutorials/go-adk/04-memory/go-adk-event/><b>04</b><span>Event System: Understanding Agent Event Flow</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/en/tutorials/go-adk/04-memory/go-adk-rewind/><b>01</b>
+| <a href=/en/tutorials/go-adk/05-multi-agent/>Module 5: Multi-Agent Collaboration →</a></p></div><aside class=wp2-list__aside><p>[ LEARNING_INDEX / 6 ]</p><a href=/en/tutorials/go-adk/04-memory/go-adk-rewind/><b>01</b><span>Rewind Sessions: Rollback conversations and let the Agent restart</span><i>↗</i></a>
+<a href=/en/tutorials/go-adk/04-memory/go-adk-context-compression/><b>02</b><span>Context Compression: Compressing Context to Keep Conversations Lean</span><i>↗</i></a>
+<a href=/en/tutorials/go-adk/04-memory/go-adk-context-caching/><b>03</b><span>Context Caching: Optimizing Large Contexts, Reducing Token Consumption</span><i>↗</i></a>
+<a href=/en/tutorials/go-adk/04-memory/go-adk-event/><b>04</b><span>Event System: Understanding the Agent Event Flow</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/en/tutorials/go-adk/04-memory/go-adk-rewind/><b>01</b>
 <span class="wp2-list__image is-empty">//</span>
-<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 1 MIN</small>
-<strong>Rewind Sessions: Session Rewind, Let Agent Try Again</strong>
-<em>详解 ADK Go 的 Rewind 机制——如何将 Agent 回溯到历史状态重新执行，适用于 Agent 走错路、需要重新来的场景。</em>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 4 MIN</small>
+<strong>Rewind Sessions: Rollback conversations and let the Agent restart</strong>
+<em>Detailed explanation of ADK Go's Rewind mechanism — how to roll an Agent back to a historical state and re-execute, useful when the Agent goes down the wrong path or …</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/en/tutorials/go-adk/04-memory/go-adk-context-compression/><b>02</b>
 <span class="wp2-list__image is-empty">//</span>
-<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 1 MIN</small>
-<strong>Context Compression: Compress Context, Keep Conversation Lean</strong>
-<em>详解 ADK Go 的 Context Compression 机制——如何压缩历史消息，保持上下文精简，控制 token 消耗。</em>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 2 MIN</small>
+<strong>Context Compression: Compressing Context to Keep Conversations Lean</strong>
+<em>A detailed explanation of ADK Go's Context Compression mechanism — how to compress historical messages, keep context lean, and control token consumption.</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/en/tutorials/go-adk/04-memory/go-adk-context-caching/><b>03</b>
 <span class="wp2-list__image is-empty">//</span>
-<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 1 MIN</small>
-<strong>Context Caching: Large Context Optimization, Reduce Token Consumption</strong>
-<em>详解 ADK Go 的 Context Caching 机制——如何缓存上下文减少 token 消耗，以及适用场景和限制。</em>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 2 MIN</small>
+<strong>Context Caching: Optimizing Large Contexts, Reducing Token Consumption</strong>
+<em>A detailed explanation of ADK Go's Context Caching mechanism — how to cache context to reduce token consumption, applicable scenarios, and limitations.</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/en/tutorials/go-adk/04-memory/go-adk-event/><b>04</b>
 <span class="wp2-list__image is-empty">//</span>
-<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 2 MIN</small>
-<strong>Event System: Understanding Agent Event Flow</strong>
-<em>详解 ADK Go 中 Event 的类型、EventHandler 的使用，以及如何监听和处理 Agent 运行过程中的各种事件。</em>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.05.30 / 3 MIN</small>
+<strong>Event System: Understanding the Agent Event Flow</strong>
+<em>A detailed explanation of Event types in ADK Go, how to use EventHandler, and how to listen for and handle events during Agent execution.</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/en/tutorials/go-adk/04-memory/go-adk-state/><b>05</b>
 <span class="wp2-list__image is-empty">//</span>
-<span class=wp2-list__copy><small>TUTORIALS / 2026.05.29 / 1 MIN</small>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.05.29 / 3 MIN</small>
 <strong>State Read/Write: Managing Agent Internal State</strong>
-<em>详解 ADK Go 中 State 的概念、读写 API，以及如何在多轮对话中保持和共享自定义状态数据。</em>
+<em>A detailed explanation of the State concept in ADK Go, the read/write APIs, and how to maintain and share custom state data across multi-turn conversations.</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/en/tutorials/go-adk/04-memory/go-adk-session/><b>06</b>
 <span class="wp2-list__image is-empty">//</span>
