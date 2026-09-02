@@ -4,7 +4,7 @@
     "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
   }
 }
-</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Consuming: Consume External Agent"><meta property="og:description" content="Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client."><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-30T21:00:00+08:00"><meta property="article:modified_time" content="2026-05-30T21:00:00+08:00"><meta property="article:author" content="Mengshou Programming"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="A2A"><meta property="article:tag" content="Tutorial"><meta name=twitter:card content="summary"><meta name=twitter:title content="Consuming: Consume External Agent"><meta name=twitter:description content="Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client."><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/08-a2a\/go-adk-a2a-consume\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/","name":"教程"},"position":3},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/","name":"Go Adk"},"position":4},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/08-a2a/","name":"08 A2a"},"position":5},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/","name":"Go Adk A2a Consume"},"position":6}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","headline":"Consuming: Consume External Agent","description":"Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client.","inLanguage":"en","datePublished":"2026-05-30T21:00:00\u002b08:00","dateModified":"2026-05-30T21:00:00\u002b08:00","author":{"@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"]},"publisher":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/","logo":{"@type":"ImageObject","url":"https:\/\/rexai.top\/favicon-32x32.png","width":"32","height":"32"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/08-a2a\/go-adk-a2a-consume\/"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".post-content h1",".post-content h2"]},"wordCount":"22","keywords":["Go","ADK","A2A","Tutorial"],"articleSection":"tutorials","articleBody":"Consuming: Consume External Agent Call external Agents in Go Agent via A2A Client—e.g., Python Agent, Java Agent.\n← Exposing | Cross-Language → ","about":[{"@type":"Thing","name":"Go"},{"@type":"Thing","name":"ADK"},{"@type":"Thing","name":"A2A"},{"@type":"Thing","name":"Tutorial"}],"isAccessibleForFree":"True","timeRequired":"PT3M","copyrightYear":"2026","educationalLevel":"intermediate","learningResourceType":"tutorial"}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/en/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Consuming: Consume External Agent"><meta property="og:description" content="Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client."><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-30T21:00:00+08:00"><meta property="article:modified_time" content="2026-05-30T21:00:00+08:00"><meta property="article:author" content="Mengshou Programming"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="A2A"><meta property="article:tag" content="Tutorial"><meta name=twitter:card content="summary"><meta name=twitter:title content="Consuming: Consume External Agent"><meta name=twitter:description content="Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client."><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/08-a2a\/go-adk-a2a-consume\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/","name":"教程"},"position":3},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/","name":"Go Adk"},"position":4},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/08-a2a/","name":"08 A2a"},"position":5},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/","name":"Go Adk A2a Consume"},"position":6}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","headline":"Consuming: Consume External Agent","description":"Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client.","inLanguage":"en","datePublished":"2026-05-30T21:00:00\u002b08:00","dateModified":"2026-05-30T21:00:00\u002b08:00","author":{"@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"]},"publisher":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/","logo":{"@type":"ImageObject","url":"https:\/\/rexai.top\/favicon-32x32.png","width":"32","height":"32"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/08-a2a\/go-adk-a2a-consume\/"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".post-content h1",".post-content h2"]},"wordCount":"2331","keywords":["Go","ADK","A2A","Tutorial"],"articleSection":"tutorials","articleBody":"Consuming: Consume External Agent Consuming external Agents is a core capability of multi-Agent systems. Unlike calling a plain HTTP API, consuming an A2A Agent means dealing with async tasks, streaming responses, retries, timeout control, and other complex semantics. A robust A2A Client must not only send requests—it must also manage the task lifecycle, handle network partitions, and implement circuit breaking and graceful degradation.\nThis article will walk through how to build a production-grade A2A consumer, from basic calls to advanced patterns.\n","about":[{"@type":"Thing","name":"Go"},{"@type":"Thing","name":"ADK"},{"@type":"Thing","name":"A2A"},{"@type":"Thing","name":"Tutorial"}],"isAccessibleForFree":"True","timeRequired":"PT14M","copyrightYear":"2026","educationalLevel":"intermediate","learningResourceType":"tutorial"}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"It requires handling async tasks, streaming responses, retries, timeouts, and task lifecycle management."},"name":"How is consuming an A2A Agent different from a regular HTTP API?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Customize http.Transport with connection pooling, TLS, timeouts, retries, and API key settings."},"name":"How do you configure a production-grade A2A Client?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"WithURL, WithHTTPClient, WithAPIKey, WithRetry, and WithRequestTimeout."},"name":"What options does a2aclient.New support?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Build a task, send it with client.SendTask, and wait for the final result."},"name":"What is the basic flow for synchronous calls?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Increase MaxIdleConns, MaxIdleConnsPerHost, MaxConnsPerHost, and extend IdleConnTimeout."},"name":"How do you optimize the connection pool for high concurrency?"}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/en/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
 梦兽编程<sup>™</sup></a><nav class=wp2-header__links aria-label="Primary navigation"><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/en/products/>Products</a></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/en/tutorials/>Tutorials</a>
 <button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tutorials>
 <span aria-hidden=true>&#9662;</span>
@@ -30,10 +30,752 @@
 <meta itemprop=position content="3"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/><span itemprop=name>Go Adk</span></a>
 <meta itemprop=position content="4"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/08-a2a/><span itemprop=name>08 A2a</span></a>
 <meta itemprop=position content="5"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/><span itemprop=name>Go Adk A2a Consume</span></a>
-<meta itemprop=position content="6"></li></ol></nav><h1 class="post-title entry-hint-parent">Consuming: Consume External Agent</h1><p class=post-description>Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client.</p><div class=post-meta><span title='2026-05-30 21:00:00 +0800 +0800'>May 30, 2026</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;22 words&nbsp;·&nbsp;Mengshou Programming<span class=waline-pageview-count data-path=/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/ style=margin-left:.5rem>
+<meta itemprop=position content="6"></li></ol></nav><h1 class="post-title entry-hint-parent">Consuming: Consume External Agent</h1><p class=post-description>Detailed explanation of how to call Agents exposed by other languages in Go Agent—connecting to external Agents via A2A Client.</p><div class=post-meta><span title='2026-05-30 21:00:00 +0800 +0800'>May 30, 2026</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2331 words&nbsp;·&nbsp;Mengshou Programming<span class=waline-pageview-count data-path=/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/ style=margin-left:.5rem>
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
-<span class=waline-pageview-number id=waline-pv-2fd4347145b74351c9aca09232b1c421da987dce6bc2baaa26e82779d6bfdab3 data-path=/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/>-</span></span></div></header><div class="post-layout has-toc"><div class=post-main><div class=post-content><p>Call external Agents in Go Agent via A2A Client—e.g., Python Agent, Java Agent.</p><p>← <a href=/en/tutorials/go-adk/08-a2a/go-adk-a2a-expose/>Exposing</a>
-| <a href=/en/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/>Cross-Language →</a></p></div><section class="post-content post-faq" aria-labelledby=post-faq-heading><h2 id=post-faq-heading>Frequently Asked Questions</h2><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section></section><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><aside class=related-articles aria-label=相关文章><h3>📚 相关文章</h3><ul><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-evaluation/>Evaluation: Agent Effectiveness Evaluation</a>
+<span class=waline-pageview-number id=waline-pv-2fd4347145b74351c9aca09232b1c421da987dce6bc2baaa26e82779d6bfdab3 data-path=/en/tutorials/go-adk/08-a2a/go-adk-a2a-consume/>-</span></span></div></header><div class="post-layout has-toc"><div class=post-main><div class=post-content><p>Consuming external Agents is a core capability of multi-Agent systems. Unlike calling a plain HTTP API, consuming an A2A Agent means dealing with async tasks, streaming responses, retries, timeout control, and other complex semantics. A robust A2A Client must not only send requests—it must also manage the task lifecycle, handle network partitions, and implement circuit breaking and graceful degradation.</p><p>This article will walk through how to build a production-grade A2A consumer, from basic calls to advanced patterns.</p><hr><h2 id=creating-the-client-the-foundation-of-connection-management>Creating the Client: The Foundation of Connection Management<a hidden class=anchor aria-hidden=true href=#creating-the-client-the-foundation-of-connection-management>#</a></h2><h3 id=basic-client-configuration>Basic Client Configuration<a hidden class=anchor aria-hidden=true href=#basic-client-configuration>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> main
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;crypto/tls&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;log&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;net&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;net/http&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;google.golang.org/adk/a2a/client&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>createClient</span>() (<span style=color:#ff79c6>*</span>a2aclient.Client, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    ctx <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>Background</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Custom HTTP Transport (production-grade configuration)</span>
+</span></span><span style=display:flex><span>    transport <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>http.Transport{
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Connection pool settings</span>
+</span></span><span style=display:flex><span>        MaxIdleConns:        <span style=color:#bd93f9>100</span>,              <span style=color:#6272a4>// max idle connections</span>
+</span></span><span style=display:flex><span>        MaxIdleConnsPerHost: <span style=color:#bd93f9>10</span>,               <span style=color:#6272a4>// max idle connections per host</span>
+</span></span><span style=display:flex><span>        MaxConnsPerHost:     <span style=color:#bd93f9>50</span>,               <span style=color:#6272a4>// max connections per host</span>
+</span></span><span style=display:flex><span>        IdleConnTimeout:     <span style=color:#bd93f9>90</span> <span style=color:#ff79c6>*</span> time.Second, <span style=color:#6272a4>// idle connection timeout</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// TLS settings</span>
+</span></span><span style=display:flex><span>        TLSClientConfig: <span style=color:#ff79c6>&amp;</span>tls.Config{
+</span></span><span style=display:flex><span>            MinVersion: tls.VersionTLS12,
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Production: verify the server certificate</span>
+</span></span><span style=display:flex><span>            InsecureSkipVerify: <span style=color:#ff79c6>false</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Connection timeout</span>
+</span></span><span style=display:flex><span>        DialContext: (<span style=color:#ff79c6>&amp;</span>net.Dialer{
+</span></span><span style=display:flex><span>            Timeout:   <span style=color:#bd93f9>5</span> <span style=color:#ff79c6>*</span> time.Second,  <span style=color:#6272a4>// dial timeout</span>
+</span></span><span style=display:flex><span>            KeepAlive: <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second, <span style=color:#6272a4>// TCP keepalive</span>
+</span></span><span style=display:flex><span>        }).DialContext,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Response header timeout</span>
+</span></span><span style=display:flex><span>        ResponseHeaderTimeout: <span style=color:#bd93f9>10</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Expect 100-continue timeout</span>
+</span></span><span style=display:flex><span>        ExpectContinueTimeout: <span style=color:#bd93f9>1</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Force HTTP/2</span>
+</span></span><span style=display:flex><span>        ForceAttemptHTTP2: <span style=color:#ff79c6>true</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    client, err <span style=color:#ff79c6>:=</span> a2aclient.<span style=color:#50fa7b>New</span>(ctx,
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithURL</span>(<span style=color:#f1fa8c>&#34;https://python-agent.example.com/a2a&#34;</span>),
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithHTTPClient</span>(<span style=color:#ff79c6>&amp;</span>http.Client{
+</span></span><span style=display:flex><span>            Transport: transport,
+</span></span><span style=display:flex><span>            Timeout:   <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second, <span style=color:#6272a4>// total request timeout</span>
+</span></span><span style=display:flex><span>        }),
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithAPIKey</span>(<span style=color:#f1fa8c>&#34;production-api-key&#34;</span>),
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithRetry</span>(<span style=color:#bd93f9>3</span>, time.Second), <span style=color:#6272a4>// retry 3 times on failure, 1s apart</span>
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithRequestTimeout</span>(<span style=color:#bd93f9>30</span><span style=color:#ff79c6>*</span>time.Second),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;failed to create client: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> client, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=connection-pool-optimization>Connection Pool Optimization<a hidden class=anchor aria-hidden=true href=#connection-pool-optimization>#</a></h3><p>The A2A Client&rsquo;s connection pool configuration directly affects performance:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// Transport configuration for high-concurrency scenarios</span>
+</span></span><span style=display:flex><span>transport <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>http.Transport{
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Increase pool size under heavy concurrency</span>
+</span></span><span style=display:flex><span>    MaxIdleConns:        <span style=color:#bd93f9>500</span>,
+</span></span><span style=display:flex><span>    MaxIdleConnsPerHost: <span style=color:#bd93f9>100</span>,
+</span></span><span style=display:flex><span>    MaxConnsPerHost:     <span style=color:#bd93f9>200</span>,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Keep-alive duration (A2A benefits from connection reuse)</span>
+</span></span><span style=display:flex><span>    IdleConnTimeout:     <span style=color:#bd93f9>5</span> <span style=color:#ff79c6>*</span> time.Minute,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Disable compression (if the Agent returns lots of text, compression adds CPU cost)</span>
+</span></span><span style=display:flex><span>    DisableCompression: <span style=color:#ff79c6>false</span>,
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// TCP connection reuse</span>
+</span></span><span style=display:flex><span>    DialContext: (<span style=color:#ff79c6>&amp;</span>net.Dialer{
+</span></span><span style=display:flex><span>        Timeout:   <span style=color:#bd93f9>5</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        KeepAlive: <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Use dual stack (IPv4 + IPv6)</span>
+</span></span><span style=display:flex><span>        DualStack: <span style=color:#ff79c6>true</span>,
+</span></span><span style=display:flex><span>    }).DialContext,
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=calling-external-agents-task-lifecycle-management>Calling External Agents: Task Lifecycle Management<a hidden class=anchor aria-hidden=true href=#calling-external-agents-task-lifecycle-management>#</a></h2><h3 id=synchronous-calls-simple-scenarios>Synchronous Calls (Simple Scenarios)<a hidden class=anchor aria-hidden=true href=#synchronous-calls-simple-scenarios>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>callAgentSync</span>(ctx context.Context, client <span style=color:#ff79c6>*</span>a2aclient.Client, input <span style=color:#8be9fd>string</span>) (<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Create the task</span>
+</span></span><span style=display:flex><span>    task, err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>SendTask</span>(ctx, <span style=color:#ff79c6>&amp;</span>a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;skill&#34;</span>: <span style=color:#f1fa8c>&#34;weather-query&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;query&#34;</span>: input,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;failed to send task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;task created: %s (status: %s)&#34;</span>, task.ID, task.Status)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Poll until completion</span>
+</span></span><span style=display:flex><span>    ticker <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>NewTicker</span>(time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> ticker.<span style=color:#50fa7b>Stop</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    timeout <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>After</span>(<span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ticker.C:
+</span></span><span style=display:flex><span>            task, err = client.<span style=color:#50fa7b>GetTask</span>(ctx, task.ID)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;failed to get task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;task status: %s&#34;</span>, task.Status)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>switch</span> task.Status {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.TaskStatusCompleted:
+</span></span><span style=display:flex><span>                output, _ <span style=color:#ff79c6>:=</span> task.Output[<span style=color:#f1fa8c>&#34;result&#34;</span>].(<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> output, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.TaskStatusFailed:
+</span></span><span style=display:flex><span>                errMsg, _ <span style=color:#ff79c6>:=</span> task.Output[<span style=color:#f1fa8c>&#34;error&#34;</span>].(<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;task failed: %s&#34;</span>, errMsg)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.TaskStatusCancelled:
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;task was cancelled&#34;</span>)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>timeout:
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Cancel the task on timeout</span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>CancelTask</span>(ctx, task.ID); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;failed to cancel task: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;task timeout&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, ctx.<span style=color:#50fa7b>Err</span>()
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=asynchronous-calls-recommended-for-production>Asynchronous Calls (Recommended for Production)<a hidden class=anchor aria-hidden=true href=#asynchronous-calls-recommended-for-production>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AsyncResult <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    TaskID <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Result <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Error  <span style=color:#8be9fd>error</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>callAgentAsync</span>(ctx context.Context, client <span style=color:#ff79c6>*</span>a2aclient.Client, input <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>&lt;-</span><span style=color:#8be9fd;font-style:italic>chan</span> AsyncResult, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Create the task</span>
+</span></span><span style=display:flex><span>    task, err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>SendTask</span>(ctx, <span style=color:#ff79c6>&amp;</span>a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;skill&#34;</span>: <span style=color:#f1fa8c>&#34;data-analysis&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;query&#34;</span>: input,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    resultCh <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> AsyncResult, <span style=color:#bd93f9>1</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Poll in the background</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>defer</span> <span style=color:#8be9fd;font-style:italic>close</span>(resultCh)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        ticker <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>NewTicker</span>(<span style=color:#bd93f9>2</span> <span style=color:#ff79c6>*</span> time.Second)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>defer</span> ticker.<span style=color:#50fa7b>Stop</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        timeout <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>After</span>(<span style=color:#bd93f9>5</span> <span style=color:#ff79c6>*</span> time.Minute)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ticker.C:
+</span></span><span style=display:flex><span>                currentTask, err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>GetTask</span>(ctx, task.ID)
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>                    resultCh <span style=color:#ff79c6>&lt;-</span> AsyncResult{TaskID: task.ID, Error: err}
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>switch</span> currentTask.Status {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>case</span> a2a.TaskStatusCompleted:
+</span></span><span style=display:flex><span>                    output, _ <span style=color:#ff79c6>:=</span> currentTask.Output[<span style=color:#f1fa8c>&#34;result&#34;</span>].(<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>                    resultCh <span style=color:#ff79c6>&lt;-</span> AsyncResult{TaskID: task.ID, Result: output}
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>case</span> a2a.TaskStatusFailed:
+</span></span><span style=display:flex><span>                    errMsg, _ <span style=color:#ff79c6>:=</span> currentTask.Output[<span style=color:#f1fa8c>&#34;error&#34;</span>].(<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>                    resultCh <span style=color:#ff79c6>&lt;-</span> AsyncResult{
+</span></span><span style=display:flex><span>                        TaskID: task.ID,
+</span></span><span style=display:flex><span>                        Error:  fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;task failed: %s&#34;</span>, errMsg),
+</span></span><span style=display:flex><span>                    }
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>case</span> a2a.TaskStatusCancelled:
+</span></span><span style=display:flex><span>                    resultCh <span style=color:#ff79c6>&lt;-</span> AsyncResult{
+</span></span><span style=display:flex><span>                        TaskID: task.ID,
+</span></span><span style=display:flex><span>                        Error:  fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;task cancelled&#34;</span>),
+</span></span><span style=display:flex><span>                    }
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>timeout:
+</span></span><span style=display:flex><span>                client.<span style=color:#50fa7b>CancelTask</span>(ctx, task.ID)
+</span></span><span style=display:flex><span>                resultCh <span style=color:#ff79c6>&lt;-</span> AsyncResult{
+</span></span><span style=display:flex><span>                    TaskID: task.ID,
+</span></span><span style=display:flex><span>                    Error:  fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;task timeout after 5m&#34;</span>),
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>                client.<span style=color:#50fa7b>CancelTask</span>(ctx, task.ID)
+</span></span><span style=display:flex><span>                resultCh <span style=color:#ff79c6>&lt;-</span> AsyncResult{TaskID: task.ID, Error: ctx.<span style=color:#50fa7b>Err</span>()}
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> resultCh, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Usage example</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>main</span>() {
+</span></span><span style=display:flex><span>    client, _ <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>createClient</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    resultCh, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>callAgentAsync</span>(ctx, client, <span style=color:#f1fa8c>&#34;Analyze Q3 sales data&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatal</span>(err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Continue doing other things...</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Wait for the result</span>
+</span></span><span style=display:flex><span>    result <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&lt;-</span>resultCh
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> result.Error <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;task %s failed: %v&#34;</span>, result.TaskID, result.Error)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;task %s completed: %s&#34;</span>, result.TaskID, result.Result)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=streaming-calls-real-time-responses>Streaming Calls (Real-Time Responses)<a hidden class=anchor aria-hidden=true href=#streaming-calls-real-time-responses>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>callAgentStreaming</span>(ctx context.Context, client <span style=color:#ff79c6>*</span>a2aclient.Client, input <span style=color:#8be9fd>string</span>) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Create a streaming task</span>
+</span></span><span style=display:flex><span>    stream, err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>SendTaskStreaming</span>(ctx, <span style=color:#ff79c6>&amp;</span>a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;skill&#34;</span>: <span style=color:#f1fa8c>&#34;code-generation&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;query&#34;</span>: input,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;failed to start streaming: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> stream.<span style=color:#50fa7b>Close</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Receive streaming updates in real time</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> update, ok <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&lt;-</span>stream.<span style=color:#50fa7b>Updates</span>():
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> !ok {
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Println</span>(<span style=color:#f1fa8c>&#34;stream closed&#34;</span>)
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>switch</span> update.Type {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.StreamUpdateTypeStatus:
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;status: %s&#34;</span>, update.Status)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.StreamUpdateTypeOutput:
+</span></span><span style=display:flex><span>                <span style=color:#6272a4>// Real-time output (e.g., code snippets)</span>
+</span></span><span style=display:flex><span>                chunk, _ <span style=color:#ff79c6>:=</span> update.Data[<span style=color:#f1fa8c>&#34;chunk&#34;</span>].(<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>                fmt.<span style=color:#50fa7b>Print</span>(chunk) <span style=color:#6272a4>// print in real time</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.StreamUpdateTypeArtifact:
+</span></span><span style=display:flex><span>                <span style=color:#6272a4>// Complete artifact (e.g., a generated file)</span>
+</span></span><span style=display:flex><span>                artifact <span style=color:#ff79c6>:=</span> update.Artifact
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;artifact received: %s (%d bytes)&#34;</span>, artifact.Name, <span style=color:#8be9fd;font-style:italic>len</span>(artifact.Data))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.StreamUpdateTypeError:
+</span></span><span style=display:flex><span>                log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;stream error: %s&#34;</span>, update.Error)
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;stream error: %s&#34;</span>, update.Error)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> ctx.<span style=color:#50fa7b>Err</span>()
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=wrapping-as-a-tool-seamless-integration-into-local-agents>Wrapping as a Tool: Seamless Integration into Local Agents<a hidden class=anchor aria-hidden=true href=#wrapping-as-a-tool-seamless-integration-into-local-agents>#</a></h2><p>Wrapping an external A2A Agent as a local Tool lets an orchestrator Agent call remote Agents as if they were local functions:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> tools
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;google.golang.org/adk/a2a/client&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;google.golang.org/adk/tool&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// ExternalAgentTool wraps a remote A2A Agent as a local Tool</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ExternalAgentTool <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    name        <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    description <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    client      <span style=color:#ff79c6>*</span>a2aclient.Client
+</span></span><span style=display:flex><span>    skill       <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    timeout     time.Duration
+</span></span><span style=display:flex><span>    maxRetries  <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// NewExternalAgentTool creates an external Agent Tool</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>NewExternalAgentTool</span>(config ExternalAgentConfig) (<span style=color:#ff79c6>*</span>ExternalAgentTool, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    ctx <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>Background</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    client, err <span style=color:#ff79c6>:=</span> a2aclient.<span style=color:#50fa7b>New</span>(ctx,
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithURL</span>(config.URL),
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithAPIKey</span>(config.APIKey),
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithTimeout</span>(config.Timeout),
+</span></span><span style=display:flex><span>        a2aclient.<span style=color:#50fa7b>WithRetry</span>(config.MaxRetries, time.Second),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;failed to create client: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>ExternalAgentTool{
+</span></span><span style=display:flex><span>        name:        config.Name,
+</span></span><span style=display:flex><span>        description: config.Description,
+</span></span><span style=display:flex><span>        client:      client,
+</span></span><span style=display:flex><span>        skill:       config.Skill,
+</span></span><span style=display:flex><span>        timeout:     config.Timeout,
+</span></span><span style=display:flex><span>        maxRetries:  config.MaxRetries,
+</span></span><span style=display:flex><span>    }, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ExternalAgentConfig <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Name        <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Description <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    URL         <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    APIKey      <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Skill       <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Timeout     time.Duration
+</span></span><span style=display:flex><span>    MaxRetries  <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (t <span style=color:#ff79c6>*</span>ExternalAgentTool) <span style=color:#50fa7b>Name</span>() <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> t.name
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (t <span style=color:#ff79c6>*</span>ExternalAgentTool) <span style=color:#50fa7b>Description</span>() <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> t.description
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (t <span style=color:#ff79c6>*</span>ExternalAgentTool) <span style=color:#50fa7b>Schema</span>() tool.Schema {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> tool.Schema{
+</span></span><span style=display:flex><span>        Type: <span style=color:#f1fa8c>&#34;object&#34;</span>,
+</span></span><span style=display:flex><span>        Properties: <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]tool.Property{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;query&#34;</span>: {
+</span></span><span style=display:flex><span>                Type:        <span style=color:#f1fa8c>&#34;string&#34;</span>,
+</span></span><span style=display:flex><span>                Description: <span style=color:#f1fa8c>&#34;The query to send to the external Agent&#34;</span>,
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        Required: []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;query&#34;</span>},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (t <span style=color:#ff79c6>*</span>ExternalAgentTool) <span style=color:#50fa7b>Call</span>(ctx context.Context, input <span style=color:#8be9fd>string</span>) (<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Parse the input</span>
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> params <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>        Query <span style=color:#8be9fd>string</span> <span style=color:#f1fa8c>`json:&#34;query&#34;`</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> json.<span style=color:#50fa7b>Unmarshal</span>([]<span style=color:#8be9fd;font-style:italic>byte</span>(input), <span style=color:#ff79c6>&amp;</span>params); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;invalid input: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Create a context with a timeout</span>
+</span></span><span style=display:flex><span>    callCtx, cancel <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>WithTimeout</span>(ctx, t.timeout)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> <span style=color:#50fa7b>cancel</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Call the external Agent</span>
+</span></span><span style=display:flex><span>    task, err <span style=color:#ff79c6>:=</span> t.client.<span style=color:#50fa7b>SendTask</span>(callCtx, <span style=color:#ff79c6>&amp;</span>a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;skill&#34;</span>: t.skill,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;query&#34;</span>: params.Query,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;failed to send task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Poll for the result</span>
+</span></span><span style=display:flex><span>    ticker <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>NewTicker</span>(time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> ticker.<span style=color:#50fa7b>Stop</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ticker.C:
+</span></span><span style=display:flex><span>            currentTask, err <span style=color:#ff79c6>:=</span> t.client.<span style=color:#50fa7b>GetTask</span>(callCtx, task.ID)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;failed to get task: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>switch</span> currentTask.Status {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.TaskStatusCompleted:
+</span></span><span style=display:flex><span>                result, _ <span style=color:#ff79c6>:=</span> currentTask.Output[<span style=color:#f1fa8c>&#34;result&#34;</span>].(<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> result, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.TaskStatusFailed:
+</span></span><span style=display:flex><span>                errMsg, _ <span style=color:#ff79c6>:=</span> currentTask.Output[<span style=color:#f1fa8c>&#34;error&#34;</span>].(<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;external agent failed: %s&#34;</span>, errMsg)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> a2a.TaskStatusCancelled:
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;task was cancelled&#34;</span>)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>callCtx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Cancel the task on timeout</span>
+</span></span><span style=display:flex><span>            t.client.<span style=color:#50fa7b>CancelTask</span>(ctx, task.ID)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;external agent call timeout&#34;</span>)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Usage example</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>setupOrchestratorAgent</span>() (<span style=color:#ff79c6>*</span>llmagent.Agent, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    ctx <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>Background</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Create external Agent Tools</span>
+</span></span><span style=display:flex><span>    weatherTool, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>NewExternalAgentTool</span>(ExternalAgentConfig{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#f1fa8c>&#34;weather_query&#34;</span>,
+</span></span><span style=display:flex><span>        Description: <span style=color:#f1fa8c>&#34;Query weather information for a specified city&#34;</span>,
+</span></span><span style=display:flex><span>        URL:         <span style=color:#f1fa8c>&#34;https://weather-agent.example.com/a2a&#34;</span>,
+</span></span><span style=display:flex><span>        APIKey:      <span style=color:#f1fa8c>&#34;weath...ey&#34;</span>,
+</span></span><span style=display:flex><span>        Skill:       <span style=color:#f1fa8c>&#34;current-weather&#34;</span>,
+</span></span><span style=display:flex><span>        Timeout:     <span style=color:#bd93f9>10</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        MaxRetries:  <span style=color:#bd93f9>2</span>,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    dataTool, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>NewExternalAgentTool</span>(ExternalAgentConfig{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#f1fa8c>&#34;data_analysis&#34;</span>,
+</span></span><span style=display:flex><span>        Description: <span style=color:#f1fa8c>&#34;Analyze datasets and return statistical summaries&#34;</span>,
+</span></span><span style=display:flex><span>        URL:         <span style=color:#f1fa8c>&#34;https://data-agent.example.com/a2a&#34;</span>,
+</span></span><span style=display:flex><span>        APIKey:      <span style=color:#ff79c6>***</span>
+</span></span><span style=display:flex><span>        Skill:       <span style=color:#f1fa8c>&#34;csv-analysis&#34;</span>,
+</span></span><span style=display:flex><span>        Timeout:     <span style=color:#bd93f9>60</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        MaxRetries:  <span style=color:#bd93f9>3</span>,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Create the orchestrator Agent</span>
+</span></span><span style=display:flex><span>    agent, err <span style=color:#ff79c6>:=</span> llmagent.<span style=color:#50fa7b>New</span>(llmagent.Config{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#f1fa8c>&#34;orchestrator&#34;</span>,
+</span></span><span style=display:flex><span>        Model:       model,
+</span></span><span style=display:flex><span>        Instruction: <span style=color:#f1fa8c>`You are a task dispatch expert. Based on user needs, call the appropriate tools to complete the task.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Available tools:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>- weather_query: query weather
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>- data_analysis: data analysis
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>If a user request involves multiple steps, call the tools in sequence.`</span>,
+</span></span><span style=display:flex><span>        Tools: []tool.Tool{weatherTool, dataTool},
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> agent, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=advanced-patterns-agent-orchestration>Advanced Patterns: Agent Orchestration<a hidden class=anchor aria-hidden=true href=#advanced-patterns-agent-orchestration>#</a></h2><h3 id=calling-multiple-agents-in-parallel>Calling Multiple Agents in Parallel<a hidden class=anchor aria-hidden=true href=#calling-multiple-agents-in-parallel>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>parallelAgentCalls</span>(ctx context.Context, inputs <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>string</span>) (<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>type</span> agentCall <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>        name   <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>        client <span style=color:#ff79c6>*</span>a2aclient.Client
+</span></span><span style=display:flex><span>        input  <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    calls <span style=color:#ff79c6>:=</span> []agentCall{
+</span></span><span style=display:flex><span>        {<span style=color:#f1fa8c>&#34;weather&#34;</span>, weatherClient, inputs[<span style=color:#f1fa8c>&#34;weather&#34;</span>]},
+</span></span><span style=display:flex><span>        {<span style=color:#f1fa8c>&#34;news&#34;</span>, newsClient, inputs[<span style=color:#f1fa8c>&#34;news&#34;</span>]},
+</span></span><span style=display:flex><span>        {<span style=color:#f1fa8c>&#34;stock&#34;</span>, stockClient, inputs[<span style=color:#f1fa8c>&#34;stock&#34;</span>]},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    results <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>    errCh <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> <span style=color:#8be9fd>error</span>, <span style=color:#8be9fd;font-style:italic>len</span>(calls))
+</span></span><span style=display:flex><span>    resultCh <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>        name   <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>        result <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>        err    <span style=color:#8be9fd>error</span>
+</span></span><span style=display:flex><span>    }, <span style=color:#8be9fd;font-style:italic>len</span>(calls))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Call in parallel</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, call <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> calls {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>(c agentCall) {
+</span></span><span style=display:flex><span>            task, err <span style=color:#ff79c6>:=</span> c.client.<span style=color:#50fa7b>SendTask</span>(ctx, <span style=color:#ff79c6>&amp;</span>a2a.Task{
+</span></span><span style=display:flex><span>                Input: <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}{
+</span></span><span style=display:flex><span>                    <span style=color:#f1fa8c>&#34;query&#34;</span>: c.input,
+</span></span><span style=display:flex><span>                },
+</span></span><span style=display:flex><span>            })
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>                resultCh <span style=color:#ff79c6>&lt;-</span> <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>                    name   <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>                    result <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>                    err    <span style=color:#8be9fd>error</span>
+</span></span><span style=display:flex><span>                }{c.name, <span style=color:#f1fa8c>&#34;&#34;</span>, err}
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Wait for completion (simplified; real code should poll)</span>
+</span></span><span style=display:flex><span>            result, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>waitForTask</span>(ctx, c.client, task.ID)
+</span></span><span style=display:flex><span>            resultCh <span style=color:#ff79c6>&lt;-</span> <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>                name   <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>                result <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>                err    <span style=color:#8be9fd>error</span>
+</span></span><span style=display:flex><span>            }{c.name, result, err}
+</span></span><span style=display:flex><span>        }(call)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Collect results</span>
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> errs []<span style=color:#8be9fd>error</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> i <span style=color:#ff79c6>:=</span> <span style=color:#bd93f9>0</span>; i &lt; <span style=color:#8be9fd;font-style:italic>len</span>(calls); i<span style=color:#ff79c6>++</span> {
+</span></span><span style=display:flex><span>        r <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&lt;-</span>resultCh
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> r.err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            errs = <span style=color:#8be9fd;font-style:italic>append</span>(errs, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;%s: %w&#34;</span>, r.name, r.err))
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>continue</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        results[r.name] = r.result
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(errs) &gt; <span style=color:#bd93f9>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> results, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;partial failures: %v&#34;</span>, errs)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> results, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=pipeline-calls-chained-processing>Pipeline Calls (Chained Processing)<a hidden class=anchor aria-hidden=true href=#pipeline-calls-chained-processing>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>pipelineAgentCalls</span>(ctx context.Context, initialInput <span style=color:#8be9fd>string</span>) (<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Step 1: data fetching</span>
+</span></span><span style=display:flex><span>    step1Result, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>callAgent</span>(ctx, dataClient, <span style=color:#f1fa8c>&#34;fetch-data&#34;</span>, initialInput)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;step 1 failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Step 2: data processing</span>
+</span></span><span style=display:flex><span>    step2Result, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>callAgent</span>(ctx, processClient, <span style=color:#f1fa8c>&#34;process-data&#34;</span>, step1Result)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;step 2 failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Step 3: result formatting</span>
+</span></span><span style=display:flex><span>    step3Result, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>callAgent</span>(ctx, formatClient, <span style=color:#f1fa8c>&#34;format-result&#34;</span>, step2Result)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#f1fa8c>&#34;&#34;</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;step 3 failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> step3Result, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=error-handling-and-retry-strategies>Error Handling and Retry Strategies<a hidden class=anchor aria-hidden=true href=#error-handling-and-retry-strategies>#</a></h2><h3 id=smart-retry>Smart Retry<a hidden class=anchor aria-hidden=true href=#smart-retry>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> RetryPolicy <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    MaxRetries  <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    BaseDelay   time.Duration
+</span></span><span style=display:flex><span>    MaxDelay    time.Duration
+</span></span><span style=display:flex><span>    Multiplier  <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    RetryableErrors []<span style=color:#8be9fd>string</span> <span style=color:#6272a4>// retryable error types</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (p <span style=color:#ff79c6>*</span>RetryPolicy) <span style=color:#50fa7b>Execute</span>(ctx context.Context, operation <span style=color:#8be9fd;font-style:italic>func</span>() <span style=color:#8be9fd>error</span>) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> lastErr <span style=color:#8be9fd>error</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> attempt <span style=color:#ff79c6>:=</span> <span style=color:#bd93f9>0</span>; attempt <span style=color:#ff79c6>&lt;=</span> p.MaxRetries; attempt<span style=color:#ff79c6>++</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> attempt &gt; <span style=color:#bd93f9>0</span> {
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Compute the backoff delay</span>
+</span></span><span style=display:flex><span>            delay <span style=color:#ff79c6>:=</span> p.BaseDelay <span style=color:#ff79c6>*</span> time.<span style=color:#50fa7b>Duration</span>(math.<span style=color:#50fa7b>Pow</span>(p.Multiplier, <span style=color:#8be9fd;font-style:italic>float64</span>(attempt<span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>)))
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> delay &gt; p.MaxDelay {
+</span></span><span style=display:flex><span>                delay = p.MaxDelay
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Add jitter to prevent thundering herd</span>
+</span></span><span style=display:flex><span>            jitter <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>Duration</span>(rand.<span style=color:#50fa7b>Int63n</span>(<span style=color:#8be9fd;font-style:italic>int64</span>(delay) <span style=color:#ff79c6>/</span> <span style=color:#bd93f9>2</span>))
+</span></span><span style=display:flex><span>            delay = delay <span style=color:#ff79c6>+</span> jitter
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;retry attempt %d/%d after %v&#34;</span>, attempt, p.MaxRetries, delay)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>time.<span style=color:#50fa7b>After</span>(delay):
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> ctx.<span style=color:#50fa7b>Err</span>()
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>operation</span>()
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>==</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        lastErr = err
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Check whether it&#39;s retryable</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> !p.<span style=color:#50fa7b>isRetryable</span>(err) {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> err
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;attempt %d failed: %v&#34;</span>, attempt<span style=color:#ff79c6>+</span><span style=color:#bd93f9>1</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;max retries exceeded: %w&#34;</span>, lastErr)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (p <span style=color:#ff79c6>*</span>RetryPolicy) <span style=color:#50fa7b>isRetryable</span>(err <span style=color:#8be9fd>error</span>) <span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>    errStr <span style=color:#ff79c6>:=</span> err.<span style=color:#50fa7b>Error</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, retryable <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> p.RetryableErrors {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> strings.<span style=color:#50fa7b>Contains</span>(errStr, retryable) {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Usage example</span>
+</span></span><span style=display:flex><span>policy <span style=color:#ff79c6>:=</span> RetryPolicy{
+</span></span><span style=display:flex><span>    MaxRetries:  <span style=color:#bd93f9>3</span>,
+</span></span><span style=display:flex><span>    BaseDelay:   time.Second,
+</span></span><span style=display:flex><span>    MaxDelay:    <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>    Multiplier:  <span style=color:#bd93f9>2.0</span>,
+</span></span><span style=display:flex><span>    RetryableErrors: []<span style=color:#8be9fd>string</span>{
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;connection refused&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;timeout&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;temporary&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;rate limit&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;service unavailable&#34;</span>,
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>err <span style=color:#ff79c6>:=</span> policy.<span style=color:#50fa7b>Execute</span>(ctx, <span style=color:#8be9fd;font-style:italic>func</span>() <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    _, err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>SendTask</span>(ctx, task)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> err
+</span></span><span style=display:flex><span>})
+</span></span></code></pre></div><hr><h2 id=deep-dive-common-questions>Deep Dive: Common Questions<a hidden class=anchor aria-hidden=true href=#deep-dive-common-questions>#</a></h2><h3 id=q-what-if-an-external-agent-becomes-unresponsive>Q: What if an external Agent becomes unresponsive?<a hidden class=anchor aria-hidden=true href=#q-what-if-an-external-agent-becomes-unresponsive>#</a></h3><p><strong>Root causes</strong>:</p><ol><li>Network partition or latency</li><li>The external Agent is overloaded</li><li>The external Agent crashed</li><li>The request itself triggers an infinite loop or long-running execution</li></ol><p><strong>Solutions</strong>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 1. Configure reasonable timeouts</span>
+</span></span><span style=display:flex><span>client, _ <span style=color:#ff79c6>:=</span> a2aclient.<span style=color:#50fa7b>New</span>(ctx,
+</span></span><span style=display:flex><span>    a2aclient.<span style=color:#50fa7b>WithTimeout</span>(<span style=color:#bd93f9>30</span><span style=color:#ff79c6>*</span>time.Second),        <span style=color:#6272a4>// per-request timeout</span>
+</span></span><span style=display:flex><span>    a2aclient.<span style=color:#50fa7b>WithRequestTimeout</span>(<span style=color:#bd93f9>5</span><span style=color:#ff79c6>*</span>time.Minute),  <span style=color:#6272a4>// total task timeout</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 2. Implement circuit breaking</span>
+</span></span><span style=display:flex><span>cbClient <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>NewCircuitBreakerClient</span>(client)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 3. Graceful degradation</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>callWithFallback</span>(ctx context.Context, client <span style=color:#ff79c6>*</span>a2aclient.Client, input <span style=color:#8be9fd>string</span>) (<span style=color:#8be9fd>string</span>, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    result, err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>Call</span>(ctx, input)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;primary agent failed: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Try a backup Agent</span>
+</span></span><span style=display:flex><span>        result, err = fallbackClient.<span style=color:#50fa7b>Call</span>(ctx, input)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Return a cached result</span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#50fa7b>getCachedResult</span>(input), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> result, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 4. Async processing + callback</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>callAsyncWithCallback</span>(ctx context.Context, client <span style=color:#ff79c6>*</span>a2aclient.Client, input <span style=color:#8be9fd>string</span>, callbackURL <span style=color:#8be9fd>string</span>) <span style=color:#8be9fd>error</span> {
+</span></span><span style=display:flex><span>    _, err <span style=color:#ff79c6>:=</span> client.<span style=color:#50fa7b>SendTask</span>(ctx, <span style=color:#ff79c6>&amp;</span>a2a.Task{
+</span></span><span style=display:flex><span>        Input: <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;query&#34;</span>:        input,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;callback_url&#34;</span>: callbackURL,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> err
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=q-how-do-you-manage-multiple-external-agents>Q: How do you manage multiple external Agents?<a hidden class=anchor aria-hidden=true href=#q-how-do-you-manage-multiple-external-agents>#</a></h3><p><strong>Agent Registry pattern</strong>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AgentRegistry <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    agents <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#ff79c6>*</span>AgentConnection
+</span></span><span style=display:flex><span>    mu     sync.RWMutex
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AgentConnection <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Name        <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Client      <span style=color:#ff79c6>*</span>a2aclient.Client
+</span></span><span style=display:flex><span>    Health      HealthStatus
+</span></span><span style=display:flex><span>    LastUsed    time.Time
+</span></span><span style=display:flex><span>    CallCount   <span style=color:#8be9fd>int64</span>
+</span></span><span style=display:flex><span>    ErrorCount  <span style=color:#8be9fd>int64</span>
+</span></span><span style=display:flex><span>    AvgLatency  time.Duration
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (r <span style=color:#ff79c6>*</span>AgentRegistry) <span style=color:#50fa7b>GetHealthyAgent</span>(skill <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>AgentConnection, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    r.mu.<span style=color:#50fa7b>RLock</span>()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> r.mu.<span style=color:#50fa7b>RUnlock</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> candidates []<span style=color:#ff79c6>*</span>AgentConnection
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, agent <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> r.agents {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> agent.<span style=color:#50fa7b>HasSkill</span>(skill) <span style=color:#ff79c6>&amp;&amp;</span> agent.Health <span style=color:#ff79c6>==</span> HealthHealthy {
+</span></span><span style=display:flex><span>            candidates = <span style=color:#8be9fd;font-style:italic>append</span>(candidates, agent)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(candidates) <span style=color:#ff79c6>==</span> <span style=color:#bd93f9>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;no healthy agent found for skill: %s&#34;</span>, skill)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Pick the one with the lowest latency</span>
+</span></span><span style=display:flex><span>    sort.<span style=color:#50fa7b>Slice</span>(candidates, <span style=color:#8be9fd;font-style:italic>func</span>(i, j <span style=color:#8be9fd>int</span>) <span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> candidates[i].AvgLatency &lt; candidates[j].AvgLatency
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> candidates[<span style=color:#bd93f9>0</span>], <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (r <span style=color:#ff79c6>*</span>AgentRegistry) <span style=color:#50fa7b>HealthCheck</span>(ctx context.Context) {
+</span></span><span style=display:flex><span>    ticker <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>NewTicker</span>(<span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>defer</span> ticker.<span style=color:#50fa7b>Stop</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>select</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ticker.C:
+</span></span><span style=display:flex><span>            r.mu.<span style=color:#50fa7b>RLock</span>()
+</span></span><span style=display:flex><span>            agents <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>([]<span style=color:#ff79c6>*</span>AgentConnection, <span style=color:#bd93f9>0</span>, <span style=color:#8be9fd;font-style:italic>len</span>(r.agents))
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>for</span> _, agent <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> r.agents {
+</span></span><span style=display:flex><span>                agents = <span style=color:#8be9fd;font-style:italic>append</span>(agents, agent)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            r.mu.<span style=color:#50fa7b>RUnlock</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>for</span> _, agent <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> agents {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>(a <span style=color:#ff79c6>*</span>AgentConnection) {
+</span></span><span style=display:flex><span>                    start <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>Now</span>()
+</span></span><span style=display:flex><span>                    _, err <span style=color:#ff79c6>:=</span> a.Client.<span style=color:#50fa7b>GetAgentCard</span>(ctx)
+</span></span><span style=display:flex><span>                    latency <span style=color:#ff79c6>:=</span> time.<span style=color:#50fa7b>Since</span>(start)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                    r.mu.<span style=color:#50fa7b>Lock</span>()
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>defer</span> r.mu.<span style=color:#50fa7b>Unlock</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                    a.LastUsed = time.<span style=color:#50fa7b>Now</span>()
+</span></span><span style=display:flex><span>                    a.AvgLatency = (a.AvgLatency <span style=color:#ff79c6>+</span> latency) <span style=color:#ff79c6>/</span> <span style=color:#bd93f9>2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>                        a.ErrorCount<span style=color:#ff79c6>++</span>
+</span></span><span style=display:flex><span>                        <span style=color:#ff79c6>if</span> a.ErrorCount &gt; <span style=color:#bd93f9>5</span> {
+</span></span><span style=display:flex><span>                            a.Health = HealthUnhealthy
+</span></span><span style=display:flex><span>                        }
+</span></span><span style=display:flex><span>                    } <span style=color:#ff79c6>else</span> {
+</span></span><span style=display:flex><span>                        a.ErrorCount = <span style=color:#bd93f9>0</span>
+</span></span><span style=display:flex><span>                        a.Health = HealthHealthy
+</span></span><span style=display:flex><span>                    }
+</span></span><span style=display:flex><span>                }(agent)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>case</span> <span style=color:#ff79c6>&lt;-</span>ctx.<span style=color:#50fa7b>Done</span>():
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=next-steps>Next Steps<a hidden class=anchor aria-hidden=true href=#next-steps>#</a></h2><p>Consuming is done—next up is cross-language collaboration: a hands-on Python + Go case study.</p><p>← <a href=/en/tutorials/go-adk/08-a2a/go-adk-a2a-expose/>Exposing</a>
+| <a href=/en/tutorials/go-adk/08-a2a/go-adk-a2a-cross-language/>Cross-Language Collaboration →</a></p><hr><blockquote><p>Follow &ldquo;Mengshou Programming&rdquo; on WeChat for more hands-on Go ADK tutorials—weekly updates on practical Go / AI programming content.</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class="post-content post-faq" aria-labelledby=post-faq-heading><h2 id=post-faq-heading>Frequently Asked Questions</h2><section class=post-faq__item><h3>How is consuming an A2A Agent different from a regular HTTP API?</h3><p>It requires handling async tasks, streaming responses, retries, timeouts, and task lifecycle management.</p></section><section class=post-faq__item><h3>How do you configure a production-grade A2A Client?</h3><p>Customize http.Transport with connection pooling, TLS, timeouts, retries, and API key settings.</p></section><section class=post-faq__item><h3>What options does a2aclient.New support?</h3><p>WithURL, WithHTTPClient, WithAPIKey, WithRetry, and WithRequestTimeout.</p></section><section class=post-faq__item><h3>What is the basic flow for synchronous calls?</h3><p>Build a task, send it with client.SendTask, and wait for the final result.</p></section><section class=post-faq__item><h3>How do you optimize the connection pool for high concurrency?</h3><p>Increase MaxIdleConns, MaxIdleConnsPerHost, MaxConnsPerHost, and extend IdleConnTimeout.</p></section></section><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><aside class=related-articles aria-label=相关文章><h3>📚 相关文章</h3><ul><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-evaluation/>Evaluation: Agent Effectiveness Evaluation</a>
 <small>— Detailed explanation of how to evaluate Agent output quality—designing …</small></li><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/>Debugging Notes and Performance Tuning: Common Issues and Solutions</a>
 <small>— Summarize common issues, debugging notes, and performance tuning experiences in …</small></li><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-full/>End-to-End Project: Complete Flow from Requirements to Deployment</a>
 <small>— Complete project practice through an intelligent customer service system—showing …</small></li><li><a href=/en/tutorials/go-adk/09-advanced/go-adk-advanced-callbacks/>Callbacks and Plugins: Lifecycle Hooks and Extension Mechanism</a>
@@ -65,7 +807,7 @@
     update: false,
   });
 </script><style>#waline-container{background:var(--rex-bg);padding:var(--rex-space-5);border-radius:var(--rex-radius-xl);border:1px solid var(--rex-border)}@media screen and (max-width:768px){#waline-container{padding:var(--rex-space-4)}}.wl-editor{border-radius:var(--rex-radius-lg)}.wl-btn{border-radius:var(--rex-radius-lg);transition:all .3s ease}.wl-btn:hover{transform:translateY(-1px)}.wl-reaction{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--rex-border)}.wl-reaction-title{font-weight:600;margin-bottom:1rem}.wl-reaction-img{transition:transform .2s ease}.wl-reaction-img:hover{transform:scale(1.2)}.wl-card{border:1px solid var(--rex-border);border-radius:var(--rex-radius-lg);background:var(--rex-bg)}.wl-card:hover{border-color:var(--rex-border-bold)}</style></div><aside class="toc-col wp2-floating-toc" data-wp2-toc><button class=wp2-floating-toc__toggle type=button aria-expanded=false aria-controls=wp2-article-toc data-wp2-toc-toggle>
-<span>CONTENTS</span><i aria-hidden=true>＋</i></button><div id=wp2-article-toc class=wp2-floating-toc__panel hidden data-wp2-toc-panel><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#consuming-consume-external-agent aria-label="Consuming: Consume External Agent">Consuming: Consume External Agent</a></li></ul></div></details></div></div></aside></div></article></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>SITEMAP</p><a href=/en/>HOME</a>
+<span>CONTENTS</span><i aria-hidden=true>＋</i></button><div id=wp2-article-toc class=wp2-floating-toc__panel hidden data-wp2-toc-panel><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#consuming-consume-external-agent aria-label="Consuming: Consume External Agent">Consuming: Consume External Agent</a><ul><li><a href=#creating-the-client-the-foundation-of-connection-management aria-label="Creating the Client: The Foundation of Connection Management">Creating the Client: The Foundation of Connection Management</a><ul><li><a href=#basic-client-configuration aria-label="Basic Client Configuration">Basic Client Configuration</a></li><li><a href=#connection-pool-optimization aria-label="Connection Pool Optimization">Connection Pool Optimization</a></li></ul></li><li><a href=#calling-external-agents-task-lifecycle-management aria-label="Calling External Agents: Task Lifecycle Management">Calling External Agents: Task Lifecycle Management</a><ul><li><a href=#synchronous-calls-simple-scenarios aria-label="Synchronous Calls (Simple Scenarios)">Synchronous Calls (Simple Scenarios)</a></li><li><a href=#asynchronous-calls-recommended-for-production aria-label="Asynchronous Calls (Recommended for Production)">Asynchronous Calls (Recommended for Production)</a></li><li><a href=#streaming-calls-real-time-responses aria-label="Streaming Calls (Real-Time Responses)">Streaming Calls (Real-Time Responses)</a></li></ul></li><li><a href=#wrapping-as-a-tool-seamless-integration-into-local-agents aria-label="Wrapping as a Tool: Seamless Integration into Local Agents">Wrapping as a Tool: Seamless Integration into Local Agents</a></li><li><a href=#advanced-patterns-agent-orchestration aria-label="Advanced Patterns: Agent Orchestration">Advanced Patterns: Agent Orchestration</a><ul><li><a href=#calling-multiple-agents-in-parallel aria-label="Calling Multiple Agents in Parallel">Calling Multiple Agents in Parallel</a></li><li><a href=#pipeline-calls-chained-processing aria-label="Pipeline Calls (Chained Processing)">Pipeline Calls (Chained Processing)</a></li></ul></li><li><a href=#error-handling-and-retry-strategies aria-label="Error Handling and Retry Strategies">Error Handling and Retry Strategies</a><ul><li><a href=#smart-retry aria-label="Smart Retry">Smart Retry</a></li></ul></li><li><a href=#deep-dive-common-questions aria-label="Deep Dive: Common Questions">Deep Dive: Common Questions</a><ul><li><a href=#q-what-if-an-external-agent-becomes-unresponsive aria-label="Q: What if an external Agent becomes unresponsive?">Q: What if an external Agent becomes unresponsive?</a></li><li><a href=#q-how-do-you-manage-multiple-external-agents aria-label="Q: How do you manage multiple external Agents?">Q: How do you manage multiple external Agents?</a></li></ul></li><li><a href=#next-steps aria-label="Next Steps">Next Steps</a></li></ul></li></ul></div></details></div></div></aside></div></article></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>SITEMAP</p><a href=/en/>HOME</a>
 <a href=/en/posts/>JOURNAL</a>
 <a href=/en/tutorials/>GUIDES</a></section><section><p class=wp2-footer__label>TOPICS</p><a href=/en/ai/>AI</a>
 <a href=/en/languages/>LANGUAGES</a>

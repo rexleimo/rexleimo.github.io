@@ -1,10 +1,10 @@
-<!doctype html><html lang=en dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Loop Workflow: Loop Execution, Exit on Condition | 梦兽编程</title><meta name=keywords content="Go,ADK,Loop,Workflow,Tutorial"><meta name=description content="Detailed explanation of ADK Go Loop workflow—Agent loops until exit condition is met, suitable for complex tasks requiring multiple iterations."><meta name=author content="Mengshou Programming"><link rel=canonical href=https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.39f25c28fb7de54c08a9914c7fe08bc27a0dfdc59977ab0bda77ca9e2d1956fd.css integrity="sha256-OfJcKPt95UwIqZFMf+CLwnoN/cWZd6sL2nfKni0ZVv0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+<!doctype html><html lang=en dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees | 梦兽编程</title><meta name=keywords content="Go,ADK,Loop,Workflow,Tutorial"><meta name=description content="In-depth analysis of the ADK Go Loop workflow iteration mechanism, termination condition design, convergence analysis, state evolution, and production-grade loop control strategies."><meta name=author content="Mengshou Programming"><link rel=canonical href=https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.39f25c28fb7de54c08a9914c7fe08bc27a0dfdc59977ab0bda77ca9e2d1956fd.css integrity="sha256-OfJcKPt95UwIqZFMf+CLwnoN/cWZd6sL2nfKni0ZVv0=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
   }
 }
-</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Loop Workflow: Loop Execution, Exit on Condition"><meta property="og:description" content="Detailed explanation of ADK Go Loop workflow—Agent loops until exit condition is met, suitable for complex tasks requiring multiple iterations."><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-30T07:00:00+08:00"><meta property="article:modified_time" content="2026-05-30T07:00:00+08:00"><meta property="article:author" content="Mengshou Programming"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Loop"><meta property="article:tag" content="Workflow"><meta property="article:tag" content="Tutorial"><meta name=twitter:card content="summary"><meta name=twitter:title content="Loop Workflow: Loop Execution, Exit on Condition"><meta name=twitter:description content="Detailed explanation of ADK Go Loop workflow—Agent loops until exit condition is met, suitable for complex tasks requiring multiple iterations."><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/05-multi-agent\/go-adk-team-loop\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/","name":"教程"},"position":3},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/","name":"Go Adk"},"position":4},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/05-multi-agent/","name":"05 Multi Agent"},"position":5},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/","name":"Go Adk Team Loop"},"position":6}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","headline":"Loop Workflow: Loop Execution, Exit on Condition","description":"Detailed explanation of ADK Go Loop workflow—Agent loops until exit condition is met, suitable for complex tasks requiring multiple iterations.","inLanguage":"en","datePublished":"2026-05-30T07:00:00\u002b08:00","dateModified":"2026-05-30T07:00:00\u002b08:00","author":{"@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"]},"publisher":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/","logo":{"@type":"ImageObject","url":"https:\/\/rexai.top\/favicon-32x32.png","width":"32","height":"32"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/05-multi-agent\/go-adk-team-loop\/"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".post-content h1",".post-content h2"]},"wordCount":"36","keywords":["Go","ADK","Loop","Workflow","Tutorial"],"articleSection":"tutorials","articleBody":"Loop Workflow: Loop Execution, Exit on Condition Some tasks can’t be completed in one go, requiring multiple iterations. Loop workflow lets Agent execute repeatedly until exit condition is met.\n← Parallel Workflow | Custom Workflow → ","about":[{"@type":"Thing","name":"Go"},{"@type":"Thing","name":"ADK"},{"@type":"Thing","name":"Loop"},{"@type":"Thing","name":"Workflow"},{"@type":"Thing","name":"Tutorial"}],"isAccessibleForFree":"True","timeRequired":"PT3M","copyrightYear":"2026","educationalLevel":"intermediate","learningResourceType":"tutorial"}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Loop workflow lets an Agent execute repeatedly until a specified exit condition is met."},"name":"What is Loop workflow?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Use it for tasks that need multiple iterations to improve, such as refining text or debugging code."},"name":"When should I use Loop workflow?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Common conditions include reaching a quality threshold, hitting a maximum iteration count, or timeout."},"name":"What are common exit conditions?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Set a maximum iteration limit and a minimum quality improvement threshold to guarantee termination."},"name":"How do I prevent infinite loops?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"After Loop, the next topic is Custom workflow for complex scenarios."},"name":"What comes after Loop workflow?"}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/en/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees"><meta property="og:description" content="In-depth analysis of the ADK Go Loop workflow iteration mechanism, termination condition design, convergence analysis, state evolution, and production-grade loop control strategies."><meta property="og:locale" content="en"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-30T07:00:00+08:00"><meta property="article:modified_time" content="2026-05-30T07:00:00+08:00"><meta property="article:author" content="Mengshou Programming"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Loop"><meta property="article:tag" content="Workflow"><meta property="article:tag" content="Tutorial"><meta name=twitter:card content="summary"><meta name=twitter:title content="Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees"><meta name=twitter:description content="In-depth analysis of the ADK Go Loop workflow iteration mechanism, termination condition design, convergence analysis, state evolution, and production-grade loop control strategies."><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/05-multi-agent\/go-adk-team-loop\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/","name":"教程"},"position":3},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/","name":"Go Adk"},"position":4},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/05-multi-agent/","name":"05 Multi Agent"},"position":5},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/","name":"Go Adk Team Loop"},"position":6}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","headline":"Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees","description":"In-depth analysis of the ADK Go Loop workflow iteration mechanism, termination condition design, convergence analysis, state evolution, and production-grade …","inLanguage":"en","datePublished":"2026-05-30T07:00:00\u002b08:00","dateModified":"2026-05-30T07:00:00\u002b08:00","author":{"@type":"Person","name":"Mengshou Programming","url":"https:\/\/rexai.top\/about/","sameAs":["https://github.com/rexai","https://rexai.top/"]},"publisher":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/","logo":{"@type":"ImageObject","url":"https:\/\/rexai.top\/favicon-32x32.png","width":"32","height":"32"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/en\/tutorials\/go-adk\/05-multi-agent\/go-adk-team-loop\/"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".post-content h1",".post-content h2"]},"wordCount":"2796","keywords":["Go","ADK","Loop","Workflow","Tutorial"],"articleSection":"tutorials","articleBody":"Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees The Loop workflow is the core pattern in an Agent Team for handling iterative optimization tasks. Unlike Sequential and Parallel workflows, which execute once, the Loop workflow uses a loop-evaluate-optimize closed-loop mechanism that lets an Agent autonomously improve output quality. However, looping brings risks—infinite loops, convergence oscillation, and state bloat—which require rigorous engineering controls. This post dives into the mathematical model, termination theory, state evolution, and production practice of Loop workflows.\n","about":[{"@type":"Thing","name":"Go"},{"@type":"Thing","name":"ADK"},{"@type":"Thing","name":"Loop"},{"@type":"Thing","name":"Workflow"},{"@type":"Thing","name":"Tutorial"}],"isAccessibleForFree":"True","timeRequired":"PT16M","copyrightYear":"2026","educationalLevel":"intermediate","learningResourceType":"tutorial"}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Tasks that require multiple rounds of iterative optimization and cannot be completed in one pass, such as copy refinement and code review fixes."},"name":"What tasks are suitable for the Loop workflow?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Ensure quality monotonicity, provide concrete actionable feedback, use iterative cooling to reduce change amplitude in later stages, and use multi-start to select the best result."},"name":"How do I ensure Loop convergence?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Use multi-evaluator voting, introduce human review at critical nodes, and regularly calibrate evaluation criteria with labeled data."},"name":"What if the evaluator itself is inaccurate?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Set a hard budget cap, use a lightweight model for evaluation, compress historical context, and terminate early when quality improvement falls below a threshold."},"name":"How can Loop token consumption be controlled?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Common termination conditions include quality score reaching the target, reaching the maximum number of iterations, token budget exhaustion, or improvement falling below a threshold."},"name":"What are the termination conditions for Loop?"}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/en/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
 梦兽编程<sup>™</sup></a><nav class=wp2-header__links aria-label="Primary navigation"><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/en/products/>Products</a></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/en/tutorials/>Tutorials</a>
 <button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tutorials>
 <span aria-hidden=true>&#9662;</span>
@@ -30,10 +30,792 @@
 <meta itemprop=position content="3"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/><span itemprop=name>Go Adk</span></a>
 <meta itemprop=position content="4"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/05-multi-agent/><span itemprop=name>05 Multi Agent</span></a>
 <meta itemprop=position content="5"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><span itemprop=name>Go Adk Team Loop</span></a>
-<meta itemprop=position content="6"></li></ol></nav><h1 class="post-title entry-hint-parent">Loop Workflow: Loop Execution, Exit on Condition</h1><p class=post-description>Detailed explanation of ADK Go Loop workflow—Agent loops until exit condition is met, suitable for complex tasks requiring multiple iterations.</p><div class=post-meta><span title='2026-05-30 07:00:00 +0800 +0800'>May 30, 2026</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;36 words&nbsp;·&nbsp;Mengshou Programming<span class=waline-pageview-count data-path=/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/ style=margin-left:.5rem>
+<meta itemprop=position content="6"></li></ol></nav><h1 class="post-title entry-hint-parent">Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees</h1><p class=post-description>In-depth analysis of the ADK Go Loop workflow iteration mechanism, termination condition design, convergence analysis, state evolution, and production-grade loop control strategies.</p><div class=post-meta><span title='2026-05-30 07:00:00 +0800 +0800'>May 30, 2026</span>&nbsp;·&nbsp;14 min&nbsp;·&nbsp;2796 words&nbsp;·&nbsp;Mengshou Programming<span class=waline-pageview-count data-path=/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/ style=margin-left:.5rem>
 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
-<span class=waline-pageview-number id=waline-pv-efaf842cb0ae0dbd9a16c9a5d6a6819b153f1b94af079549de23af2fbd73a943 data-path=/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/>-</span></span></div></header><div class="post-layout has-toc"><div class=post-main><div class=post-content><p>Some tasks can&rsquo;t be completed in one go, requiring multiple iterations. Loop workflow lets Agent execute repeatedly until exit condition is met.</p><p>← <a href=/en/tutorials/go-adk/05-multi-agent/go-adk-team-parallel/>Parallel Workflow</a>
-| <a href=/en/tutorials/go-adk/05-multi-agent/go-adk-team-custom/>Custom Workflow →</a></p></div><section class="post-content post-faq" aria-labelledby=post-faq-heading><h2 id=post-faq-heading>Frequently Asked Questions</h2><section class=post-faq__item><h3>What is Loop workflow?</h3><p>Loop workflow lets an Agent execute repeatedly until a specified exit condition is met.</p></section><section class=post-faq__item><h3>When should I use Loop workflow?</h3><p>Use it for tasks that need multiple iterations to improve, such as refining text or debugging code.</p></section><section class=post-faq__item><h3>What are common exit conditions?</h3><p>Common conditions include reaching a quality threshold, hitting a maximum iteration count, or timeout.</p></section><section class=post-faq__item><h3>How do I prevent infinite loops?</h3><p>Set a maximum iteration limit and a minimum quality improvement threshold to guarantee termination.</p></section><section class=post-faq__item><h3>What comes after Loop workflow?</h3><p>After Loop, the next topic is Custom workflow for complex scenarios.</p></section></section><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><aside class=related-articles aria-label=相关文章><h3>📚 相关文章</h3><ul><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-evaluation/>Evaluation: Agent Effectiveness Evaluation</a>
+<span class=waline-pageview-number id=waline-pv-efaf842cb0ae0dbd9a16c9a5d6a6819b153f1b94af079549de23af2fbd73a943 data-path=/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/>-</span></span></div></header><div class="post-layout has-toc"><div class=post-main><div class=post-content><p>The Loop workflow is the core pattern in an Agent Team for handling iterative optimization tasks. Unlike Sequential and Parallel workflows, which execute once, the Loop workflow uses a <strong>loop-evaluate-optimize</strong> closed-loop mechanism that lets an Agent autonomously improve output quality. However, looping brings risks—infinite loops, convergence oscillation, and state bloat—which require rigorous engineering controls. This post dives into the mathematical model, termination theory, state evolution, and production practice of Loop workflows.</p><h2 id=mathematical-model-of-iterative-optimization>Mathematical Model of Iterative Optimization<a hidden class=anchor aria-hidden=true href=#mathematical-model-of-iterative-optimization>#</a></h2><h3 id=convergence-analysis>Convergence Analysis<a hidden class=anchor aria-hidden=true href=#convergence-analysis>#</a></h3><p>A Loop workflow can be formalized as an iterative function system:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>x_{n+1} = f(x_n, e_n)
+</span></span></code></pre></div><p>Where:</p><ul><li><code>x_n</code>: output of the nth iteration</li><li><code>f</code>: Agent improvement function</li><li><code>e_n</code>: evaluation feedback of the nth iteration</li></ul><p><strong>Convergence condition</strong>: when there exists a quality metric <code>Q(x)</code> such that <code>Q(x_{n+1}) >= Q(x_n)</code> holds for all n, and <code>Q(x)</code> has an upper bound, then the sequence <code>{x_n}</code> must converge.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// Convergence analyzer</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ConvergenceAnalyzer <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    qualityHistory []<span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    windowSize     <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    threshold      <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (ca <span style=color:#ff79c6>*</span>ConvergenceAnalyzer) <span style=color:#50fa7b>IsConverged</span>() (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory) &lt; ca.windowSize {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#bd93f9>0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Take the most recent windowSize quality values</span>
+</span></span><span style=display:flex><span>    recent <span style=color:#ff79c6>:=</span> ca.qualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory)<span style=color:#ff79c6>-</span>ca.windowSize:]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Calculate variance</span>
+</span></span><span style=display:flex><span>    mean <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>calculateMean</span>(recent)
+</span></span><span style=display:flex><span>    variance <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>calculateVariance</span>(recent, mean)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Variance below threshold means converged</span>
+</span></span><span style=display:flex><span>    converged <span style=color:#ff79c6>:=</span> variance &lt; ca.threshold
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> converged, variance
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (ca <span style=color:#ff79c6>*</span>ConvergenceAnalyzer) <span style=color:#50fa7b>DetectOscillation</span>() <span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory) &lt; <span style=color:#bd93f9>4</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Detect oscillation: quality values repeatedly rise and fall</span>
+</span></span><span style=display:flex><span>    last4 <span style=color:#ff79c6>:=</span> ca.qualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>4</span>:]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    upDown <span style=color:#ff79c6>:=</span> (last4[<span style=color:#bd93f9>1</span>] &gt; last4[<span style=color:#bd93f9>0</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>2</span>] &lt; last4[<span style=color:#bd93f9>1</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>3</span>] &gt; last4[<span style=color:#bd93f9>2</span>])
+</span></span><span style=display:flex><span>    downUp <span style=color:#ff79c6>:=</span> (last4[<span style=color:#bd93f9>1</span>] &lt; last4[<span style=color:#bd93f9>0</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>2</span>] &gt; last4[<span style=color:#bd93f9>1</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>3</span>] &lt; last4[<span style=color:#bd93f9>2</span>])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> upDown <span style=color:#ff79c6>||</span> downUp
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=quality-metric-design>Quality Metric Design<a hidden class=anchor aria-hidden=true href=#quality-metric-design>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// Multi-dimensional quality evaluation system</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> QualityMetrics <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Content quality (0-1)</span>
+</span></span><span style=display:flex><span>    Relevance    <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// relevance</span>
+</span></span><span style=display:flex><span>    Coherence    <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// coherence</span>
+</span></span><span style=display:flex><span>    Completeness <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// completeness</span>
+</span></span><span style=display:flex><span>    Accuracy     <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// accuracy</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Structural quality (0-1)</span>
+</span></span><span style=display:flex><span>    Structure  <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// structural soundness</span>
+</span></span><span style=display:flex><span>    Formatting <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// formatting compliance</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Language quality (0-1)</span>
+</span></span><span style=display:flex><span>    Grammar <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// grammatical correctness</span>
+</span></span><span style=display:flex><span>    Style   <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// style consistency</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Business quality (0-1)</span>
+</span></span><span style=display:flex><span>    Requirements <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// requirement satisfaction</span>
+</span></span><span style=display:flex><span>    Constraints  <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// constraint satisfaction</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (qm <span style=color:#ff79c6>*</span>QualityMetrics) <span style=color:#50fa7b>OverallScore</span>() <span style=color:#8be9fd>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Weighted combined score</span>
+</span></span><span style=display:flex><span>    weights <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>float64</span>{
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Relevance&#34;</span>:    <span style=color:#bd93f9>0.20</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Coherence&#34;</span>:    <span style=color:#bd93f9>0.15</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Completeness&#34;</span>: <span style=color:#bd93f9>0.15</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Accuracy&#34;</span>:     <span style=color:#bd93f9>0.20</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Structure&#34;</span>:    <span style=color:#bd93f9>0.10</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Formatting&#34;</span>:   <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Grammar&#34;</span>:      <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Style&#34;</span>:        <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Requirements&#34;</span>: <span style=color:#bd93f9>0.03</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Constraints&#34;</span>:  <span style=color:#bd93f9>0.02</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>:=</span> <span style=color:#bd93f9>0.0</span>
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Relevance&#34;</span>] <span style=color:#ff79c6>*</span> qm.Relevance
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Coherence&#34;</span>] <span style=color:#ff79c6>*</span> qm.Coherence
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Completeness&#34;</span>] <span style=color:#ff79c6>*</span> qm.Completeness
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Accuracy&#34;</span>] <span style=color:#ff79c6>*</span> qm.Accuracy
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Structure&#34;</span>] <span style=color:#ff79c6>*</span> qm.Structure
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Formatting&#34;</span>] <span style=color:#ff79c6>*</span> qm.Formatting
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Grammar&#34;</span>] <span style=color:#ff79c6>*</span> qm.Grammar
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Style&#34;</span>] <span style=color:#ff79c6>*</span> qm.Style
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Requirements&#34;</span>] <span style=color:#ff79c6>*</span> qm.Requirements
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Constraints&#34;</span>] <span style=color:#ff79c6>*</span> qm.Constraints
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> score
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Evaluate quality via LLM</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>evaluateWithLLM</span>(ctx context.Context, model agent.Model, content <span style=color:#8be9fd>string</span>, criteria []<span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>QualityMetrics, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    prompt <span style=color:#ff79c6>:=</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>`Please evaluate the quality of the following content, scoring each dimension (0-1):
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Evaluation dimensions:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Please output the scores in JSON format.`</span>, content, strings.<span style=color:#50fa7b>Join</span>(criteria, <span style=color:#f1fa8c>&#34;\n&#34;</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    response, err <span style=color:#ff79c6>:=</span> model.<span style=color:#50fa7b>GenerateContent</span>(ctx, prompt)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> metrics QualityMetrics
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> json.<span style=color:#50fa7b>Unmarshal</span>([]<span style=color:#8be9fd;font-style:italic>byte</span>(response), <span style=color:#ff79c6>&amp;</span>metrics); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>metrics, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=loop-workflow-architecture-design>Loop Workflow Architecture Design<a hidden class=anchor aria-hidden=true href=#loop-workflow-architecture-design>#</a></h2><h3 id=core-components>Core Components<a hidden class=anchor aria-hidden=true href=#core-components>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> LoopWorkflow <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    agent           <span style=color:#ff79c6>*</span>agent.Agent        <span style=color:#6272a4>// iteration Agent</span>
+</span></span><span style=display:flex><span>    evaluator       Evaluator           <span style=color:#6272a4>// quality evaluator</span>
+</span></span><span style=display:flex><span>    exitCondition   ExitCondition       <span style=color:#6272a4>// exit condition</span>
+</span></span><span style=display:flex><span>    maxIterations   <span style=color:#8be9fd>int</span>                 <span style=color:#6272a4>// maximum iterations</span>
+</span></span><span style=display:flex><span>    minIterations   <span style=color:#8be9fd>int</span>                 <span style=color:#6272a4>// minimum iterations</span>
+</span></span><span style=display:flex><span>    convergenceCfg  <span style=color:#ff79c6>*</span>ConvergenceConfig  <span style=color:#6272a4>// convergence config</span>
+</span></span><span style=display:flex><span>    stateManager    StateManager        <span style=color:#6272a4>// state manager</span>
+</span></span><span style=display:flex><span>    feedbackBuilder FeedbackBuilder     <span style=color:#6272a4>// feedback builder</span>
+</span></span><span style=display:flex><span>    strategy        IterationStrategy   <span style=color:#6272a4>// iteration strategy</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Evaluator interface</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> Evaluator <span style=color:#8be9fd;font-style:italic>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#50fa7b>Evaluate</span>(ctx context.Context, output <span style=color:#8be9fd>string</span>, target <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>EvaluationResult, <span style=color:#8be9fd>error</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Exit condition interface</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ExitCondition <span style=color:#8be9fd;font-style:italic>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Iteration state</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> LoopState <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Iteration      <span style=color:#8be9fd>int</span>                    <span style=color:#6272a4>// current iteration count</span>
+</span></span><span style=display:flex><span>    CurrentOutput  <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// current output</span>
+</span></span><span style=display:flex><span>    PreviousOutput <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// previous output</span>
+</span></span><span style=display:flex><span>    QualityHistory []<span style=color:#8be9fd>float64</span>              <span style=color:#6272a4>// quality history</span>
+</span></span><span style=display:flex><span>    BestOutput     <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// best output</span>
+</span></span><span style=display:flex><span>    BestQuality    <span style=color:#8be9fd>float64</span>                <span style=color:#6272a4>// best quality</span>
+</span></span><span style=display:flex><span>    Feedback       <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// current feedback</span>
+</span></span><span style=display:flex><span>    Context        <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{} <span style=color:#6272a4>// context state</span>
+</span></span><span style=display:flex><span>    StartTime      time.Time              <span style=color:#6272a4>// start time</span>
+</span></span><span style=display:flex><span>    TokenUsed      <span style=color:#8be9fd>int</span>                    <span style=color:#6272a4>// token consumption</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Evaluation result</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> EvaluationResult <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Quality  <span style=color:#8be9fd>float64</span>         <span style=color:#6272a4>// quality score</span>
+</span></span><span style=display:flex><span>    Feedback <span style=color:#8be9fd>string</span>          <span style=color:#6272a4>// improvement feedback</span>
+</span></span><span style=display:flex><span>    Metrics  <span style=color:#ff79c6>*</span>QualityMetrics <span style=color:#6272a4>// detailed metrics</span>
+</span></span><span style=display:flex><span>    Passed   <span style=color:#8be9fd>bool</span>            <span style=color:#6272a4>// passed</span>
+</span></span><span style=display:flex><span>    Criteria <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span> <span style=color:#6272a4>// per-criterion pass status</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=execution-engine>Execution Engine<a hidden class=anchor aria-hidden=true href=#execution-engine>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (lw <span style=color:#ff79c6>*</span>LoopWorkflow) <span style=color:#50fa7b>Execute</span>(ctx context.Context, input <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>LoopResult, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 1. Initialize state</span>
+</span></span><span style=display:flex><span>    state <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>LoopState{
+</span></span><span style=display:flex><span>        Iteration:   <span style=color:#bd93f9>0</span>,
+</span></span><span style=display:flex><span>        Context:     <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}),
+</span></span><span style=display:flex><span>        StartTime:   time.<span style=color:#50fa7b>Now</span>(),
+</span></span><span style=display:flex><span>        BestQuality: <span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    state.Context[<span style=color:#f1fa8c>&#34;original_input&#34;</span>] = input
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 2. Initial execution</span>
+</span></span><span style=display:flex><span>    output, err <span style=color:#ff79c6>:=</span> lw.agent.<span style=color:#50fa7b>Run</span>(ctx, input)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;initial execution failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    state.CurrentOutput = output
+</span></span><span style=display:flex><span>    state.BestOutput = output
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 3. Evaluate initial output</span>
+</span></span><span style=display:flex><span>    eval, err <span style=color:#ff79c6>:=</span> lw.evaluator.<span style=color:#50fa7b>Evaluate</span>(ctx, output, input)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;initial evaluation failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    state.QualityHistory = <span style=color:#8be9fd;font-style:italic>append</span>(state.QualityHistory, eval.Quality)
+</span></span><span style=display:flex><span>    state.BestQuality = eval.Quality
+</span></span><span style=display:flex><span>    state.Feedback = eval.Feedback
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 4. Iterative optimization loop</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>        state.Iteration<span style=color:#ff79c6>++</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Check exit condition</span>
+</span></span><span style=display:flex><span>        shouldExit, reason <span style=color:#ff79c6>:=</span> lw.exitCondition.<span style=color:#50fa7b>ShouldExit</span>(state)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> shouldExit {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, reason), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Check max iterations</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> state.Iteration <span style=color:#ff79c6>&gt;=</span> lw.maxIterations {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;max_iterations_reached&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Build iteration input</span>
+</span></span><span style=display:flex><span>        iterationInput <span style=color:#ff79c6>:=</span> lw.feedbackBuilder.<span style=color:#50fa7b>Build</span>(state, eval)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Execute iteration</span>
+</span></span><span style=display:flex><span>        newOutput, err <span style=color:#ff79c6>:=</span> lw.agent.<span style=color:#50fa7b>Run</span>(ctx, iterationInput)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Iteration failed, use best historical result</span>
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Iteration %d failed: %v&#34;</span>, state.Iteration, err)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;iteration_failed&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        state.PreviousOutput = state.CurrentOutput
+</span></span><span style=display:flex><span>        state.CurrentOutput = newOutput
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Evaluate new output</span>
+</span></span><span style=display:flex><span>        eval, err = lw.evaluator.<span style=color:#50fa7b>Evaluate</span>(ctx, newOutput, input)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Evaluation failed at iteration %d: %v&#34;</span>, state.Iteration, err)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>continue</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        state.QualityHistory = <span style=color:#8be9fd;font-style:italic>append</span>(state.QualityHistory, eval.Quality)
+</span></span><span style=display:flex><span>        state.Feedback = eval.Feedback
+</span></span><span style=display:flex><span>        state.TokenUsed <span style=color:#ff79c6>+=</span> <span style=color:#50fa7b>estimateTokens</span>(newOutput)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Update best result</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> eval.Quality &gt; state.BestQuality {
+</span></span><span style=display:flex><span>            state.BestQuality = eval.Quality
+</span></span><span style=display:flex><span>            state.BestOutput = newOutput
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Detect convergence</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> lw.convergenceCfg <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            analyzer <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>ConvergenceAnalyzer{
+</span></span><span style=display:flex><span>                qualityHistory: state.QualityHistory,
+</span></span><span style=display:flex><span>                windowSize:     lw.convergenceCfg.WindowSize,
+</span></span><span style=display:flex><span>                threshold:      lw.convergenceCfg.Threshold,
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> converged, variance <span style=color:#ff79c6>:=</span> analyzer.<span style=color:#50fa7b>IsConverged</span>(); converged {
+</span></span><span style=display:flex><span>                state.Context[<span style=color:#f1fa8c>&#34;convergence_variance&#34;</span>] = variance
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;converged&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> analyzer.<span style=color:#50fa7b>DetectOscillation</span>() {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;oscillation_detected&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Check token budget</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> lw.tokenBudget <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> <span style=color:#ff79c6>&amp;&amp;</span> !lw.tokenBudget.<span style=color:#50fa7b>CanAllocate</span>(<span style=color:#bd93f9>1000</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;token_budget_exhausted&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (lw <span style=color:#ff79c6>*</span>LoopWorkflow) <span style=color:#50fa7b>buildResult</span>(state <span style=color:#ff79c6>*</span>LoopState, reason <span style=color:#8be9fd>string</span>) <span style=color:#ff79c6>*</span>LoopResult {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>LoopResult{
+</span></span><span style=display:flex><span>        Output:         state.BestOutput,
+</span></span><span style=display:flex><span>        Quality:        state.BestQuality,
+</span></span><span style=display:flex><span>        Iterations:     state.Iteration,
+</span></span><span style=display:flex><span>        ExitReason:     reason,
+</span></span><span style=display:flex><span>        QualityHistory: state.QualityHistory,
+</span></span><span style=display:flex><span>        TokenUsed:      state.TokenUsed,
+</span></span><span style=display:flex><span>        Duration:       time.<span style=color:#50fa7b>Since</span>(state.StartTime),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=termination-condition-design>Termination Condition Design<a hidden class=anchor aria-hidden=true href=#termination-condition-design>#</a></h2><h3 id=composite-exit-conditions>Composite Exit Conditions<a hidden class=anchor aria-hidden=true href=#composite-exit-conditions>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// Combine multiple exit conditions</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CompositeExitCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    conditions []ExitCondition
+</span></span><span style=display:flex><span>    mode       CompositeMode <span style=color:#6272a4>// ANY | ALL</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CompositeMode <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>const</span> (
+</span></span><span style=display:flex><span>    ModeAny CompositeMode = <span style=color:#ff79c6>iota</span> <span style=color:#6272a4>// exit when any condition is met</span>
+</span></span><span style=display:flex><span>    ModeAll                       <span style=color:#6272a4>// exit only when all conditions are met</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>CompositeExitCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> c.mode <span style=color:#ff79c6>==</span> ModeAny {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> _, cond <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> c.conditions {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> exit, reason <span style=color:#ff79c6>:=</span> cond.<span style=color:#50fa7b>ShouldExit</span>(state); exit {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, reason
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// ModeAll</span>
+</span></span><span style=display:flex><span>    reasons <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>([]<span style=color:#8be9fd>string</span>, <span style=color:#bd93f9>0</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, cond <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> c.conditions {
+</span></span><span style=display:flex><span>        exit, reason <span style=color:#ff79c6>:=</span> cond.<span style=color:#50fa7b>ShouldExit</span>(state)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> !exit {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        reasons = <span style=color:#8be9fd;font-style:italic>append</span>(reasons, reason)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, strings.<span style=color:#50fa7b>Join</span>(reasons, <span style=color:#f1fa8c>&#34; + &#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Concrete exit condition implementations</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 1. Quality threshold condition</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> QualityThresholdCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Threshold <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>QualityThresholdCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.BestQuality <span style=color:#ff79c6>&gt;=</span> c.Threshold {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;quality_threshold_reached: %.3f &gt;= %.3f&#34;</span>,
+</span></span><span style=display:flex><span>            state.BestQuality, c.Threshold)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 2. Maximum iteration condition</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> MaxIterationCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    MaxIterations <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>MaxIterationCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.Iteration <span style=color:#ff79c6>&gt;=</span> c.MaxIterations {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;max_iterations: %d&#34;</span>, c.MaxIterations)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 3. Improvement stall condition</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ImprovementStallCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    WindowSize     <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    MinImprovement <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>ImprovementStallCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) &lt; c.WindowSize<span style=color:#ff79c6>+</span><span style=color:#bd93f9>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    recent <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span>c.WindowSize:]
+</span></span><span style=display:flex><span>    best <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span>c.WindowSize<span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, q <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> recent {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> q<span style=color:#ff79c6>-</span>best <span style=color:#ff79c6>&gt;=</span> c.MinImprovement {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;improvement_stalled: no improvement &gt; %.3f in last %d iterations&#34;</span>,
+</span></span><span style=display:flex><span>        c.MinImprovement, c.WindowSize)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 4. Time budget condition</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> TimeBudgetCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    MaxDuration time.Duration
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>TimeBudgetCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> time.<span style=color:#50fa7b>Since</span>(state.StartTime) <span style=color:#ff79c6>&gt;=</span> c.MaxDuration {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;time_budget_exhausted: %v&#34;</span>, c.MaxDuration)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 5. Quality regression condition (prevent over-optimization)</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> QualityRegressionCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Threshold <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>QualityRegressionCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) &lt; <span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    last <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>]
+</span></span><span style=display:flex><span>    prev <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> prev<span style=color:#ff79c6>-</span>last &gt; c.Threshold {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;quality_regression: %.3f -&gt; %.3f&#34;</span>, prev, last)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=iteration-strategy-design>Iteration Strategy Design<a hidden class=anchor aria-hidden=true href=#iteration-strategy-design>#</a></h2><h3 id=feedback-building-strategy>Feedback Building Strategy<a hidden class=anchor aria-hidden=true href=#feedback-building-strategy>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// Feedback builder interface</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> FeedbackBuilder <span style=color:#8be9fd;font-style:italic>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#50fa7b>Build</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Detailed feedback builder</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> DetailedFeedbackBuilder <span style=color:#8be9fd;font-style:italic>struct</span>{}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (b <span style=color:#ff79c6>*</span>DetailedFeedbackBuilder) <span style=color:#50fa7b>Build</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> feedback strings.Builder
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;Original requirement: %s\n\n&#34;</span>, state.Context[<span style=color:#f1fa8c>&#34;original_input&#34;</span>]))
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;Current iteration: %d\n&#34;</span>, state.Iteration))
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;Current quality score: %.3f\n&#34;</span>, eval.Quality))
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;Historical best: %.3f\n\n&#34;</span>, state.BestQuality))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;Evaluation feedback:\n&#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(eval.Feedback)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n\n&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Add concrete improvement suggestions</span>
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;Aspects needing improvement:\n&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> criterion, passed <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> eval.Criteria {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> !passed {
+</span></span><span style=display:flex><span>            feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;- %s: not met\n&#34;</span>, criterion))
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\nPlease improve the content based on the above feedback and output the optimized version.&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> feedback.<span style=color:#50fa7b>String</span>()
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Diff feedback builder (provides before-and-after comparison)</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> DiffFeedbackBuilder <span style=color:#8be9fd;font-style:italic>struct</span>{}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (b <span style=color:#ff79c6>*</span>DiffFeedbackBuilder) <span style=color:#50fa7b>Build</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> feedback strings.Builder
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;Please optimize the following content.\n\n&#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;[Current Version]\n&#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(state.CurrentOutput)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n\n&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.PreviousOutput <span style=color:#ff79c6>!=</span> <span style=color:#f1fa8c>&#34;&#34;</span> {
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;[Previous Version]\n&#34;</span>)
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(state.PreviousOutput)
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n\n&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;Quality change: %.3f -&gt; %.3f\n&#34;</span>,
+</span></span><span style=display:flex><span>            state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span>], eval.Quality))
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\nImprovement direction: &#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(eval.Feedback)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> feedback.<span style=color:#50fa7b>String</span>()
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=adaptive-iteration-strategy>Adaptive Iteration Strategy<a hidden class=anchor aria-hidden=true href=#adaptive-iteration-strategy>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// Dynamically adjust iteration strategy based on current state</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AdaptiveIterationStrategy <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    baseStrategy   IterationStrategy
+</span></span><span style=display:flex><span>    qualityTargets []<span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// stage-based quality targets</span>
+</span></span><span style=display:flex><span>    currentPhase   <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (s <span style=color:#ff79c6>*</span>AdaptiveIterationStrategy) <span style=color:#50fa7b>GetNextInput</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Select stage based on current quality</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> i, target <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> s.qualityTargets {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> state.BestQuality &lt; target {
+</span></span><span style=display:flex><span>            s.currentPhase = i
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>break</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Different strategies for different stages</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>switch</span> s.currentPhase {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#bd93f9>0</span>:
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Phase 1: focus on structure and completeness</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.<span style=color:#50fa7b>buildStructureFocusPrompt</span>(state, eval)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#bd93f9>1</span>:
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Phase 2: focus on content and accuracy</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.<span style=color:#50fa7b>buildContentFocusPrompt</span>(state, eval)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#bd93f9>2</span>:
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// Phase 3: focus on language and style</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.<span style=color:#50fa7b>buildStyleFocusPrompt</span>(state, eval)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>default</span>:
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.baseStrategy.<span style=color:#50fa7b>GetNextInput</span>(state, eval)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (s <span style=color:#ff79c6>*</span>AdaptiveIterationStrategy) <span style=color:#50fa7b>buildStructureFocusPrompt</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>`Current quality: %.3f, focus on structure optimization.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Current content:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Please optimize the following:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>1. Ensure clear headings and paragraph structure.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>2. Add appropriate subheadings.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>3. Ensure logical flow is smooth.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>4. Check the completeness of the beginning and end.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Output the complete optimized version.`</span>, state.BestQuality, state.CurrentOutput)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=hands-on-scenario-copywriting-multi-round-optimization-system>Hands-On Scenario: Copywriting Multi-Round Optimization System<a hidden class=anchor aria-hidden=true href=#hands-on-scenario-copywriting-multi-round-optimization-system>#</a></h2><h3 id=full-implementation>Full Implementation<a hidden class=anchor aria-hidden=true href=#full-implementation>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> main
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;log&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;strings&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/google/adk-go/agent&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/google/adk-go/team&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// CopywritingOptimizer copywriting optimization system</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CopywritingOptimizer <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    workflow <span style=color:#ff79c6>*</span>team.LoopWorkflow
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>NewCopywritingOptimizer</span>(model agent.Model) (<span style=color:#ff79c6>*</span>CopywritingOptimizer, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Create the writing Agent</span>
+</span></span><span style=display:flex><span>    writerAgent, err <span style=color:#ff79c6>:=</span> agent.<span style=color:#50fa7b>New</span>(agent.Config{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#f1fa8c>&#34;copywriter&#34;</span>,
+</span></span><span style=display:flex><span>        Model:       model,
+</span></span><span style=display:flex><span>        Instruction: <span style=color:#f1fa8c>`You are a senior copywriter. Create or optimize copy based on requirements and feedback.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Requirements:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>1. Lively and infectious language.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>2. Highlight core selling points.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>3. Match the target audience&#39;s language habits.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>4. Keep within the requested word count.`</span>,
+</span></span><span style=display:flex><span>        Timeout: <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Build evaluator</span>
+</span></span><span style=display:flex><span>    evaluator <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>CopywritingEvaluator{
+</span></span><span style=display:flex><span>        model: model,
+</span></span><span style=display:flex><span>        criteria: []EvaluationCriterion{
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;Appeal&#34;</span>, Weight: <span style=color:#bd93f9>0.25</span>, Prompt: <span style=color:#f1fa8c>&#34;Evaluate the copy&#39;s appeal and hook strength&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;Clarity&#34;</span>, Weight: <span style=color:#bd93f9>0.20</span>, Prompt: <span style=color:#f1fa8c>&#34;Evaluate the clarity of message delivery&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;Persuasion&#34;</span>, Weight: <span style=color:#bd93f9>0.25</span>, Prompt: <span style=color:#f1fa8c>&#34;Evaluate persuasion and conversion potential&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;BrandTone&#34;</span>, Weight: <span style=color:#bd93f9>0.15</span>, Prompt: <span style=color:#f1fa8c>&#34;Evaluate consistency with brand tone&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;Creativity&#34;</span>, Weight: <span style=color:#bd93f9>0.15</span>, Prompt: <span style=color:#f1fa8c>&#34;Evaluate creativity and differentiation&#34;</span>},
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Build composite exit condition</span>
+</span></span><span style=display:flex><span>    exitCondition <span style=color:#ff79c6>:=</span> team.<span style=color:#50fa7b>NewCompositeExitCondition</span>(team.ModeAny,
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.QualityThresholdCondition{Threshold: <span style=color:#bd93f9>0.85</span>},      <span style=color:#6272a4>// quality threshold reached</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.MaxIterationCondition{MaxIterations: <span style=color:#bd93f9>5</span>},          <span style=color:#6272a4>// max 5 rounds</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.ImprovementStallCondition{                         <span style=color:#6272a4>// improvement stalled</span>
+</span></span><span style=display:flex><span>            WindowSize:     <span style=color:#bd93f9>2</span>,
+</span></span><span style=display:flex><span>            MinImprovement: <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.TimeBudgetCondition{MaxDuration: <span style=color:#bd93f9>2</span> <span style=color:#ff79c6>*</span> time.Minute}, <span style=color:#6272a4>// time budget</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.QualityRegressionCondition{Threshold: <span style=color:#bd93f9>0.10</span>},      <span style=color:#6272a4>// quality regression</span>
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Build workflow</span>
+</span></span><span style=display:flex><span>    workflow <span style=color:#ff79c6>:=</span> team.<span style=color:#50fa7b>NewLoopWorkflow</span>(
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithAgent</span>(writerAgent),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithEvaluator</span>(evaluator),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithExitCondition</span>(exitCondition),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithFeedbackBuilder</span>(<span style=color:#ff79c6>&amp;</span>team.DiffFeedbackBuilder{}),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithConvergenceConfig</span>(<span style=color:#ff79c6>&amp;</span>team.ConvergenceConfig{
+</span></span><span style=display:flex><span>            WindowSize: <span style=color:#bd93f9>3</span>,
+</span></span><span style=display:flex><span>            Threshold:  <span style=color:#bd93f9>0.01</span>,
+</span></span><span style=display:flex><span>        }),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithTokenBudget</span>(<span style=color:#bd93f9>30000</span>),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>CopywritingOptimizer{workflow: workflow}, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// CopywritingEvaluator copywriting evaluator</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CopywritingEvaluator <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    model    agent.Model
+</span></span><span style=display:flex><span>    criteria []EvaluationCriterion
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> EvaluationCriterion <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Name   <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Weight <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    Prompt <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (e <span style=color:#ff79c6>*</span>CopywritingEvaluator) <span style=color:#50fa7b>Evaluate</span>(ctx context.Context, output <span style=color:#8be9fd>string</span>, target <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>team.EvaluationResult, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Build evaluation prompt</span>
+</span></span><span style=display:flex><span>    prompt <span style=color:#ff79c6>:=</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>`Please evaluate the following copy, scoring each dimension (0-1, 3 decimal places).
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Target: %s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Copy content:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Evaluation dimensions:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>`</span>, target, output)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, c <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> e.criteria {
+</span></span><span style=display:flex><span>        prompt <span style=color:#ff79c6>+=</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;- %s (weight %.0f%%): %s\n&#34;</span>, c.Name, c.Weight<span style=color:#ff79c6>*</span><span style=color:#bd93f9>100</span>, c.Prompt)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    prompt <span style=color:#ff79c6>+=</span> <span style=color:#f1fa8c>`
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Please output in JSON format:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>{
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;scores&#34;: {&#34;dimension name&#34;: score},
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;overall&#34;: overall score,
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;feedback&#34;: &#34;specific improvement suggestions&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;passed&#34;: true/false
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>}`</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    response, err <span style=color:#ff79c6>:=</span> e.model.<span style=color:#50fa7b>GenerateContent</span>(ctx, prompt)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;evaluation failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> evalData <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>        Scores   <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>float64</span> <span style=color:#f1fa8c>`json:&#34;scores&#34;`</span>
+</span></span><span style=display:flex><span>        Overall  <span style=color:#8be9fd>float64</span>            <span style=color:#f1fa8c>`json:&#34;overall&#34;`</span>
+</span></span><span style=display:flex><span>        Feedback <span style=color:#8be9fd>string</span>           <span style=color:#f1fa8c>`json:&#34;feedback&#34;`</span>
+</span></span><span style=display:flex><span>        Passed   <span style=color:#8be9fd>bool</span>              <span style=color:#f1fa8c>`json:&#34;passed&#34;`</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> json.<span style=color:#50fa7b>Unmarshal</span>([]<span style=color:#8be9fd;font-style:italic>byte</span>(response), <span style=color:#ff79c6>&amp;</span>evalData); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;parse evaluation: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    criteria <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> name, score <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> evalData.Scores {
+</span></span><span style=display:flex><span>        criteria[name] = score <span style=color:#ff79c6>&gt;=</span> <span style=color:#bd93f9>0.7</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>team.EvaluationResult{
+</span></span><span style=display:flex><span>        Quality:  evalData.Overall,
+</span></span><span style=display:flex><span>        Feedback: evalData.Feedback,
+</span></span><span style=display:flex><span>        Passed:   evalData.Passed,
+</span></span><span style=display:flex><span>        Criteria: criteria,
+</span></span><span style=display:flex><span>        Metrics: <span style=color:#ff79c6>&amp;</span>team.QualityMetrics{
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// Map to generic metrics</span>
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>main</span>() {
+</span></span><span style=display:flex><span>    ctx <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>Background</span>()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    optimizer, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>NewCopywritingOptimizer</span>(model)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatalf</span>(<span style=color:#f1fa8c>&#34;Failed to create optimizer: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    result, err <span style=color:#ff79c6>:=</span> optimizer.workflow.<span style=color:#50fa7b>Execute</span>(ctx,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>`Create a social media promotional copy for a new smartwatch.
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Target audience: urban professionals aged 25-35
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Core selling points: 7-day battery, health monitoring, stylish design
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>Word count: 100-150 words`</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatalf</span>(<span style=color:#f1fa8c>&#34;Optimization failed: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Final copy (quality: %.3f):\n%s\n\n&#34;</span>, result.Quality, result.Output)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Iterations: %d\n&#34;</span>, result.Iterations)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Exit reason: %s\n&#34;</span>, result.ExitReason)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Quality history: %v\n&#34;</span>, result.QualityHistory)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Token used: %d\n&#34;</span>, result.TokenUsed)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Total duration: %v\n&#34;</span>, result.Duration)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=anti-infinite-loop-mechanisms>Anti-Infinite-Loop Mechanisms<a hidden class=anchor aria-hidden=true href=#anti-infinite-loop-mechanisms>#</a></h2><h3 id=multi-layer-protection>Multi-Layer Protection<a hidden class=anchor aria-hidden=true href=#multi-layer-protection>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AntiLoopProtection <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    maxIterations       <span style=color:#8be9fd>int</span>           <span style=color:#6272a4>// hard limit</span>
+</span></span><span style=display:flex><span>    timeBudget          time.Duration <span style=color:#6272a4>// time limit</span>
+</span></span><span style=display:flex><span>    tokenBudget         <span style=color:#8be9fd>int</span>           <span style=color:#6272a4>// token limit</span>
+</span></span><span style=display:flex><span>    similarityThreshold <span style=color:#8be9fd>float64</span>       <span style=color:#6272a4>// output similarity threshold</span>
+</span></span><span style=display:flex><span>    history             []<span style=color:#8be9fd>string</span>      <span style=color:#6272a4>// output history</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (p <span style=color:#ff79c6>*</span>AntiLoopProtection) <span style=color:#50fa7b>Check</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 1. Iteration count check</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.Iteration <span style=color:#ff79c6>&gt;=</span> p.maxIterations {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;max_iterations&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 2. Time check</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> time.<span style=color:#50fa7b>Since</span>(state.StartTime) <span style=color:#ff79c6>&gt;=</span> p.timeBudget {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;time_budget&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 3. Token check</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.TokenUsed <span style=color:#ff79c6>&gt;=</span> p.tokenBudget {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;token_budget&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 4. Similarity check (detect loops)</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) <span style=color:#ff79c6>&gt;=</span> <span style=color:#bd93f9>3</span> {
+</span></span><span style=display:flex><span>        current <span style=color:#ff79c6>:=</span> state.CurrentOutput
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> i, hist <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> p.history {
+</span></span><span style=display:flex><span>            similarity <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>calculateSimilarity</span>(current, hist)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> similarity &gt; p.similarityThreshold {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;repeated_output (similarity %.3f with iteration %d)&#34;</span>,
+</span></span><span style=display:flex><span>                    similarity, i)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    p.history = <span style=color:#8be9fd;font-style:italic>append</span>(p.history, state.CurrentOutput)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 5. Quality regression check</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) <span style=color:#ff79c6>&gt;=</span> <span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>        last <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>]
+</span></span><span style=display:flex><span>        prev <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span>]
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> prev<span style=color:#ff79c6>-</span>last &gt; <span style=color:#bd93f9>0.2</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;significant_regression&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Text similarity calculation (simplified Jaccard)</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>calculateSimilarity</span>(a, b <span style=color:#8be9fd>string</span>) <span style=color:#8be9fd>float64</span> {
+</span></span><span style=display:flex><span>    setA <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>tokenize</span>(a)
+</span></span><span style=display:flex><span>    setB <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>tokenize</span>(b)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    intersection <span style=color:#ff79c6>:=</span> <span style=color:#bd93f9>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> setA {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> setB[token] {
+</span></span><span style=display:flex><span>            intersection<span style=color:#ff79c6>++</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    union <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>len</span>(setA) <span style=color:#ff79c6>+</span> <span style=color:#8be9fd;font-style:italic>len</span>(setB) <span style=color:#ff79c6>-</span> intersection
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> union <span style=color:#ff79c6>==</span> <span style=color:#bd93f9>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#bd93f9>1.0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#8be9fd;font-style:italic>float64</span>(intersection) <span style=color:#ff79c6>/</span> <span style=color:#8be9fd;font-style:italic>float64</span>(union)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>tokenize</span>(text <span style=color:#8be9fd>string</span>) <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span>)
+</span></span><span style=display:flex><span>    words <span style=color:#ff79c6>:=</span> strings.<span style=color:#50fa7b>Fields</span>(text)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, word <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> words {
+</span></span><span style=display:flex><span>        tokens[strings.<span style=color:#50fa7b>ToLower</span>(word)] = <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> tokens
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=state-evolution-and-history-management>State Evolution and History Management<a hidden class=anchor aria-hidden=true href=#state-evolution-and-history-management>#</a></h2><h3 id=compressed-storage>Compressed Storage<a hidden class=anchor aria-hidden=true href=#compressed-storage>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CompressedLoopHistory <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    iterations     <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    qualityTrend   []<span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    bestOutputs    []OutputSnapshot
+</span></span><span style=display:flex><span>    compressionCfg <span style=color:#ff79c6>*</span>CompressionConfig
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> OutputSnapshot <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Iteration <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    Quality   <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    Hash      <span style=color:#8be9fd>string</span> <span style=color:#6272a4>// content hash for deduplication</span>
+</span></span><span style=display:flex><span>    Summary   <span style=color:#8be9fd>string</span> <span style=color:#6272a4>// summary replaces full content</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (h <span style=color:#ff79c6>*</span>CompressedLoopHistory) <span style=color:#50fa7b>Add</span>(output <span style=color:#8be9fd>string</span>, quality <span style=color:#8be9fd>float64</span>, iteration <span style=color:#8be9fd>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Only keep results from critical iterations</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> h.<span style=color:#50fa7b>shouldKeep</span>(iteration, quality) {
+</span></span><span style=display:flex><span>        hash <span style=color:#ff79c6>:=</span> sha256.<span style=color:#50fa7b>Sum256</span>([]<span style=color:#8be9fd;font-style:italic>byte</span>(output))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        h.bestOutputs = <span style=color:#8be9fd;font-style:italic>append</span>(h.bestOutputs, OutputSnapshot{
+</span></span><span style=display:flex><span>            Iteration: iteration,
+</span></span><span style=display:flex><span>            Quality:   quality,
+</span></span><span style=display:flex><span>            Hash:      fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;%x&#34;</span>, hash[:<span style=color:#bd93f9>8</span>]),
+</span></span><span style=display:flex><span>            Summary:   <span style=color:#50fa7b>summarize</span>(output, <span style=color:#bd93f9>200</span>),
+</span></span><span style=display:flex><span>        })
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    h.qualityTrend = <span style=color:#8be9fd;font-style:italic>append</span>(h.qualityTrend, quality)
+</span></span><span style=display:flex><span>    h.iterations = iteration
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (h <span style=color:#ff79c6>*</span>CompressedLoopHistory) <span style=color:#50fa7b>shouldKeep</span>(iteration <span style=color:#8be9fd>int</span>, quality <span style=color:#8be9fd>float64</span>) <span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Keep: first, best, and most recent</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> iteration <span style=color:#ff79c6>==</span> <span style=color:#bd93f9>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> quality &gt; h.<span style=color:#50fa7b>getBestQuality</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> iteration &gt; h.iterations<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=common-questions-in-depth>Common Questions in Depth<a hidden class=anchor aria-hidden=true href=#common-questions-in-depth>#</a></h2><h3 id=q-how-does-a-loop-workflow-ensure-convergence>Q: How does a Loop workflow ensure convergence?<a hidden class=anchor aria-hidden=true href=#q-how-does-a-loop-workflow-ensure-convergence>#</a></h3><p><strong>A</strong>: Convergence cannot be absolutely guaranteed, but the probability can be increased by:</p><ol><li><strong>Quality monotonicity</strong>: ensure evaluator feedback actually points toward improvement.</li><li><strong>Feedback quality</strong>: use detailed, actionable feedback rather than vague &ldquo;not good enough&rdquo; comments.</li><li><strong>Iterative cooling</strong>: reduce the amplitude of changes in later iterations to avoid oscillation.</li><li><strong>Multi-start</strong>: run multiple Loops from different initial outputs and select the best result.</li></ol><h3 id=q-what-if-the-evaluator-itself-is-inaccurate>Q: What if the evaluator itself is inaccurate?<a hidden class=anchor aria-hidden=true href=#q-what-if-the-evaluator-itself-is-inaccurate>#</a></h3><p><strong>A</strong>: Three layers of protection:</p><ol><li><strong>Multi-evaluator voting</strong>: use 3 different evaluators and take the median.</li><li><strong>Human-in-the-loop</strong>: introduce human review at critical nodes.</li><li><strong>Evaluator calibration</strong>: regularly calibrate evaluation criteria with labeled data.</li></ol><h3 id=q-how-is-loop-token-consumption-controlled>Q: How is Loop token consumption controlled?<a hidden class=anchor aria-hidden=true href=#q-how-is-loop-token-consumption-controlled>#</a></h3><p><strong>A</strong>: A combination of strategies:</p><ul><li>Set a hard budget cap.</li><li>Use a lightweight model for evaluation.</li><li>Compress historical context (keep only summaries).</li><li>Early termination (exit early when quality improvement &lt; 0.01).</li></ul><h2 id=next-steps>Next Steps<a hidden class=anchor aria-hidden=true href=#next-steps>#</a></h2><p>You now have a deep understanding of Loop workflow iterative optimization and convergence control. Next, explore the Custom Workflow—flexible orchestration, dynamic scheduling, and complex scenario adaptation for custom workflows.</p><p>← <a href=/en/tutorials/go-adk/05-multi-agent/go-adk-team-parallel/>Parallel Workflow</a>
+| <a href=/en/tutorials/go-adk/05-multi-agent/go-adk-team-custom/>Custom Workflow →</a></p><hr><blockquote><p>Want to learn more Go ADK hands-on? Follow the &ldquo;Mengshou Programming&rdquo; channel for weekly updates on Go and AI programming.</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class="post-content post-faq" aria-labelledby=post-faq-heading><h2 id=post-faq-heading>Frequently Asked Questions</h2><section class=post-faq__item><h3>What tasks are suitable for the Loop workflow?</h3><p>Tasks that require multiple rounds of iterative optimization and cannot be completed in one pass, such as copy refinement and code review fixes.</p></section><section class=post-faq__item><h3>How do I ensure Loop convergence?</h3><p>Ensure quality monotonicity, provide concrete actionable feedback, use iterative cooling to reduce change amplitude in later stages, and use multi-start to select the best result.</p></section><section class=post-faq__item><h3>What if the evaluator itself is inaccurate?</h3><p>Use multi-evaluator voting, introduce human review at critical nodes, and regularly calibrate evaluation criteria with labeled data.</p></section><section class=post-faq__item><h3>How can Loop token consumption be controlled?</h3><p>Set a hard budget cap, use a lightweight model for evaluation, compress historical context, and terminate early when quality improvement falls below a threshold.</p></section><section class=post-faq__item><h3>What are the termination conditions for Loop?</h3><p>Common termination conditions include quality score reaching the target, reaching the maximum number of iterations, token budget exhaustion, or improvement falling below a threshold.</p></section></section><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><aside class=related-articles aria-label=相关文章><h3>📚 相关文章</h3><ul><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-evaluation/>Evaluation: Agent Effectiveness Evaluation</a>
 <small>— Detailed explanation of how to evaluate Agent output quality—designing …</small></li><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-debugging/>Debugging Notes and Performance Tuning: Common Issues and Solutions</a>
 <small>— Summarize common issues, debugging notes, and performance tuning experiences in …</small></li><li><a href=/en/tutorials/go-adk/10-realworld/go-adk-realworld-full/>End-to-End Project: Complete Flow from Requirements to Deployment</a>
 <small>— Complete project practice through an intelligent customer service system—showing …</small></li><li><a href=/en/tutorials/go-adk/09-advanced/go-adk-advanced-callbacks/>Callbacks and Plugins: Lifecycle Hooks and Extension Mechanism</a>
@@ -65,7 +847,7 @@
     update: false,
   });
 </script><style>#waline-container{background:var(--rex-bg);padding:var(--rex-space-5);border-radius:var(--rex-radius-xl);border:1px solid var(--rex-border)}@media screen and (max-width:768px){#waline-container{padding:var(--rex-space-4)}}.wl-editor{border-radius:var(--rex-radius-lg)}.wl-btn{border-radius:var(--rex-radius-lg);transition:all .3s ease}.wl-btn:hover{transform:translateY(-1px)}.wl-reaction{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--rex-border)}.wl-reaction-title{font-weight:600;margin-bottom:1rem}.wl-reaction-img{transition:transform .2s ease}.wl-reaction-img:hover{transform:scale(1.2)}.wl-card{border:1px solid var(--rex-border);border-radius:var(--rex-radius-lg);background:var(--rex-bg)}.wl-card:hover{border-color:var(--rex-border-bold)}</style></div><aside class="toc-col wp2-floating-toc" data-wp2-toc><button class=wp2-floating-toc__toggle type=button aria-expanded=false aria-controls=wp2-article-toc data-wp2-toc-toggle>
-<span>CONTENTS</span><i aria-hidden=true>＋</i></button><div id=wp2-article-toc class=wp2-floating-toc__panel hidden data-wp2-toc-panel><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#loop-workflow-loop-execution-exit-on-condition aria-label="Loop Workflow: Loop Execution, Exit on Condition">Loop Workflow: Loop Execution, Exit on Condition</a></li></ul></div></details></div></div></aside></div></article></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>SITEMAP</p><a href=/en/>HOME</a>
+<span>CONTENTS</span><i aria-hidden=true>＋</i></button><div id=wp2-article-toc class=wp2-floating-toc__panel hidden data-wp2-toc-panel><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#loop-workflow-deep-dive-iterative-optimization-termination-conditions-and-convergence-guarantees aria-label="Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees">Loop Workflow Deep Dive: Iterative Optimization, Termination Conditions, and Convergence Guarantees</a><ul><li><a href=#mathematical-model-of-iterative-optimization aria-label="Mathematical Model of Iterative Optimization">Mathematical Model of Iterative Optimization</a><ul><li><a href=#convergence-analysis aria-label="Convergence Analysis">Convergence Analysis</a></li><li><a href=#quality-metric-design aria-label="Quality Metric Design">Quality Metric Design</a></li></ul></li><li><a href=#loop-workflow-architecture-design aria-label="Loop Workflow Architecture Design">Loop Workflow Architecture Design</a><ul><li><a href=#core-components aria-label="Core Components">Core Components</a></li><li><a href=#execution-engine aria-label="Execution Engine">Execution Engine</a></li></ul></li><li><a href=#termination-condition-design aria-label="Termination Condition Design">Termination Condition Design</a><ul><li><a href=#composite-exit-conditions aria-label="Composite Exit Conditions">Composite Exit Conditions</a></li></ul></li><li><a href=#iteration-strategy-design aria-label="Iteration Strategy Design">Iteration Strategy Design</a><ul><li><a href=#feedback-building-strategy aria-label="Feedback Building Strategy">Feedback Building Strategy</a></li><li><a href=#adaptive-iteration-strategy aria-label="Adaptive Iteration Strategy">Adaptive Iteration Strategy</a></li></ul></li><li><a href=#hands-on-scenario-copywriting-multi-round-optimization-system aria-label="Hands-On Scenario: Copywriting Multi-Round Optimization System">Hands-On Scenario: Copywriting Multi-Round Optimization System</a><ul><li><a href=#full-implementation aria-label="Full Implementation">Full Implementation</a></li></ul></li><li><a href=#anti-infinite-loop-mechanisms aria-label="Anti-Infinite-Loop Mechanisms">Anti-Infinite-Loop Mechanisms</a><ul><li><a href=#multi-layer-protection aria-label="Multi-Layer Protection">Multi-Layer Protection</a></li></ul></li><li><a href=#state-evolution-and-history-management aria-label="State Evolution and History Management">State Evolution and History Management</a><ul><li><a href=#compressed-storage aria-label="Compressed Storage">Compressed Storage</a></li></ul></li><li><a href=#common-questions-in-depth aria-label="Common Questions in Depth">Common Questions in Depth</a><ul><li><a href=#q-how-does-a-loop-workflow-ensure-convergence aria-label="Q: How does a Loop workflow ensure convergence?">Q: How does a Loop workflow ensure convergence?</a></li><li><a href=#q-what-if-the-evaluator-itself-is-inaccurate aria-label="Q: What if the evaluator itself is inaccurate?">Q: What if the evaluator itself is inaccurate?</a></li><li><a href=#q-how-is-loop-token-consumption-controlled aria-label="Q: How is Loop token consumption controlled?">Q: How is Loop token consumption controlled?</a></li></ul></li><li><a href=#next-steps aria-label="Next Steps">Next Steps</a></li></ul></li></ul></div></details></div></div></aside></div></article></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>SITEMAP</p><a href=/en/>HOME</a>
 <a href=/en/posts/>JOURNAL</a>
 <a href=/en/tutorials/>GUIDES</a></section><section><p class=wp2-footer__label>TOPICS</p><a href=/en/ai/>AI</a>
 <a href=/en/languages/>LANGUAGES</a>
