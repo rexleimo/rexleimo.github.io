@@ -1,0 +1,571 @@
+<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Web 界面部署与维护：让用户通过浏览器使用 | 梦兽编程</title><meta name=keywords content="Go,ADK,Web,部署,运维,教程"><meta name=description content="详解通过 ADK Go 的 Web 界面在生产环境部署 Agent——包括 HTTPS 配置、反向代理、高可用方案。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-web/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.398dffd18a28c2d45709796aa70d801219f077c71465afbe31ffb11da23515d0.css integrity="sha256-OY3/0YoowtRXCXlqpw2AEhnwd8cUZa++Mf+xHaI1FdA=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-web/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/07-deployment/go-adk-deploy-web/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-web/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Web 界面部署与维护：让用户通过浏览器使用"><meta property="og:description" content="详解通过 ADK Go 的 Web 界面在生产环境部署 Agent——包括 HTTPS 配置、反向代理、高可用方案。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-29T10:00:00+08:00"><meta property="article:modified_time" content="2026-05-29T10:00:00+08:00"><meta property="article:author" content="梦兽编程"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Web"><meta property="article:tag" content="部署"><meta property="article:tag" content="运维"><meta property="article:tag" content="教程"><meta name=twitter:card content="summary"><meta name=twitter:title content="Web 界面部署与维护：让用户通过浏览器使用"><meta name=twitter:description content="详解通过 ADK Go 的 Web 界面在生产环境部署 Agent——包括 HTTPS 配置、反向代理、高可用方案。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"梦兽编程","url":"https:\/\/rexai.top\/about/","sameAs":["https:\/\/github.com\/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/tutorials\/go-adk\/07-deployment\/go-adk-deploy-web\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/","name":"教程"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/go-adk/","name":"Go Adk"},"position":3},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/go-adk/07-deployment/","name":"07 Deployment"},"position":4},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-web/","name":"Go Adk Deploy Web"},"position":5}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","headline":"Web 界面部署与维护：让用户通过浏览器使用","description":"详解通过 ADK Go 的 Web 界面在生产环境部署 Agent——包括 HTTPS 配置、反向代理、高可用方案。","inLanguage":"zh-cn","datePublished":"2026-05-29T10:00:00\u002b08:00","dateModified":"2026-05-29T10:00:00\u002b08:00","author":{"@type":"Person","name":"梦兽编程","url":"https:\/\/rexai.top\/about/","sameAs":["https:\/\/github.com\/rexai","https://rexai.top/"]},"publisher":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/","logo":{"@type":"ImageObject","url":"https:\/\/rexai.top\/icon-512.png","width":"512","height":"512"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/tutorials\/go-adk\/07-deployment\/go-adk-deploy-web\/"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".post-content h1",".post-content h2"]},"wordCount":"1444","keywords":["Go","ADK","Web","部署","运维","教程"],"articleSection":"tutorials","articleBody":"Web 界面部署与维护：让用户通过浏览器使用 将 Agent 部署为 Web 服务意味着要面对真实的互联网环境——HTTPS 加密、跨域请求、WebSocket 长连接、CDN 加速、DDoS 防护等。与纯 API 部署不同，Web 界面部署还需要考虑前端资源托管、SEO、首屏加载速度等用户体验问题。\n本文将深入讲解生产级 Web 部署的完整技术栈，从反向代理配置到高可用架构，从性能优化到安全防护。\n启动 Web 服务：分离 API 与 WebUI ADK Go 支持将 API 服务和 WebUI 分离部署，这在生产环境中是最佳实践：\n\/\/ 生产环境推荐：API 和 WebUI 分离 func main() { ctx := context.Background() \/\/ 创建 Agent agent, err := createAgent(ctx) if err != nil { log.Fatal(err) } \/\/ API 服务（面向程序调用） apiRuntime, err := agentruntime.New(ctx, agentruntime.WithAgent(agent), agentruntime.WithPort(8080), agentruntime.WithCORS(agentruntime.CORSConfig{ AllowedOrigins: []string{\u0026#34;https:\/\/my-agent.example.com\u0026#34;}, AllowedMethods: []string{\u0026#34;GET\u0026#34;, \u0026#34;POST\u0026#34;, \u0026#34;OPTIONS\u0026#34;}, AllowedHeaders: []string{\u0026#34;Content-Type\u0026#34;, \u0026#34;Authorization\u0026#34;, \u0026#34;X-Request-ID\u0026#34;}, AllowCredentials: true, MaxAge: 86400, }), ) if err != nil { log.Fatal(err) } \/\/ WebUI 服务（面向浏览器用户） webUIRuntime, err := agentruntime.New(ctx, agentruntime.WithAgent(agent), agentruntime.WithPort(8081), agentruntime.WithWebUI(agentruntime.WebUIConfig{ StaticPath: \u0026#34;.\/webui\/dist\u0026#34;, \/\/ 前端构建产物 IndexPath: \u0026#34;index.html\u0026#34;, APIProxyTarget: \u0026#34;http:\/\/localhost:8080\u0026#34;, \/\/ 代理到 API 服务 }), ) if err != nil { log.Fatal(err) } \/\/ 启动两个服务 errCh := make(chan error, 2) go func() { errCh \u0026lt;- apiRuntime.Serve() }() go func() { errCh \u0026lt;- webUIRuntime.Serve() }() if err := \u0026lt;-errCh; err != nil { log.Fatal(err) } } 分离部署的优势：\n","about":[{"@type":"Thing","name":"Go"},{"@type":"Thing","name":"ADK"},{"@type":"Thing","name":"Web"},{"@type":"Thing","name":"部署"},{"@type":"Thing","name":"运维"},{"@type":"Thing","name":"教程"}],"isAccessibleForFree":"True","timeRequired":"PT10M","copyrightYear":"2026","educationalLevel":"intermediate","learningResourceType":"tutorial"}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":null},"name":null}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
+梦兽编程<sup>™</sup></a><nav class=wp2-header__links aria-label=主导航><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/products/>产品</a></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tutorials/>教程</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tutorials>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 教程 菜单</span></button><div id=wp2-submenu-tutorials class=wp2-header__submenu aria-label=教程 hidden><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/ai/>AI</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-ai>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 AI 菜单</span></button><div id=wp2-submenu-ai class=wp2-header__submenu aria-label=AI hidden><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/languages/>开发</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-dev>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 开发 菜单</span></button><div id=wp2-submenu-dev class=wp2-header__submenu aria-label=开发 hidden><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tools/rexai-tool-directory/>工具</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tools>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 工具 菜单</span></button><div id=wp2-submenu-tools class=wp2-header__submenu aria-label=工具 hidden><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/categories/>探索</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-explore>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 探索 菜单</span></button><div id=wp2-submenu-explore class=wp2-header__submenu aria-label=探索 hidden><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></div><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/about/>关于</a></div></nav><div class=wp2-header__spacer></div><a class=wp2-header__cta href=/tools/cc-codex-portal/>AI 套装 <span aria-hidden=true>&rarr;</span></a>
+<button class=wp2-header__menu type=button aria-expanded=false aria-controls=wp2-mobile-menu data-wp2-menu data-open-label=打开菜单 data-close-label=关闭菜单>
+<span class=wp2-header__menu-mark aria-hidden=true><i></i><i></i><i></i></span>
+<span class=wp2-header__menu-label data-wp2-menu-label>打开菜单</span></button></header><div id=wp2-mobile-menu class=wp2-menu-panel hidden><div class=wp2-menu-panel__frame><div class=wp2-menu-panel__directory><div class=wp2-menu-panel__meta><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div><nav class=wp2-menu-panel__grid aria-label=全站导航><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/products/><strong>产品</strong><span aria-hidden=true>&rarr;</span></a><p>自研产品、服务与项目入口。</p></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tutorials/><strong>教程</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/ai/><strong>AI</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/languages/><strong>开发</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tools/rexai-tool-directory/><strong>工具</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/categories/><strong>探索</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></section><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/about/><strong>关于</strong><span aria-hidden=true>&rarr;</span></a><p>了解梦兽编程、联系渠道与站点说明。</p></section></nav></div><div class=wp2-menu-panel__utility aria-label=站点工具><span class=wp2-menu-panel__utility-label>实用工具</span>
+<a class=wp2-menu-panel__utility-search href=/search/>搜索</a><a href=/en/>English</a>
+<button type=button data-theme-toggle data-theme-light-label=主题：浅色 data-theme-dark-label=主题：深色 data-theme-light-action=切换至深色 data-theme-dark-action=切换至浅色 aria-pressed=false><span data-theme-toggle-label>主题：浅色</span></button></div></div></div><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class=glass-main><article class="post-single wp2-article"><header class=page-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
+<meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/><span itemprop=name>教程</span></a>
+<meta itemprop=position content="2"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/go-adk/><span itemprop=name>Go Adk</span></a>
+<meta itemprop=position content="3"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/go-adk/07-deployment/><span itemprop=name>07 Deployment</span></a>
+<meta itemprop=position content="4"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/go-adk/07-deployment/go-adk-deploy-web/><span itemprop=name>Go Adk Deploy Web</span></a>
+<meta itemprop=position content="5"></li></ol></nav><h1 class="post-title entry-hint-parent">Web 界面部署与维护：让用户通过浏览器使用</h1><p class=post-description>详解通过 ADK Go 的 Web 界面在生产环境部署 Agent——包括 HTTPS 配置、反向代理、高可用方案。</p><div class=post-meta><span title='2026-05-29 10:00:00 +0800 CST'>May 29, 2026</span>&nbsp;·&nbsp;7 min&nbsp;·&nbsp;1444 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/07-deployment/go-adk-deploy-web/ style=margin-left:.5rem>
+<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
+<span class=waline-pageview-number id=waline-pv-d20ee902887fbb9cd328f06c8c22ae7c1544a861a89cfbdc440d8d164c99a9fb data-path=/tutorials/go-adk/07-deployment/go-adk-deploy-web/>-</span></span></div></header><div class="post-layout has-toc"><div class=post-main><div class=post-content><p>将 Agent 部署为 Web 服务意味着要面对真实的互联网环境——HTTPS 加密、跨域请求、WebSocket 长连接、CDN 加速、DDoS 防护等。与纯 API 部署不同，Web 界面部署还需要考虑前端资源托管、SEO、首屏加载速度等用户体验问题。</p><p>本文将深入讲解生产级 Web 部署的完整技术栈，从反向代理配置到高可用架构，从性能优化到安全防护。</p><hr><h2 id=启动-web-服务分离-api-与-webui>启动 Web 服务：分离 API 与 WebUI<a hidden class=anchor aria-hidden=true href=#启动-web-服务分离-api-与-webui>#</a></h2><p>ADK Go 支持将 API 服务和 WebUI 分离部署，这在生产环境中是最佳实践：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 生产环境推荐：API 和 WebUI 分离</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>main</span>() {
+</span></span><span style=display:flex><span>    ctx <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>Background</span>()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 创建 Agent</span>
+</span></span><span style=display:flex><span>    agent, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>createAgent</span>(ctx)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatal</span>(err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// API 服务（面向程序调用）</span>
+</span></span><span style=display:flex><span>    apiRuntime, err <span style=color:#ff79c6>:=</span> agentruntime.<span style=color:#50fa7b>New</span>(ctx,
+</span></span><span style=display:flex><span>        agentruntime.<span style=color:#50fa7b>WithAgent</span>(agent),
+</span></span><span style=display:flex><span>        agentruntime.<span style=color:#50fa7b>WithPort</span>(<span style=color:#bd93f9>8080</span>),
+</span></span><span style=display:flex><span>        agentruntime.<span style=color:#50fa7b>WithCORS</span>(agentruntime.CORSConfig{
+</span></span><span style=display:flex><span>            AllowedOrigins:   []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;https://my-agent.example.com&#34;</span>},
+</span></span><span style=display:flex><span>            AllowedMethods:   []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;GET&#34;</span>, <span style=color:#f1fa8c>&#34;POST&#34;</span>, <span style=color:#f1fa8c>&#34;OPTIONS&#34;</span>},
+</span></span><span style=display:flex><span>            AllowedHeaders:   []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;Content-Type&#34;</span>, <span style=color:#f1fa8c>&#34;Authorization&#34;</span>, <span style=color:#f1fa8c>&#34;X-Request-ID&#34;</span>},
+</span></span><span style=display:flex><span>            AllowCredentials: <span style=color:#ff79c6>true</span>,
+</span></span><span style=display:flex><span>            MaxAge:           <span style=color:#bd93f9>86400</span>,
+</span></span><span style=display:flex><span>        }),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatal</span>(err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// WebUI 服务（面向浏览器用户）</span>
+</span></span><span style=display:flex><span>    webUIRuntime, err <span style=color:#ff79c6>:=</span> agentruntime.<span style=color:#50fa7b>New</span>(ctx,
+</span></span><span style=display:flex><span>        agentruntime.<span style=color:#50fa7b>WithAgent</span>(agent),
+</span></span><span style=display:flex><span>        agentruntime.<span style=color:#50fa7b>WithPort</span>(<span style=color:#bd93f9>8081</span>),
+</span></span><span style=display:flex><span>        agentruntime.<span style=color:#50fa7b>WithWebUI</span>(agentruntime.WebUIConfig{
+</span></span><span style=display:flex><span>            StaticPath:     <span style=color:#f1fa8c>&#34;./webui/dist&#34;</span>,  <span style=color:#6272a4>// 前端构建产物</span>
+</span></span><span style=display:flex><span>            IndexPath:      <span style=color:#f1fa8c>&#34;index.html&#34;</span>,
+</span></span><span style=display:flex><span>            APIProxyTarget: <span style=color:#f1fa8c>&#34;http://localhost:8080&#34;</span>,  <span style=color:#6272a4>// 代理到 API 服务</span>
+</span></span><span style=display:flex><span>        }),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatal</span>(err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 启动两个服务</span>
+</span></span><span style=display:flex><span>    errCh <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>chan</span> <span style=color:#8be9fd>error</span>, <span style=color:#bd93f9>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() { errCh <span style=color:#ff79c6>&lt;-</span> apiRuntime.<span style=color:#50fa7b>Serve</span>() }()
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() { errCh <span style=color:#ff79c6>&lt;-</span> webUIRuntime.<span style=color:#50fa7b>Serve</span>() }()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&lt;-</span>errCh; err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatal</span>(err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><strong>分离部署的优势</strong>：</p><ol><li><strong>独立扩展</strong>：API 和 WebUI 的负载模式不同，可以分别扩容</li><li><strong>独立维护</strong>：前端更新不需要重启 API 服务</li><li><strong>安全隔离</strong>：WebUI 可以放在 CDN 后，API 可以限制内网访问</li><li><strong>技术栈独立</strong>：前端可以用 Vite/Webpack 构建，与后端解耦</li></ol><hr><h2 id=https-配置生产环境的安全基线>HTTPS 配置：生产环境的安全基线<a hidden class=anchor aria-hidden=true href=#https-配置生产环境的安全基线>#</a></h2><h3 id=使用-nginx-反向代理推荐>使用 Nginx 反向代理（推荐）<a hidden class=anchor aria-hidden=true href=#使用-nginx-反向代理推荐>#</a></h3><p>Nginx 作为反向代理是生产环境的标准做法，它提供 SSL 终止、负载均衡、静态文件缓存等功能：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-nginx data-lang=nginx><span style=display:flex><span><span style=color:#6272a4># /etc/nginx/sites-available/my-agent
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># HTTP 重定向到 HTTPS
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6>server</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>listen</span> <span style=color:#bd93f9>80</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>server_name</span> <span style=color:#f1fa8c>my-agent.example.com</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#bd93f9>301</span> <span style=color:#f1fa8c>https://</span><span style=color:#8be9fd;font-style:italic>$server_name$request_uri</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># HTTPS 服务
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6>server</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>listen</span> <span style=color:#bd93f9>443</span> <span style=color:#f1fa8c>ssl</span> <span style=color:#f1fa8c>http2</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>server_name</span> <span style=color:#f1fa8c>my-agent.example.com</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># SSL 证书配置
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_certificate</span> <span style=color:#f1fa8c>/etc/ssl/certs/my-agent.example.com.crt</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_certificate_key</span> <span style=color:#f1fa8c>/etc/ssl/private/my-agent.example.com.key</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># SSL 安全加固
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_protocols</span> <span style=color:#f1fa8c>TLSv1.2</span> <span style=color:#f1fa8c>TLSv1.3</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_ciphers</span> <span style=color:#f1fa8c>ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_prefer_server_ciphers</span> on;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_session_cache</span> <span style=color:#f1fa8c>shared:SSL:10m</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_session_timeout</span> <span style=color:#f1fa8c>1d</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>ssl_session_tickets</span> off;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># HSTS（强制 HTTPS）
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>Strict-Transport-Security</span> <span style=color:#f1fa8c>&#34;max-age=63072000</span>; <span style=color:#ff79c6>includeSubDomains</span>; <span style=color:#ff79c6>preload&#34;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 安全响应头
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>X-Frame-Options</span> <span style=color:#f1fa8c>&#34;SAMEORIGIN&#34;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>X-Content-Type-Options</span> <span style=color:#f1fa8c>&#34;nosniff&#34;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>X-XSS-Protection</span> <span style=color:#f1fa8c>&#34;1</span>; <span style=color:#ff79c6>mode=block&#34;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>Referrer-Policy</span> <span style=color:#f1fa8c>&#34;strict-origin-when-cross-origin&#34;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 日志配置
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>access_log</span> <span style=color:#f1fa8c>/var/log/nginx/my-agent.access.log</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>error_log</span> <span style=color:#f1fa8c>/var/log/nginx/my-agent.error.log</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># Gzip 压缩
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>gzip</span> on;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>gzip_vary</span> on;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>gzip_proxied</span> <span style=color:#f1fa8c>any</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>gzip_comp_level</span> <span style=color:#bd93f9>6</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>gzip_types</span> <span style=color:#f1fa8c>text/plain</span> <span style=color:#f1fa8c>text/css</span> <span style=color:#f1fa8c>text/xml</span> <span style=color:#f1fa8c>application/json</span> <span style=color:#f1fa8c>application/javascript</span> <span style=color:#f1fa8c>application/xml+rss</span> <span style=color:#f1fa8c>application/atom+xml</span> <span style=color:#f1fa8c>image/svg+xml</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># API 代理（代理到后端服务）
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>location</span> <span style=color:#f1fa8c>/api/</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_pass</span> <span style=color:#f1fa8c>http://localhost:8080/</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_http_version</span> <span style=color:#bd93f9>1</span><span style=color:#f1fa8c>.1</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># 请求头转发
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Host</span> <span style=color:#8be9fd;font-style:italic>$host</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Real-IP</span> <span style=color:#8be9fd;font-style:italic>$remote_addr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Forwarded-For</span> <span style=color:#8be9fd;font-style:italic>$proxy_add_x_forwarded_for</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Forwarded-Proto</span> <span style=color:#8be9fd;font-style:italic>$scheme</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Request-ID</span> <span style=color:#8be9fd;font-style:italic>$request_id</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># 超时配置（Agent 响应可能较慢）
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_connect_timeout</span> <span style=color:#f1fa8c>30s</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_send_timeout</span> <span style=color:#f1fa8c>60s</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_read_timeout</span> <span style=color:#f1fa8c>300s</span>;  <span style=color:#6272a4># 5 分钟，适应长推理
+</span></span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># SSE（Server-Sent Events）支持
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_buffering</span> off;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_cache</span> off;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_read_timeout</span> <span style=color:#bd93f9>86400</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># 错误处理
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_intercept_errors</span> on;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>error_page</span> <span style=color:#bd93f9>502</span> <span style=color:#bd93f9>503</span> <span style=color:#bd93f9>504</span> <span style=color:#f1fa8c>/50x.html</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># WebSocket 支持（如果需要实时通信）
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>location</span> <span style=color:#f1fa8c>/ws/</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_pass</span> <span style=color:#f1fa8c>http://localhost:8080/ws/</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_http_version</span> <span style=color:#bd93f9>1</span><span style=color:#f1fa8c>.1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Upgrade</span> <span style=color:#8be9fd;font-style:italic>$http_upgrade</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Connection</span> <span style=color:#f1fa8c>&#34;upgrade&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Host</span> <span style=color:#8be9fd;font-style:italic>$host</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Real-IP</span> <span style=color:#8be9fd;font-style:italic>$remote_addr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_read_timeout</span> <span style=color:#bd93f9>86400</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># WebUI 静态文件
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>location</span> <span style=color:#f1fa8c>/</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>root</span> <span style=color:#f1fa8c>/opt/my-agent/webui/dist</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>try_files</span> <span style=color:#8be9fd;font-style:italic>$uri</span> <span style=color:#8be9fd;font-style:italic>$uri/</span> <span style=color:#f1fa8c>/index.html</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># 静态文件缓存
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>location</span> ~<span style=color:#f1fa8c>*</span> <span style=color:#f1fa8c>\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)</span>$ {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>expires</span> <span style=color:#f1fa8c>1y</span>;
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>Cache-Control</span> <span style=color:#f1fa8c>&#34;public,</span> <span style=color:#f1fa8c>immutable&#34;</span>;
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>access_log</span> off;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># HTML 文件不缓存（支持前端路由）
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>location</span> ~<span style=color:#f1fa8c>*</span> <span style=color:#f1fa8c>\.html</span>$ {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>expires</span> <span style=color:#f1fa8c>-1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>Cache-Control</span> <span style=color:#f1fa8c>&#34;no-cache,</span> <span style=color:#f1fa8c>no-store,</span> <span style=color:#f1fa8c>must-revalidate&#34;</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 错误页面
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>location</span> = <span style=color:#f1fa8c>/50x.html</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>root</span> <span style=color:#f1fa8c>/usr/share/nginx/html</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>internal</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 限制请求体大小（防止大文件上传导致内存问题）
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>client_max_body_size</span> <span style=color:#bd93f9>10m</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 限流配置（防止 DDoS）
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>limit_req_zone</span> <span style=color:#8be9fd;font-style:italic>$binary_remote_addr</span> <span style=color:#f1fa8c>zone=api_limit:10m</span> <span style=color:#f1fa8c>rate=10r/s</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>location</span> <span style=color:#f1fa8c>/api/</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>limit_req</span> <span style=color:#f1fa8c>zone=api_limit</span> <span style=color:#f1fa8c>burst=20</span> <span style=color:#f1fa8c>nodelay</span>;
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># ... 其他配置
+</span></span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=使用-lets-encrypt-免费证书>使用 Let&rsquo;s Encrypt 免费证书<a hidden class=anchor aria-hidden=true href=#使用-lets-encrypt-免费证书>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#6272a4># 安装 certbot</span>
+</span></span><span style=display:flex><span>sudo apt-get install certbot python3-certbot-nginx
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># 自动获取并配置证书</span>
+</span></span><span style=display:flex><span>sudo certbot --nginx -d my-agent.example.com
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># 测试自动续期</span>
+</span></span><span style=display:flex><span>sudo certbot renew --dry-run
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># 查看证书信息</span>
+</span></span><span style=display:flex><span>sudo certbot certificates
+</span></span></code></pre></div><p><strong>自动续期配置</strong>：</p><p>Let&rsquo;s Encrypt 证书有效期 90 天，需要设置自动续期：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#6272a4># 添加 crontab 任务</span>
+</span></span><span style=display:flex><span>sudo crontab -e
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4># 添加以下行（每天凌晨 3 点尝试续期）</span>
+</span></span><span style=display:flex><span><span style=color:#bd93f9>0</span> <span style=color:#bd93f9>3</span> * * * /usr/bin/certbot renew --quiet --deploy-hook <span style=color:#f1fa8c>&#34;systemctl reload nginx&#34;</span>
+</span></span></code></pre></div><h3 id=使用-cloudflare-代理增强安全>使用 Cloudflare 代理（增强安全）<a hidden class=anchor aria-hidden=true href=#使用-cloudflare-代理增强安全>#</a></h3><p>如果域名使用 Cloudflare DNS，可以开启其代理服务获得额外保护：</p><ol><li><strong>SSL/TLS 模式</strong>：设置为 &ldquo;Full (strict)&rdquo;</li><li><strong>Always Use HTTPS</strong>：开启</li><li><strong>Security Level</strong>：根据需求设置</li><li><strong>Bot Fight Mode</strong>：开启，防止恶意爬虫</li><li><strong>Rate Limiting Rules</strong>：配置 API 限流</li></ol><hr><h2 id=高可用方案从单点到集群>高可用方案：从单点到集群<a hidden class=anchor aria-hidden=true href=#高可用方案从单点到集群>#</a></h2><h3 id=多实例--负载均衡架构>多实例 + 负载均衡架构<a hidden class=anchor aria-hidden=true href=#多实例--负载均衡架构>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>                              ┌─────────────┐
+</span></span><span style=display:flex><span>                              │   CDN /     │
+</span></span><span style=display:flex><span>                              │ Cloudflare  │
+</span></span><span style=display:flex><span>                              └──────┬──────┘
+</span></span><span style=display:flex><span>                                     │
+</span></span><span style=display:flex><span>                              ┌──────▼──────┐
+</span></span><span style=display:flex><span>                              │   Nginx     │
+</span></span><span style=display:flex><span>                              │ (负载均衡)   │
+</span></span><span style=display:flex><span>                              │  + SSL 终止  │
+</span></span><span style=display:flex><span>                              └──────┬──────┘
+</span></span><span style=display:flex><span>                                     │
+</span></span><span style=display:flex><span>                    ┌────────────────┼────────────────┐
+</span></span><span style=display:flex><span>                    ▼                ▼                ▼
+</span></span><span style=display:flex><span>             ┌──────────┐     ┌──────────┐     ┌──────────┐
+</span></span><span style=display:flex><span>             │ Runtime  │     │ Runtime  │     │ Runtime  │
+</span></span><span style=display:flex><span>             │ 实例 1   │     │ 实例 2   │     │ 实例 3   │
+</span></span><span style=display:flex><span>             │ :8080    │     │ :8081    │     │ :8082    │
+</span></span><span style=display:flex><span>             └────┬─────┘     └────┬─────┘     └────┬─────┘
+</span></span><span style=display:flex><span>                  │                │                │
+</span></span><span style=display:flex><span>                  └────────────────┼────────────────┘
+</span></span><span style=display:flex><span>                                   ▼
+</span></span><span style=display:flex><span>                            ┌─────────────┐
+</span></span><span style=display:flex><span>                            │    Redis    │
+</span></span><span style=display:flex><span>                            │ (Session    │
+</span></span><span style=display:flex><span>                            │  共享存储)   │
+</span></span><span style=display:flex><span>                            └─────────────┘
+</span></span></code></pre></div><h3 id=nginx-负载均衡配置>Nginx 负载均衡配置<a hidden class=anchor aria-hidden=true href=#nginx-负载均衡配置>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-nginx data-lang=nginx><span style=display:flex><span><span style=color:#ff79c6>upstream</span> <span style=color:#f1fa8c>runtime_backend</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 加权轮询（根据实例性能调整权重）
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>server</span> 127.0.0.1:<span style=color:#bd93f9>8080</span> <span style=color:#f1fa8c>weight=3</span> <span style=color:#f1fa8c>max_fails=3</span> <span style=color:#f1fa8c>fail_timeout=30s</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>server</span> 127.0.0.1:<span style=color:#bd93f9>8081</span> <span style=color:#f1fa8c>weight=3</span> <span style=color:#f1fa8c>max_fails=3</span> <span style=color:#f1fa8c>fail_timeout=30s</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>server</span> 127.0.0.1:<span style=color:#bd93f9>8082</span> <span style=color:#f1fa8c>weight=3</span> <span style=color:#f1fa8c>max_fails=3</span> <span style=color:#f1fa8c>fail_timeout=30s</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 健康检查（需要 nginx-plus 或第三方模块）
+</span></span></span><span style=display:flex><span>    <span style=color:#6272a4># health_check interval=5s fails=3 passes=2;
+</span></span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 连接池配置
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>keepalive</span> <span style=color:#bd93f9>32</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>keepalive_timeout</span> <span style=color:#f1fa8c>60s</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>keepalive_requests</span> <span style=color:#bd93f9>1000</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>server</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>location</span> <span style=color:#f1fa8c>/api/</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_pass</span> <span style=color:#f1fa8c>http://runtime_backend/</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_http_version</span> <span style=color:#bd93f9>1</span><span style=color:#f1fa8c>.1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Connection</span> <span style=color:#f1fa8c>&#34;&#34;</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># 启用连接复用
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Host</span> <span style=color:#8be9fd;font-style:italic>$host</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Real-IP</span> <span style=color:#8be9fd;font-style:italic>$remote_addr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Forwarded-For</span> <span style=color:#8be9fd;font-style:italic>$proxy_add_x_forwarded_for</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Forwarded-Proto</span> <span style=color:#8be9fd;font-style:italic>$scheme</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4># 超时配置
+</span></span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_connect_timeout</span> <span style=color:#f1fa8c>30s</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_send_timeout</span> <span style=color:#f1fa8c>60s</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>proxy_read_timeout</span> <span style=color:#f1fa8c>300s</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=session-共享redis-集群配置>Session 共享：Redis 集群配置<a hidden class=anchor aria-hidden=true href=#session-共享redis-集群配置>#</a></h3><p>多实例部署必须解决 Session 共享问题，Redis 是最常用的方案：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/redis/go-redis/v9&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>createRedisClient</span>() <span style=color:#ff79c6>*</span>redis.Client {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> redis.<span style=color:#50fa7b>NewClient</span>(<span style=color:#ff79c6>&amp;</span>redis.Options{
+</span></span><span style=display:flex><span>        Addr:     <span style=color:#f1fa8c>&#34;localhost:6379&#34;</span>,
+</span></span><span style=display:flex><span>        Password: <span style=color:#f1fa8c>&#34;&#34;</span>,  <span style=color:#6272a4>// 生产环境必须设置密码</span>
+</span></span><span style=display:flex><span>        DB:       <span style=color:#bd93f9>0</span>,
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 连接池配置</span>
+</span></span><span style=display:flex><span>        PoolSize:     <span style=color:#bd93f9>100</span>,              <span style=color:#6272a4>// 连接池大小</span>
+</span></span><span style=display:flex><span>        MinIdleConns: <span style=color:#bd93f9>10</span>,               <span style=color:#6272a4>// 最小空闲连接</span>
+</span></span><span style=display:flex><span>        MaxRetries:   <span style=color:#bd93f9>3</span>,                <span style=color:#6272a4>// 最大重试次数</span>
+</span></span><span style=display:flex><span>        DialTimeout:  <span style=color:#bd93f9>5</span> <span style=color:#ff79c6>*</span> time.Second,  <span style=color:#6272a4>// 连接超时</span>
+</span></span><span style=display:flex><span>        ReadTimeout:  <span style=color:#bd93f9>3</span> <span style=color:#ff79c6>*</span> time.Second,  <span style=color:#6272a4>// 读取超时</span>
+</span></span><span style=display:flex><span>        WriteTimeout: <span style=color:#bd93f9>3</span> <span style=color:#ff79c6>*</span> time.Second,  <span style=color:#6272a4>// 写入超时</span>
+</span></span><span style=display:flex><span>        PoolTimeout:  <span style=color:#bd93f9>4</span> <span style=color:#ff79c6>*</span> time.Second,  <span style=color:#6272a4>// 从池获取连接超时</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 健康检查</span>
+</span></span><span style=display:flex><span>        ConnMaxIdleTime: <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Minute,
+</span></span><span style=display:flex><span>        ConnMaxLifetime: <span style=color:#bd93f9>1</span> <span style=color:#ff79c6>*</span> time.Hour,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 生产环境：Redis Cluster</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>createRedisCluster</span>() <span style=color:#ff79c6>*</span>redis.ClusterClient {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> redis.<span style=color:#50fa7b>NewClusterClient</span>(<span style=color:#ff79c6>&amp;</span>redis.ClusterOptions{
+</span></span><span style=display:flex><span>        Addrs: []<span style=color:#8be9fd>string</span>{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;redis-node-1:6379&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;redis-node-2:6379&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;redis-node-3:6379&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        Password: <span style=color:#f1fa8c>&#34;your-strong-password&#34;</span>,
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 集群配置</span>
+</span></span><span style=display:flex><span>        PoolSize:        <span style=color:#bd93f9>100</span>,
+</span></span><span style=display:flex><span>        MinIdleConns:    <span style=color:#bd93f9>10</span>,
+</span></span><span style=display:flex><span>        MaxRetries:      <span style=color:#bd93f9>3</span>,
+</span></span><span style=display:flex><span>        DialTimeout:     <span style=color:#bd93f9>5</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        ReadTimeout:     <span style=color:#bd93f9>3</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        WriteTimeout:    <span style=color:#bd93f9>3</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 路由配置</span>
+</span></span><span style=display:flex><span>        RouteRandomly:   <span style=color:#ff79c6>true</span>,  <span style=color:#6272a4>// 读操作随机路由到从节点</span>
+</span></span><span style=display:flex><span>        RouteByLatency:  <span style=color:#ff79c6>false</span>,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Runtime 配置 Redis Session 存储</span>
+</span></span><span style=display:flex><span>runtime, err <span style=color:#ff79c6>:=</span> agentruntime.<span style=color:#50fa7b>New</span>(ctx,
+</span></span><span style=display:flex><span>    agentruntime.<span style=color:#50fa7b>WithAgent</span>(agent),
+</span></span><span style=display:flex><span>    agentruntime.<span style=color:#50fa7b>WithRedisStore</span>(redisClient),
+</span></span><span style=display:flex><span>    agentruntime.<span style=color:#50fa7b>WithSessionSerializer</span>(agentruntime.JSONSerializer),  <span style=color:#6272a4>// JSON 序列化</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><p><strong>Session 序列化性能对比</strong>：</p><div class=table-wrapper><table><thead><tr><th>序列化方式</th><th>速度</th><th>体积</th><th>可读性</th><th>建议</th></tr></thead><tbody><tr><td>JSON</td><td>中等</td><td>较大</td><td>好</td><td>通用，调试方便</td></tr><tr><td>MessagePack</td><td>快</td><td>小</td><td>差</td><td>高性能场景</td></tr><tr><td>Protobuf</td><td>最快</td><td>最小</td><td>差</td><td>极致性能，但增加复杂度</td></tr></tbody></table></div><hr><h2 id=运维监控可观测性三支柱>运维监控：可观测性三支柱<a hidden class=anchor aria-hidden=true href=#运维监控可观测性三支柱>#</a></h2><h3 id=健康检查端点>健康检查端点<a hidden class=anchor aria-hidden=true href=#健康检查端点>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 分层健康检查</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>healthHandler</span>(w http.ResponseWriter, r <span style=color:#ff79c6>*</span>http.Request) {
+</span></span><span style=display:flex><span>    ctx <span style=color:#ff79c6>:=</span> r.<span style=color:#50fa7b>Context</span>()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    health <span style=color:#ff79c6>:=</span> HealthStatus{
+</span></span><span style=display:flex><span>        Status:    <span style=color:#f1fa8c>&#34;healthy&#34;</span>,
+</span></span><span style=display:flex><span>        Timestamp: time.<span style=color:#50fa7b>Now</span>().<span style=color:#50fa7b>UTC</span>(),
+</span></span><span style=display:flex><span>        Version:   version,
+</span></span><span style=display:flex><span>        Uptime:    time.<span style=color:#50fa7b>Since</span>(startTime).<span style=color:#50fa7b>String</span>(),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 依赖检查</span>
+</span></span><span style=display:flex><span>    checks <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]DependencyStatus)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// Redis 检查</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> redisClient.<span style=color:#50fa7b>Ping</span>(ctx).<span style=color:#50fa7b>Err</span>(); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        checks[<span style=color:#f1fa8c>&#34;redis&#34;</span>] = DependencyStatus{Status: <span style=color:#f1fa8c>&#34;down&#34;</span>, Error: err.<span style=color:#50fa7b>Error</span>()}
+</span></span><span style=display:flex><span>        health.Status = <span style=color:#f1fa8c>&#34;unhealthy&#34;</span>
+</span></span><span style=display:flex><span>    } <span style=color:#ff79c6>else</span> {
+</span></span><span style=display:flex><span>        checks[<span style=color:#f1fa8c>&#34;redis&#34;</span>] = DependencyStatus{Status: <span style=color:#f1fa8c>&#34;up&#34;</span>, Latency: <span style=color:#f1fa8c>&#34;2ms&#34;</span>}
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// LLM API 检查（轻量级）</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>checkLLMHealth</span>(ctx); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        checks[<span style=color:#f1fa8c>&#34;llm&#34;</span>] = DependencyStatus{Status: <span style=color:#f1fa8c>&#34;degraded&#34;</span>, Error: err.<span style=color:#50fa7b>Error</span>()}
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> health.Status <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#34;healthy&#34;</span> {
+</span></span><span style=display:flex><span>            health.Status = <span style=color:#f1fa8c>&#34;degraded&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    } <span style=color:#ff79c6>else</span> {
+</span></span><span style=display:flex><span>        checks[<span style=color:#f1fa8c>&#34;llm&#34;</span>] = DependencyStatus{Status: <span style=color:#f1fa8c>&#34;up&#34;</span>, Latency: <span style=color:#f1fa8c>&#34;150ms&#34;</span>}
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    health.Checks = checks
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 根据状态设置 HTTP 状态码</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>switch</span> health.Status {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#f1fa8c>&#34;healthy&#34;</span>:
+</span></span><span style=display:flex><span>        w.<span style=color:#50fa7b>WriteHeader</span>(http.StatusOK)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#f1fa8c>&#34;degraded&#34;</span>:
+</span></span><span style=display:flex><span>        w.<span style=color:#50fa7b>WriteHeader</span>(http.StatusOK)  <span style=color:#6272a4>// 降级仍返回 200，但标记状态</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#f1fa8c>&#34;unhealthy&#34;</span>:
+</span></span><span style=display:flex><span>        w.<span style=color:#50fa7b>WriteHeader</span>(http.StatusServiceUnavailable)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    w.<span style=color:#50fa7b>Header</span>().<span style=color:#50fa7b>Set</span>(<span style=color:#f1fa8c>&#34;Content-Type&#34;</span>, <span style=color:#f1fa8c>&#34;application/json&#34;</span>)
+</span></span><span style=display:flex><span>    json.<span style=color:#50fa7b>NewEncoder</span>(w).<span style=color:#50fa7b>Encode</span>(health)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=prometheus-指标接入>Prometheus 指标接入<a hidden class=anchor aria-hidden=true href=#prometheus-指标接入>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/prometheus/client_golang/prometheus&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/prometheus/client_golang/prometheus/promhttp&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>var</span> (
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 请求计数器</span>
+</span></span><span style=display:flex><span>    requestCounter = prometheus.<span style=color:#50fa7b>NewCounterVec</span>(
+</span></span><span style=display:flex><span>        prometheus.CounterOpts{
+</span></span><span style=display:flex><span>            Name: <span style=color:#f1fa8c>&#34;agent_requests_total&#34;</span>,
+</span></span><span style=display:flex><span>            Help: <span style=color:#f1fa8c>&#34;Total number of requests&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;method&#34;</span>, <span style=color:#f1fa8c>&#34;endpoint&#34;</span>, <span style=color:#f1fa8c>&#34;status&#34;</span>},
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 请求延迟直方图</span>
+</span></span><span style=display:flex><span>    requestDuration = prometheus.<span style=color:#50fa7b>NewHistogramVec</span>(
+</span></span><span style=display:flex><span>        prometheus.HistogramOpts{
+</span></span><span style=display:flex><span>            Name:    <span style=color:#f1fa8c>&#34;agent_request_duration_seconds&#34;</span>,
+</span></span><span style=display:flex><span>            Help:    <span style=color:#f1fa8c>&#34;Request duration in seconds&#34;</span>,
+</span></span><span style=display:flex><span>            Buckets: prometheus.DefBuckets,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;method&#34;</span>, <span style=color:#f1fa8c>&#34;endpoint&#34;</span>},
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 活跃 Session 数</span>
+</span></span><span style=display:flex><span>    activeSessions = prometheus.<span style=color:#50fa7b>NewGauge</span>(
+</span></span><span style=display:flex><span>        prometheus.GaugeOpts{
+</span></span><span style=display:flex><span>            Name: <span style=color:#f1fa8c>&#34;agent_active_sessions&#34;</span>,
+</span></span><span style=display:flex><span>            Help: <span style=color:#f1fa8c>&#34;Number of active sessions&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// LLM API 调用指标</span>
+</span></span><span style=display:flex><span>    llmCalls = prometheus.<span style=color:#50fa7b>NewCounterVec</span>(
+</span></span><span style=display:flex><span>        prometheus.CounterOpts{
+</span></span><span style=display:flex><span>            Name: <span style=color:#f1fa8c>&#34;agent_llm_calls_total&#34;</span>,
+</span></span><span style=display:flex><span>            Help: <span style=color:#f1fa8c>&#34;Total number of LLM API calls&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;model&#34;</span>, <span style=color:#f1fa8c>&#34;status&#34;</span>},
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    llmLatency = prometheus.<span style=color:#50fa7b>NewHistogramVec</span>(
+</span></span><span style=display:flex><span>        prometheus.HistogramOpts{
+</span></span><span style=display:flex><span>            Name:    <span style=color:#f1fa8c>&#34;agent_llm_latency_seconds&#34;</span>,
+</span></span><span style=display:flex><span>            Help:    <span style=color:#f1fa8c>&#34;LLM API latency in seconds&#34;</span>,
+</span></span><span style=display:flex><span>            Buckets: []<span style=color:#8be9fd>float64</span>{<span style=color:#bd93f9>0.5</span>, <span style=color:#bd93f9>1</span>, <span style=color:#bd93f9>2</span>, <span style=color:#bd93f9>5</span>, <span style=color:#bd93f9>10</span>, <span style=color:#bd93f9>30</span>, <span style=color:#bd93f9>60</span>},
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;model&#34;</span>},
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>init</span>() {
+</span></span><span style=display:flex><span>    prometheus.<span style=color:#50fa7b>MustRegister</span>(requestCounter, requestDuration, activeSessions, llmCalls, llmLatency)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 在 main 中启动 metrics server</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>startMetricsServer</span>(port <span style=color:#8be9fd>int</span>) {
+</span></span><span style=display:flex><span>    mux <span style=color:#ff79c6>:=</span> http.<span style=color:#50fa7b>NewServeMux</span>()
+</span></span><span style=display:flex><span>    mux.<span style=color:#50fa7b>Handle</span>(<span style=color:#f1fa8c>&#34;/metrics&#34;</span>, promhttp.<span style=color:#50fa7b>Handler</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    server <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>http.Server{
+</span></span><span style=display:flex><span>        Addr:    fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;:%d&#34;</span>, port),
+</span></span><span style=display:flex><span>        Handler: mux,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>go</span> <span style=color:#8be9fd;font-style:italic>func</span>() {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Metrics server starting on :%d&#34;</span>, port)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> server.<span style=color:#50fa7b>ListenAndServe</span>(); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Metrics server error: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }()
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=grafana-监控面板>Grafana 监控面板<a hidden class=anchor aria-hidden=true href=#grafana-监控面板>#</a></h3><p>关键监控指标：</p><div class=table-wrapper><table><thead><tr><th>指标</th><th>告警阈值</th><th>说明</th></tr></thead><tbody><tr><td>请求 QPS</td><td>-</td><td>了解负载趋势</td></tr><tr><td>P99 延迟</td><td>> 10s</td><td>用户体验关键指标</td></tr><tr><td>错误率</td><td>> 1%</td><td>服务健康度</td></tr><tr><td>活跃 Session 数</td><td>> MaxSessions * 0.8</td><td>内存压力预警</td></tr><tr><td>LLM API 错误率</td><td>> 5%</td><td>依赖服务异常</td></tr><tr><td>Goroutine 数量</td><td>> 10000</td><td>可能的泄漏</td></tr><tr><td>内存使用</td><td>> 80%</td><td>OOM 风险</td></tr><tr><td>CPU 使用</td><td>> 80%</td><td>性能瓶颈</td></tr></tbody></table></div><hr><h2 id=常见问题深度排查>常见问题深度排查<a hidden class=anchor aria-hidden=true href=#常见问题深度排查>#</a></h2><h3 id=qnginx-代理后-websocket-不工作>Q：Nginx 代理后 WebSocket 不工作<a hidden class=anchor aria-hidden=true href=#qnginx-代理后-websocket-不工作>#</a></h3><p><strong>根本原因</strong>：Nginx 默认不会转发 WebSocket 的 Upgrade 头。</p><p><strong>完整解决方案</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-nginx data-lang=nginx><span style=display:flex><span><span style=color:#ff79c6>location</span> <span style=color:#f1fa8c>/ws/</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_pass</span> <span style=color:#f1fa8c>http://backend</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_http_version</span> <span style=color:#bd93f9>1</span><span style=color:#f1fa8c>.1</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># WebSocket 必需的头
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Upgrade</span> <span style=color:#8be9fd;font-style:italic>$http_upgrade</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Connection</span> <span style=color:#f1fa8c>&#34;upgrade&#34;</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 其他头
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>Host</span> <span style=color:#8be9fd;font-style:italic>$host</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Real-IP</span> <span style=color:#8be9fd;font-style:italic>$remote_addr</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Forwarded-For</span> <span style=color:#8be9fd;font-style:italic>$proxy_add_x_forwarded_for</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_set_header</span> <span style=color:#f1fa8c>X-Forwarded-Proto</span> <span style=color:#8be9fd;font-style:italic>$scheme</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># 长连接超时
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_read_timeout</span> <span style=color:#bd93f9>86400</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_send_timeout</span> <span style=color:#bd93f9>86400</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><strong>验证方法</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#6272a4># 测试 WebSocket 连接</span>
+</span></span><span style=display:flex><span>curl -i -N <span style=color:#f1fa8c>\
+</span></span></span><span style=display:flex><span>    -H <span style=color:#f1fa8c>&#34;Connection: Upgrade&#34;</span> <span style=color:#f1fa8c>\
+</span></span></span><span style=display:flex><span>    -H <span style=color:#f1fa8c>&#34;Upgrade: websocket&#34;</span> <span style=color:#f1fa8c>\
+</span></span></span><span style=display:flex><span>    -H <span style=color:#f1fa8c>&#34;Host: my-agent.example.com&#34;</span> <span style=color:#f1fa8c>\
+</span></span></span><span style=display:flex><span>    -H <span style=color:#f1fa8c>&#34;Origin: https://my-agent.example.com&#34;</span> <span style=color:#f1fa8c>\
+</span></span></span><span style=display:flex><span>    https://my-agent.example.com/ws/
+</span></span></code></pre></div><h3 id=q多实例下-session-不一致>Q：多实例下 Session 不一致<a hidden class=anchor aria-hidden=true href=#q多实例下-session-不一致>#</a></h3><p><strong>根本原因</strong>：默认 Session 存储在内存中，多实例间不共享。</p><p><strong>解决方案</strong>：</p><ol><li><strong>使用 Redis 共享 Session</strong>（推荐）</li><li><strong>使用 Sticky Session</strong>（会话保持）</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-nginx data-lang=nginx><span style=display:flex><span><span style=color:#6272a4># Sticky Session 配置（基于 IP 哈希）
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6>upstream</span> <span style=color:#f1fa8c>runtime_backend</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>ip_hash</span>;  <span style=color:#6272a4># 同一 IP 总是路由到同一实例
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>server</span> 127.0.0.1:<span style=color:#bd93f9>8080</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>server</span> 127.0.0.1:<span style=color:#bd93f9>8081</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>server</span> 127.0.0.1:<span style=color:#bd93f9>8082</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><strong>注意</strong>：Sticky Session 是临时方案，实例重启或扩缩容时会话会丢失。生产环境务必使用 Redis。</p><h3 id=qcors-问题>Q：CORS 问题<a hidden class=anchor aria-hidden=true href=#qcors-问题>#</a></h3><p><strong>根本原因</strong>：浏览器的同源策略限制。</p><p><strong>正确配置</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 后端配置</span>
+</span></span><span style=display:flex><span>runtime, err <span style=color:#ff79c6>:=</span> agentruntime.<span style=color:#50fa7b>New</span>(ctx,
+</span></span><span style=display:flex><span>    agentruntime.<span style=color:#50fa7b>WithCORS</span>(agentruntime.CORSConfig{
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 不要在生产环境使用 &#34;*&#34;</span>
+</span></span><span style=display:flex><span>        AllowedOrigins: []<span style=color:#8be9fd>string</span>{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;https://my-agent.example.com&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;https://app.example.com&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        AllowedMethods: []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;GET&#34;</span>, <span style=color:#f1fa8c>&#34;POST&#34;</span>, <span style=color:#f1fa8c>&#34;OPTIONS&#34;</span>},
+</span></span><span style=display:flex><span>        AllowedHeaders: []<span style=color:#8be9fd>string</span>{
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;Content-Type&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;Authorization&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;X-Request-ID&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#f1fa8c>&#34;X-CSRF-Token&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        ExposedHeaders:   []<span style=color:#8be9fd>string</span>{<span style=color:#f1fa8c>&#34;X-Request-ID&#34;</span>},
+</span></span><span style=display:flex><span>        AllowCredentials: <span style=color:#ff79c6>true</span>,  <span style=color:#6272a4>// 允许携带 Cookie</span>
+</span></span><span style=display:flex><span>        MaxAge:           <span style=color:#bd93f9>86400</span>,
+</span></span><span style=display:flex><span>    }),
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-nginx data-lang=nginx><span style=display:flex><span><span style=color:#6272a4># Nginx 层也可以配置 CORS（作为兜底）
+</span></span></span><span style=display:flex><span><span style=color:#ff79c6>location</span> <span style=color:#f1fa8c>/api/</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4># CORS 预检请求
+</span></span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#f1fa8c>(</span><span style=color:#8be9fd;font-style:italic>$request_method</span> = <span style=color:#f1fa8c>&#39;OPTIONS&#39;)</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Access-Control-Allow-Origin&#39;</span> <span style=color:#f1fa8c>&#39;https://my-agent.example.com&#39;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Access-Control-Allow-Methods&#39;</span> <span style=color:#f1fa8c>&#39;GET,</span> <span style=color:#f1fa8c>POST,</span> <span style=color:#f1fa8c>OPTIONS&#39;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Access-Control-Allow-Headers&#39;</span> <span style=color:#f1fa8c>&#39;Content-Type,</span> <span style=color:#f1fa8c>Authorization&#39;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Access-Control-Allow-Credentials&#39;</span> <span style=color:#f1fa8c>&#39;true&#39;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Access-Control-Max-Age&#39;</span> <span style=color:#f1fa8c>&#39;86400&#39;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Content-Length&#39;</span> <span style=color:#f1fa8c>&#39;0&#39;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#bd93f9>204</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Access-Control-Allow-Origin&#39;</span> <span style=color:#f1fa8c>&#39;https://my-agent.example.com&#39;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>add_header</span> <span style=color:#f1fa8c>&#39;Access-Control-Allow-Credentials&#39;</span> <span style=color:#f1fa8c>&#39;true&#39;</span> <span style=color:#f1fa8c>always</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>proxy_pass</span> <span style=color:#f1fa8c>http://backend</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=性能优化清单>性能优化清单<a hidden class=anchor aria-hidden=true href=#性能优化清单>#</a></h2><ul><li><input disabled type=checkbox> <strong>启用 HTTP/2</strong>：Nginx 配置 <code>listen 443 ssl http2</code></li><li><input disabled type=checkbox> <strong>启用 Gzip</strong>：压缩文本响应，减少 70%+ 传输量</li><li><input disabled type=checkbox> <strong>静态文件缓存</strong>：JS/CSS/图片设置 1 年缓存</li><li><input disabled type=checkbox> <strong>CDN 加速</strong>：静态资源放到 CDN</li><li><input disabled type=checkbox> <strong>连接复用</strong>：Nginx <code>keepalive</code> 配置</li><li><input disabled type=checkbox> <strong>连接池</strong>：Redis 连接池、HTTP Client 连接池</li><li><input disabled type=checkbox> <strong>响应压缩</strong>：大 JSON 响应启用压缩</li><li><input disabled type=checkbox> <strong>请求合并</strong>：前端批量请求，减少连接数</li><li><input disabled type=checkbox> <strong>懒加载</strong>：WebUI 组件按需加载</li><li><input disabled type=checkbox> <strong>预连接</strong>：<code>&lt;link rel="preconnect"></code> 加速关键资源</li></ul><hr><h2 id=下一步>下一步<a hidden class=anchor aria-hidden=true href=#下一步>#</a></h2><p>Web 部署搞定了，接下来看 Docker 容器化部署——构建镜像、部署到任何环境。</p><p>← <a href=/tutorials/go-adk/07-deployment/go-adk-deploy-cli/>CLI 部署</a>
+| <a href=/tutorials/go-adk/07-deployment/go-adk-deploy-docker/>Docker 容器化部署 →</a></p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class="post-content post-faq" aria-labelledby=post-faq-heading><h2 id=post-faq-heading>常见问题</h2><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section><section class=post-faq__item><h3></h3><p></p></section></section><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><aside class=related-articles aria-label=相关文章><h3>📚 相关文章</h3><ul><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-routing/>Agent 路由深度解析：动态分发策略、负载均衡与智能调度</a>
+<small>— 深入剖析 ADK Go Agent 路由机制的设计原理，涵盖规则路由、LLM 路由、混合路由策略、负载感知调度与生产级流量管理。</small></li><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-custom/>Custom Workflow 深度解析：自定义编排引擎、动态调度与复杂场景适配</a>
+<small>— 深入剖析 ADK Go Custom Workflow 的架构设计，涵盖自定义调度引擎、状态机模型、动态流程编排、条件分支与生产级复杂工作流实现。</small></li><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-loop/>Loop 工作流深度解析：迭代优化、终止条件与收敛性保障</a>
+<small>— 深入剖析 ADK Go Loop 工作流的迭代机制、终止条件设计、收敛性分析、状态演化与生产级循环控制策略。</small></li><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-parallel/>Parallel 工作流深度解析：并发控制、结果聚合与一致性保障</a>
+<small>— 深入剖析 ADK Go Parallel 工作流的并发模型、结果聚合算法、一致性协议与生产级性能调优，涵盖扇出-扇入模式、超时控制与部分失败处理。</small></li></ul></aside><footer class=post-footer><ul class=post-tags><li><a href=/tags/go/>#Go</a></li><li><a href=/tags/adk/>#ADK</a></li><li><a href=/tags/web/>#Web</a></li><li><a href=/tags/%E9%83%A8%E7%BD%B2/>#部署</a></li><li><a href=/tags/%E8%BF%90%E7%BB%B4/>#运维</a></li><li><a href=/tags/%E6%95%99%E7%A8%8B/>#教程</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script><style>#waline-container{background:var(--rex-bg);padding:var(--rex-space-5);border-radius:var(--rex-radius-xl);border:1px solid var(--rex-border)}@media screen and (max-width:768px){#waline-container{padding:var(--rex-space-4)}}.wl-editor{border-radius:var(--rex-radius-lg)}.wl-btn{border-radius:var(--rex-radius-lg);transition:all .3s ease}.wl-btn:hover{transform:translateY(-1px)}.wl-reaction{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--rex-border)}.wl-reaction-title{font-weight:600;margin-bottom:1rem}.wl-reaction-img{transition:transform .2s ease}.wl-reaction-img:hover{transform:scale(1.2)}.wl-card{border:1px solid var(--rex-border);border-radius:var(--rex-radius-lg);background:var(--rex-bg)}.wl-card:hover{border-color:var(--rex-border-bold)}</style></div><aside class="toc-col wp2-floating-toc" data-wp2-toc><button class=wp2-floating-toc__toggle type=button aria-expanded=false aria-controls=wp2-article-toc data-wp2-toc-toggle>
+<span>目录</span><i aria-hidden=true>＋</i></button><div id=wp2-article-toc class=wp2-floating-toc__panel hidden data-wp2-toc-panel><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#web-%e7%95%8c%e9%9d%a2%e9%83%a8%e7%bd%b2%e4%b8%8e%e7%bb%b4%e6%8a%a4%e8%ae%a9%e7%94%a8%e6%88%b7%e9%80%9a%e8%bf%87%e6%b5%8f%e8%a7%88%e5%99%a8%e4%bd%bf%e7%94%a8 aria-label="Web 界面部署与维护：让用户通过浏览器使用">Web 界面部署与维护：让用户通过浏览器使用</a><ul><li><a href=#%e5%90%af%e5%8a%a8-web-%e6%9c%8d%e5%8a%a1%e5%88%86%e7%a6%bb-api-%e4%b8%8e-webui aria-label="启动 Web 服务：分离 API 与 WebUI">启动 Web 服务：分离 API 与 WebUI</a></li><li><a href=#https-%e9%85%8d%e7%bd%ae%e7%94%9f%e4%ba%a7%e7%8e%af%e5%a2%83%e7%9a%84%e5%ae%89%e5%85%a8%e5%9f%ba%e7%ba%bf aria-label="HTTPS 配置：生产环境的安全基线">HTTPS 配置：生产环境的安全基线</a><ul><li><a href=#%e4%bd%bf%e7%94%a8-nginx-%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86%e6%8e%a8%e8%8d%90 aria-label="使用 Nginx 反向代理（推荐）">使用 Nginx 反向代理（推荐）</a></li><li><a href=#%e4%bd%bf%e7%94%a8-lets-encrypt-%e5%85%8d%e8%b4%b9%e8%af%81%e4%b9%a6 aria-label="使用 Let&rsquo;s Encrypt 免费证书">使用 Let&rsquo;s Encrypt 免费证书</a></li><li><a href=#%e4%bd%bf%e7%94%a8-cloudflare-%e4%bb%a3%e7%90%86%e5%a2%9e%e5%bc%ba%e5%ae%89%e5%85%a8 aria-label="使用 Cloudflare 代理（增强安全）">使用 Cloudflare 代理（增强安全）</a></li></ul></li><li><a href=#%e9%ab%98%e5%8f%af%e7%94%a8%e6%96%b9%e6%a1%88%e4%bb%8e%e5%8d%95%e7%82%b9%e5%88%b0%e9%9b%86%e7%be%a4 aria-label=高可用方案：从单点到集群>高可用方案：从单点到集群</a><ul><li><a href=#%e5%a4%9a%e5%ae%9e%e4%be%8b--%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1%e6%9e%b6%e6%9e%84 aria-label="多实例 + 负载均衡架构">多实例 + 负载均衡架构</a></li><li><a href=#nginx-%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1%e9%85%8d%e7%bd%ae aria-label="Nginx 负载均衡配置">Nginx 负载均衡配置</a></li><li><a href=#session-%e5%85%b1%e4%ba%abredis-%e9%9b%86%e7%be%a4%e9%85%8d%e7%bd%ae aria-label="Session 共享：Redis 集群配置">Session 共享：Redis 集群配置</a></li></ul></li><li><a href=#%e8%bf%90%e7%bb%b4%e7%9b%91%e6%8e%a7%e5%8f%af%e8%a7%82%e6%b5%8b%e6%80%a7%e4%b8%89%e6%94%af%e6%9f%b1 aria-label=运维监控：可观测性三支柱>运维监控：可观测性三支柱</a><ul><li><a href=#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5%e7%ab%af%e7%82%b9 aria-label=健康检查端点>健康检查端点</a></li><li><a href=#prometheus-%e6%8c%87%e6%a0%87%e6%8e%a5%e5%85%a5 aria-label="Prometheus 指标接入">Prometheus 指标接入</a></li><li><a href=#grafana-%e7%9b%91%e6%8e%a7%e9%9d%a2%e6%9d%bf aria-label="Grafana 监控面板">Grafana 监控面板</a></li></ul></li><li><a href=#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%b7%b1%e5%ba%a6%e6%8e%92%e6%9f%a5 aria-label=常见问题深度排查>常见问题深度排查</a><ul><li><a href=#qnginx-%e4%bb%a3%e7%90%86%e5%90%8e-websocket-%e4%b8%8d%e5%b7%a5%e4%bd%9c aria-label="Q：Nginx 代理后 WebSocket 不工作">Q：Nginx 代理后 WebSocket 不工作</a></li><li><a href=#q%e5%a4%9a%e5%ae%9e%e4%be%8b%e4%b8%8b-session-%e4%b8%8d%e4%b8%80%e8%87%b4 aria-label="Q：多实例下 Session 不一致">Q：多实例下 Session 不一致</a></li><li><a href=#qcors-%e9%97%ae%e9%a2%98 aria-label="Q：CORS 问题">Q：CORS 问题</a></li></ul></li><li><a href=#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e6%b8%85%e5%8d%95 aria-label=性能优化清单>性能优化清单</a></li><li><a href=#%e4%b8%8b%e4%b8%80%e6%ad%a5 aria-label=下一步>下一步</a></li></ul></li></ul></div></details></div></div></aside></div></article></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
+<a href=/posts/>文章</a>
+<a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
+<a href=/languages/>编程语言</a>
+<a href=/infrastructure/>基础设施</a></section><section><p class=wp2-footer__label>联系</p><a href=/about/>关于梦兽</a>
+<a href=/contact/>联系我们</a>
+<a href=/privacy/>隐私政策</a>
+<a href=/tools/>工具精选</a>
+<a href=/tags/>标签索引</a></section><section><p class=wp2-footer__label>订阅</p><a href=/search/>搜索文章</a>
+<a href=/categories/>分类</a>
+<span>© 2026 梦兽编程</span></section></div><div class=wp2-footer__bar><span>由代码与好奇心驱动</span>
+<span>V.2026.09 / 系统正常</span></div><div class=wp2-footer__wordmark>梦兽编程</div></footer><button class=back-to-top id=backToTop aria-label="Back to top" aria-hidden=true tabindex=-1>
+<svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48"><circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/><circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+<svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+<script src="/js/theme.js?v=wp2-nav-20260820" defer></script><script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script><script>(function(){var e=document.getElementById("backToTop"),t=e?e.querySelector(".back-to-top__ring-progress"):null;if(!e)return;window.addEventListener("scroll",function(){var s,n=document.documentElement.scrollTop||document.body.scrollTop;n>400?(e.classList.add("is-visible"),e.setAttribute("aria-hidden","false"),e.removeAttribute("tabindex"),t&&(s=document.documentElement.scrollHeight-window.innerHeight,t.style.strokeDashoffset=125.6*(1-n/s))):(e.classList.remove("is-visible"),e.setAttribute("aria-hidden","true"),e.setAttribute("tabindex","-1"))},{passive:!0}),e.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})})()</script></body></html>

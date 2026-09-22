@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 600" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <rect width="1040" height="600" fill="#ffffff"/>
+  <text x="40" y="46" font-size="26" font-weight="bold" fill="#0f172a">可逆效应的实现：ctx.effect 与回执栈</text>
+  <text x="40" y="74" font-size="15" fill="#64748b">论文 §3.1 / 算法 1 —— 加载时每步前插逆操作，卸载时按栈回放；中断点就是迭代边界</text>
+
+  <!-- 左：组件 apply -->
+  <rect x="40" y="110" width="270" height="312" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="175" y="142" font-size="17" font-weight="bold" fill="#15803d" text-anchor="middle">组件 apply（generator）</text>
+  <rect x="60" y="164" width="230" height="56" rx="8" fill="#ffffff" stroke="#d1fae5"/>
+  <text x="76" y="188" font-size="13" fill="#334155">步骤 1：注册路由</text>
+  <text x="76" y="207" font-size="12" fill="#059669">yield (新状态, 逆₁)</text>
+  <rect x="60" y="232" width="230" height="56" rx="8" fill="#ffffff" stroke="#d1fae5"/>
+  <text x="76" y="256" font-size="13" fill="#334155">步骤 2：连数据库</text>
+  <text x="76" y="275" font-size="12" fill="#059669">yield (新状态, 逆₂)</text>
+  <rect x="60" y="300" width="230" height="56" rx="8" fill="#ffffff" stroke="#d1fae5"/>
+  <text x="76" y="324" font-size="13" fill="#334155">步骤 3：起定时器</text>
+  <text x="76" y="343" font-size="12" fill="#059669">yield (新状态, 逆₃)</text>
+  <text x="175" y="388" font-size="12" fill="#64748b" text-anchor="middle">逆操作在应用点当场返回，</text>
+  <text x="175" y="406" font-size="12" fill="#64748b" text-anchor="middle">只对「当时这个状态」承诺</text>
+
+  <path d="M310,260 C345,260 345,240 376,240" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- 中：ctx.effect -->
+  <rect x="380" y="110" width="300" height="300" rx="14" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="530" y="142" font-size="17" font-weight="bold" fill="#1d4ed8" text-anchor="middle">运行时 ctx.effect 每步做三件事</text>
+  <text x="400" y="176" font-size="13.5" fill="#334155">① 应用状态变换 s → s′</text>
+  <text x="400" y="204" font-size="13.5" fill="#334155">② 收下本步的逆操作</text>
+  <text x="400" y="232" font-size="13.5" fill="#334155">③ 前插进累加器（后进先出）</text>
+
+  <rect x="425" y="256" width="210" height="96" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="530" y="282" font-size="12.5" font-weight="bold" fill="#b91c1c" text-anchor="middle">guard</text>
+  <text x="530" y="306" font-size="11.5" fill="#7f1d1d" text-anchor="middle">armed？目标视图仍一致？</text>
+  <text x="530" y="330" font-size="11" fill="#991b1b" text-anchor="middle">变了就停，只保留已入栈回执</text>
+  <text x="530" y="384" font-size="12" fill="#64748b" text-anchor="middle">每步前插 → 累加器（右侧回执栈，LIFO）</text>
+
+  <path d="M680,262 C710,262 710,250 736,250" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- 右：回执栈可视化 -->
+  <rect x="740" y="110" width="260" height="300" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="870" y="142" font-size="17" font-weight="bold" fill="#0f172a" text-anchor="middle">累加器（回执栈）</text>
+  <rect x="770" y="166" width="200" height="52" rx="8" fill="#dbeafe" stroke="#60a5fa"/>
+  <text x="870" y="198" font-size="14" fill="#1e40af" text-anchor="middle">逆3 关定时器</text>
+  <rect x="770" y="226" width="200" height="52" rx="8" fill="#bfdbfe" stroke="#60a5fa"/>
+  <text x="870" y="258" font-size="14" fill="#1e40af" text-anchor="middle">逆2 断开数据库</text>
+  <rect x="770" y="286" width="200" height="52" rx="8" fill="#93c5fd" stroke="#3b82f6"/>
+  <text x="870" y="318" font-size="14" fill="#1e3a8a" text-anchor="middle">逆1 注销路由</text>
+  <text x="870" y="372" font-size="12" fill="#64748b" text-anchor="middle">父级上下文的回执链再包一层：</text>
+  <text x="870" y="390" font-size="12" fill="#64748b" text-anchor="middle">子效应的逆 = 父上下文的一个效应</text>
+
+  <!-- 卸载流程 -->
+  <path d="M870,410 L870,446" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrg)"/>
+  <rect x="40" y="450" width="960" height="110" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="70" y="486" font-size="16" font-weight="bold" fill="#15803d">卸载（dispose）：</text>
+  <text x="70" y="530" font-size="13.5" fill="#334155">armed=false 停掉在飞的迭代 → await 收齐回执 → recover() 按栈回放 逆3 → 逆2 → 逆1</text>
+  <rect x="700" y="474" width="270" height="60" rx="10" fill="#ffffff" stroke="#6ee7b7"/>
+  <text x="835" y="499" font-size="14.5" font-weight="bold" fill="#047857" text-anchor="middle">上下文恢复原状</text>
+  <text x="835" y="520" font-size="12" fill="#059669" text-anchor="middle">按「观测等价 ≈」读，而非字节级还原</text>
+</svg>

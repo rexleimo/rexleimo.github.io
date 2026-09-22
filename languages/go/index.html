@@ -1,0 +1,95 @@
+<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Go | 梦兽编程</title><meta name=keywords content><meta name=description content="Go 语言后端开发、并发模型与工程实践。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/languages/go/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.398dffd18a28c2d45709796aa70d801219f077c71465afbe31ffb11da23515d0.css integrity="sha256-OY3/0YoowtRXCXlqpw2AEhnwd8cUZa++Mf+xHaI1FdA=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/languages/go/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/languages/go/><link rel=alternate hreflang=en href=https://rexai.top/en/languages/go/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/languages/go/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Go"><meta property="og:description" content="Go 语言后端开发、并发模型与工程实践。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="website"><meta name=twitter:card content="summary"><meta name=twitter:title content="Go"><meta name=twitter:description content="Go 语言后端开发、并发模型与工程实践。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"梦兽编程","url":"https:\/\/rexai.top\/about/","sameAs":["https:\/\/github.com\/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/languages\/go\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/languages/","name":"Languages"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/languages/go/","name":"Go"},"position":3}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
+梦兽编程<sup>™</sup></a><nav class=wp2-header__links aria-label=主导航><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/products/>产品</a></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tutorials/>教程</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tutorials>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 教程 菜单</span></button><div id=wp2-submenu-tutorials class=wp2-header__submenu aria-label=教程 hidden><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/ai/>AI</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-ai>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 AI 菜单</span></button><div id=wp2-submenu-ai class=wp2-header__submenu aria-label=AI hidden><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/languages/>开发</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-dev>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 开发 菜单</span></button><div id=wp2-submenu-dev class=wp2-header__submenu aria-label=开发 hidden><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tools/rexai-tool-directory/>工具</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tools>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 工具 菜单</span></button><div id=wp2-submenu-tools class=wp2-header__submenu aria-label=工具 hidden><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/categories/>探索</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-explore>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 探索 菜单</span></button><div id=wp2-submenu-explore class=wp2-header__submenu aria-label=探索 hidden><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></div><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/about/>关于</a></div></nav><div class=wp2-header__spacer></div><a class=wp2-header__cta href=/tools/cc-codex-portal/>AI 套装 <span aria-hidden=true>&rarr;</span></a>
+<button class=wp2-header__menu type=button aria-expanded=false aria-controls=wp2-mobile-menu data-wp2-menu data-open-label=打开菜单 data-close-label=关闭菜单>
+<span class=wp2-header__menu-mark aria-hidden=true><i></i><i></i><i></i></span>
+<span class=wp2-header__menu-label data-wp2-menu-label>打开菜单</span></button></header><div id=wp2-mobile-menu class=wp2-menu-panel hidden><div class=wp2-menu-panel__frame><div class=wp2-menu-panel__directory><div class=wp2-menu-panel__meta><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div><nav class=wp2-menu-panel__grid aria-label=全站导航><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/products/><strong>产品</strong><span aria-hidden=true>&rarr;</span></a><p>自研产品、服务与项目入口。</p></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tutorials/><strong>教程</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/ai/><strong>AI</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/languages/><strong>开发</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tools/rexai-tool-directory/><strong>工具</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/categories/><strong>探索</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></section><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/about/><strong>关于</strong><span aria-hidden=true>&rarr;</span></a><p>了解梦兽编程、联系渠道与站点说明。</p></section></nav></div><div class=wp2-menu-panel__utility aria-label=站点工具><span class=wp2-menu-panel__utility-label>实用工具</span>
+<a class=wp2-menu-panel__utility-search href=/search/>搜索</a><a href=/en/>English</a>
+<button type=button data-theme-toggle data-theme-light-label=主题：浅色 data-theme-dark-label=主题：深色 data-theme-light-action=切换至深色 data-theme-dark-action=切换至浅色 aria-pressed=false><span data-theme-toggle-label>主题：浅色</span></button></div></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
+<meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/languages/><span itemprop=name>Languages</span></a>
+<meta itemprop=position content="2"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/languages/go/><span itemprop=name>Go</span></a>
+<meta itemprop=position content="3"></li></ol></nav><p>[ SECTION / LANGUAGES ]</p><h1>Go</h1><div>Go 语言后端开发、并发模型与工程实践。</div><span>9 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/languages/go/2026-09-20-go127-http-body-drain/><b>01</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-09-20-go127-http-body-drain/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.09.20 / 7 MIN</small>
+<strong>resp.Body 要手动排空？Go 1.27 改了规矩</strong>
+<em>Go 1.27 改了 HTTP 客户端惯例：Close() 现在自动排空未读响应体（256 KiB 与 50 毫秒两个限额内）。我在同一台机器上装了 go1.26.4 与 go1.27.1 两套工具链实测 50 次请求，连接复用从 1/50 变成 50/50。本文讲清旧规则为什么成立、新规矩改了哪里、哪些场景仍要手写排空。附完整可复现代码 …</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/2026-09-16-fiber-v3-99-compile-errors/><b>02</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-09-16-fiber-v3-99-compile-errors/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.09.16 / 5 MIN</small>
+<strong>Fiber v3 来了：99 个编译错误值得吗</strong>
+<em>Fiber v3 从 2 月 GA 到 v3.5.0，fiber.Ctx 直接实现 context.Context、Bind 统一解析、QUERY 方法、迁移 CLI。我在 Go 1.26.4 上真跑了一遍：自动改了哪些、坑在哪、ctx 取消为什么不随 c 传播。附完整可复现代码</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/2026-08-12-go-ai-coding-language-debate/><b>03</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-08-12-go-ai-coding-language-debate/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.08.12 / 3 MIN</small>
+<strong>Google 说 Go 是 AI 编程的理想语言，HN 吵了 317 条评论</strong>
+<em>Google 官方博客称 Go 是 AI 辅助软件工程的理想语言，Hacker News 317 条评论吵成四派。我们的观点：双方都算错了账——AI 时代选语言看的不是「写」，是「验证成本」。本文给出三要素账本、选型建议和一个今晚就能跑的对照实验</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/2026-05-05-go-2026-backend-engineers-survival-guide/><b>04</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/2026-05-05-go-2026-backend-engineers-survival-guide/cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.05.05 / 2 MIN</small>
+<strong>Go 2026 后端工程师生存指南：1.25 和 1.26 那些真正影响生产的变化</strong>
+<em>Go 1.25 和 1.26 带来了容器感知 GOMAXPROCS、go fix 现代化改造、Green Tea GC、并发测试利器 synctest 等重磅更新。本文用生活案例拆解这些对后端工程师真正有用的变化。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/2026-02-27-go-memory-allocator-internals/><b>05</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/go-memory-allocator-internals/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.02.27 / 1 MIN</small>
+<strong>Go内存分配器：一个仓库经理的自我修养</strong>
+<em>从64MB仓库到8KB货架，揭秘Go如何用三级缓存架构让内存分配快到飞起。深入理解arena、span、size class的设计哲学，看懂tcmalloc思想在Go中的落地实践。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/2026-02-20-go-sqlc-postgres-zero-orm/><b>06</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/go-sqlc-postgres-zero-orm/cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.02.20 / 2 MIN</small>
+<strong>Go + sqlc + Postgres：Cloudflare 这套「零ORM」方案，凭什么撑起 99.99% 可用率</strong>
+<em>Cloudflare 用 Go + sqlc + Postgres 组建零ORM方案，绕开 GORM 的 N+1 查询和反射开销，85K vs 42K qps、p99 从 3.8ms 降到 1.2ms。拆解这套方案的设计逻辑、迁移细节和适用场景。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/2026-02-16-go-json-v2-delayed/><b>07</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/go-json-v2/cover.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.02.16 / 2 MIN</small>
+<strong>Go 1.26 没带上 JSON v2：44个子任务还剩18个，这事儿不简单</strong>
+<em>Go 1.26 发布了，但 JSON v2 仍挂在实验路径下。44个子任务还剩18个未完成，性能回归问题未解，Union 类型支持待定——这不是跳票，是 Go 团队在给标准库打地基。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/go-to-rust-axum-migration-1-2m-saved/><b>08</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/languages/go/go-to-rust-axum-migration-1-2m-saved/653cd914-39f9-4640-8d54-96d16547c0d1.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.01.18 / 1 MIN</small>
+<strong>小李把Go单体重写成Rust Axum，公司一年省了800多万，他涨薪到200万</strong>
+<em>这不是一个炫耀Rust多快的故事。这是关于技术选型如何变成真金白银，以及为什么大多数重写项目无法复制这个结果。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/languages/go/go-gc-secrets/><b>09</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/go-gc-secrets/go-gc-tri-color-marking-restaurant-metaphor.png alt loading=lazy></span>
+<span class=wp2-list__copy><small>LANGUAGES / 2026.01.06 / 1 MIN</small>
+<strong>Go GC性能暴增10倍的秘密：99%的人不知道的并发垃圾回收技巧</strong>
+<em>生产环境延迟从500ms降到50ms！深度揭秘Go垃圾回收的三色标记算法、写屏障机制和GOGC调优实战，让你的服务彻底告别卡顿。</em>
+</span><i>↗</i></a></div></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
+<a href=/posts/>文章</a>
+<a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
+<a href=/languages/>编程语言</a>
+<a href=/infrastructure/>基础设施</a></section><section><p class=wp2-footer__label>联系</p><a href=/about/>关于梦兽</a>
+<a href=/contact/>联系我们</a>
+<a href=/privacy/>隐私政策</a>
+<a href=/tools/>工具精选</a>
+<a href=/tags/>标签索引</a></section><section><p class=wp2-footer__label>订阅</p><a href=/search/>搜索文章</a>
+<a href=/categories/>分类</a>
+<span>© 2026 梦兽编程</span></section></div><div class=wp2-footer__bar><span>由代码与好奇心驱动</span>
+<span>V.2026.09 / 系统正常</span></div><div class=wp2-footer__wordmark>梦兽编程</div></footer><script src="/js/theme.js?v=wp2-nav-20260820" defer></script><script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script></body></html>

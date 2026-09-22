@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 640" font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ea580c"/>
+    </marker>
+  </defs>
+
+  <rect width="1040" height="640" fill="#ffffff"/>
+  <text x="40" y="46" font-size="26" font-weight="bold" fill="#0f172a">上下文范式一图流：组件如何装进「上下文」</text>
+  <text x="40" y="74" font-size="15" fill="#64748b">论文 §3.3 / §5 —— 左：组件的三份声明；中：统一的递归上下文；右：两个可组合性维度各自的发生地</text>
+
+  <!-- 组件 -->
+  <rect x="40" y="110" width="280" height="344" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="180" y="142" font-size="18" font-weight="bold" fill="#0f172a" text-anchor="middle">组件 Component</text>
+  <text x="180" y="163" font-size="12.5" fill="#94a3b8" text-anchor="middle">= 三元组（一次实例化叫 fiber）</text>
+
+  <rect x="60" y="178" width="240" height="74" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="76" y="204" font-size="15" font-weight="bold" fill="#1d4ed8">inject</text>
+  <text x="76" y="226" font-size="13" fill="#334155">我需要什么（依赖声明）</text>
+
+  <rect x="60" y="264" width="240" height="74" rx="10" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="76" y="290" font-size="15" font-weight="bold" fill="#c2410c">provide</text>
+  <text x="76" y="312" font-size="13" fill="#334155">我提供什么（可安装的键）</text>
+
+  <rect x="60" y="350" width="240" height="88" rx="10" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="76" y="376" font-size="15" font-weight="bold" fill="#15803d">apply</text>
+  <text x="76" y="396" font-size="13" fill="#334155">激活时执行的效应序列</text>
+  <text x="76" y="416" font-size="12" fill="#64748b">（generator，每步 yield 逆操作）</text>
+
+  <!-- 上下文 -->
+  <rect x="420" y="110" width="330" height="424" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="585" y="142" font-size="18" font-weight="bold" fill="#0f172a" text-anchor="middle">上下文 Context（递归类型）</text>
+  <text x="585" y="163" font-size="12.5" fill="#94a3b8" text-anchor="middle">所有效应与余效应都经由它中转</text>
+
+  <rect x="440" y="180" width="290" height="64" rx="10" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="456" y="206" font-size="14" font-weight="bold" fill="#334155">内层上下文</text>
+  <text x="456" y="227" font-size="12.5" fill="#64748b">指向父级 → 天然形成组件树</text>
+
+  <rect x="440" y="256" width="290" height="106" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="456" y="282" font-size="14" font-weight="bold" fill="#1d4ed8">累加器 = 回执栈</text>
+  <text x="456" y="303" font-size="12.5" fill="#334155">已执行效应的逆操作复合</text>
+  <text x="456" y="322" font-size="12.5" fill="#334155">每步前插（LIFO）</text>
+  <text x="456" y="341" font-size="12" fill="#64748b">卸载 = 按栈回放一次</text>
+
+  <rect x="440" y="374" width="290" height="140" rx="10" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="456" y="400" font-size="14" font-weight="bold" fill="#c2410c">依赖表 key → value</text>
+  <text x="456" y="421" font-size="12.5" fill="#334155">类型化偏函数：有 / 无，不可重复</text>
+  <text x="456" y="440" font-size="12.5" fill="#334155">set / get 本身也是效应 → 自动可逆</text>
+  <text x="456" y="459" font-size="12" fill="#64748b">隔离 realm：同键在不同上下文不同值</text>
+  <text x="456" y="478" font-size="12" fill="#64748b">拦截 intercept：取值时合并元数据</text>
+  <text x="456" y="497" font-size="12" fill="#64748b">（改策略不触发重载）</text>
+
+  <!-- 右侧两维 -->
+  <rect x="810" y="110" width="190" height="196" rx="14" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="905" y="140" font-size="16" font-weight="bold" fill="#1d4ed8" text-anchor="middle">时间维</text>
+  <text x="826" y="168" font-size="13" fill="#334155">加载 = 效应入栈</text>
+  <text x="826" y="192" font-size="13" fill="#334155">卸载 = 回执回放</text>
+  <text x="826" y="216" font-size="13" fill="#334155">中断点 = 迭代边界</text>
+  <text x="826" y="240" font-size="13" fill="#334155">中途撤销只回放</text>
+  <text x="826" y="260" font-size="13" fill="#334155">已入栈的部分</text>
+  <text x="905" y="292" font-size="12" fill="#64748b" text-anchor="middle">→ 时间可组合性</text>
+
+  <rect x="810" y="330" width="190" height="204" rx="14" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="905" y="360" font-size="16" font-weight="bold" fill="#c2410c" text-anchor="middle">空间维</text>
+  <text x="826" y="388" font-size="13" fill="#334155">依赖变化 → notify</text>
+  <text x="826" y="412" font-size="13" fill="#334155">重算目标视图 → refresh</text>
+  <text x="826" y="436" font-size="13" fill="#334155">齐了 → 激活</text>
+  <text x="826" y="460" font-size="13" fill="#334155">缺了 → 停用</text>
+  <text x="826" y="484" font-size="13" fill="#334155">无关 → 忽略</text>
+  <text x="905" y="516" font-size="12" fill="#64748b" text-anchor="middle">→ 空间可组合性</text>
+
+  <!-- 箭头 -->
+  <path d="M320,394 C365,394 375,320 418,308" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrb)"/>
+  <path d="M320,215 C370,215 380,300 418,330" fill="none" stroke="#ea580c" stroke-width="2" marker-end="url(#arro)"/>
+
+  <path d="M750,480 C780,480 780,420 808,416" fill="none" stroke="#ea580c" stroke-width="2" marker-end="url(#arro)"/>
+  <path d="M750,300 C780,300 780,220 808,214" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrb)"/>
+
+  <!-- 图例 -->
+  <text x="230" y="550" font-size="13.5" font-weight="bold">
+    <tspan fill="#ea580c">── 声明依赖 / 提供绑定</tspan>
+    <tspan fill="#475569">　　</tspan>
+    <tspan fill="#2563eb">── 每步效应：新状态 + 逆操作</tspan>
+  </text>
+
+  <!-- 底注 -->
+  <rect x="40" y="566" width="960" height="44" rx="10" fill="#f1f5f9"/>
+  <text x="520" y="593" font-size="13.5" fill="#475569" text-anchor="middle">纪律：所有共享状态必须绑定在 key 上 · 「恢复原状」按观测等价 ≈ 来读，而非字节级还原</text>
+</svg>

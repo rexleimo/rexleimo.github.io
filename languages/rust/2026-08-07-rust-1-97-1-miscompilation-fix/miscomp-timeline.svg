@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#171a21"/>
+      <stop offset="1" stop-color="#0e1015"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f0795c"/>
+      <stop offset="1" stop-color="#d95f43"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e5484d"/>
+      <stop offset="1" stop-color="#b02a2f"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#46a758"/>
+      <stop offset="1" stop-color="#2f7d40"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#8892a6"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+
+  <!-- Header -->
+  <text x="80" y="70" font-family="Consolas, monospace" font-size="26" fill="#f0795c" font-weight="bold">MISCOMPILATION TIMELINE</text>
+  <text x="80" y="112" font-family="Microsoft YaHei, sans-serif" font-size="40" fill="#ffffff" font-weight="bold">从潜伏到引爆：一周的修复时间线</text>
+
+  <!-- Timeline line -->
+  <line x1="130" y1="300" x2="1470" y2="300" stroke="#2a3140" stroke-width="6"/>
+  <line x1="130" y1="300" x2="1470" y2="300" stroke="#8892a6" stroke-width="2" stroke-dasharray="8 8"/>
+
+  <!-- Node 1: 1.87 -->
+  <circle cx="280" cy="300" r="18" fill="#2a3140" stroke="#8892a6" stroke-width="3"/>
+  <text x="280" y="308" font-family="Consolas, monospace" font-size="18" fill="#e6e9ef" text-anchor="middle">1.87</text>
+  <text x="280" y="220" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#ffffff" font-weight="bold" text-anchor="middle">2025-05</text>
+  <text x="280" y="252" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#8892a6" text-anchor="middle">LLVM 20 引入</text>
+  <text x="280" y="282" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#8892a6" text-anchor="middle">x86 后端 bug 潜伏</text>
+
+  <!-- Node 2: 1.97.0 -->
+  <circle cx="800" cy="300" r="18" fill="#b02a2f" stroke="#e5484d" stroke-width="3"/>
+  <text x="800" y="308" font-family="Consolas, monospace" font-size="18" fill="#ffffff" text-anchor="middle">1.97.0</text>
+  <text x="800" y="380" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#e5484d" font-weight="bold" text-anchor="middle">2026-07-09</text>
+  <text x="800" y="412" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#e6e9ef" text-anchor="middle">tag 2 → -1，误编译引爆</text>
+  <text x="800" y="442" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#e5484d" text-anchor="middle">当天收到 segfault 报告</text>
+
+  <!-- Node 3: 1.97.1 -->
+  <circle cx="1280" cy="300" r="18" fill="#2f7d40" stroke="#46a758" stroke-width="3"/>
+  <text x="1280" y="308" font-family="Consolas, monospace" font-size="18" fill="#ffffff" text-anchor="middle">1.97.1</text>
+  <text x="1280" y="220" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#46a758" font-weight="bold" text-anchor="middle">2026-07-16</text>
+  <text x="1280" y="252" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#e6e9ef" text-anchor="middle">LLVM 修复 backport</text>
+  <text x="1280" y="282" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#e6e9ef" text-anchor="middle">rustc 触发改动回滚</text>
+
+  <!-- Impact band -->
+  <rect x="80" y="520" width="1440" height="170" rx="14" fill="#1f2430" stroke="#2a3140" stroke-width="1"/>
+  <text x="110" y="566" font-family="Microsoft YaHei, sans-serif" font-size="22" fill="#ffffff" font-weight="bold">影响与判定</text>
+  <text x="110" y="606" font-family="Microsoft YaHei, sans-serif" font-size="20" fill="#e6e9ef">触发形状：多 payload 字段枚举 + match + -O 优化构建；debug 构建不受影响</text>
+  <text x="110" y="646" font-family="Microsoft YaHei, sans-serif" font-size="20" fill="#e6e9ef">平台：x86 / x64 专属（aarch64、riscv64gc 正常）· Windows 与 Linux 均可复现</text>
+  <text x="110" y="672" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#8892a6">实测：本机 Windows x64 MSVC，1.97.0 段错误（exit 139）/ 1.97.1 正常</text>
+
+  <!-- Footer -->
+  <text x="80" y="840" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#5c6474">梦兽编程 · 全栈之巅  |  数据来源：Rust 官方博客 · rust-lang/rust issue #159035</text>
+</svg>

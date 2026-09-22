@@ -1,0 +1,865 @@
+<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Loop 工作流深度解析：迭代优化、终止条件与收敛性保障 | 梦兽编程</title><meta name=keywords content="Go,ADK,Loop,工作流,迭代优化,收敛性,终止条件,生产实践"><meta name=description content="深入剖析 ADK Go Loop 工作流的迭代机制、终止条件设计、收敛性分析、状态演化与生产级循环控制策略。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.398dffd18a28c2d45709796aa70d801219f077c71465afbe31ffb11da23515d0.css integrity="sha256-OY3/0YoowtRXCXlqpw2AEhnwd8cUZa++Mf+xHaI1FdA=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/tutorials/go-adk/05-multi-agent/go-adk-team-loop/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="Loop 工作流深度解析：迭代优化、终止条件与收敛性保障"><meta property="og:description" content="深入剖析 ADK Go Loop 工作流的迭代机制、终止条件设计、收敛性分析、状态演化与生产级循环控制策略。"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="article"><meta property="article:section" content="tutorials"><meta property="article:published_time" content="2026-05-30T07:00:00+08:00"><meta property="article:modified_time" content="2026-05-30T07:00:00+08:00"><meta property="article:author" content="梦兽编程"><meta property="article:tag" content="Go"><meta property="article:tag" content="ADK"><meta property="article:tag" content="Loop"><meta property="article:tag" content="工作流"><meta property="article:tag" content="迭代优化"><meta property="article:tag" content="收敛性"><meta name=twitter:card content="summary"><meta name=twitter:title content="Loop 工作流深度解析：迭代优化、终止条件与收敛性保障"><meta name=twitter:description content="深入剖析 ADK Go Loop 工作流的迭代机制、终止条件设计、收敛性分析、状态演化与生产级循环控制策略。"><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"梦兽编程","url":"https:\/\/rexai.top\/about/","sameAs":["https:\/\/github.com\/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/tutorials\/go-adk\/05-multi-agent\/go-adk-team-loop\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/","name":"教程"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/go-adk/","name":"Go Adk"},"position":3},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/go-adk/05-multi-agent/","name":"05 Multi Agent"},"position":4},{"@type":"ListItem","item":{"@id":"https://rexai.top/tutorials/go-adk/05-multi-agent/go-adk-team-loop/","name":"Go Adk Team Loop"},"position":5}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"TechArticle","headline":"Loop 工作流深度解析：迭代优化、终止条件与收敛性保障","description":"深入剖析 ADK Go Loop 工作流的迭代机制、终止条件设计、收敛性分析、状态演化与生产级循环控制策略。","inLanguage":"zh-cn","datePublished":"2026-05-30T07:00:00\u002b08:00","dateModified":"2026-05-30T07:00:00\u002b08:00","author":{"@type":"Person","name":"梦兽编程","url":"https:\/\/rexai.top\/about/","sameAs":["https:\/\/github.com\/rexai","https://rexai.top/"]},"publisher":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/","logo":{"@type":"ImageObject","url":"https:\/\/rexai.top\/icon-512.png","width":"512","height":"512"}},"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/tutorials\/go-adk\/05-multi-agent\/go-adk-team-loop\/"},"speakable":{"@type":"SpeakableSpecification","cssSelector":[".post-content h1",".post-content h2"]},"wordCount":"2107","keywords":["Go","ADK","Loop","工作流","迭代优化","收敛性","终止条件","生产实践"],"articleSection":"tutorials","articleBody":"Loop 工作流深度解析：迭代优化、终止条件与收敛性保障 Loop 工作流是 Agent Team 中处理迭代优化类任务的核心模式。与 Sequential 和 Parallel 的一次性执行不同，Loop 通过循环-评估-优化的闭环机制，让 Agent 自主改进输出质量。然而，循环带来的风险——无限循环、收敛震荡、状态膨胀——需要严谨的工程控制。本文将深入 Loop 的数学模型、终止理论、状态演化与生产实践。\n迭代优化的数学模型 收敛性分析 Loop 工作流可以形式化为一个迭代函数系统：\nx_{n\u002b1} = f(x_n, e_n) 其中：\nx_n：第 n 次迭代的输出 f：Agent 的改进函数 e_n：第 n 次迭代的评估反馈 收敛条件：当存在某个质量度量 Q(x)，使得 Q(x_{n\u002b1}) \u0026gt;= Q(x_n) 对所有 n 成立，且 Q(x) 有上界，则序列 {x_n} 必然收敛。\n\/\/ 收敛性分析器 type ConvergenceAnalyzer struct { qualityHistory []float64 windowSize int threshold float64 } func (ca *ConvergenceAnalyzer) IsConverged() (bool, float64) { if len(ca.qualityHistory) \u0026lt; ca.windowSize { return false, 0 } \/\/ 取最近 windowSize 次的质量值 recent := ca.qualityHistory[len(ca.qualityHistory)-ca.windowSize:] \/\/ 计算方差 mean := calculateMean(recent) variance := calculateVariance(recent, mean) \/\/ 方差小于阈值认为已收敛 converged := variance \u0026lt; ca.threshold return converged, variance } func (ca *ConvergenceAnalyzer) DetectOscillation() bool { if len(ca.qualityHistory) \u0026lt; 4 { return false } \/\/ 检测震荡模式：质量值反复升降 last4 := ca.qualityHistory[len(ca.qualityHistory)-4:] upDown := (last4[1] \u0026gt; last4[0]) \u0026amp;\u0026amp; (last4[2] \u0026lt; last4[1]) \u0026amp;\u0026amp; (last4[3] \u0026gt; last4[2]) downUp := (last4[1] \u0026lt; last4[0]) \u0026amp;\u0026amp; (last4[2] \u0026gt; last4[1]) \u0026amp;\u0026amp; (last4[3] \u0026lt; last4[2]) return upDown || downUp } 质量度量设计 \/\/ 多维度质量评估体系 type QualityMetrics struct { \/\/ 内容质量（0-1） Relevance float64 \/\/ 相关性 Coherence float64 \/\/ 连贯性 Completeness float64 \/\/ 完整性 Accuracy float64 \/\/ 准确性 \/\/ 结构质量（0-1） Structure float64 \/\/ 结构合理性 Formatting float64 \/\/ 格式规范 \/\/ 语言质量（0-1） Grammar float64 \/\/ 语法正确性 Style float64 \/\/ 风格一致性 \/\/ 业务质量（0-1） Requirements float64 \/\/ 需求满足度 Constraints float64 \/\/ 约束满足度 } func (qm *QualityMetrics) OverallScore() float64 { \/\/ 加权综合评分 weights := map[string]float64{ \u0026#34;Relevance\u0026#34;: 0.20, \u0026#34;Coherence\u0026#34;: 0.15, \u0026#34;Completeness\u0026#34;: 0.15, \u0026#34;Accuracy\u0026#34;: 0.20, \u0026#34;Structure\u0026#34;: 0.10, \u0026#34;Formatting\u0026#34;: 0.05, \u0026#34;Grammar\u0026#34;: 0.05, \u0026#34;Style\u0026#34;: 0.05, \u0026#34;Requirements\u0026#34;: 0.03, \u0026#34;Constraints\u0026#34;: 0.02, } score := 0.0 score \u002b= weights[\u0026#34;Relevance\u0026#34;] * qm.Relevance score \u002b= weights[\u0026#34;Coherence\u0026#34;] * qm.Coherence score \u002b= weights[\u0026#34;Completeness\u0026#34;] * qm.Completeness score \u002b= weights[\u0026#34;Accuracy\u0026#34;] * qm.Accuracy score \u002b= weights[\u0026#34;Structure\u0026#34;] * qm.Structure score \u002b= weights[\u0026#34;Formatting\u0026#34;] * qm.Formatting score \u002b= weights[\u0026#34;Grammar\u0026#34;] * qm.Grammar score \u002b= weights[\u0026#34;Style\u0026#34;] * qm.Style score \u002b= weights[\u0026#34;Requirements\u0026#34;] * qm.Requirements score \u002b= weights[\u0026#34;Constraints\u0026#34;] * qm.Constraints return score } \/\/ 通过 LLM 评估质量 func evaluateWithLLM(ctx context.Context, model agent.Model, content string, criteria []string) (*QualityMetrics, error) { prompt := fmt.Sprintf(\u0060请评估以下内容的质量，按以下维度打分（0-1）： %s 评估维度： %s 请以 JSON 格式输出评分。\u0060, content, strings.Join(criteria, \u0026#34;\\n\u0026#34;)) response, err := model.GenerateContent(ctx, prompt) if err != nil { return nil, err } var metrics QualityMetrics if err := json.Unmarshal([]byte(response), \u0026amp;metrics); err != nil { return nil, err } return \u0026amp;metrics, nil } Loop 工作流架构设计 核心组件 type LoopWorkflow struct { agent *agent.Agent \/\/ 迭代 Agent evaluator Evaluator \/\/ 质量评估器 exitCondition ExitCondition \/\/ 退出条件 maxIterations int \/\/ 最大迭代次数 minIterations int \/\/ 最小迭代次数 convergenceCfg *ConvergenceConfig \/\/ 收敛配置 stateManager StateManager \/\/ 状态管理器 feedbackBuilder FeedbackBuilder \/\/ 反馈构建器 strategy IterationStrategy \/\/ 迭代策略 } \/\/ 评估器接口 type Evaluator interface { Evaluate(ctx context.Context, output string, target string) (*EvaluationResult, error) } \/\/ 退出条件接口 type ExitCondition interface { ShouldExit(state *LoopState) (bool, string) } \/\/ 迭代状态 type LoopState struct { Iteration int \/\/ 当前迭代次数 CurrentOutput string \/\/ 当前输出 PreviousOutput string \/\/ 上一次输出 QualityHistory []float64 \/\/ 质量历史 BestOutput string \/\/ 最佳输出 BestQuality float64 \/\/ 最佳质量 Feedback string \/\/ 当前反馈 Context map[string]interface{} \/\/ 上下文状态 StartTime time.Time \/\/ 开始时间 TokenUsed int \/\/ Token 消耗 } \/\/ 评估结果 type EvaluationResult struct { Quality float64 \/\/ 质量评分 Feedback string \/\/ 改进反馈 Metrics *QualityMetrics \/\/ 详细指标 Passed bool \/\/ 是否通过 Criteria map[string]bool \/\/ 各标准通过情况 } 执行引擎 func (lw *LoopWorkflow) Execute(ctx context.Context, input string) …","about":[{"@type":"Thing","name":"Go"},{"@type":"Thing","name":"ADK"},{"@type":"Thing","name":"Loop"},{"@type":"Thing","name":"工作流"},{"@type":"Thing","name":"迭代优化"},{"@type":"Thing","name":"收敛性"},{"@type":"Thing","name":"终止条件"},{"@type":"Thing","name":"生产实践"}],"isAccessibleForFree":"True","timeRequired":"PT13M","copyrightYear":"2026","educationalLevel":"intermediate","learningResourceType":"tutorial"}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"适合需要多次迭代优化、无法一次完成的复杂任务，如文案打磨、代码审查修正等。"},"name":"Loop 工作流适合什么任务？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"保证质量单调性、提供具体可操作的反馈、后期采用迭代降温降低改动幅度，并可使用多起点选择最优结果。"},"name":"如何确保 Loop 收敛？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"使用多评估器投票、关键节点引入人工审核、定期用标注数据校准评估标准。"},"name":"评估器本身不准确怎么办？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"设置硬预算上限、使用轻量级模型做评估、压缩历史上下文、在质量提升低于阈值时早期终止。"},"name":"如何控制 Loop 的 Token 消耗？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"常见终止条件包括质量分数达标、达到最大迭代次数、Token 预算耗尽或改进幅度低于阈值。"},"name":"Loop 的终止条件有哪些？"}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
+梦兽编程<sup>™</sup></a><nav class=wp2-header__links aria-label=主导航><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/products/>产品</a></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tutorials/>教程</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tutorials>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 教程 菜单</span></button><div id=wp2-submenu-tutorials class=wp2-header__submenu aria-label=教程 hidden><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/ai/>AI</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-ai>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 AI 菜单</span></button><div id=wp2-submenu-ai class=wp2-header__submenu aria-label=AI hidden><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/languages/>开发</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-dev>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 开发 菜单</span></button><div id=wp2-submenu-dev class=wp2-header__submenu aria-label=开发 hidden><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tools/rexai-tool-directory/>工具</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tools>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 工具 菜单</span></button><div id=wp2-submenu-tools class=wp2-header__submenu aria-label=工具 hidden><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/categories/>探索</a>
+<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-explore>
+<span aria-hidden=true>&#9662;</span>
+<span class=wp2-visually-hidden>展开 探索 菜单</span></button><div id=wp2-submenu-explore class=wp2-header__submenu aria-label=探索 hidden><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></div><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/about/>关于</a></div></nav><div class=wp2-header__spacer></div><a class=wp2-header__cta href=/tools/cc-codex-portal/>AI 套装 <span aria-hidden=true>&rarr;</span></a>
+<button class=wp2-header__menu type=button aria-expanded=false aria-controls=wp2-mobile-menu data-wp2-menu data-open-label=打开菜单 data-close-label=关闭菜单>
+<span class=wp2-header__menu-mark aria-hidden=true><i></i><i></i><i></i></span>
+<span class=wp2-header__menu-label data-wp2-menu-label>打开菜单</span></button></header><div id=wp2-mobile-menu class=wp2-menu-panel hidden><div class=wp2-menu-panel__frame><div class=wp2-menu-panel__directory><div class=wp2-menu-panel__meta><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div><nav class=wp2-menu-panel__grid aria-label=全站导航><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/products/><strong>产品</strong><span aria-hidden=true>&rarr;</span></a><p>自研产品、服务与项目入口。</p></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tutorials/><strong>教程</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/ai/><strong>AI</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/languages/><strong>开发</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tools/rexai-tool-directory/><strong>工具</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/categories/><strong>探索</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></section><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/about/><strong>关于</strong><span aria-hidden=true>&rarr;</span></a><p>了解梦兽编程、联系渠道与站点说明。</p></section></nav></div><div class=wp2-menu-panel__utility aria-label=站点工具><span class=wp2-menu-panel__utility-label>实用工具</span>
+<a class=wp2-menu-panel__utility-search href=/search/>搜索</a><a href=/en/>English</a>
+<button type=button data-theme-toggle data-theme-light-label=主题：浅色 data-theme-dark-label=主题：深色 data-theme-light-action=切换至深色 data-theme-dark-action=切换至浅色 aria-pressed=false><span data-theme-toggle-label>主题：浅色</span></button></div></div></div><div class=reading-progress-bar id=readingProgress aria-hidden=true></div><main id=main-content class=glass-main><article class="post-single wp2-article"><header class=page-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
+<meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/><span itemprop=name>教程</span></a>
+<meta itemprop=position content="2"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/go-adk/><span itemprop=name>Go Adk</span></a>
+<meta itemprop=position content="3"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/go-adk/05-multi-agent/><span itemprop=name>05 Multi Agent</span></a>
+<meta itemprop=position content="4"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/tutorials/go-adk/05-multi-agent/go-adk-team-loop/><span itemprop=name>Go Adk Team Loop</span></a>
+<meta itemprop=position content="5"></li></ol></nav><h1 class="post-title entry-hint-parent">Loop 工作流深度解析：迭代优化、终止条件与收敛性保障</h1><p class=post-description>深入剖析 ADK Go Loop 工作流的迭代机制、终止条件设计、收敛性分析、状态演化与生产级循环控制策略。</p><div class=post-meta><span title='2026-05-30 07:00:00 +0800 CST'>May 30, 2026</span>&nbsp;·&nbsp;10 min&nbsp;·&nbsp;2107 words&nbsp;·&nbsp;梦兽编程<span class=waline-pageview-count data-path=/tutorials/go-adk/05-multi-agent/go-adk-team-loop/ style=margin-left:.5rem>
+<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align:-.125em;margin-right:.25rem"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133.0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13.133 13.133.0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12.0-3.879-1.168-5.168-2.457A13.134 13.134.0 011.172 8z"/><path d="M8 5.5a2.5 2.5.0 100 5 2.5 2.5.0 000-5zM4.5 8a3.5 3.5.0 117 0 3.5 3.5.0 01-7 0z"/></svg>
+<span class=waline-pageview-number id=waline-pv-076f78f9153bd2e2f9bcc83589bef97780527e45309ea5d73dc9183d3c5b7d72 data-path=/tutorials/go-adk/05-multi-agent/go-adk-team-loop/>-</span></span></div></header><div class="post-layout has-toc"><div class=post-main><div class=post-content><p>Loop 工作流是 Agent Team 中处理迭代优化类任务的核心模式。与 Sequential 和 Parallel 的一次性执行不同，Loop 通过<strong>循环-评估-优化</strong>的闭环机制，让 Agent 自主改进输出质量。然而，循环带来的风险——无限循环、收敛震荡、状态膨胀——需要严谨的工程控制。本文将深入 Loop 的数学模型、终止理论、状态演化与生产实践。</p><h2 id=迭代优化的数学模型>迭代优化的数学模型<a hidden class=anchor aria-hidden=true href=#迭代优化的数学模型>#</a></h2><h3 id=收敛性分析>收敛性分析<a hidden class=anchor aria-hidden=true href=#收敛性分析>#</a></h3><p>Loop 工作流可以形式化为一个迭代函数系统：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-fallback data-lang=fallback><span style=display:flex><span>x_{n+1} = f(x_n, e_n)
+</span></span></code></pre></div><p>其中：</p><ul><li><code>x_n</code>：第 n 次迭代的输出</li><li><code>f</code>：Agent 的改进函数</li><li><code>e_n</code>：第 n 次迭代的评估反馈</li></ul><p><strong>收敛条件</strong>：当存在某个质量度量 <code>Q(x)</code>，使得 <code>Q(x_{n+1}) >= Q(x_n)</code> 对所有 n 成立，且 <code>Q(x)</code> 有上界，则序列 <code>{x_n}</code> 必然收敛。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 收敛性分析器</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ConvergenceAnalyzer <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    qualityHistory []<span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    windowSize     <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    threshold      <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (ca <span style=color:#ff79c6>*</span>ConvergenceAnalyzer) <span style=color:#50fa7b>IsConverged</span>() (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory) &lt; ca.windowSize {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#bd93f9>0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 取最近 windowSize 次的质量值</span>
+</span></span><span style=display:flex><span>    recent <span style=color:#ff79c6>:=</span> ca.qualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory)<span style=color:#ff79c6>-</span>ca.windowSize:]
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 计算方差</span>
+</span></span><span style=display:flex><span>    mean <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>calculateMean</span>(recent)
+</span></span><span style=display:flex><span>    variance <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>calculateVariance</span>(recent, mean)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 方差小于阈值认为已收敛</span>
+</span></span><span style=display:flex><span>    converged <span style=color:#ff79c6>:=</span> variance &lt; ca.threshold
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> converged, variance
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (ca <span style=color:#ff79c6>*</span>ConvergenceAnalyzer) <span style=color:#50fa7b>DetectOscillation</span>() <span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory) &lt; <span style=color:#bd93f9>4</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 检测震荡模式：质量值反复升降</span>
+</span></span><span style=display:flex><span>    last4 <span style=color:#ff79c6>:=</span> ca.qualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(ca.qualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>4</span>:]
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    upDown <span style=color:#ff79c6>:=</span> (last4[<span style=color:#bd93f9>1</span>] &gt; last4[<span style=color:#bd93f9>0</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>2</span>] &lt; last4[<span style=color:#bd93f9>1</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>3</span>] &gt; last4[<span style=color:#bd93f9>2</span>])
+</span></span><span style=display:flex><span>    downUp <span style=color:#ff79c6>:=</span> (last4[<span style=color:#bd93f9>1</span>] &lt; last4[<span style=color:#bd93f9>0</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>2</span>] &gt; last4[<span style=color:#bd93f9>1</span>]) <span style=color:#ff79c6>&amp;&amp;</span> (last4[<span style=color:#bd93f9>3</span>] &lt; last4[<span style=color:#bd93f9>2</span>])
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> upDown <span style=color:#ff79c6>||</span> downUp
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=质量度量设计>质量度量设计<a hidden class=anchor aria-hidden=true href=#质量度量设计>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 多维度质量评估体系</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> QualityMetrics <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 内容质量（0-1）</span>
+</span></span><span style=display:flex><span>    Relevance     <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 相关性</span>
+</span></span><span style=display:flex><span>    Coherence     <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 连贯性</span>
+</span></span><span style=display:flex><span>    Completeness  <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 完整性</span>
+</span></span><span style=display:flex><span>    Accuracy      <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 准确性</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 结构质量（0-1）</span>
+</span></span><span style=display:flex><span>    Structure     <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 结构合理性</span>
+</span></span><span style=display:flex><span>    Formatting    <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 格式规范</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 语言质量（0-1）</span>
+</span></span><span style=display:flex><span>    Grammar       <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 语法正确性</span>
+</span></span><span style=display:flex><span>    Style         <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 风格一致性</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 业务质量（0-1）</span>
+</span></span><span style=display:flex><span>    Requirements  <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 需求满足度</span>
+</span></span><span style=display:flex><span>    Constraints   <span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 约束满足度</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (qm <span style=color:#ff79c6>*</span>QualityMetrics) <span style=color:#50fa7b>OverallScore</span>() <span style=color:#8be9fd>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 加权综合评分</span>
+</span></span><span style=display:flex><span>    weights <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>float64</span>{
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Relevance&#34;</span>:    <span style=color:#bd93f9>0.20</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Coherence&#34;</span>:    <span style=color:#bd93f9>0.15</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Completeness&#34;</span>: <span style=color:#bd93f9>0.15</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Accuracy&#34;</span>:     <span style=color:#bd93f9>0.20</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Structure&#34;</span>:    <span style=color:#bd93f9>0.10</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Formatting&#34;</span>:   <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Grammar&#34;</span>:      <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Style&#34;</span>:        <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Requirements&#34;</span>: <span style=color:#bd93f9>0.03</span>,
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>&#34;Constraints&#34;</span>:  <span style=color:#bd93f9>0.02</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>:=</span> <span style=color:#bd93f9>0.0</span>
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Relevance&#34;</span>] <span style=color:#ff79c6>*</span> qm.Relevance
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Coherence&#34;</span>] <span style=color:#ff79c6>*</span> qm.Coherence
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Completeness&#34;</span>] <span style=color:#ff79c6>*</span> qm.Completeness
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Accuracy&#34;</span>] <span style=color:#ff79c6>*</span> qm.Accuracy
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Structure&#34;</span>] <span style=color:#ff79c6>*</span> qm.Structure
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Formatting&#34;</span>] <span style=color:#ff79c6>*</span> qm.Formatting
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Grammar&#34;</span>] <span style=color:#ff79c6>*</span> qm.Grammar
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Style&#34;</span>] <span style=color:#ff79c6>*</span> qm.Style
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Requirements&#34;</span>] <span style=color:#ff79c6>*</span> qm.Requirements
+</span></span><span style=display:flex><span>    score <span style=color:#ff79c6>+=</span> weights[<span style=color:#f1fa8c>&#34;Constraints&#34;</span>] <span style=color:#ff79c6>*</span> qm.Constraints
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> score
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 通过 LLM 评估质量</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>evaluateWithLLM</span>(ctx context.Context, model agent.Model, content <span style=color:#8be9fd>string</span>, criteria []<span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>QualityMetrics, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    prompt <span style=color:#ff79c6>:=</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>`请评估以下内容的质量，按以下维度打分（0-1）：
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>评估维度：
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>请以 JSON 格式输出评分。`</span>, content, strings.<span style=color:#50fa7b>Join</span>(criteria, <span style=color:#f1fa8c>&#34;\n&#34;</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    response, err <span style=color:#ff79c6>:=</span> model.<span style=color:#50fa7b>GenerateContent</span>(ctx, prompt)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> metrics QualityMetrics
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> json.<span style=color:#50fa7b>Unmarshal</span>([]<span style=color:#8be9fd;font-style:italic>byte</span>(response), <span style=color:#ff79c6>&amp;</span>metrics); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>metrics, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=loop-工作流架构设计>Loop 工作流架构设计<a hidden class=anchor aria-hidden=true href=#loop-工作流架构设计>#</a></h2><h3 id=核心组件>核心组件<a hidden class=anchor aria-hidden=true href=#核心组件>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> LoopWorkflow <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    agent           <span style=color:#ff79c6>*</span>agent.Agent        <span style=color:#6272a4>// 迭代 Agent</span>
+</span></span><span style=display:flex><span>    evaluator       Evaluator           <span style=color:#6272a4>// 质量评估器</span>
+</span></span><span style=display:flex><span>    exitCondition   ExitCondition       <span style=color:#6272a4>// 退出条件</span>
+</span></span><span style=display:flex><span>    maxIterations   <span style=color:#8be9fd>int</span>                 <span style=color:#6272a4>// 最大迭代次数</span>
+</span></span><span style=display:flex><span>    minIterations   <span style=color:#8be9fd>int</span>                 <span style=color:#6272a4>// 最小迭代次数</span>
+</span></span><span style=display:flex><span>    convergenceCfg  <span style=color:#ff79c6>*</span>ConvergenceConfig  <span style=color:#6272a4>// 收敛配置</span>
+</span></span><span style=display:flex><span>    stateManager    StateManager        <span style=color:#6272a4>// 状态管理器</span>
+</span></span><span style=display:flex><span>    feedbackBuilder FeedbackBuilder     <span style=color:#6272a4>// 反馈构建器</span>
+</span></span><span style=display:flex><span>    strategy        IterationStrategy   <span style=color:#6272a4>// 迭代策略</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 评估器接口</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> Evaluator <span style=color:#8be9fd;font-style:italic>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#50fa7b>Evaluate</span>(ctx context.Context, output <span style=color:#8be9fd>string</span>, target <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>EvaluationResult, <span style=color:#8be9fd>error</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 退出条件接口</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ExitCondition <span style=color:#8be9fd;font-style:italic>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 迭代状态</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> LoopState <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Iteration      <span style=color:#8be9fd>int</span>                    <span style=color:#6272a4>// 当前迭代次数</span>
+</span></span><span style=display:flex><span>    CurrentOutput  <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// 当前输出</span>
+</span></span><span style=display:flex><span>    PreviousOutput <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// 上一次输出</span>
+</span></span><span style=display:flex><span>    QualityHistory []<span style=color:#8be9fd>float64</span>              <span style=color:#6272a4>// 质量历史</span>
+</span></span><span style=display:flex><span>    BestOutput     <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// 最佳输出</span>
+</span></span><span style=display:flex><span>    BestQuality    <span style=color:#8be9fd>float64</span>                <span style=color:#6272a4>// 最佳质量</span>
+</span></span><span style=display:flex><span>    Feedback       <span style=color:#8be9fd>string</span>                 <span style=color:#6272a4>// 当前反馈</span>
+</span></span><span style=display:flex><span>    Context        <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{} <span style=color:#6272a4>// 上下文状态</span>
+</span></span><span style=display:flex><span>    StartTime      time.Time              <span style=color:#6272a4>// 开始时间</span>
+</span></span><span style=display:flex><span>    TokenUsed      <span style=color:#8be9fd>int</span>                    <span style=color:#6272a4>// Token 消耗</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 评估结果</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> EvaluationResult <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Quality    <span style=color:#8be9fd>float64</span>            <span style=color:#6272a4>// 质量评分</span>
+</span></span><span style=display:flex><span>    Feedback   <span style=color:#8be9fd>string</span>             <span style=color:#6272a4>// 改进反馈</span>
+</span></span><span style=display:flex><span>    Metrics    <span style=color:#ff79c6>*</span>QualityMetrics    <span style=color:#6272a4>// 详细指标</span>
+</span></span><span style=display:flex><span>    Passed     <span style=color:#8be9fd>bool</span>               <span style=color:#6272a4>// 是否通过</span>
+</span></span><span style=display:flex><span>    Criteria   <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span>    <span style=color:#6272a4>// 各标准通过情况</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=执行引擎>执行引擎<a hidden class=anchor aria-hidden=true href=#执行引擎>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (lw <span style=color:#ff79c6>*</span>LoopWorkflow) <span style=color:#50fa7b>Execute</span>(ctx context.Context, input <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>LoopResult, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 1. 初始化状态</span>
+</span></span><span style=display:flex><span>    state <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>LoopState{
+</span></span><span style=display:flex><span>        Iteration: <span style=color:#bd93f9>0</span>,
+</span></span><span style=display:flex><span>        Context:   <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd;font-style:italic>interface</span>{}),
+</span></span><span style=display:flex><span>        StartTime: time.<span style=color:#50fa7b>Now</span>(),
+</span></span><span style=display:flex><span>        BestQuality: <span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    state.Context[<span style=color:#f1fa8c>&#34;original_input&#34;</span>] = input
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 2. 初始执行</span>
+</span></span><span style=display:flex><span>    output, err <span style=color:#ff79c6>:=</span> lw.agent.<span style=color:#50fa7b>Run</span>(ctx, input)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;initial execution failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    state.CurrentOutput = output
+</span></span><span style=display:flex><span>    state.BestOutput = output
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 3. 评估初始输出</span>
+</span></span><span style=display:flex><span>    eval, err <span style=color:#ff79c6>:=</span> lw.evaluator.<span style=color:#50fa7b>Evaluate</span>(ctx, output, input)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;initial evaluation failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    state.QualityHistory = <span style=color:#8be9fd;font-style:italic>append</span>(state.QualityHistory, eval.Quality)
+</span></span><span style=display:flex><span>    state.BestQuality = eval.Quality
+</span></span><span style=display:flex><span>    state.Feedback = eval.Feedback
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 4. 迭代优化循环</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> {
+</span></span><span style=display:flex><span>        state.Iteration<span style=color:#ff79c6>++</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 检查退出条件</span>
+</span></span><span style=display:flex><span>        shouldExit, reason <span style=color:#ff79c6>:=</span> lw.exitCondition.<span style=color:#50fa7b>ShouldExit</span>(state)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> shouldExit {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, reason), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 检查最大迭代次数</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> state.Iteration <span style=color:#ff79c6>&gt;=</span> lw.maxIterations {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;max_iterations_reached&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 构建迭代输入</span>
+</span></span><span style=display:flex><span>        iterationInput <span style=color:#ff79c6>:=</span> lw.feedbackBuilder.<span style=color:#50fa7b>Build</span>(state, eval)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 执行迭代</span>
+</span></span><span style=display:flex><span>        newOutput, err <span style=color:#ff79c6>:=</span> lw.agent.<span style=color:#50fa7b>Run</span>(ctx, iterationInput)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// 迭代失败，使用最佳历史结果</span>
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Iteration %d failed: %v&#34;</span>, state.Iteration, err)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;iteration_failed&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        state.PreviousOutput = state.CurrentOutput
+</span></span><span style=display:flex><span>        state.CurrentOutput = newOutput
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 评估新输出</span>
+</span></span><span style=display:flex><span>        eval, err = lw.evaluator.<span style=color:#50fa7b>Evaluate</span>(ctx, newOutput, input)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            log.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Evaluation failed at iteration %d: %v&#34;</span>, state.Iteration, err)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>continue</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        state.QualityHistory = <span style=color:#8be9fd;font-style:italic>append</span>(state.QualityHistory, eval.Quality)
+</span></span><span style=display:flex><span>        state.Feedback = eval.Feedback
+</span></span><span style=display:flex><span>        state.TokenUsed <span style=color:#ff79c6>+=</span> <span style=color:#50fa7b>estimateTokens</span>(newOutput)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 更新最佳结果</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> eval.Quality &gt; state.BestQuality {
+</span></span><span style=display:flex><span>            state.BestQuality = eval.Quality
+</span></span><span style=display:flex><span>            state.BestOutput = newOutput
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 检测收敛</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> lw.convergenceCfg <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>            analyzer <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>ConvergenceAnalyzer{
+</span></span><span style=display:flex><span>                qualityHistory: state.QualityHistory,
+</span></span><span style=display:flex><span>                windowSize:     lw.convergenceCfg.WindowSize,
+</span></span><span style=display:flex><span>                threshold:      lw.convergenceCfg.Threshold,
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> converged, variance <span style=color:#ff79c6>:=</span> analyzer.<span style=color:#50fa7b>IsConverged</span>(); converged {
+</span></span><span style=display:flex><span>                state.Context[<span style=color:#f1fa8c>&#34;convergence_variance&#34;</span>] = variance
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;converged&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> analyzer.<span style=color:#50fa7b>DetectOscillation</span>() {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;oscillation_detected&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 检查 Token 预算</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> lw.tokenBudget <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> <span style=color:#ff79c6>&amp;&amp;</span> !lw.tokenBudget.<span style=color:#50fa7b>CanAllocate</span>(<span style=color:#bd93f9>1000</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> lw.<span style=color:#50fa7b>buildResult</span>(state, <span style=color:#f1fa8c>&#34;token_budget_exhausted&#34;</span>), <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (lw <span style=color:#ff79c6>*</span>LoopWorkflow) <span style=color:#50fa7b>buildResult</span>(state <span style=color:#ff79c6>*</span>LoopState, reason <span style=color:#8be9fd>string</span>) <span style=color:#ff79c6>*</span>LoopResult {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>LoopResult{
+</span></span><span style=display:flex><span>        Output:        state.BestOutput,
+</span></span><span style=display:flex><span>        Quality:       state.BestQuality,
+</span></span><span style=display:flex><span>        Iterations:    state.Iteration,
+</span></span><span style=display:flex><span>        ExitReason:    reason,
+</span></span><span style=display:flex><span>        QualityHistory: state.QualityHistory,
+</span></span><span style=display:flex><span>        TokenUsed:     state.TokenUsed,
+</span></span><span style=display:flex><span>        Duration:      time.<span style=color:#50fa7b>Since</span>(state.StartTime),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=终止条件设计>终止条件设计<a hidden class=anchor aria-hidden=true href=#终止条件设计>#</a></h2><h3 id=复合退出条件>复合退出条件<a hidden class=anchor aria-hidden=true href=#复合退出条件>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 组合多个退出条件</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CompositeExitCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    conditions []ExitCondition
+</span></span><span style=display:flex><span>    mode       CompositeMode <span style=color:#6272a4>// ANY | ALL</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CompositeMode <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>const</span> (
+</span></span><span style=display:flex><span>    ModeAny CompositeMode = <span style=color:#ff79c6>iota</span> <span style=color:#6272a4>// 任一条件满足即退出</span>
+</span></span><span style=display:flex><span>    ModeAll                       <span style=color:#6272a4>// 所有条件满足才退出</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>CompositeExitCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> c.mode <span style=color:#ff79c6>==</span> ModeAny {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> _, cond <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> c.conditions {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> exit, reason <span style=color:#ff79c6>:=</span> cond.<span style=color:#50fa7b>ShouldExit</span>(state); exit {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, reason
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// ModeAll</span>
+</span></span><span style=display:flex><span>    reasons <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>([]<span style=color:#8be9fd>string</span>, <span style=color:#bd93f9>0</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, cond <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> c.conditions {
+</span></span><span style=display:flex><span>        exit, reason <span style=color:#ff79c6>:=</span> cond.<span style=color:#50fa7b>ShouldExit</span>(state)
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> !exit {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        reasons = <span style=color:#8be9fd;font-style:italic>append</span>(reasons, reason)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, strings.<span style=color:#50fa7b>Join</span>(reasons, <span style=color:#f1fa8c>&#34; + &#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 具体退出条件实现</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 1. 质量阈值条件</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> QualityThresholdCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Threshold <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>QualityThresholdCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.BestQuality <span style=color:#ff79c6>&gt;=</span> c.Threshold {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;quality_threshold_reached: %.3f &gt;= %.3f&#34;</span>, 
+</span></span><span style=display:flex><span>            state.BestQuality, c.Threshold)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 2. 最大迭代次数条件</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> MaxIterationCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    MaxIterations <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>MaxIterationCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.Iteration <span style=color:#ff79c6>&gt;=</span> c.MaxIterations {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;max_iterations: %d&#34;</span>, c.MaxIterations)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 3. 质量提升停滞条件</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> ImprovementStallCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    WindowSize    <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    MinImprovement <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>ImprovementStallCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) &lt; c.WindowSize<span style=color:#ff79c6>+</span><span style=color:#bd93f9>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    recent <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span>c.WindowSize:]
+</span></span><span style=display:flex><span>    best <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span>c.WindowSize<span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>]
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, q <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> recent {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> q<span style=color:#ff79c6>-</span>best <span style=color:#ff79c6>&gt;=</span> c.MinImprovement {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;improvement_stalled: no improvement &gt; %.3f in last %d iterations&#34;</span>,
+</span></span><span style=display:flex><span>        c.MinImprovement, c.WindowSize)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 4. 时间预算条件</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> TimeBudgetCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    MaxDuration time.Duration
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>TimeBudgetCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> time.<span style=color:#50fa7b>Since</span>(state.StartTime) <span style=color:#ff79c6>&gt;=</span> c.MaxDuration {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;time_budget_exhausted: %v&#34;</span>, c.MaxDuration)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 5. 质量下降条件（防止过优化）</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> QualityRegressionCondition <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Threshold <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (c <span style=color:#ff79c6>*</span>QualityRegressionCondition) <span style=color:#50fa7b>ShouldExit</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) &lt; <span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    last <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>]
+</span></span><span style=display:flex><span>    prev <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span>]
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> prev<span style=color:#ff79c6>-</span>last &gt; c.Threshold {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;quality_regression: %.3f -&gt; %.3f&#34;</span>, prev, last)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=迭代策略设计>迭代策略设计<a hidden class=anchor aria-hidden=true href=#迭代策略设计>#</a></h2><h3 id=反馈构建策略>反馈构建策略<a hidden class=anchor aria-hidden=true href=#反馈构建策略>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 反馈构建器接口</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> FeedbackBuilder <span style=color:#8be9fd;font-style:italic>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#50fa7b>Build</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 详细反馈构建器</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> DetailedFeedbackBuilder <span style=color:#8be9fd;font-style:italic>struct</span>{}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (b <span style=color:#ff79c6>*</span>DetailedFeedbackBuilder) <span style=color:#50fa7b>Build</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> feedback strings.Builder
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;原始需求: %s\n\n&#34;</span>, state.Context[<span style=color:#f1fa8c>&#34;original_input&#34;</span>]))
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;当前迭代: %d\n&#34;</span>, state.Iteration))
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;当前质量评分: %.3f\n&#34;</span>, eval.Quality))
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;历史最佳: %.3f\n\n&#34;</span>, state.BestQuality))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;评估反馈:\n&#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(eval.Feedback)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n\n&#34;</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 添加具体改进建议</span>
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;需要改进的方面:\n&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> criterion, passed <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> eval.Criteria {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> !passed {
+</span></span><span style=display:flex><span>            feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;- %s: 未达标\n&#34;</span>, criterion))
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n请基于以上反馈改进内容，输出优化后的版本。&#34;</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> feedback.<span style=color:#50fa7b>String</span>()
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 对比反馈构建器（提供前后对比）</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> DiffFeedbackBuilder <span style=color:#8be9fd;font-style:italic>struct</span>{}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (b <span style=color:#ff79c6>*</span>DiffFeedbackBuilder) <span style=color:#50fa7b>Build</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> feedback strings.Builder
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;请优化以下内容。\n\n&#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;【当前版本】\n&#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(state.CurrentOutput)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n\n&#34;</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.PreviousOutput <span style=color:#ff79c6>!=</span> <span style=color:#f1fa8c>&#34;&#34;</span> {
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;【上一版本】\n&#34;</span>)
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(state.PreviousOutput)
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n\n&#34;</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        feedback.<span style=color:#50fa7b>WriteString</span>(fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;质量变化: %.3f -&gt; %.3f\n&#34;</span>, 
+</span></span><span style=display:flex><span>            state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span>], eval.Quality))
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(<span style=color:#f1fa8c>&#34;\n改进方向: &#34;</span>)
+</span></span><span style=display:flex><span>    feedback.<span style=color:#50fa7b>WriteString</span>(eval.Feedback)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> feedback.<span style=color:#50fa7b>String</span>()
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=自适应迭代策略>自适应迭代策略<a hidden class=anchor aria-hidden=true href=#自适应迭代策略>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#6272a4>// 根据当前状态动态调整迭代策略</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AdaptiveIterationStrategy <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    baseStrategy    IterationStrategy
+</span></span><span style=display:flex><span>    qualityTargets  []<span style=color:#8be9fd>float64</span> <span style=color:#6272a4>// 分阶段质量目标</span>
+</span></span><span style=display:flex><span>    currentPhase    <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (s <span style=color:#ff79c6>*</span>AdaptiveIterationStrategy) <span style=color:#50fa7b>GetNextInput</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 根据当前质量选择阶段</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> i, target <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> s.qualityTargets {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> state.BestQuality &lt; target {
+</span></span><span style=display:flex><span>            s.currentPhase = i
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>break</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 不同阶段使用不同策略</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>switch</span> s.currentPhase {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#bd93f9>0</span>:
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 第一阶段：关注结构和完整性</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.<span style=color:#50fa7b>buildStructureFocusPrompt</span>(state, eval)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#bd93f9>1</span>:
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 第二阶段：关注内容和准确性</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.<span style=color:#50fa7b>buildContentFocusPrompt</span>(state, eval)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>case</span> <span style=color:#bd93f9>2</span>:
+</span></span><span style=display:flex><span>        <span style=color:#6272a4>// 第三阶段：关注语言和风格</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.<span style=color:#50fa7b>buildStyleFocusPrompt</span>(state, eval)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>default</span>:
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> s.baseStrategy.<span style=color:#50fa7b>GetNextInput</span>(state, eval)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (s <span style=color:#ff79c6>*</span>AdaptiveIterationStrategy) <span style=color:#50fa7b>buildStructureFocusPrompt</span>(state <span style=color:#ff79c6>*</span>LoopState, eval <span style=color:#ff79c6>*</span>EvaluationResult) <span style=color:#8be9fd>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>`当前质量: %.3f，重点关注结构优化。
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>当前内容：
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>请优化以下方面：
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>1. 确保有清晰的标题和段落结构
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>2. 添加适当的小标题
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>3. 确保逻辑流程顺畅
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>4. 检查开头和结尾的完整性
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>输出优化后的完整版本。`</span>, state.BestQuality, state.CurrentOutput)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=实战场景文案多轮优化系统>实战场景：文案多轮优化系统<a hidden class=anchor aria-hidden=true href=#实战场景文案多轮优化系统>#</a></h2><h3 id=完整实现>完整实现<a hidden class=anchor aria-hidden=true href=#完整实现>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#ff79c6>package</span> main
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;context&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;log&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;strings&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/google/adk-go/agent&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f1fa8c>&#34;github.com/google/adk-go/team&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// CopywritingOptimizer 文案优化系统</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CopywritingOptimizer <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    workflow <span style=color:#ff79c6>*</span>team.LoopWorkflow
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>NewCopywritingOptimizer</span>(model agent.Model) (<span style=color:#ff79c6>*</span>CopywritingOptimizer, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 创建写作 Agent</span>
+</span></span><span style=display:flex><span>    writerAgent, err <span style=color:#ff79c6>:=</span> agent.<span style=color:#50fa7b>New</span>(agent.Config{
+</span></span><span style=display:flex><span>        Name:        <span style=color:#f1fa8c>&#34;copywriter&#34;</span>,
+</span></span><span style=display:flex><span>        Model:       model,
+</span></span><span style=display:flex><span>        Instruction: <span style=color:#f1fa8c>`你是资深文案策划。根据需求和反馈创作或优化文案。
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>要求：
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>1. 语言生动有感染力
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>2. 突出核心卖点
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>3. 符合目标受众语言习惯
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>4. 控制字数在要求范围内`</span>,
+</span></span><span style=display:flex><span>        Timeout: <span style=color:#bd93f9>30</span> <span style=color:#ff79c6>*</span> time.Second,
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, err
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 构建评估器</span>
+</span></span><span style=display:flex><span>    evaluator <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>&amp;</span>CopywritingEvaluator{
+</span></span><span style=display:flex><span>        model: model,
+</span></span><span style=display:flex><span>        criteria: []EvaluationCriterion{
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;吸引力&#34;</span>, Weight: <span style=color:#bd93f9>0.25</span>, Prompt: <span style=color:#f1fa8c>&#34;评估文案的吸引力和 hooks 强度&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;清晰度&#34;</span>, Weight: <span style=color:#bd93f9>0.20</span>, Prompt: <span style=color:#f1fa8c>&#34;评估信息传达的清晰度&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;说服力&#34;</span>, Weight: <span style=color:#bd93f9>0.25</span>, Prompt: <span style=color:#f1fa8c>&#34;评估说服力和转化率潜力&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;品牌调性&#34;</span>, Weight: <span style=color:#bd93f9>0.15</span>, Prompt: <span style=color:#f1fa8c>&#34;评估是否符合品牌调性&#34;</span>},
+</span></span><span style=display:flex><span>            {Name: <span style=color:#f1fa8c>&#34;创意度&#34;</span>, Weight: <span style=color:#bd93f9>0.15</span>, Prompt: <span style=color:#f1fa8c>&#34;评估创意和差异化程度&#34;</span>},
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 构建复合退出条件</span>
+</span></span><span style=display:flex><span>    exitCondition <span style=color:#ff79c6>:=</span> team.<span style=color:#50fa7b>NewCompositeExitCondition</span>(team.ModeAny,
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.QualityThresholdCondition{Threshold: <span style=color:#bd93f9>0.85</span>},      <span style=color:#6272a4>// 质量达标</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.MaxIterationCondition{MaxIterations: <span style=color:#bd93f9>5</span>},          <span style=color:#6272a4>// 最多 5 轮</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.ImprovementStallCondition{                         <span style=color:#6272a4>// 提升停滞</span>
+</span></span><span style=display:flex><span>            WindowSize:     <span style=color:#bd93f9>2</span>,
+</span></span><span style=display:flex><span>            MinImprovement: <span style=color:#bd93f9>0.05</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.TimeBudgetCondition{MaxDuration: <span style=color:#bd93f9>2</span> <span style=color:#ff79c6>*</span> time.Minute}, <span style=color:#6272a4>// 时间预算</span>
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>&amp;</span>team.QualityRegressionCondition{Threshold: <span style=color:#bd93f9>0.10</span>},      <span style=color:#6272a4>// 质量回退</span>
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 构建工作流</span>
+</span></span><span style=display:flex><span>    workflow <span style=color:#ff79c6>:=</span> team.<span style=color:#50fa7b>NewLoopWorkflow</span>(
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithAgent</span>(writerAgent),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithEvaluator</span>(evaluator),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithExitCondition</span>(exitCondition),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithFeedbackBuilder</span>(<span style=color:#ff79c6>&amp;</span>team.DiffFeedbackBuilder{}),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithConvergenceConfig</span>(<span style=color:#ff79c6>&amp;</span>team.ConvergenceConfig{
+</span></span><span style=display:flex><span>            WindowSize: <span style=color:#bd93f9>3</span>,
+</span></span><span style=display:flex><span>            Threshold:  <span style=color:#bd93f9>0.01</span>,
+</span></span><span style=display:flex><span>        }),
+</span></span><span style=display:flex><span>        team.<span style=color:#50fa7b>WithTokenBudget</span>(<span style=color:#bd93f9>30000</span>),
+</span></span><span style=display:flex><span>    )
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>CopywritingOptimizer{workflow: workflow}, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// CopywritingEvaluator 文案评估器</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CopywritingEvaluator <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    model    agent.Model
+</span></span><span style=display:flex><span>    criteria []EvaluationCriterion
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> EvaluationCriterion <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Name   <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>    Weight <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    Prompt <span style=color:#8be9fd>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (e <span style=color:#ff79c6>*</span>CopywritingEvaluator) <span style=color:#50fa7b>Evaluate</span>(ctx context.Context, output <span style=color:#8be9fd>string</span>, target <span style=color:#8be9fd>string</span>) (<span style=color:#ff79c6>*</span>team.EvaluationResult, <span style=color:#8be9fd>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 构建评估提示</span>
+</span></span><span style=display:flex><span>    prompt <span style=color:#ff79c6>:=</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>`请评估以下文案，按维度打分（0-1，保留3位小数）。
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>目标: %s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>文案内容:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>%s
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>评估维度:
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>`</span>, target, output)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, c <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> e.criteria {
+</span></span><span style=display:flex><span>        prompt <span style=color:#ff79c6>+=</span> fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;- %s (权重%.0f%%): %s\n&#34;</span>, c.Name, c.Weight<span style=color:#ff79c6>*</span><span style=color:#bd93f9>100</span>, c.Prompt)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    prompt <span style=color:#ff79c6>+=</span> <span style=color:#f1fa8c>`
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>请以 JSON 格式输出：
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>{
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;scores&#34;: {&#34;维度名&#34;: 分数},
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;overall&#34;: 综合评分,
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;feedback&#34;: &#34;具体改进建议&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>  &#34;passed&#34;: true/false
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>}`</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    response, err <span style=color:#ff79c6>:=</span> e.model.<span style=color:#50fa7b>GenerateContent</span>(ctx, prompt)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;evaluation failed: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#8be9fd;font-style:italic>var</span> evalData <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>        Scores  <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>float64</span> <span style=color:#f1fa8c>`json:&#34;scores&#34;`</span>
+</span></span><span style=display:flex><span>        Overall <span style=color:#8be9fd>float64</span>            <span style=color:#f1fa8c>`json:&#34;overall&#34;`</span>
+</span></span><span style=display:flex><span>        Feedback <span style=color:#8be9fd>string</span>           <span style=color:#f1fa8c>`json:&#34;feedback&#34;`</span>
+</span></span><span style=display:flex><span>        Passed  <span style=color:#8be9fd>bool</span>              <span style=color:#f1fa8c>`json:&#34;passed&#34;`</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>:=</span> json.<span style=color:#50fa7b>Unmarshal</span>([]<span style=color:#8be9fd;font-style:italic>byte</span>(response), <span style=color:#ff79c6>&amp;</span>evalData); err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>nil</span>, fmt.<span style=color:#50fa7b>Errorf</span>(<span style=color:#f1fa8c>&#34;parse evaluation: %w&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    criteria <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span>)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> name, score <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> evalData.Scores {
+</span></span><span style=display:flex><span>        criteria[name] = score <span style=color:#ff79c6>&gt;=</span> <span style=color:#bd93f9>0.7</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>&amp;</span>team.EvaluationResult{
+</span></span><span style=display:flex><span>        Quality:  evalData.Overall,
+</span></span><span style=display:flex><span>        Feedback: evalData.Feedback,
+</span></span><span style=display:flex><span>        Passed:   evalData.Passed,
+</span></span><span style=display:flex><span>        Criteria: criteria,
+</span></span><span style=display:flex><span>        Metrics: <span style=color:#ff79c6>&amp;</span>team.QualityMetrics{
+</span></span><span style=display:flex><span>            <span style=color:#6272a4>// 映射到通用指标</span>
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }, <span style=color:#ff79c6>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>main</span>() {
+</span></span><span style=display:flex><span>    ctx <span style=color:#ff79c6>:=</span> context.<span style=color:#50fa7b>Background</span>()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    optimizer, err <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>NewCopywritingOptimizer</span>(model)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatalf</span>(<span style=color:#f1fa8c>&#34;Failed to create optimizer: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    result, err <span style=color:#ff79c6>:=</span> optimizer.workflow.<span style=color:#50fa7b>Execute</span>(ctx, 
+</span></span><span style=display:flex><span>        <span style=color:#f1fa8c>`为新款智能手表创作社交媒体推广文案。
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>目标受众：25-35岁都市白领
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>核心卖点：7天续航、健康监测、时尚设计
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>字数要求：100-150字`</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> err <span style=color:#ff79c6>!=</span> <span style=color:#ff79c6>nil</span> {
+</span></span><span style=display:flex><span>        log.<span style=color:#50fa7b>Fatalf</span>(<span style=color:#f1fa8c>&#34;Optimization failed: %v&#34;</span>, err)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;最终文案（质量: %.3f）:\n%s\n\n&#34;</span>, result.Quality, result.Output)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;迭代次数: %d\n&#34;</span>, result.Iterations)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;退出原因: %s\n&#34;</span>, result.ExitReason)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;质量历史: %v\n&#34;</span>, result.QualityHistory)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;Token 消耗: %d\n&#34;</span>, result.TokenUsed)
+</span></span><span style=display:flex><span>    fmt.<span style=color:#50fa7b>Printf</span>(<span style=color:#f1fa8c>&#34;总耗时: %v\n&#34;</span>, result.Duration)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=防死循环机制>防死循环机制<a hidden class=anchor aria-hidden=true href=#防死循环机制>#</a></h2><h3 id=多层防护>多层防护<a hidden class=anchor aria-hidden=true href=#多层防护>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> AntiLoopProtection <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    maxIterations    <span style=color:#8be9fd>int</span>           <span style=color:#6272a4>// 硬限制</span>
+</span></span><span style=display:flex><span>    timeBudget       time.Duration <span style=color:#6272a4>// 时间限制</span>
+</span></span><span style=display:flex><span>    tokenBudget      <span style=color:#8be9fd>int</span>           <span style=color:#6272a4>// Token 限制</span>
+</span></span><span style=display:flex><span>    similarityThreshold <span style=color:#8be9fd>float64</span>    <span style=color:#6272a4>// 输出相似度阈值</span>
+</span></span><span style=display:flex><span>    history          []<span style=color:#8be9fd>string</span>      <span style=color:#6272a4>// 输出历史</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (p <span style=color:#ff79c6>*</span>AntiLoopProtection) <span style=color:#50fa7b>Check</span>(state <span style=color:#ff79c6>*</span>LoopState) (<span style=color:#8be9fd>bool</span>, <span style=color:#8be9fd>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 1. 迭代次数检查</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.Iteration <span style=color:#ff79c6>&gt;=</span> p.maxIterations {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;max_iterations&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 2. 时间检查</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> time.<span style=color:#50fa7b>Since</span>(state.StartTime) <span style=color:#ff79c6>&gt;=</span> p.timeBudget {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;time_budget&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 3. Token 检查</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> state.TokenUsed <span style=color:#ff79c6>&gt;=</span> p.tokenBudget {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;token_budget&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 4. 相似度检查（检测循环）</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) <span style=color:#ff79c6>&gt;=</span> <span style=color:#bd93f9>3</span> {
+</span></span><span style=display:flex><span>        current <span style=color:#ff79c6>:=</span> state.CurrentOutput
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>for</span> i, hist <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> p.history {
+</span></span><span style=display:flex><span>            similarity <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>calculateSimilarity</span>(current, hist)
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>if</span> similarity &gt; p.similarityThreshold {
+</span></span><span style=display:flex><span>                <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;repeated_output (similarity %.3f with iteration %d)&#34;</span>, 
+</span></span><span style=display:flex><span>                    similarity, i)
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    p.history = <span style=color:#8be9fd;font-style:italic>append</span>(p.history, state.CurrentOutput)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 5. 质量回退检查</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> <span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory) <span style=color:#ff79c6>&gt;=</span> <span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>        last <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>1</span>]
+</span></span><span style=display:flex><span>        prev <span style=color:#ff79c6>:=</span> state.QualityHistory[<span style=color:#8be9fd;font-style:italic>len</span>(state.QualityHistory)<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span>]
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> prev<span style=color:#ff79c6>-</span>last &gt; <span style=color:#bd93f9>0.2</span> {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>, <span style=color:#f1fa8c>&#34;significant_regression&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>, <span style=color:#f1fa8c>&#34;&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// 文本相似度计算（简化版 Jaccard）</span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>calculateSimilarity</span>(a, b <span style=color:#8be9fd>string</span>) <span style=color:#8be9fd>float64</span> {
+</span></span><span style=display:flex><span>    setA <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>tokenize</span>(a)
+</span></span><span style=display:flex><span>    setB <span style=color:#ff79c6>:=</span> <span style=color:#50fa7b>tokenize</span>(b)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    intersection <span style=color:#ff79c6>:=</span> <span style=color:#bd93f9>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> token <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> setA {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>if</span> setB[token] {
+</span></span><span style=display:flex><span>            intersection<span style=color:#ff79c6>++</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    union <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>len</span>(setA) <span style=color:#ff79c6>+</span> <span style=color:#8be9fd;font-style:italic>len</span>(setB) <span style=color:#ff79c6>-</span> intersection
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> union <span style=color:#ff79c6>==</span> <span style=color:#bd93f9>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#bd93f9>1.0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#8be9fd;font-style:italic>float64</span>(intersection) <span style=color:#ff79c6>/</span> <span style=color:#8be9fd;font-style:italic>float64</span>(union)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> <span style=color:#50fa7b>tokenize</span>(text <span style=color:#8be9fd>string</span>) <span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>    tokens <span style=color:#ff79c6>:=</span> <span style=color:#8be9fd;font-style:italic>make</span>(<span style=color:#8be9fd;font-style:italic>map</span>[<span style=color:#8be9fd>string</span>]<span style=color:#8be9fd>bool</span>)
+</span></span><span style=display:flex><span>    words <span style=color:#ff79c6>:=</span> strings.<span style=color:#50fa7b>Fields</span>(text)
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>for</span> _, word <span style=color:#ff79c6>:=</span> <span style=color:#ff79c6>range</span> words {
+</span></span><span style=display:flex><span>        tokens[strings.<span style=color:#50fa7b>ToLower</span>(word)] = <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> tokens
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=状态演化与历史管理>状态演化与历史管理<a hidden class=anchor aria-hidden=true href=#状态演化与历史管理>#</a></h2><h3 id=压缩存储>压缩存储<a hidden class=anchor aria-hidden=true href=#压缩存储>#</a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> CompressedLoopHistory <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    iterations     <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    qualityTrend   []<span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    bestOutputs    []OutputSnapshot
+</span></span><span style=display:flex><span>    compressionCfg <span style=color:#ff79c6>*</span>CompressionConfig
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>type</span> OutputSnapshot <span style=color:#8be9fd;font-style:italic>struct</span> {
+</span></span><span style=display:flex><span>    Iteration <span style=color:#8be9fd>int</span>
+</span></span><span style=display:flex><span>    Quality   <span style=color:#8be9fd>float64</span>
+</span></span><span style=display:flex><span>    Hash      <span style=color:#8be9fd>string</span> <span style=color:#6272a4>// 内容哈希，用于去重</span>
+</span></span><span style=display:flex><span>    Summary   <span style=color:#8be9fd>string</span> <span style=color:#6272a4>// 摘要（替代完整内容）</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (h <span style=color:#ff79c6>*</span>CompressedLoopHistory) <span style=color:#50fa7b>Add</span>(output <span style=color:#8be9fd>string</span>, quality <span style=color:#8be9fd>float64</span>, iteration <span style=color:#8be9fd>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 只保留关键迭代的结果</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> h.<span style=color:#50fa7b>shouldKeep</span>(iteration, quality) {
+</span></span><span style=display:flex><span>        hash <span style=color:#ff79c6>:=</span> sha256.<span style=color:#50fa7b>Sum256</span>([]<span style=color:#8be9fd;font-style:italic>byte</span>(output))
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        h.bestOutputs = <span style=color:#8be9fd;font-style:italic>append</span>(h.bestOutputs, OutputSnapshot{
+</span></span><span style=display:flex><span>            Iteration: iteration,
+</span></span><span style=display:flex><span>            Quality:   quality,
+</span></span><span style=display:flex><span>            Hash:      fmt.<span style=color:#50fa7b>Sprintf</span>(<span style=color:#f1fa8c>&#34;%x&#34;</span>, hash[:<span style=color:#bd93f9>8</span>]),
+</span></span><span style=display:flex><span>            Summary:   <span style=color:#50fa7b>summarize</span>(output, <span style=color:#bd93f9>200</span>),
+</span></span><span style=display:flex><span>        })
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    h.qualityTrend = <span style=color:#8be9fd;font-style:italic>append</span>(h.qualityTrend, quality)
+</span></span><span style=display:flex><span>    h.iterations = iteration
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#8be9fd;font-style:italic>func</span> (h <span style=color:#ff79c6>*</span>CompressedLoopHistory) <span style=color:#50fa7b>shouldKeep</span>(iteration <span style=color:#8be9fd>int</span>, quality <span style=color:#8be9fd>float64</span>) <span style=color:#8be9fd>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>// 保留：首次、最佳、最近</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> iteration <span style=color:#ff79c6>==</span> <span style=color:#bd93f9>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> quality &gt; h.<span style=color:#50fa7b>getBestQuality</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>if</span> iteration &gt; h.iterations<span style=color:#ff79c6>-</span><span style=color:#bd93f9>2</span> {
+</span></span><span style=display:flex><span>        <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>false</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=常见问题深度解析>常见问题深度解析<a hidden class=anchor aria-hidden=true href=#常见问题深度解析>#</a></h2><h3 id=qloop-工作流如何确保收敛>Q：Loop 工作流如何确保收敛？<a hidden class=anchor aria-hidden=true href=#qloop-工作流如何确保收敛>#</a></h3><p><strong>A</strong>：收敛性无法绝对保证，但可以通过以下手段提高概率：</p><ol><li><strong>质量单调性</strong>：确保评估器给出的反馈确实指向改进方向</li><li><strong>反馈质量</strong>：使用详细的、可操作的反馈，而非笼统的"不够好"</li><li><strong>迭代降温</strong>：后期迭代降低改动幅度，避免震荡</li><li><strong>多起点</strong>：从不同初始输出启动多个 Loop，选择最佳结果</li></ol><h3 id=q评估器本身不准确怎么办>Q：评估器本身不准确怎么办？<a hidden class=anchor aria-hidden=true href=#q评估器本身不准确怎么办>#</a></h3><p><strong>A</strong>：三层保障：</p><ol><li><strong>多评估器投票</strong>：使用 3 个不同评估器，取中位数</li><li><strong>人类反馈强化</strong>：关键节点引入人工审核</li><li><strong>评估器校准</strong>：定期用标注数据校准评估标准</li></ol><h3 id=qloop-的-token-消耗如何控制>Q：Loop 的 Token 消耗如何控制？<a hidden class=anchor aria-hidden=true href=#qloop-的-token-消耗如何控制>#</a></h3><p><strong>A</strong>：策略组合：</p><ul><li>设置硬预算上限</li><li>使用轻量级模型进行评估</li><li>压缩历史上下文（只保留摘要）</li><li>早期终止（质量提升 &lt; 0.01 时提前退出）</li></ul><h2 id=下一步>下一步<a hidden class=anchor aria-hidden=true href=#下一步>#</a></h2><p>Loop 工作流的迭代优化与收敛控制已深入掌握。接下来探索 Custom Workflow——自定义工作流的灵活编排、动态调度与复杂场景适配。</p><p>← <a href=/tutorials/go-adk/05-multi-agent/go-adk-team-parallel/>Parallel 工作流</a>
+| <a href=/tutorials/go-adk/05-multi-agent/go-adk-team-custom/>Custom Workflow →</a></p><hr><blockquote><p>想跟着学更多 Go ADK 实战？关注「全栈之巅-梦兽编程」公众号，每周更新 Go / AI 编程实战干货。</p><p><img loading=lazy src=/images/wechat-qr.jpg></p></blockquote></div><section class="post-content post-faq" aria-labelledby=post-faq-heading><h2 id=post-faq-heading>常见问题</h2><section class=post-faq__item><h3>Loop 工作流适合什么任务？</h3><p>适合需要多次迭代优化、无法一次完成的复杂任务，如文案打磨、代码审查修正等。</p></section><section class=post-faq__item><h3>如何确保 Loop 收敛？</h3><p>保证质量单调性、提供具体可操作的反馈、后期采用迭代降温降低改动幅度，并可使用多起点选择最优结果。</p></section><section class=post-faq__item><h3>评估器本身不准确怎么办？</h3><p>使用多评估器投票、关键节点引入人工审核、定期用标注数据校准评估标准。</p></section><section class=post-faq__item><h3>如何控制 Loop 的 Token 消耗？</h3><p>设置硬预算上限、使用轻量级模型做评估、压缩历史上下文、在质量提升低于阈值时早期终止。</p></section><section class=post-faq__item><h3>Loop 的终止条件有哪些？</h3><p>常见终止条件包括质量分数达标、达到最大迭代次数、Token 预算耗尽或改进幅度低于阈值。</p></section></section><section class=post-actions aria-label="post actions"><div class=post-actions__group><div class=post-actions__item><script type=text/javascript src=https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js data-name=bmc-button data-slug=winbbryz data-color=#FFDD00 data-emoji data-font=Cookie data-text="Buy me a coffee" data-outline-color=#000000 data-font-color=#000000 data-coffee-color=#ffffff></script></div></div></section><aside class=related-articles aria-label=相关文章><h3>📚 相关文章</h3><ul><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-routing/>Agent 路由深度解析：动态分发策略、负载均衡与智能调度</a>
+<small>— 深入剖析 ADK Go Agent 路由机制的设计原理，涵盖规则路由、LLM 路由、混合路由策略、负载感知调度与生产级流量管理。</small></li><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-custom/>Custom Workflow 深度解析：自定义编排引擎、动态调度与复杂场景适配</a>
+<small>— 深入剖析 ADK Go Custom Workflow 的架构设计，涵盖自定义调度引擎、状态机模型、动态流程编排、条件分支与生产级复杂工作流实现。</small></li><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-parallel/>Parallel 工作流深度解析：并发控制、结果聚合与一致性保障</a>
+<small>— 深入剖析 ADK Go Parallel 工作流的并发模型、结果聚合算法、一致性协议与生产级性能调优，涵盖扇出-扇入模式、超时控制与部分失败处理。</small></li><li><a href=/tutorials/go-adk/05-multi-agent/go-adk-team-sequential/>Sequential 工作流深度解析：管道化编排的状态一致性、错误传播与性能优化</a>
+<small>— 深入剖析 ADK Go Sequential 工作流的内部实现机制，涵盖管道设计模式、状态传递协议、错误处理策略、背压控制与生产环境调优。</small></li></ul></aside><footer class=post-footer><ul class=post-tags><li><a href=/tags/go/>#Go</a></li><li><a href=/tags/adk/>#ADK</a></li><li><a href=/tags/loop/>#Loop</a></li><li><a href=/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/>#工作流</a></li><li><a href=/tags/%E8%BF%AD%E4%BB%A3%E4%BC%98%E5%8C%96/>#迭代优化</a></li><li><a href=/tags/%E6%94%B6%E6%95%9B%E6%80%A7/>#收敛性</a></li><li><a href=/tags/%E7%BB%88%E6%AD%A2%E6%9D%A1%E4%BB%B6/>#终止条件</a></li><li><a href=/tags/%E7%94%9F%E4%BA%A7%E5%AE%9E%E8%B7%B5/>#生产实践</a></li></ul></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css><div id=waline-container style=margin-top:3rem></div><script type=module>
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script><style>#waline-container{background:var(--rex-bg);padding:var(--rex-space-5);border-radius:var(--rex-radius-xl);border:1px solid var(--rex-border)}@media screen and (max-width:768px){#waline-container{padding:var(--rex-space-4)}}.wl-editor{border-radius:var(--rex-radius-lg)}.wl-btn{border-radius:var(--rex-radius-lg);transition:all .3s ease}.wl-btn:hover{transform:translateY(-1px)}.wl-reaction{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--rex-border)}.wl-reaction-title{font-weight:600;margin-bottom:1rem}.wl-reaction-img{transition:transform .2s ease}.wl-reaction-img:hover{transform:scale(1.2)}.wl-card{border:1px solid var(--rex-border);border-radius:var(--rex-radius-lg);background:var(--rex-bg)}.wl-card:hover{border-color:var(--rex-border-bold)}</style></div><aside class="toc-col wp2-floating-toc" data-wp2-toc><button class=wp2-floating-toc__toggle type=button aria-expanded=false aria-controls=wp2-article-toc data-wp2-toc-toggle>
+<span>目录</span><i aria-hidden=true>＋</i></button><div id=wp2-article-toc class=wp2-floating-toc__panel hidden data-wp2-toc-panel><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#loop-%e5%b7%a5%e4%bd%9c%e6%b5%81%e6%b7%b1%e5%ba%a6%e8%a7%a3%e6%9e%90%e8%bf%ad%e4%bb%a3%e4%bc%98%e5%8c%96%e7%bb%88%e6%ad%a2%e6%9d%a1%e4%bb%b6%e4%b8%8e%e6%94%b6%e6%95%9b%e6%80%a7%e4%bf%9d%e9%9a%9c aria-label="Loop 工作流深度解析：迭代优化、终止条件与收敛性保障">Loop 工作流深度解析：迭代优化、终止条件与收敛性保障</a><ul><li><a href=#%e8%bf%ad%e4%bb%a3%e4%bc%98%e5%8c%96%e7%9a%84%e6%95%b0%e5%ad%a6%e6%a8%a1%e5%9e%8b aria-label=迭代优化的数学模型>迭代优化的数学模型</a><ul><li><a href=#%e6%94%b6%e6%95%9b%e6%80%a7%e5%88%86%e6%9e%90 aria-label=收敛性分析>收敛性分析</a></li><li><a href=#%e8%b4%a8%e9%87%8f%e5%ba%a6%e9%87%8f%e8%ae%be%e8%ae%a1 aria-label=质量度量设计>质量度量设计</a></li></ul></li><li><a href=#loop-%e5%b7%a5%e4%bd%9c%e6%b5%81%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1 aria-label="Loop 工作流架构设计">Loop 工作流架构设计</a><ul><li><a href=#%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6 aria-label=核心组件>核心组件</a></li><li><a href=#%e6%89%a7%e8%a1%8c%e5%bc%95%e6%93%8e aria-label=执行引擎>执行引擎</a></li></ul></li><li><a href=#%e7%bb%88%e6%ad%a2%e6%9d%a1%e4%bb%b6%e8%ae%be%e8%ae%a1 aria-label=终止条件设计>终止条件设计</a><ul><li><a href=#%e5%a4%8d%e5%90%88%e9%80%80%e5%87%ba%e6%9d%a1%e4%bb%b6 aria-label=复合退出条件>复合退出条件</a></li></ul></li><li><a href=#%e8%bf%ad%e4%bb%a3%e7%ad%96%e7%95%a5%e8%ae%be%e8%ae%a1 aria-label=迭代策略设计>迭代策略设计</a><ul><li><a href=#%e5%8f%8d%e9%a6%88%e6%9e%84%e5%bb%ba%e7%ad%96%e7%95%a5 aria-label=反馈构建策略>反馈构建策略</a></li><li><a href=#%e8%87%aa%e9%80%82%e5%ba%94%e8%bf%ad%e4%bb%a3%e7%ad%96%e7%95%a5 aria-label=自适应迭代策略>自适应迭代策略</a></li></ul></li><li><a href=#%e5%ae%9e%e6%88%98%e5%9c%ba%e6%99%af%e6%96%87%e6%a1%88%e5%a4%9a%e8%bd%ae%e4%bc%98%e5%8c%96%e7%b3%bb%e7%bb%9f aria-label=实战场景：文案多轮优化系统>实战场景：文案多轮优化系统</a><ul><li><a href=#%e5%ae%8c%e6%95%b4%e5%ae%9e%e7%8e%b0 aria-label=完整实现>完整实现</a></li></ul></li><li><a href=#%e9%98%b2%e6%ad%bb%e5%be%aa%e7%8e%af%e6%9c%ba%e5%88%b6 aria-label=防死循环机制>防死循环机制</a><ul><li><a href=#%e5%a4%9a%e5%b1%82%e9%98%b2%e6%8a%a4 aria-label=多层防护>多层防护</a></li></ul></li><li><a href=#%e7%8a%b6%e6%80%81%e6%bc%94%e5%8c%96%e4%b8%8e%e5%8e%86%e5%8f%b2%e7%ae%a1%e7%90%86 aria-label=状态演化与历史管理>状态演化与历史管理</a><ul><li><a href=#%e5%8e%8b%e7%bc%a9%e5%ad%98%e5%82%a8 aria-label=压缩存储>压缩存储</a></li></ul></li><li><a href=#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%b7%b1%e5%ba%a6%e8%a7%a3%e6%9e%90 aria-label=常见问题深度解析>常见问题深度解析</a><ul><li><a href=#qloop-%e5%b7%a5%e4%bd%9c%e6%b5%81%e5%a6%82%e4%bd%95%e7%a1%ae%e4%bf%9d%e6%94%b6%e6%95%9b aria-label="Q：Loop 工作流如何确保收敛？">Q：Loop 工作流如何确保收敛？</a></li><li><a href=#q%e8%af%84%e4%bc%b0%e5%99%a8%e6%9c%ac%e8%ba%ab%e4%b8%8d%e5%87%86%e7%a1%ae%e6%80%8e%e4%b9%88%e5%8a%9e aria-label=Q：评估器本身不准确怎么办？>Q：评估器本身不准确怎么办？</a></li><li><a href=#qloop-%e7%9a%84-token-%e6%b6%88%e8%80%97%e5%a6%82%e4%bd%95%e6%8e%a7%e5%88%b6 aria-label="Q：Loop 的 Token 消耗如何控制？">Q：Loop 的 Token 消耗如何控制？</a></li></ul></li><li><a href=#%e4%b8%8b%e4%b8%80%e6%ad%a5 aria-label=下一步>下一步</a></li></ul></li></ul></div></details></div></div></aside></div></article></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
+<a href=/posts/>文章</a>
+<a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
+<a href=/languages/>编程语言</a>
+<a href=/infrastructure/>基础设施</a></section><section><p class=wp2-footer__label>联系</p><a href=/about/>关于梦兽</a>
+<a href=/contact/>联系我们</a>
+<a href=/privacy/>隐私政策</a>
+<a href=/tools/>工具精选</a>
+<a href=/tags/>标签索引</a></section><section><p class=wp2-footer__label>订阅</p><a href=/search/>搜索文章</a>
+<a href=/categories/>分类</a>
+<span>© 2026 梦兽编程</span></section></div><div class=wp2-footer__bar><span>由代码与好奇心驱动</span>
+<span>V.2026.09 / 系统正常</span></div><div class=wp2-footer__wordmark>梦兽编程</div></footer><button class=back-to-top id=backToTop aria-label="Back to top" aria-hidden=true tabindex=-1>
+<svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48"><circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/><circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+<svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+<script src="/js/theme.js?v=wp2-nav-20260820" defer></script><script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script><script>(function(){var e=document.getElementById("backToTop"),t=e?e.querySelector(".back-to-top__ring-progress"):null;if(!e)return;window.addEventListener("scroll",function(){var s,n=document.documentElement.scrollTop||document.body.scrollTop;n>400?(e.classList.add("is-visible"),e.setAttribute("aria-hidden","false"),e.removeAttribute("tabindex"),t&&(s=document.documentElement.scrollHeight-window.innerHeight,t.style.strokeDashoffset=125.6*(1-n/s))):(e.classList.remove("is-visible"),e.setAttribute("aria-hidden","true"),e.setAttribute("tabindex","-1"))},{passive:!0}),e.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"})})})()</script></body></html>
