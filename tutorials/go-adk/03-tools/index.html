@@ -1,4 +1,4 @@
-<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>模块 3：工具使用 | 梦兽编程</title><meta name=keywords content="Go,ADK,Tool,MCP,OpenAPI"><meta name=description content="Function Tool、MCP、OpenAPI、认证"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/03-tools/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.13e768146b85fa10d2bb55df4dad26ca74504b4c3e59c21b460f9dd26637795b.css integrity="sha256-E+doFGuF+hDSu1XfTa0mynRQS0w+WcIbRg+d0mY3eVs=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/tutorials/go-adk/03-tools/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/03-tools/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/03-tools/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>模块 3：工具使用 | 梦兽编程</title><meta name=keywords content="Go,ADK,Tool,MCP,OpenAPI"><meta name=description content="Function Tool、MCP、OpenAPI、认证"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/go-adk/03-tools/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/tutorials/go-adk/03-tools/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/go-adk/03-tools/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/go-adk/03-tools/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
@@ -34,31 +34,31 @@
 <a href=/tutorials/go-adk/03-tools/go-adk-openapi-tool/><b>02</b><span>OpenAPI Tool：将 REST API 动态生成 Agent 可调用的 Tool</span><i>↗</i></a>
 <a href=/tutorials/go-adk/03-tools/go-adk-mcp/><b>03</b><span>MCP Server 接入实战：将任何外部服务变成 Agent 的 Tool</span><i>↗</i></a>
 <a href=/tutorials/go-adk/03-tools/go-adk-tool-performance/><b>04</b><span>Function Tool 性能优化：超时、并发与资源管理</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/tutorials/go-adk/03-tools/go-adk-tool-confirmation/><b>01</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.29 / 2 MIN</small>
 <strong>Tool Confirmation 与安全认证：在 Agent 行动前增加安全阀</strong>
 <em>详解 Tool Confirmation 机制——当 Agent 要执行有风险操作时，如何让用户确认后再执行；以及 API Key、OAuth 等认证机制的配置。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/tutorials/go-adk/03-tools/go-adk-openapi-tool/><b>02</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.29 / 1 MIN</small>
 <strong>OpenAPI Tool：将 REST API 动态生成 Agent 可调用的 Tool</strong>
 <em>详解如何使用 OpenAPI Tool 从 OpenAPI spec 动态生成 Tool，适合那些有 API 文档但没有 MCP 接口的服务。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/tutorials/go-adk/03-tools/go-adk-mcp/><b>03</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.29 / 2 MIN</small>
 <strong>MCP Server 接入实战：将任何外部服务变成 Agent 的 Tool</strong>
 <em>详解 MCP（Model Context Protocol）的工作原理，以及如何通过 MCP 将外部服务（如数据库、API）接入 ADK Go Agent。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/tutorials/go-adk/03-tools/go-adk-tool-performance/><b>04</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.29 / 3 MIN</small>
 <strong>Function Tool 性能优化：超时、并发与资源管理</strong>
 <em>详解 Function Tool 的性能优化策略：超时控制、并发调用、连接池管理，以及如何避免慢 Tool 影响整个 Agent 的响应。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/tutorials/go-adk/03-tools/go-adk-tool-basics/><b>05</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.29 / 3 MIN</small>
 <strong>Function Tool 编写基础：让 Agent 调用自定义逻辑</strong>
 <em>深入讲解 ADK Go 中 Function Tool 的编写方法：接口定义、参数解析、返回值处理，以及如何让 Model 正确识别和调用 Tool。</em>

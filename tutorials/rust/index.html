@@ -1,4 +1,4 @@
-<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Rust 教程 | 梦兽编程</title><meta name=keywords content="rust,rust-教程,rust-编程,rust-错误处理,rust-生命周期"><meta name=description content="Rust语言从入门到精通，涵盖异步编程、Web开发、Actor模型等进阶内容。通过实战项目和案例分析，帮助您掌握内存安全、高性能并发编程技巧。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/rust/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.13e768146b85fa10d2bb55df4dad26ca74504b4c3e59c21b460f9dd26637795b.css integrity="sha256-E+doFGuF+hDSu1XfTa0mynRQS0w+WcIbRg+d0mY3eVs=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/tutorials/rust/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/rust/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/rust/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Rust 教程 | 梦兽编程</title><meta name=keywords content="rust,rust-教程,rust-编程,rust-错误处理,rust-生命周期"><meta name=description content="Rust语言从入门到精通，涵盖异步编程、Web开发、Actor模型等进阶内容。通过实战项目和案例分析，帮助您掌握内存安全、高性能并发编程技巧。"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/tutorials/rust/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/tutorials/rust/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/tutorials/rust/><link rel=alternate hreflang=en href=https://rexai.top/en/tutorials/rust/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
@@ -32,19 +32,19 @@
 <a href=/tutorials/rust/rust-oidc-axum-auth/><b>02</b><span>别再手写 JWT 校验：用 OIDC + Axum 给 Rust API 加上生产级身份认证</span><i>↗</i></a>
 <a href=/tutorials/rust/rust-memory-safety-cve/><b>03</b><span>1000 倍差距：Google 用 Rust 把内存安全漏洞压到 20% 以下，这份作业你可以抄</span><i>↗</i></a>
 <a href=/tutorials/rust/async-rust-why-so-hard/><b>04</b><span>Async Rust 为什么用起来这么别扭？——写给被 async/await 折磨过的你</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/tutorials/rust/rust-embassy-embedded-rp2040/><b>01</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.08.08 / 2 MIN</small>
 <strong>扔掉 Arduino：用 Rust + Embassy 写单片机，一个 LED 闪烁入门 async 裸机编程</strong>
 <em>Arduino 用 C++，内存小、容易写出越界。本文用树莓派 Pico（RP2040）带你跑通 Rust 裸机（no_std）+ Embassy 异步框架：从工具链、Cargo.toml、memory.x 到 async 闪烁，附 5 条新手避坑指南。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/tutorials/rust/rust-oidc-axum-auth/><b>02</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.08.08 / 3 MIN</small>
 <strong>别再手写 JWT 校验：用 OIDC + Axum 给 Rust API 加上生产级身份认证</strong>
 <em>自己解析 JWT 很容易踩 alg=none、密钥写死、不校验 aud/iss 的坑。本文基于 Axum 实写一个 OIDC Bearer Token 校验中间件：JWKS 公钥拉取、alg 白名单、iss/aud 校验、时钟漂移容忍，并给出接入 Keycloak/Auth0 的最简方案。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/tutorials/rust/rust-memory-safety-cve/><b>03</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.08.08 / 1 MIN</small>
 <strong>1000 倍差距：Google 用 Rust 把内存安全漏洞压到 20% 以下，这份作业你可以抄</strong>
 <em>Google 2025 年披露：Android 内存安全漏洞占比首次跌破 20%，Rust 代码漏洞密度比 C/C++ 低约 1000 倍。本文拆解背后的原理，用一段 use-after-free 的 C/Rust 对照说明所有权如何消灭整类漏洞，并给出可落地的行动清单。</em>
@@ -56,7 +56,7 @@
 <em>Async Rust 性能强悍，但为什么写起来总让人怀疑人生？从生态碎片化、Pin/Unpin 到取消安全和性能陷阱，用生活化的比喻拆解那些官方文档不会告诉你的真实痛点。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/tutorials/rust/sse-vs-websocket-guide/><b>05</b>
-<span class="wp2-list__image is-empty">//</span>
+<span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>TUTORIALS / 2026.05.17 / 2 MIN</small>
 <strong>WebSocket vs SSE 实测复盘：10万连接下 SSE 节省 40% 内存</strong>
 <em>Ark Protocol 团队在 10万并发连接下实测 WebSocket 与 SSE 的性能差异，SSE 节省 40% 内存。本文给出实战选型决策指南。</em>
