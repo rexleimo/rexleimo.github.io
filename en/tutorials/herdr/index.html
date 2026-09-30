@@ -28,7 +28,7 @@
 <button type=button data-theme-toggle data-theme-light-label="THEME: LIGHT" data-theme-dark-label="THEME: DARK" data-theme-light-action="Switch to dark theme" data-theme-dark-action="Switch to light theme" aria-pressed=false><span data-theme-toggle-label>THEME: LIGHT</span></button></div></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/><span itemprop=name>教程</span></a>
 <meta itemprop=position content="3"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/en/tutorials/herdr/><span itemprop=name>Herdr</span></a>
-<meta itemprop=position content="4"></li></ol></nav><p>[ SECTION / TUTORIALS ]</p><h1>The Herdr Practical Guide: A Terminal Workspace for AI Coding Agents</h1><div>A hands-on column built on herdr 0.9.2 stable: why tmux stopped being enough, mouse-first multiplexing, agent state awareness (working/blocked/done), Local plus SSH machines in one window, the 18 official agent integrations (including a live check of Pi and Hermes on this machine), CLI and socket API orchestration, plugins and the marketplace. Every command output here comes from a real machine.</div><span>4 POSTS</span></header><div class=wp2-list__intro-grid><div class="wp2-list__intro post-content"><h1 id=the-herdr-practical-guide>The Herdr Practical Guide</h1><blockquote><p><strong>Baseline for this column: herdr <code>0.9.2</code> stable channel (tested on this machine: macOS / Apple silicon).</strong></p><p>Every command, config key and socket method is aligned with the documentation source of the
+<meta itemprop=position content="4"></li></ol></nav><p>[ SECTION / TUTORIALS ]</p><h1>The Herdr Practical Guide: A Terminal Workspace for AI Coding Agents</h1><div>A hands-on column built on herdr 0.9.2 stable: why tmux stopped being enough, mouse-first multiplexing, agent state awareness (working/blocked/done), Local plus SSH machines in one window, the 18 official agent integrations (including a live check of Pi and Hermes on this machine), CLI and socket API orchestration, plugins and the marketplace. Every command output here comes from a real machine.</div><span>6 POSTS</span></header><div class=wp2-list__intro-grid><div class="wp2-list__intro post-content"><h1 id=the-herdr-practical-guide>The Herdr Practical Guide</h1><blockquote><p><strong>Baseline for this column: herdr <code>0.9.2</code> stable channel (tested on this machine: macOS / Apple silicon).</strong></p><p>Every command, config key and socket method is aligned with the documentation source of the
 official pinned revision <code>v0.9.2</code>
 (<code>raw.githubusercontent.com/herdrdev/herdr/v0.9.2/docs/next/website/src/content/docs/*.mdx</code>).
 Anything marked &ldquo;verified on this machine&rdquo; is the literal output of a real run, not written from memory.</p></blockquote><h2 id=herdr-in-one-sentence>Herdr in one sentence</h2><p><strong>Herdr is a terminal workspace manager for AI coding agents.</strong></p><p>Like tmux, it is a multiplexer: a background server holds the real terminal processes, a client
@@ -104,7 +104,7 @@ background&rdquo;.</p><h2 id=learning-path>Learning path</h2><div class=table-wr
 are added as supplementary articles rather than quietly rewriting old ones.</li><li>Every article states its <strong>verified version and platform</strong> at the top. Any claim that disagrees
 with the v0.9.2 official documentation source or with a run on this machine counts as a bug —
 please point it out in the comments.</li><li><strong>No invented keybindings, config keys or CLI flags</strong> — that is also the first rule the official
-agent guide sets for AI, and this column obeys it.</li><li>When the preview channel comes up, it is always labelled as opt-in and able to regress.</li><li>Official conclusions are cited with links, never pasted wholesale.</li></ul></div><aside class=wp2-list__aside><p>[ LEARNING_INDEX / 4 ]</p><a href=/en/tutorials/herdr/00-intro/><b>01</b><span>Module 0: Getting to Know Herdr (the Terminal Workspace Manager)</span><i>↗</i></a>
+agent guide sets for AI, and this column obeys it.</li><li>When the preview channel comes up, it is always labelled as opt-in and able to regress.</li><li>Official conclusions are cited with links, never pasted wholesale.</li></ul></div><aside class=wp2-list__aside><p>[ LEARNING_INDEX / 6 ]</p><a href=/en/tutorials/herdr/00-intro/><b>01</b><span>Module 0: Getting to Know Herdr (the Terminal Workspace Manager)</span><i>↗</i></a>
 <a href=/en/tutorials/herdr/01-daily/><b>02</b><span>Module 1: Daily Workflow (mouse-first, keyboard, session state)</span><i>↗</i></a>
 <a href=/en/tutorials/herdr/02-remote/><b>03</b><span>Module 2: Remote and Multi-Machine (Local + SSH in one window, the three remote paths)</span><i>↗</i></a>
 <a href=/en/tutorials/herdr/03-agents/><b>04</b><span>Module 3: Agent Integrations (the state model, the 18 official integrations, adding support for your own agent)</span><i>↗</i></a></aside></div><div class=wp2-list__rows><a class=wp2-list__row href=/en/tutorials/herdr/00-intro/><b>01</b>
@@ -130,6 +130,18 @@ agent guide sets for AI, and this column obeys it.</li><li>When the preview chan
 <span class=wp2-list__copy><small>TUTORIALS / 2026.09.29 / 3 MIN</small>
 <strong>Module 3: Agent Integrations (the state model, the 18 official integrations, adding support for your own agent)</strong>
 <em>A complete account of Herdr's agent awareness: who decides the five states, how the detection manifest and screen detection work, why VM and sandbox wrappers block …</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/en/tutorials/herdr/04-control/><b>05</b>
+<span class="wp2-list__image is-empty"></span>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.09.29 / 4 MIN</small>
+<strong>Module 4: Programmable Control (the CLI contract, the socket protocol, agent automation, plugins)</strong>
+<em>The full Herdr control surface: how the 18 CLI verbs relate to the 102 socket methods, the single-line JSON envelope and the three exit codes, four-level session routing …</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/en/tutorials/herdr/05-ops/><b>06</b>
+<span class="wp2-list__image is-empty"></span>
+<span class=wp2-list__copy><small>TUTORIALS / 2026.09.29 / 4 MIN</small>
+<strong>Module 5: Troubleshooting and Tuning (diagnosis order, 208 configuration keys, Windows boundaries)</strong>
+<em>The full Herdr troubleshooting and tuning guide: the 11 documented failure modes reorganised by who owns the problem, and why herdr server stop ends every pane process; …</em>
 </span><i>↗</i></a></div></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>SITEMAP</p><a href=/en/>HOME</a>
 <a href=/en/posts/>JOURNAL</a>
 <a href=/en/tutorials/>GUIDES</a></section><section><p class=wp2-footer__label>TOPICS</p><a href=/en/ai/>AI</a>
