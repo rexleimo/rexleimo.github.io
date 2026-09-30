@@ -87,8 +87,9 @@ document.addEventListener("DOMContentLoaded", function () {
       var frame = image.parentElement;
       image.remove();
       if (frame) {
+        // Let CSS render the shared no-cover placeholder (row number on a hairline grid).
+        // Setting text here would fight the ::after counter and print a stray "//".
         frame.classList.add("is-empty");
-        frame.textContent = "//";
       }
     }
     if (image.complete && !image.naturalWidth) replaceBrokenImage();
