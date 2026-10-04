@@ -27,65 +27,65 @@
 <a class=wp2-menu-panel__utility-search href=/search/>搜索</a><a href=/en/>English</a>
 <button type=button data-theme-toggle data-theme-light-label=主题：浅色 data-theme-dark-label=主题：深色 data-theme-light-action=切换至深色 data-theme-dark-action=切换至浅色 aria-pressed=false><span data-theme-toggle-label>主题：浅色</span></button></div></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/posts/><span itemprop=name>Posts</span></a>
-<meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>53 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/2026-10-03-waiton-rust-agent-port/><b>01</b>
+<meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>55 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/2026-10-04-pssa-non-transformer-rust/><b>01</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-04-pssa-non-transformer-rust/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>POSTS / 2026.10.04 / 5 MIN</small>
+<strong>一个不用 PyTorch 的语言模型，纯 Rust 手写：生成比 transformer 快 12 倍？我差点被自己的 98 倍骗了</strong>
+<em>PSSA 是个 21MB 的仓库：选择性 SSM 循环 + 双曲记忆库 + 快速权重在线更新，无 PyTorch。作者说生成快 12 倍，正文表写 4.13 倍——我本机编译跑通，字符归一实测 9.3x，还抓到我差点踩进的 98x 假数字陷阱。梯度对账 3e-8 本机复现，全命令可复跑。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/posts/2026-10-04-rust-simd-zen4/><b>02</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-04-rust-simd-zen4/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>POSTS / 2026.10.04 / 7 MIN</small>
+<strong>Rust 的 SIMD 在 2026 年到底能不能写了：我在 Zen4 上把 4 条路线全跑了一遍</strong>
+<em>shnatsel 那篇长文断言 Zen4 把 512 映射到 256-bit 执行。我这台 EPYC 9354P 就是 Zen4——写了个 4 路线吞吐基准（自动向量化/wide/pulp/3 档 target-cpu）亲手戳一遍：能坐实的坐实，循环被 DCE、target-cpu 决定吞吐这些坑都写进去了。汇编实锤 0 条 …</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/posts/2026-10-03-waiton-rust-agent-port/><b>03</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-03-waiton-rust-agent-port/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.03 / 3 MIN</small>
 <strong>把 1200 万周下载的 npm 包交给 AI 维护一周，我学到的 5 条护栏</strong>
 <em>一个 11 年的 npm 老牌包 wait-on（周下载 1200 万），新 maintainer 上任第一周就交给 coding agent 夜里并行干活：27 个 PR、6 个 release，还顺手启动了 Rust 双引擎移植。我逐条把这套东西在我本机验了一遍——能带走的是 5 条护栏，而不是 AI 多能干。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-03-rust-vs-go-latency-myth/><b>02</b>
+</a><a class=wp2-list__row href=/posts/2026-10-03-rust-vs-go-latency-myth/><b>04</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-03-rust-vs-go-latency-myth/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.03 / 2 MIN</small>
 <strong>Rust vs Go 写微服务，"延迟差 3 倍"是假的</strong>
 <em>技术圈流传"用 Rust 重写服务，性能快 3 倍"。我把同一个 CRUD 微服务用 Rust（axum）和 Go（标准库 net/http）各写一版，放在同一台 2 核机器上压 6 组：延迟没有任何一档差 3 倍，中并发时 Go 的 p99 反而更低，Rust 真正拉开 2-3 倍差距的是内存。数据、代码、压测脚本全部开源可复现。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-03-ripgrep-bounded-memory/><b>03</b>
+</a><a class=wp2-list__row href=/posts/2026-10-03-ripgrep-bounded-memory/><b>05</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-03-ripgrep-bounded-memory/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.03 / 4 MIN</small>
 <strong>Rust 写 CLI 工具为什么爽：ripgrep 10MB 内存查完 100GB，秘密不是「Rust 魔法」</strong>
 <em>ripgrep 能查 100GB 数据不爆内存？秘密不是 Rust 快，是「内存有界 + 流式固定缓冲」这个工程决策。我在 2 核机器上用 256MB/1GB/4GB 三档语料实测坐实：数据量涨 16 倍，RSS 纹丝不动（7MB 封顶），换一个「全部读进内存」的实现就跟着涨到 4GB。全代码开源可复现。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-02-react-19-3-five-apis/><b>04</b>
+</a><a class=wp2-list__row href=/posts/2026-10-02-react-19-3-five-apis/><b>06</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-02-react-19-3-five-apis/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.02 / 6 MIN</small>
 <strong>React 睡了 11 个月，一睁眼 5 个新 API：我全跑了一遍，两个跟你听说的不一样</strong>
 <em>React 19.3 是 19.x 时隔 11 个月的首个功能版本：Fragment 能挂 ref、RSC 能直接渲染 Context、ViewTransition 转正、browser() 让客户端组件退场 SSR、Trusted Types 防 XSS。我在 react@19.3.0 + Next 16.3.8 上把五个全跑了一遍，两 …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-02-rust-compiler-speedup/><b>05</b>
+</a><a class=wp2-list__row href=/posts/2026-10-02-rust-compiler-speedup/><b>07</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-02-rust-compiler-speedup/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.01 / 2 MIN</small>
 <strong>在一台两核机器上，我把 Rust 编译从 20 秒砍到 0.05 秒</strong>
 <em>rustc 团队负责人 Nethercote 发文讲编译器提速，HN 第一。他测的是编译器内部；我测的是用户侧——在一台没装 Rust 的两核机器上，手动点亮工具链，跑出一组编译基准：冷启动 20 秒，增量 0.05 秒，差 330 倍。这篇讲我实际跑出了哪些数字、哪根杠杆没装成，以及 Nethercote 那个 4.57% 我为什么复现 …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-02-tla-plus-boundaries/><b>06</b>
+</a><a class=wp2-list__row href=/posts/2026-10-02-tla-plus-boundaries/><b>08</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-02-tla-plus-boundaries/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.01 / 4 MIN</small>
 <strong>在没有 Java 的机器上，我点亮了 TLA+ 的模型检查器</strong>
 <em>Claude Code 之父说 Opus 用 TLA+ 抓到了竞态，全网在吹形式化。我反手在一台没 root、没桌面、没预装 Java 的机器上，手动把 TLA+ 的模型检查器 TLC 点亮了，还自己写了一个 40 行的 lost-update 规格。结果那个从 GitHub 拉下来的 jar，在我机器上连教科书的 stuttering …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-02-opendlss-vulkan-dlss5/><b>07</b>
+</a><a class=wp2-list__row href=/posts/2026-10-02-opendlss-vulkan-dlss5/><b>09</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-02-opendlss-vulkan-dlss5/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.01 / 3 MIN</small>
 <strong>没有 N 卡的机器上，我把 NVIDIA 的闭源网络拆到能拆为止</strong>
 <em>NVIDIA 的 DLSS 5 神经渲染网络，被人用纯 Vulkan 重实现到 75 个 block 边界逐字节对齐。我手上这台机器没有 N 卡，验不了它最招牌的 GPU bit-exact。但我把仓库浅克隆下来读了源码、核对了 71-block 图、本机真跑了一条 PTX 除法器回归——把能拆的拆到能拆为止，能说的就说我能说的，跑不了的 …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-01-giflib-rs-ai-rewrite/><b>08</b>
+</a><a class=wp2-list__row href=/posts/2026-10-01-giflib-rs-ai-rewrite/><b>10</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-01-giflib-rs-ai-rewrite/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.01 / 3 MIN</small>
 <strong>Google 让 AI 把 C 库翻译成 Rust：3000 万张 GIF 验证之后，它在一个 CVE 公布前就免疫了</strong>
 <em>Google 安全团队用 Gemini 把 3000 行的 C 图像库 giflib 重写成 Rust，业务逻辑 0 行 unsafe。验证不是跑一遍测试：3000 万张 GIF 全量回归、2 亿轮差分模糊、对抗性 AI 审查 + 专家逐块签核。最漂亮的注脚：原 C 版后来爆出越界堆写（CVE-2026-26740），已迁移的服务天然免疫 …</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-09-29-why-rust-lsp-is-hard/><b>09</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-09-29-why-rust-lsp-is-hard/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.09.29 / 2 MIN</small>
-<strong>Rust 的 LSP 为什么难做：写 rust-analyzer 的人停更了，一个新作者把门重新推开</strong>
-<em>matklad 的 rust-analyzer 博客 2023 年停更，LSP 内部原理的中文资料几乎绝迹。9 月 16 日，Rust Glancer 作者 Igor Aleksanov（popzxc）发了篇长文《Why building a Rust LSP is hard》，从 VFS、查询并发、索引分层到「猜用户想干什么」，把 …</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-09-28-msft-rust-tier1-codegen-utc/><b>10</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-09-28-msft-rust-tier1-codegen-utc/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.09.28 / 2 MIN</small>
-<strong>微软把 Rust 提为 Tier-1 语言：100+ 个仓库共用一个编译器后端，但它不开源</strong>
-<em>9 月 10 日 Rust Foundation 官网客文正式宣布：Rust 在微软内部拿到 Tier-1 语言地位，与 C++/C#/TypeScript 并列。真正的干货是 rustc_codegen_utc——把 rustc 焊进 MSVC 自家 UTC 代码生成管线，Rust 和 C++ 共用一个优化器。但我核了一圈流传的说法，三 …</em>
 </span><i>↗</i></a></div><nav class=wp2-list__pagination aria-label=Pagination><span>1 / 6</span><a href=/posts/page/2/>NEXT →</a></nav></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
 <a href=/posts/>文章</a>
 <a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
