@@ -291,6 +291,7 @@ body:has(.lp) .wp2-business { display: none; }
 .lp-network-visual__node { position: absolute; z-index: 2; width: 48px; aspect-ratio: 1; border: 2px solid var(--lp-bg); border-radius: 50%; background: var(--lp-accent); }
 .lp-network-visual__node--one { top: 25%; left: 24%; }
 .lp-network-visual__node--two { right: 19%; bottom: 23%; background: #8b9cff; }
+.lp-network-visual__node--three { top: 58%; left: 52%; width: 30px; background: #84cc16; }
 .lp-stats { justify-content: stretch; gap: 0; margin-top: 0; border: 2px solid var(--lp-border); border-top: 0; }
 .lp-stats > div { flex: 1; padding: 22px; border-right: 2px solid var(--lp-border); }
 .lp-stats > div:last-child { border-right: 0; }
@@ -326,6 +327,12 @@ body:has(.lp) .wp2-business { display: none; }
 .lp-plate__route { position: absolute; top: 59%; left: 25%; z-index: 1; width: 50%; height: 12px; border-top: 3px solid var(--lp-accent); border-bottom: 3px solid var(--lp-accent); }
 .lp-plate__stack { position: absolute; left: 50%; z-index: 2; width: 120px; height: 42px; border: 2px solid var(--lp-text); background: var(--lp-bg); transform: translateX(-50%) skewY(-12deg); }
 .lp-plate__stack--one { top: 31%; } .lp-plate__stack--two { top: 48%; background: var(--lp-accent); } .lp-plate__stack--three { top: 65%; }
+/* 04 / GLOBAL_NODE plate — server racks with status LEDs and a routing beam (Lcayun) */
+.lp-plate__rack { position: absolute; z-index: 2; top: 30%; width: 56px; height: 46%; border: 2px solid var(--lp-text); background: repeating-linear-gradient(var(--lp-bg) 0 8px, var(--lp-text) 8px 10px); }
+.lp-plate__rack--a { left: 16%; } .lp-plate__rack--b { right: 16%; background: repeating-linear-gradient(var(--lp-accent) 0 8px, var(--lp-text) 8px 10px); }
+.lp-plate__rack::after { position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--lp-accent); content: ""; }
+.lp-plate__rack--b::after { background: var(--lp-text); }
+.lp-plate__beam { position: absolute; z-index: 1; top: 52%; left: 22%; width: 56%; height: 0; border-top: 3px dashed var(--lp-accent); transform: rotate(-6deg); }
 .lp-product__cta { border-radius: 0; background: var(--lp-accent); color: var(--lp-text); }
 .lp-product__cta:hover { background: var(--lp-text); color: var(--lp-bg); }
 .lp-pricing, .lp-products, .lp-features, .lp-model-grid { gap: 0; }
