@@ -29,15 +29,15 @@
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/posts/><span itemprop=name>Posts</span></a>
 <meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>55 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/2026-10-04-pssa-non-transformer-rust/><b>01</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-04-pssa-non-transformer-rust/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.04 / 5 MIN</small>
+<span class=wp2-list__copy><small>POSTS / 2026.10.04 / 3 MIN</small>
 <strong>一个不用 PyTorch 的语言模型，纯 Rust 手写：生成比 transformer 快 12 倍？我差点被自己的 98 倍骗了</strong>
-<em>PSSA 是个 21MB 的仓库：选择性 SSM 循环 + 双曲记忆库 + 快速权重在线更新，无 PyTorch。作者说生成快 12 倍，正文表写 4.13 倍——我本机编译跑通，字符归一实测 9.3x，还抓到我差点踩进的 98x 假数字陷阱。梯度对账 3e-8 本机复现，全命令可复跑。</em>
+<em>PSSA 是个 21MB 仓库：SSM 循环+双曲记忆库+快权重在线更新，无 PyTorch。作者说快 12 倍，正文表写 4.13 倍——我本机字符归一实测 9.3x，还抓到 98x 假数字陷阱：按名义 token 上限算吞吐，两边工作量根本不可比。梯度对账 3e-8 本机复现，全命令可复跑。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/posts/2026-10-04-rust-simd-zen4/><b>02</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-04-rust-simd-zen4/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.04 / 7 MIN</small>
+<span class=wp2-list__copy><small>POSTS / 2026.10.04 / 3 MIN</small>
 <strong>Rust 的 SIMD 在 2026 年到底能不能写了：我在 Zen4 上把 4 条路线全跑了一遍</strong>
-<em>shnatsel 那篇长文断言 Zen4 把 512 映射到 256-bit 执行。我这台 EPYC 9354P 就是 Zen4——写了个 4 路线吞吐基准（自动向量化/wide/pulp/3 档 target-cpu）亲手戳一遍：能坐实的坐实，循环被 DCE、target-cpu 决定吞吐这些坑都写进去了。汇编实锤 0 条 …</em>
+<em>shnatsel 断言 Zen4 把 512 映射到 256-bit 执行。我这台 EPYC 9354P 就是 Zen4——写 4 路线吞吐基准（自动向量化/wide/pulp/3 档 target-cpu）亲手戳一遍：汇编 0 条 512-bit 实锤假 512，DCE 让循环凭空消失的坑也写在里面。</em>
 </span><i>↗</i>
 </a><a class=wp2-list__row href=/posts/2026-10-03-waiton-rust-agent-port/><b>03</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-03-waiton-rust-agent-port/cover.jpg alt loading=lazy></span>
