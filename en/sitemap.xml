@@ -73,6 +73,14 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/categories/ai-%E5%BA%94%E7%94%A8%E4%B8%8E%E5%B7%A5%E7%A8%8B/" />
   </url>
   <url>
+    <loc>https://rexai.top/en/tags/arc/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/arc/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/arc/" />
+  </url>
+  <url>
     <loc>https://rexai.top/en/categories/</loc>
     <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -81,10 +89,24 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/categories/" />
   </url>
   <url>
+    <loc>https://rexai.top/en/tags/concurrency/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://rexai.top/en/tags/local-inference/</loc>
     <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://rexai.top/en/tags/mutex/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/mutex/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/mutex/" />
   </url>
   <url>
     <loc>https://rexai.top/en/posts/</loc>
@@ -93,6 +115,28 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/" />
+  </url>
+  <url>
+    <loc>https://rexai.top/en/tags/rust/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/rust/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/rust/" />
+  </url>
+  <url>
+    <loc>https://rexai.top/en/categories/rust--systems-programming/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://rexai.top/en/posts/2026-10-10-rust-concurrency-arc-deadlock/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-10-rust-concurrency-arc-deadlock/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-10-rust-concurrency-arc-deadlock/" />
   </url>
   <url>
     <loc>https://rexai.top/en/tags/</loc>
@@ -179,20 +223,6 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/performance/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/performance/" />
-  </url>
-  <url>
-    <loc>https://rexai.top/en/tags/rust/</loc>
-    <lastmod>2026-10-07T15:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/rust/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/rust/" />
-  </url>
-  <url>
-    <loc>https://rexai.top/en/categories/rust--systems-programming/</loc>
-    <lastmod>2026-10-07T15:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://rexai.top/en/tags/ffi/</loc>
@@ -433,12 +463,6 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-02-react-19-3-five-apis/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-02-react-19-3-five-apis/" />
-  </url>
-  <url>
-    <loc>https://rexai.top/en/tags/concurrency/</loc>
-    <lastmod>2026-10-01T09:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://rexai.top/en/tags/cve/</loc>

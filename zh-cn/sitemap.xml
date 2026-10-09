@@ -87,12 +87,50 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/categories/ai-%E5%BA%94%E7%94%A8%E4%B8%8E%E5%B7%A5%E7%A8%8B/" />
   </url>
   <url>
+    <loc>https://rexai.top/tags/arc/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/arc/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/arc/" />
+  </url>
+  <url>
     <loc>https://rexai.top/categories/</loc>
     <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/categories/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/categories/" />
+  </url>
+  <url>
+    <loc>https://rexai.top/tags/mutex/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/mutex/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/mutex/" />
+  </url>
+  <url>
+    <loc>https://rexai.top/tags/rust/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/rust/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/rust/" />
+  </url>
+  <url>
+    <loc>https://rexai.top/posts/2026-10-10-rust-concurrency-arc-deadlock/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-10-rust-concurrency-arc-deadlock/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-10-rust-concurrency-arc-deadlock/" />
+  </url>
+  <url>
+    <loc>https://rexai.top/categories/rust-%E4%B8%8E%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://rexai.top/tags/</loc>
@@ -104,6 +142,12 @@
   </url>
   <url>
     <loc>https://rexai.top/tags/%E6%9C%AC%E5%9C%B0%E6%8E%A8%E7%90%86/</loc>
+    <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://rexai.top/tags/%E5%B9%B6%E5%8F%91/</loc>
     <lastmod>2026-10-10T09:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -183,20 +227,6 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-07-zero-cost-abstraction-asm/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-07-zero-cost-abstraction-asm/" />
-  </url>
-  <url>
-    <loc>https://rexai.top/tags/rust/</loc>
-    <lastmod>2026-10-07T15:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/rust/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/rust/" />
-  </url>
-  <url>
-    <loc>https://rexai.top/categories/rust-%E4%B8%8E%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B/</loc>
-    <lastmod>2026-10-07T15:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://rexai.top/tags/%E6%80%A7%E8%83%BD/</loc>
@@ -441,12 +471,6 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/gpu/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/gpu/" />
-  </url>
-  <url>
-    <loc>https://rexai.top/tags/%E5%B9%B6%E5%8F%91/</loc>
-    <lastmod>2026-10-01T09:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://rexai.top/posts/2026-10-02-opendlss-vulkan-dlss5/</loc>
