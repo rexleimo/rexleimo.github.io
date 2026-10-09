@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="js">
+<head><meta charset="utf-8">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="robots" content="index, follow">
+  <title>A 0.8B Model, 4GB VRAM, Turned Into a Decision Engine: I Reconciled the Two Number Sets in Unsloth&#39;s New Feature | 梦兽编程</title>
+  <meta name="keywords" content="Unsloth, Decision model, Qwen3.5, LoRA, fine-tuning, Clef">
+  <meta name="description" content="Unsloth added a &#39;Decision model&#39; capability to its fine-tuning stack: turn a small LLM like Qwen3.5 0.8B into an engine that emits option probabilities only, trainable in 4GB VRAM. Their own X post carries two sets of numbers (20.7%-&gt;74.3% and 30-37%-&gt;78%); I reconciled both against the official docs line by line. They are two different baselines that align once you split them. Includes a full-model VRAM/time table and a reproduction trap (start r=16, reproduce with r=64).">
+  <meta name="author" content="梦兽编程">
+  <link rel="canonical" href="https://rexai.top/en/posts/2026-10-10-unsloth-decision-model-08b/">
+  <meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+  <meta name="impact-site-verification" value="6a4c88bc-bba3-418e-9e49-d15d52bb3231">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp"><script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pref-theme');
+        var isDark = false;
+        if (t === 'dark' || (!t && isDark)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link crossorigin="anonymous" href="/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css" integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as="style">
+  <link rel="icon" href="https://rexai.top/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://rexai.top/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://rexai.top/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="https://rexai.top/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="msapplication-TileColor" content="#0a0f1d">
+  <link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-10-unsloth-decision-model-08b/"><link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-10-unsloth-decision-model-08b/">
+
+  <noscript>
+      <style>
+          #theme-toggle,
+          .top-link {
+              display: none;
+          }
+      </style>
+  </noscript>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('pref-theme');
+      var root = document.documentElement;
+      if (t === 'light') { root.classList.remove('dark'); root.setAttribute('data-theme', 'light'); }
+      else { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); }
+    } catch (e) {}
+  })();
+</script><script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092"
+     crossorigin="anonymous"></script><meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-62VF26DEY6');
+</script>
+<meta property="og:url" content="https://rexai.top/en/posts/2026-10-10-unsloth-decision-model-08b/">
+  <meta property="og:site_name" content="梦兽编程">
+  <meta property="og:title" content="A 0.8B Model, 4GB VRAM, Turned Into a Decision Engine: I Reconciled the Two Number Sets in Unsloth&#39;s New Feature">
+  <meta property="og:description" content="Unsloth added a &#39;Decision model&#39; capability to its fine-tuning stack: turn a small LLM like Qwen3.5 0.8B into an engine that emits option probabilities only, trainable in 4GB VRAM. Their own X post carries two sets of numbers (20.7%-&gt;74.3% and 30-37%-&gt;78%); I reconciled both against the official docs line by line. They are two different baselines that align once you split them. Includes a full-model VRAM/time table and a reproduction trap (start r=16, reproduce with r=64).">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-10-10T09:00:00+08:00">
+    <meta property="article:modified_time" content="2026-10-10T09:00:00+08:00">
+    <meta property="article:author" content="梦兽编程">
+    <meta property="article:tag" content="Unsloth">
+    <meta property="article:tag" content="Small-Models">
+    <meta property="article:tag" content="Lora-Finetuning">
+    <meta property="article:tag" content="Local Inference">
+    <meta property="article:tag" content="Decision-Models">
+    <meta property="og:image" content="https://rexai.top/images/posts/2026-10-10-unsloth-decision-model-08b/cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rexai.top/images/posts/2026-10-10-unsloth-decision-model-08b/cover.jpg">
+
+<meta name="twitter:title" content="A 0.8B Model, 4GB VRAM, Turned Into a Decision Engine: I Reconciled the Two Number Sets in Unsloth&#39;s New Feature">
+<meta name="twitter:description" content="Unsloth added a &#39;Decision model&#39; capability to its fine-tuning stack: turn a small LLM like Qwen3.5 0.8B into an engine that emits option probabilities only, trainable in 4GB VRAM. Their own X post carries two sets of numbers (20.7%-&gt;74.3% and 30-37%-&gt;78%); I reconciled both against the official docs line by line. They are two different baselines that align once you split them. Includes a full-model VRAM/time table and a reproduction trap (start r=16, reproduce with r=64).">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "梦兽编程",
+  "url": "https:\/\/rexai.top\/about/",
+  "sameAs": [
+    "https:\/\/github.com\/rexai",
+    "https://rexai.top/"
+  ],
+  "affiliation": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/"
+  },
+  "knowsAbout": ["Rust", "AI Agent", "LLM", "Coding Agent", "Terminal UI", "System Programming"],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/en\/posts\/2026-10-10-unsloth-decision-model-08b\/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/posts/","name":"Posts"},"position":3},{"@type":"ListItem","item":{"@id":"https://rexai.top/en/posts/2026-10-10-unsloth-decision-model-08b/","name":"2026 10 10 Unsloth Decision Model 08b"},"position":4}]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "A 0.8B Model, 4GB VRAM, Turned Into a Decision Engine: I Reconciled the Two Number Sets in Unsloth\u0027s New Feature",
+  "description": "Unsloth added a \u0026#39;Decision model\u0026#39; capability to its fine-tuning stack: turn a small LLM like Qwen3.5 0.8B into an engine that emits option probabilities only, …",
+  "inLanguage": "en",
+  "datePublished": "2026-10-10T09:00:00\u002b08:00",
+  "dateModified": "2026-10-10T09:00:00\u002b08:00",
+  "author": {
+    "@type": "Person",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/about/",
+    "sameAs": ["https:\/\/github.com\/rexai","https://rexai.top/"]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https:\/\/rexai.top\/icon-512.png",
+      "width": "512",
+      "height": "512"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/en\/posts\/2026-10-10-unsloth-decision-model-08b\/"
+  },
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".post-content h1", ".post-content h2"]
+  },
+  "wordCount": "1565",
+  "keywords": ["Unsloth", "small-models", "lora-finetuning", "local-inference", "decision-models"],
+  "image": "https:\/\/rexai.top\/images\/posts\/2026-10-10-unsloth-decision-model-08b\/cover.jpg",
+  "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-10-unsloth-decision-model-08b\/cover.jpg",
+  "articleSection": "posts",
+  "articleBody": "The moment this hit my feed I froze for a couple of seconds - the official X post contradicts itself, with two sets of numbers.\n@UnslothAI’s 2026-10-07 release post (“You can now train your own Decision model like Jev locally!”): first line claims it “increased Qwen3.5 0.8B’s aggregate accuracy from 20.7% to 74.3% across 3 decision benchmarks - on just 4GB VRAM”; the very next paragraph says “increasing downstream accuracy from 30-37% to 78%”. Same post, same model, two baselines (20.7 vs 30-37), two ceilings (74.3 vs 78) - it looks like a broken ledger.\n",
+  "about": [{"@type": "Thing", "name": "Unsloth"}, {"@type": "Thing", "name": "small-models"}, {"@type": "Thing", "name": "lora-finetuning"}, {"@type": "Thing", "name": "local-inference"}, {"@type": "Thing", "name": "decision-models"}],
+  "isAccessibleForFree": "True",
+  "timeRequired": "PT10M",
+  "copyrightYear": "2026",
+  "educationalLevel": "intermediate",
+  "learningResourceType": "tutorial"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"A normal LLM emits a stream of text tokens (it decodes, and it can break JSON). A decision model bolts on a small classification head (same design as Cloudflare's Clef): the LLM reads the input once, and the head scores each option directly and outputs probabilities. No text generation, no output-token latency, no parse failures. Fits questions whose answers live in a finite set: routing, intent, injection screening."},"name":"What is a decision model, and how is it different from normal LLM fine-tuning?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Both are right; they are different baselines. 20.7/74.3 is the plain mean of three benchmarks (typed-decisions 36-\u003e73, BANKING77 7-\u003e74, CLINC150 19-\u003e76): (36+7+19)/3=20.7, (73+74+76)/3=74.3. 30-37-\u003e78 is the docs' own phrase 'from 30-37% (roughly chance level) up to 78%', where 78% is accuracy on a 3,000-row mixed holdout. I reconcile both line by line in the body."},"name":"Which is right, 20.7%-\u003e74.3% or 30-37%-\u003e78% in the official post?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"The official decision-model table lists 0.8B fine-tune peak 4GB (42 min), Llama 3.2 3B 4.1GB - a 4bit-base + LoRA recipe. VRAM is not a single source: Unsloth's Qwen3.5 fine-tuning page lists 3GB for 0.8B BF16 LoRA, and an official AMD technical article (2026-07) measured Qwen3.5 training on a 3GB-VRAM AMD card. Three sources agree, so '4GB is enough' is a cross-checked conclusion."},"name":"Does 4GB VRAM really hold?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"No. The docs' 'Recommended settings' are 4bit base + LoRA rank 16 + lr 2e-4 - a starter. But the table numbers were produced with LoRA rank 64, one epoch; the docs themselves note: to reproduce the table, use rank-64, don't compare against the starter defaults."},"name":"Should I reproduce with the settings the docs recommend?"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Anything with a finite answer set: ticket routing, intent classification, injection screening, document tagging, multi-question adjudication. Open-ended generation and reasoning that needs an explanation chain do not - those stay on the LLM text path. A traditional encoder classifier may be leaner and faster, so keep it as a baseline when you choose."},"name":"What tasks suit it?"}]
+}
+</script>
+
+</head><body class="site-body"><header class="wp2-header">
+  <a class="wp2-header__brand" href="/en/" aria-label="梦兽编程">
+    <img class="wp2-header__brand-logo" src="/images/brand/nav-logo-32.png" alt="" width="32" height="32">
+    梦兽编程<sup>™</sup>
+  </a>
+
+  <nav class="wp2-header__links" aria-label="Primary navigation"><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/en/products/">Products</a>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/en/tutorials/">Tutorials</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tutorials">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">Open Tutorials menu</span>
+        </button>
+        <div id="wp2-submenu-tutorials" class="wp2-header__submenu" aria-label="Tutorials" hidden><a href="/en/tutorials/smart-contracts/"><span>Smart Contracts</span><b aria-hidden="true">&rarr;</b></a><a href="/en/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/en/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/en/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/en/ai/">AI</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-ai">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">Open AI menu</span>
+        </button>
+        <div id="wp2-submenu-ai" class="wp2-header__submenu" aria-label="AI" hidden><a href="/en/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/en/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/en/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/en/languages/">Dev</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-dev">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">Open Dev menu</span>
+        </button>
+        <div id="wp2-submenu-dev" class="wp2-header__submenu" aria-label="Dev" hidden><a href="/en/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/en/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/en/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/en/frontend/"><span>Frontend</span><b aria-hidden="true">&rarr;</b></a><a href="/en/infrastructure/"><span>Infrastructure</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/en/tools/rexai-tool-directory/">Tools</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tools">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">Open Tools menu</span>
+        </button>
+        <div id="wp2-submenu-tools" class="wp2-header__submenu" aria-label="Tools" hidden><a href="/en/tools/rexai-tool-directory/"><span>Tool Directory</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex Tool Hub</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden"> (opens in a new tab)</span></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/en/categories/">Explore</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-explore">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">Open Explore menu</span>
+        </button>
+        <div id="wp2-submenu-explore" class="wp2-header__submenu" aria-label="Explore" hidden><a href="/en/tags/"><span>Tags</span><b aria-hidden="true">&rarr;</b></a><a href="/en/categories/"><span>Categories</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/en/about/">About</a>
+      </div>
+  </nav>
+
+  <div class="wp2-header__spacer"></div>
+  <a class="wp2-header__cta" href="/en/tools/cc-codex-portal/">AI_SUITE <span aria-hidden="true">&rarr;</span></a>
+  <button class="wp2-header__menu" type="button" aria-expanded="false" aria-controls="wp2-mobile-menu" data-wp2-menu data-open-label="OPEN_MENU" data-close-label="CLOSE_MENU">
+    <span class="wp2-header__menu-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="wp2-header__menu-label" data-wp2-menu-label>OPEN_MENU</span>
+  </button>
+</header>
+
+<div id="wp2-mobile-menu" class="wp2-menu-panel" hidden>
+  <div class="wp2-menu-panel__frame">
+    <div class="wp2-menu-panel__directory">
+    <div class="wp2-menu-panel__meta"><span>[ SITE_DIRECTORY / 2026 ]</span><span>CHOOSE A DIRECTION</span></div>
+    <nav class="wp2-menu-panel__grid" aria-label="Site directory"><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/en/products/"><strong>Products</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>Products, services, and project entry points.</p>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/en/tutorials/"><strong>Tutorials</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/en/tutorials/smart-contracts/"><span>Smart Contracts</span><b aria-hidden="true">&rarr;</b></a><a href="/en/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/en/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/en/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/en/ai/"><strong>AI</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/en/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/en/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/en/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/en/languages/"><strong>Dev</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/en/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/en/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/en/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/en/frontend/"><span>Frontend</span><b aria-hidden="true">&rarr;</b></a><a href="/en/infrastructure/"><span>Infrastructure</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/en/tools/rexai-tool-directory/"><strong>Tools</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/en/tools/rexai-tool-directory/"><span>Tool Directory</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex Tool Hub</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden"> (opens in a new tab)</span></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/en/categories/"><strong>Explore</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/en/tags/"><span>Tags</span><b aria-hidden="true">&rarr;</b></a><a href="/en/categories/"><span>Categories</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/en/about/"><strong>About</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>About Rex Builds, contact details, and site information.</p>
+        </section>
+    </nav>
+    </div>
+    <div class="wp2-menu-panel__utility" aria-label="Site utilities">
+      <span class="wp2-menu-panel__utility-label">UTILITY</span>
+      <a class="wp2-menu-panel__utility-search" href="/en/search/">SEARCH</a><a href="/">中文</a>
+      <button type="button" data-theme-toggle data-theme-light-label="THEME: LIGHT" data-theme-dark-label="THEME: DARK" data-theme-light-action="Switch to dark theme" data-theme-dark-action="Switch to light theme" aria-pressed="false"><span data-theme-toggle-label>THEME: LIGHT</span></button>
+    </div>
+  </div>
+</div>
+<div class="reading-progress-bar" id="readingProgress" aria-hidden="true"></div>
+
+  <main id="main-content" class="glass-main"><article class="post-single wp2-article">
+
+  <header class="page-head">
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://rexai.top/"><span itemprop="name">梦兽编程</span></a>
+      <meta itemprop="position" content="1">
+    </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/en/posts/"><span itemprop="name">Posts</span></a>
+        <meta itemprop="position" content="3">
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/en/posts/2026-10-10-unsloth-decision-model-08b/"><span itemprop="name">2026 10 10 Unsloth Decision Model 08b</span></a>
+        <meta itemprop="position" content="4">
+      </li>
+  </ol>
+</nav>
+
+    <h1 class="post-title entry-hint-parent">
+      A 0.8B Model, 4GB VRAM, Turned Into a Decision Engine: I Reconciled the Two Number Sets in Unsloth&#39;s New Feature
+    </h1><p class="post-description">Unsloth added a &#39;Decision model&#39; capability to its fine-tuning stack: turn a small LLM like Qwen3.5 0.8B into an engine that emits option probabilities only, trainable in 4GB VRAM. Their own X post carries two sets of numbers (20.7%-&gt;74.3% and 30-37%-&gt;78%); I reconciled both against the official docs line by line. They are two different baselines that align once you split them. Includes a full-model VRAM/time table and a reproduction trap (start r=16, reproduce with r=64).</p>
+    <div class="post-meta"><span title='2026-10-10 09:00:00 +0800 +0800'>October 10, 2026</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;1565 words&nbsp;·&nbsp;梦兽编程<span class="waline-pageview-count" data-path="/en/posts/2026-10-10-unsloth-decision-model-08b/" style="margin-left: 0.5rem;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+  </svg>
+  <span class="waline-pageview-number" id="waline-pv-11815c527ab0e6bb39345cb045dcec185c08ebc415d3d355c3bf4e2bf0b419f4" data-path="/en/posts/2026-10-10-unsloth-decision-model-08b/">-</span>
+</span>&nbsp;|&nbsp;<span class="rex-translations">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+    <span class="rex-translations__links"><a href="https://rexai.top/posts/2026-10-10-unsloth-decision-model-08b/" class="rex-translations__link">中文</a></span>
+  </span>
+    </div>
+  </header>
+  <figure class="entry-cover wp2-article-cover">
+    <img src="https://rexai.top/images/posts/2026-10-10-unsloth-decision-model-08b/cover.jpg" alt="A 0.8B Model, 4GB VRAM, Turned Into a Decision Engine: I Reconciled the Two Number Sets in Unsloth&#39;s New Feature" fetchpriority="high" onerror="this.closest('.entry-cover').remove()">
+  </figure>
+
+  <div class="post-layout has-toc">
+    <div class="post-main">
+      <div class="post-content"><p>The moment this hit my feed I froze for a couple of seconds - <strong>the official X post contradicts itself, with two sets of numbers.</strong></p>
+<p>@UnslothAI&rsquo;s 2026-10-07 release post (&ldquo;You can now train your own Decision model like Jev locally!&rdquo;): first line claims it &ldquo;increased Qwen3.5 0.8B&rsquo;s aggregate accuracy from <strong>20.7% to 74.3%</strong> across 3 decision benchmarks - on just <strong>4GB VRAM</strong>&rdquo;; the very next paragraph says &ldquo;increasing downstream accuracy from <strong>30-37% to 78%</strong>&rdquo;. Same post, same model, two baselines (20.7 vs 30-37), two ceilings (74.3 vs 78) - it looks like a broken ledger.</p>
+<p>I pulled the entire official doc page and reconciled it line by line: nothing is wrong; they are two different baselines. That &ldquo;reconciling the circulating numbers&rdquo; exercise is the spine of this piece.</p>
+<h2 id="the-mechanism-a-clef-head-that-writes-no-text-only-scores-options">The mechanism: a Clef head that writes no text, only scores options<a hidden class="anchor" aria-hidden="true" href="#the-mechanism-a-clef-head-that-writes-no-text-only-scores-options">#</a></h2>
+<p>The official doc&rsquo;s mechanism (quoted keywords): the LLM reads the input once, and a <strong>small head (same design as Cloudflare&rsquo;s Clef)</strong> looks at the LLM&rsquo;s internal representation over &ldquo;each question x each option&rdquo; and directly scores each option - one forward pass adjudicates many questions.</p>
+<p>Two engineering consequences:</p>
+<ul>
+<li><strong>No output tokens</strong>: no autoregressive decoding, no output-side latency, and no &ldquo;JSON breaks / parse fails&rdquo; failure mode - structured output no longer leans on a parser as a backstop;</li>
+<li><strong>The cost is on the input side</strong>: more questions and options lengthen the sequence; inference cost scales linearly with question count, so a decision model is not zero-cost.</li>
+</ul>
+<p>It is essentially a swap from &ldquo;the LLM produces the answer&rdquo; to &ldquo;the LLM produces features + a cheap head produces the answer.&rdquo; The features reuse the LLM&rsquo;s semantics; the verdict goes to a cheap deterministic head, and the output stage moves from &ldquo;generate&rdquo; to &ldquo;score.&rdquo;</p>
+<p><img alt="The LLM reads the input once; a small head scores every question x option directly, no text" loading="lazy" src="/images/posts/2026-10-10-unsloth-decision-model-08b/fig-head.jpg"></p>
+<h2 id="reconciliation-the-official-two-sets-split-by-baseline-and-aligned">Reconciliation: the official two sets, split by baseline and aligned<a hidden class="anchor" aria-hidden="true" href="#reconciliation-the-official-two-sets-split-by-baseline-and-aligned">#</a></h2>
+<p>Put the two sources side by side:</p>
+<p><strong>Source A: the official doc per-benchmark table</strong> (Qwen3.5-0.8B row):</p>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Benchmark</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>typed-decisions</td>
+        <td>36%</td>
+        <td>73%</td>
+      </tr>
+      <tr>
+        <td>BANKING77</td>
+        <td>7%</td>
+        <td>74%</td>
+      </tr>
+      <tr>
+        <td>CLINC150</td>
+        <td>19%</td>
+        <td>76%</td>
+      </tr>
+      <tr>
+        <td>Mixed holdout (3,000 rows)</td>
+        <td>-</td>
+        <td><strong>78%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p><strong>Source B: the official X post</strong>: &ldquo;20.7% -&gt; 74.3% (3-benchmark aggregate)&rdquo; and &ldquo;30-37% -&gt; 78% (downstream)&rdquo;.</p>
+<p>Reconciliation result (my arithmetic):</p>
+<ul>
+<li>20.7% = (36 + 7 + 19) / 3 = <strong>20.67 ~= 20.7</strong> (plain mean of the three benchmarks&rsquo; &ldquo;before&rdquo;)</li>
+<li>74.3% = (73 + 74 + 76) / 3 = <strong>74.33 ~= 74.3</strong> (plain mean of the three benchmarks&rsquo; &ldquo;after&rdquo;)</li>
+<li>30-37%: the doc&rsquo;s own words &ldquo;from 30-37% (which is roughly chance level)&rdquo; - it describes the range of the per-benchmark &ldquo;before&rdquo; values (typed 36%, 2B 33%; the 0.8B set falls in that band), not a third dataset</li>
+<li>78%: accuracy on the 3,000-row mixed holdout (typed-decisions 2000 + BANKING77 500 + CLINC150 500), matching the Holdout column of the per-benchmark table</li>
+</ul>
+<p>Conclusion: the two sets inside the same post are a &ldquo;three-benchmark plain mean&rdquo; and a &ldquo;range description + mixed holdout&rdquo; - two baselines, and neither is miscalculated. The release post writes both back to back with no baseline label, so a first read makes it look like a self-contradiction. That is exactly where circulating numbers usually go wrong: the numbers are right, and the missing baseline is what is not written.</p>
+<p><img alt="Two sets reconciled: 3-benchmark means 20.7/74.3 vs range+holdout 30-37/78, split and aligned" loading="lazy" src="/images/posts/2026-10-10-unsloth-decision-model-08b/fig-ledger.jpg"></p>
+<h2 id="the-full-model-table-a-4gb-to-14gb-vram-gradient">The full-model table: a 4GB-to-14GB VRAM gradient<a hidden class="anchor" aria-hidden="true" href="#the-full-model-table-a-4gb-to-14gb-vram-gradient">#</a></h2>
+<p>The official doc&rsquo;s &ldquo;all models&rdquo; table (Test accuracy / VRAM / Training time, all vendor-reported):</p>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th>
+        <th>Test accuracy</th>
+        <th>VRAM</th>
+        <th>Training time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Qwen3.5-0.8B</td>
+        <td>78%</td>
+        <td>4GB</td>
+        <td>42 min</td>
+      </tr>
+      <tr>
+        <td>Qwen3.5-2B</td>
+        <td>81%</td>
+        <td>8GB</td>
+        <td>40 min</td>
+      </tr>
+      <tr>
+        <td>Llama 3.2 3B</td>
+        <td>79%</td>
+        <td>4.1GB</td>
+        <td>30 min</td>
+      </tr>
+      <tr>
+        <td>Gemma 4 E4B</td>
+        <td>77%</td>
+        <td>14.4GB</td>
+        <td>49 min</td>
+      </tr>
+      <tr>
+        <td>Laya (further fine-tune)</td>
+        <td>77%</td>
+        <td>2.5GB</td>
+        <td>10 min</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p>Three rows in detail:</p>
+<ul>
+<li><strong>Llama 3.2 3B in 4.1GB and 30 minutes</strong> - 1pp lower accuracy than 0.8B, a quarter of the VRAM;</li>
+<li><strong>2B is 3pp over 0.8B</strong> (81 vs 78), double the VRAM;</li>
+<li><strong>Laya further fine-tune 2.5GB/10min</strong>: topping up an existing decision model is an order of magnitude cheaper than training from scratch.</li>
+</ul>
+<p>The VRAM figures can be cross-checked one level deeper: Unsloth&rsquo;s Qwen3.5 fine-tuning page lists 3GB for 0.8B BF16 LoRA (same table: 2B=5GB, 4B=10GB), and an official AMD technical article (2026-07) measured Qwen3.5 training on a 3GB-VRAM AMD card. The decision table&rsquo;s 4GB (4bit recipe) and these two 3GB figures (BF16 recipe) use different recipes but match in magnitude - <strong>a 4GB card can train the 0.8B decision model; that is a three-source cross-checked conclusion, not a single-source claim.</strong></p>
+<p>Training-data recipe (official): <code>typed-decisions</code> + 12 sources (ag_news, arc, banking77, boolq, clinc150, commonsense_qa, mmlu, mnli, prompt_injections, snli, sst5, wanli); test on 3,000 rows. The test set is decontaminated against the training data - that note is what underwrites the 78%.</p>
+<p><img alt="0.8B-&gt;4GB up to Gemma 4-&gt;14GB: the VRAM gradient for small-model fine-tuning" loading="lazy" src="/images/posts/2026-10-10-unsloth-decision-model-08b/fig-vram.jpg"></p>
+<h2 id="the-reproduction-trap-start-r16-reproduce-with-r64">The reproduction trap: start r=16, reproduce with r=64<a hidden class="anchor" aria-hidden="true" href="#the-reproduction-trap-start-r16-reproduce-with-r64">#</a></h2>
+<p>The second pitfall, more subtle than the baseline one:</p>
+<ul>
+<li>The doc&rsquo;s &ldquo;Recommended settings&rdquo;: <strong>4bit base, LoRA rank 16, lr 2e-4, 2 epochs</strong> - a starter for people to get going;</li>
+<li>But the doc body also says the table numbers were &ldquo;fine-tuned with a Clef head using LoRA (<strong>r=64</strong>) for <strong>one epoch</strong>&rdquo;;</li>
+<li>The third-party report calls it out explicitly: to reproduce the table, use rank-64; <strong>don&rsquo;t compare against the starter defaults.</strong></li>
+</ul>
+<p>The doc&rsquo;s example code block reads <code>r = 16, lora_alpha = 16</code> (in the <code>FastDecisionModel.get_peft_model</code> block). The example code and the table numbers use different hyperparameters: running the example as-is will not reach 78%. The quick-validation route is in the docs too: <code>max_steps = 60</code>, &ldquo;Qwen3.5-4B reached 76% in 10 minutes on an L4&rdquo; (single L4, official figure).</p>
+<p><img alt="4bit base + LoRA matrices + 4GB VRAM bar: start r=16, reproduce with r=64" loading="lazy" src="/images/posts/2026-10-10-unsloth-decision-model-08b/fig-lora.jpg"></p>
+<h2 id="training-dataset-structure">Training dataset structure<a hidden class="anchor" aria-hidden="true" href="#training-dataset-structure">#</a></h2>
+<p><code>LocalLLaMA/typed-decisions</code> is the data backbone of this tutorial; it has 30,708 downloads on Hugging Face. It ships 5 configs: <code>all</code>, <code>agent_trace_observability</code>, <code>customer_service</code>, <code>invoice_processing</code>, <code>security_incidents</code>. Most &ldquo;decision tasks&rdquo; can land on a ready-made subset without training on the full mix - for ticket routing, the <code>customer_service</code> subset is cleaner than <code>all</code>.</p>
+<p>The docs also note: the test set is decontaminated against the training data.</p>
+<p><img alt="Scenarios branching: tickets / email / injection screening converging on one decision head" loading="lazy" src="/images/posts/2026-10-10-unsloth-decision-model-08b/fig-scenarios.jpg"></p>
+<h2 id="what-suits-it-what-does-not">What suits it, what does not<a hidden class="anchor" aria-hidden="true" href="#what-suits-it-what-does-not">#</a></h2>
+<p>Suits (answer in a finite set):</p>
+<ul>
+<li>Ticket routing, intent classification (BANKING77/CLINC150 are exactly this);</li>
+<li>Injection / risk screening (the training sources include <code>prompt_injections</code>);</li>
+<li>Adjudicating several fields from one input (doc example: the same ticket gets &ldquo;which team + refund or not&rdquo; in one forward pass);</li>
+<li>Document tagging, process branching.</li>
+</ul>
+<p>Does not suit: open generation, reasoning that needs an explanation chain - those stay on the LLM text path; the decision head is just a shortcut for &ldquo;produce the answer.&rdquo;</p>
+<p>One more selection note from a third party: a traditional encoder classifier may be leaner and faster, so keep it as a baseline for comparison when choosing. The decision model&rsquo;s selling point is reusing the LLM&rsquo;s semantic base plus structured output; it does not lead in raw accuracy.</p>
+<h2 id="ecosystem-slot-jev--laya--clef--kev">Ecosystem slot: Jev / Laya / Clef / Kev<a hidden class="anchor" aria-hidden="true" href="#ecosystem-slot-jev--laya--clef--kev">#</a></h2>
+<p>This space is crowded right now:</p>
+<ul>
+<li><strong>Jev / Laya / Clef</strong>: the official post names them directly - &ldquo;train your own Decision model like Jev.&rdquo; Jev (TypeSafe) goes through an API; Laya/Clef are local branches; Clef is Cloudflare&rsquo;s public design, and Unsloth&rsquo;s head is Clef-same;</li>
+<li><strong>Kev</strong> (GitHub jaredpalmer): a 0.8B-27B decision-model family on Qwen3.5/3.8; the 0.8B runs on a laptop; API-compatible with the Jev protocol - the &ldquo;pretrained weights vs fine-tune it yourself&rdquo; split, opposite routes from the Unsloth tutorial;</li>
+<li>Unsloth&rsquo;s differentiation: <strong>they hand you a trainer, not weights</strong> (<code>FastDecisionModel</code> + <code>DecisionTrainer</code> in the open-source package); wire up your own Decision API when you&rsquo;re done.</li>
+</ul>
+<p><img alt="The 0.8B decision model running on a laptop / single box: the small machine glows" loading="lazy" src="/images/posts/2026-10-10-unsloth-decision-model-08b/fig-laptop.jpg"></p>
+<h2 id="data-sources-and-baselines">Data sources and baselines<a hidden class="anchor" aria-hidden="true" href="#data-sources-and-baselines">#</a></h2>
+<p>The figures in this piece are cross-checked across multiple sources: the official docs tables, the official X release post, and a third-party report (alphasignal.ai, which relays the same tables and flags them vendor-reported). Training results such as 4GB / 42min / 78% come from the official decision-model table; VRAM gets two extra cross-checks - the BF16 LoRA VRAM table on Unsloth&rsquo;s Qwen3.5 fine-tuning page (0.8B = 3GB) and an official AMD technical article (2026-07) measuring Qwen3.5 training on a 3GB-VRAM AMD card. The magnitudes agree. The mean reconciliation ((36+7+19)/3=20.7, (73+74+76)/3=74.3) is pure arithmetic.</p>
+<p>The test set is decontaminated against the training data per the official note; &ldquo;30-37% ~= chance level&rdquo; is the official baseline, and because per-benchmark class counts differ, the random baseline is not strictly 1/class-count.</p>
+<p>The Unsloth tutorial and tables iterate fast; this piece tracks the 2026-10-07 snapshot.</p>
+<h2 id="sources">Sources<a hidden class="anchor" aria-hidden="true" href="#sources">#</a></h2>
+<ul>
+<li>@UnslothAI official release post (2026-10-07, the two number sets&rsquo; origin): <a href="https://x.com/UnslothAI/status/2107868866361930236" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="https://x.com/UnslothAI/status/2107868866361930236 (External link)">https://x.com/UnslothAI/status/2107868866361930236 <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</li>
+<li>Official doc &ldquo;Train your own Decision Model with Unsloth&rdquo; (per-benchmark table, all-models table, recommended settings; captured 2026-10-07): <a href="https://unsloth.ai/docs/basics/train-your-own-decision-model-with-unsloth" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="https://unsloth.ai/docs/basics/train-your-own-decision-model-with-unsloth (External link)">https://unsloth.ai/docs/basics/train-your-own-decision-model-with-unsloth <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</li>
+<li>Third-party report (same table relayed + rank-64 reproduction note, vendor-reported flagged): <a href="https://alphasignal.ai/news/unsloth-turns-a-0-8b-model-into-a-fast-decision-engine-at-78-accuracy" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="https://alphasignal.ai/news/unsloth-turns-a-0-8b-model-into-a-fast-decision-engine-at-78-accuracy (External link)">https://alphasignal.ai/news/unsloth-turns-a-0-8b-model-into-a-fast-decision-engine-at-78-accuracy <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</li>
+<li>Unsloth Qwen3.5 fine-tuning page (BF16 LoRA VRAM table, 0.8B = 3GB, cross-check source): <a href="https://unsloth.ai/docs/models/qwen3.5/fine-tune" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="https://unsloth.ai/docs/models/qwen3.5/fine-tune (External link)">https://unsloth.ai/docs/models/qwen3.5/fine-tune <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</li>
+<li>Official AMD technical article (2026-07, measured Qwen3.5 training on 3GB-VRAM AMD, cross-check source): <a href="https://www.amd.com/en/developer/resources/technical-articles/2026/train-and-run-models-on-amd-gpus-with-unsloth.html" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="https://www.amd.com/en/developer/resources/technical-articles/2026/train-and-run-models-on-amd-gpus-with-unsloth.html (External link)">https://www.amd.com/en/developer/resources/technical-articles/2026/train-and-run-models-on-amd-gpus-with-unsloth.html <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</li>
+<li>HF dataset: <a href="https://huggingface.co/datasets/LocalLLaMA/typed-decisions" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="https://huggingface.co/datasets/LocalLLaMA/typed-decisions (External link)">https://huggingface.co/datasets/LocalLLaMA/typed-decisions <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</li>
+</ul>
+<h2 id="related-reading">Related reading<a hidden class="anchor" aria-hidden="true" href="#related-reading">#</a></h2>
+<ul>
+<li>Mistral Le Chonk spec check: 1T params, 49B active; the widely-quoted 1M context measures 512K (this site, 10-09)</li>
+<li>SelfSearch: an agent rewrites its own prompts, $4.03 to match Codex (this site, 10-08)</li>
+</ul>
+<hr>
+<p><strong>Which camp are you</strong>: the 0.8B-is-enough camp (start on the Llama 3.2 3B 4.1GB row), the 2B-precision camp (8GB to reach 81%), or the wait-and-see camp (grab the Kev 0.8B weights and run, no self-training)? Drop your VRAM tier + the first scenario you plan to adjudicate in the comments - once enough pile up I&rsquo;ll ship a &ldquo;decision-model selection, measured&rdquo; follow-up and run the encoder-classifier baseline alongside.</p>
+<p>Pass this to the colleague <strong>still using GPT for ticket routing</strong> - a 4GB-VRAM job does not need to burn pay-per-token API money. Search &ldquo;梦兽编程&rdquo; on WeChat.</p>
+
+
+      </div>
+<section class="post-content post-faq" aria-labelledby="post-faq-heading">
+  <h2 id="post-faq-heading">Frequently Asked Questions</h2>
+  <section class="post-faq__item">
+    <h3>What is a decision model, and how is it different from normal LLM fine-tuning?</h3>
+    <p>A normal LLM emits a stream of text tokens (it decodes, and it can break JSON). A decision model bolts on a small classification head (same design as Cloudflare&#39;s Clef): the LLM reads the input once, and the head scores each option directly and outputs probabilities. No text generation, no output-token latency, no parse failures. Fits questions whose answers live in a finite set: routing, intent, injection screening.</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>Which is right, 20.7%-&gt;74.3% or 30-37%-&gt;78% in the official post?</h3>
+    <p>Both are right; they are different baselines. 20.7/74.3 is the plain mean of three benchmarks (typed-decisions 36-&gt;73, BANKING77 7-&gt;74, CLINC150 19-&gt;76): (36&#43;7&#43;19)/3=20.7, (73&#43;74&#43;76)/3=74.3. 30-37-&gt;78 is the docs&#39; own phrase &#39;from 30-37% (roughly chance level) up to 78%&#39;, where 78% is accuracy on a 3,000-row mixed holdout. I reconcile both line by line in the body.</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>Does 4GB VRAM really hold?</h3>
+    <p>The official decision-model table lists 0.8B fine-tune peak 4GB (42 min), Llama 3.2 3B 4.1GB - a 4bit-base &#43; LoRA recipe. VRAM is not a single source: Unsloth&#39;s Qwen3.5 fine-tuning page lists 3GB for 0.8B BF16 LoRA, and an official AMD technical article (2026-07) measured Qwen3.5 training on a 3GB-VRAM AMD card. Three sources agree, so &#39;4GB is enough&#39; is a cross-checked conclusion.</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>Should I reproduce with the settings the docs recommend?</h3>
+    <p>No. The docs&#39; &#39;Recommended settings&#39; are 4bit base &#43; LoRA rank 16 &#43; lr 2e-4 - a starter. But the table numbers were produced with LoRA rank 64, one epoch; the docs themselves note: to reproduce the table, use rank-64, don&#39;t compare against the starter defaults.</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>What tasks suit it?</h3>
+    <p>Anything with a finite answer set: ticket routing, intent classification, injection screening, document tagging, multi-question adjudication. Open-ended generation and reasoning that needs an explanation chain do not - those stay on the LLM text path. A traditional encoder classifier may be leaner and faster, so keep it as a baseline when you choose.</p>
+  </section>
+</section>
+
+<section class="post-actions" aria-label="post actions">
+  <div class="post-actions__group">
+    <div class="post-actions__item">
+      <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="winbbryz" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff"></script>
+    </div>
+  </div>
+</section>
+
+
+
+      <footer class="post-footer">
+        <ul class="post-tags"><li><a href="/en/tags/unsloth/">#Unsloth</a></li><li><a href="/en/tags/small-models/">#Small-Models</a></li><li><a href="/en/tags/lora-finetuning/">#Lora-Finetuning</a></li><li><a href="/en/tags/local-inference/">#Local Inference</a></li><li><a href="/en/tags/decision-models/">#Decision-Models</a></li>
+        </ul>
+      </footer>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css" />
+
+
+<div id="waline-container" style="margin-top: 3rem;"></div>
+
+
+<script type="module">
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'en-US',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: 'Leave a comment to share your thoughts...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script>
+
+<style>
+#waline-container {
+  background: var(--rex-bg);
+  padding: var(--rex-space-5);
+  border-radius: var(--rex-radius-xl);
+  border: 1px solid var(--rex-border);
+}
+@media screen and (max-width: 768px) {
+  #waline-container {
+    padding: var(--rex-space-4);
+  }
+}
+.wl-editor {
+  border-radius: var(--rex-radius-lg);
+}
+.wl-btn {
+  border-radius: var(--rex-radius-lg);
+  transition: all 0.3s ease;
+}
+.wl-btn:hover {
+  transform: translateY(-1px);
+}
+.wl-reaction {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rex-border);
+}
+.wl-reaction-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.wl-reaction-img {
+  transition: transform 0.2s ease;
+}
+.wl-reaction-img:hover {
+  transform: scale(1.2);
+}
+.wl-card {
+  border: 1px solid var(--rex-border);
+  border-radius: var(--rex-radius-lg);
+  background: var(--rex-bg);
+}
+.wl-card:hover {
+  border-color: var(--rex-border-bold);
+}
+</style>
+    </div>
+    <aside class="toc-col wp2-floating-toc" data-wp2-toc>
+      <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
+        <span>CONTENTS</span><i aria-hidden="true">＋</i>
+      </button>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#the-mechanism-a-clef-head-that-writes-no-text-only-scores-options" aria-label="The mechanism: a Clef head that writes no text, only scores options">The mechanism: a Clef head that writes no text, only scores options</a></li>
+                <li>
+                    <a href="#reconciliation-the-official-two-sets-split-by-baseline-and-aligned" aria-label="Reconciliation: the official two sets, split by baseline and aligned">Reconciliation: the official two sets, split by baseline and aligned</a></li>
+                <li>
+                    <a href="#the-full-model-table-a-4gb-to-14gb-vram-gradient" aria-label="The full-model table: a 4GB-to-14GB VRAM gradient">The full-model table: a 4GB-to-14GB VRAM gradient</a></li>
+                <li>
+                    <a href="#the-reproduction-trap-start-r16-reproduce-with-r64" aria-label="The reproduction trap: start r=16, reproduce with r=64">The reproduction trap: start r=16, reproduce with r=64</a></li>
+                <li>
+                    <a href="#training-dataset-structure" aria-label="Training dataset structure">Training dataset structure</a></li>
+                <li>
+                    <a href="#what-suits-it-what-does-not" aria-label="What suits it, what does not">What suits it, what does not</a></li>
+                <li>
+                    <a href="#ecosystem-slot-jev--laya--clef--kev" aria-label="Ecosystem slot: Jev / Laya / Clef / Kev">Ecosystem slot: Jev / Laya / Clef / Kev</a></li>
+                <li>
+                    <a href="#data-sources-and-baselines" aria-label="Data sources and baselines">Data sources and baselines</a></li>
+                <li>
+                    <a href="#sources" aria-label="Sources">Sources</a></li>
+                <li>
+                    <a href="#related-reading" aria-label="Related reading">Related reading</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+      </div>
+    </aside>
+  </div>
+</article>
+  </main><footer class="wp2-footer">
+  <div class="wp2-footer__grid">
+    <section>
+      <p class="wp2-footer__label">SITEMAP</p>
+      <a href="/en/">HOME</a>
+      <a href="/en/posts/">JOURNAL</a>
+      <a href="/en/tutorials/">GUIDES</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">TOPICS</p>
+      <a href="/en/ai/">AI</a>
+      <a href="/en/languages/">LANGUAGES</a>
+      <a href="/en/infrastructure/">INFRA</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">CONNECT</p>
+      <a href="/en/about/">ABOUT</a>
+      <a href="/en/contact/">CONTACT</a>
+      <a href="/en/privacy/">PRIVACY</a>
+      <a href="/en/tools/">TOOLS</a>
+      <a href="/en/tags/">TAG INDEX</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">SIGNAL</p>
+      <a href="/en/search/">SEARCH</a>
+      <a href="/en/categories/">CATEGORIES</a>
+      <span>© 2026 梦兽编程</span>
+    </section>
+  </div>
+  <div class="wp2-footer__bar">
+    <span>BUILT WITH CODE AND CURIOSITY</span>
+    <span>V.2026.10 / SYSTEMS NOMINAL</span>
+  </div>
+  <div class="wp2-footer__wordmark">梦兽编程</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" aria-hidden="true" tabindex="-1">
+  <svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48">
+    <circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+  <script src="/js/theme.js?v=wp2-nav-20260820" defer></script>
+  <script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script>
+  <script>
+    (function(){ var b=document.getElementById('backToTop'),r=b?b.querySelector('.back-to-top__ring-progress'):null; if(!b)return; window.addEventListener('scroll',function(){var s=document.documentElement.scrollTop||document.body.scrollTop;if(s>400){b.classList.add('is-visible');b.setAttribute('aria-hidden','false');b.removeAttribute('tabindex');if(r){var max=document.documentElement.scrollHeight-window.innerHeight;r.style.strokeDashoffset=125.6*(1-s/max);}}else{b.classList.remove('is-visible');b.setAttribute('aria-hidden','true');b.setAttribute('tabindex','-1');}},{passive:true}); b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});}); })();
+  </script>
+</body>
+</html>
