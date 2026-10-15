@@ -1,100 +1,371 @@
-<!doctype html><html lang=zh-cn dir=ltr class=js><head><meta charset=utf-8><meta name=referrer content="no-referrer-when-downgrade"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>文章 | 梦兽编程</title><meta name=keywords content><meta name=description content="博客文章"><meta name=author content="梦兽编程"><link rel=canonical href=https://rexai.top/posts/><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><meta name=impact-site-verification value=6a4c88bc-bba3-418e-9e49-d15d52bb3231><meta name=applicable-device content="pc,mobile"><meta name=renderer content="webkit"><meta http-equiv=Cache-Control content="no-transform"><meta http-equiv=Cache-Control content="no-siteapp"><script>(function(){try{var e=localStorage.getItem("pref-theme"),t=!1;(e==="dark"||!e&&t)&&document.documentElement.classList.add("dark")}catch{}})()</script><link crossorigin=anonymous href=/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as=style><link rel=icon href=https://rexai.top/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://rexai.top/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://rexai.top/favicon-32x32.png><link rel=apple-touch-icon href=https://rexai.top/apple-touch-icon.png><meta name=theme-color content="#0a0f1d"><meta name=msapplication-TileColor content="#0a0f1d"><link rel=alternate type=application/rss+xml href=https://rexai.top/posts/index.xml><link rel=alternate hreflang=zh-cn href=https://rexai.top/posts/><link rel=alternate hreflang=en href=https://rexai.top/en/posts/><noscript><style>#theme-toggle,.top-link{display:none}</style></noscript><script>(function(){try{var t=localStorage.getItem("pref-theme"),e=document.documentElement;t==="light"?(e.classList.remove("dark"),e.setAttribute("data-theme","light")):(e.classList.add("dark"),e.setAttribute("data-theme","dark"))}catch{}})()</script><script type=importmap>
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr" class="js">
+<head><meta charset="utf-8">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="robots" content="index, follow">
+  <title>文章 | 梦兽编程</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="博客文章">
+  <meta name="author" content="梦兽编程">
+  <link rel="canonical" href="https://rexai.top/posts/">
+  <meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+  <meta name="impact-site-verification" value="6a4c88bc-bba3-418e-9e49-d15d52bb3231">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp"><script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pref-theme');
+        var isDark = false;
+        if (t === 'dark' || (!t && isDark)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link crossorigin="anonymous" href="/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css" integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as="style">
+  <link rel="icon" href="https://rexai.top/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://rexai.top/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://rexai.top/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="https://rexai.top/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="msapplication-TileColor" content="#0a0f1d">
+  <link rel="alternate" type="application/rss+xml" href="https://rexai.top/posts/index.xml">
+  <link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/"><link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/">
+
+  <noscript>
+      <style>
+          #theme-toggle,
+          .top-link {
+              display: none;
+          }
+      </style>
+  </noscript>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('pref-theme');
+      var root = document.documentElement;
+      if (t === 'light') { root.classList.remove('dark'); root.setAttribute('data-theme', 'light'); }
+      else { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); }
+    } catch (e) {}
+  })();
+</script><script type="importmap">
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
   }
 }
-</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092" crossorigin=anonymous></script><meta name=msvalidate.01 content="DFC221DBAE81D3FE5D692A4C8F3670CF"><script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-62VF26DEY6")</script><meta property="og:url" content="https://rexai.top/posts/"><meta property="og:site_name" content="梦兽编程"><meta property="og:title" content="文章"><meta property="og:description" content="博客文章"><meta property="og:locale" content="zh-cn"><meta property="og:type" content="website"><meta name=twitter:card content="summary"><meta name=twitter:title content="文章"><meta name=twitter:description content="博客文章"><script type=application/ld+json>{"@context":"https://schema.org","@type":"Person","name":"梦兽编程","url":"https:\/\/rexai.top\/about/","sameAs":["https:\/\/github.com\/rexai","https://rexai.top/"],"affiliation":{"@type":"Organization","name":"梦兽编程","url":"https:\/\/rexai.top\/"},"knowsAbout":["Rust","AI Agent","LLM","Coding Agent","Terminal UI","System Programming"],"mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/rexai.top\/posts\/"}}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/","name":"Posts"},"position":2}]}</script></head><body class=site-body><header class=wp2-header><a class=wp2-header__brand href=/ aria-label=梦兽编程><img class=wp2-header__brand-logo src=/images/brand/nav-logo-32.png alt width=32 height=32>
-梦兽编程<sup>™</sup></a><nav class=wp2-header__links aria-label=主导航><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/products/>产品</a></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tutorials/>教程</a>
-<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tutorials>
-<span aria-hidden=true>&#9662;</span>
-<span class=wp2-visually-hidden>展开 教程 菜单</span></button><div id=wp2-submenu-tutorials class=wp2-header__submenu aria-label=教程 hidden><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk-2/><span>Go ADK 2.0</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/herdr/><span>Herdr</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/ai/>AI</a>
-<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-ai>
-<span aria-hidden=true>&#9662;</span>
-<span class=wp2-visually-hidden>展开 AI 菜单</span></button><div id=wp2-submenu-ai class=wp2-header__submenu aria-label=AI hidden><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/languages/>开发</a>
-<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-dev>
-<span aria-hidden=true>&#9662;</span>
-<span class=wp2-visually-hidden>展开 开发 菜单</span></button><div id=wp2-submenu-dev class=wp2-header__submenu aria-label=开发 hidden><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/tools/rexai-tool-directory/>工具</a>
-<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-tools>
-<span aria-hidden=true>&#9662;</span>
-<span class=wp2-visually-hidden>展开 工具 菜单</span></button><div id=wp2-submenu-tools class=wp2-header__submenu aria-label=工具 hidden><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></div><div class="wp2-header__nav-item has-children" data-wp2-nav-item><a class=wp2-header__nav-link href=/categories/>探索</a>
-<button class=wp2-header__submenu-toggle type=button data-wp2-submenu-toggle aria-expanded=false aria-controls=wp2-submenu-explore>
-<span aria-hidden=true>&#9662;</span>
-<span class=wp2-visually-hidden>展开 探索 菜单</span></button><div id=wp2-submenu-explore class=wp2-header__submenu aria-label=探索 hidden><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></div><div class=wp2-header__nav-item data-wp2-nav-item><a class=wp2-header__nav-link href=/about/>关于</a></div></nav><div class=wp2-header__spacer></div><a class=wp2-header__cta href=/tools/cc-codex-portal/>AI 套装 <span aria-hidden=true>&rarr;</span></a>
-<button class=wp2-header__menu type=button aria-expanded=false aria-controls=wp2-mobile-menu data-wp2-menu data-open-label=打开菜单 data-close-label=关闭菜单>
-<span class=wp2-header__menu-mark aria-hidden=true><i></i><i></i><i></i></span>
-<span class=wp2-header__menu-label data-wp2-menu-label>打开菜单</span></button></header><div id=wp2-mobile-menu class=wp2-menu-panel hidden><div class=wp2-menu-panel__frame><div class=wp2-menu-panel__directory><div class=wp2-menu-panel__meta><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div><nav class=wp2-menu-panel__grid aria-label=全站导航><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/products/><strong>产品</strong><span aria-hidden=true>&rarr;</span></a><p>自研产品、服务与项目入口。</p></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tutorials/><strong>教程</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tutorials/smart-contracts/><span>智能合约</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk/><span>Go ADK</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/go-adk-2/><span>Go ADK 2.0</span><b aria-hidden=true>&rarr;</b></a><a href=/tutorials/herdr/><span>Herdr</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/ai/><strong>AI</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/ai/claude-code/><span>Claude Code</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/codex/><span>Codex</span><b aria-hidden=true>&rarr;</b></a><a href=/ai/llm/><span>LLM</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/languages/><strong>开发</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/languages/rust/><span>Rust</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/go/><span>Go</span><b aria-hidden=true>&rarr;</b></a><a href=/languages/python/><span>Python</span><b aria-hidden=true>&rarr;</b></a><a href=/frontend/><span>前端</span><b aria-hidden=true>&rarr;</b></a><a href=/infrastructure/><span>基础设施</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/tools/rexai-tool-directory/><strong>工具</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tools/rexai-tool-directory/><span>AI 工具导航</span><b aria-hidden=true>&rarr;</b></a><a href=https://tool.rexai.top/ target=_blank rel=noopener><span>Rex 工具集</span><b aria-hidden=true>&nearr;</b><span class=wp2-visually-hidden>（在新标签页打开）</span></a><a href=/marketing/><span>VPN网络链</span><b aria-hidden=true>&rarr;</b></a></div></section><section class=wp2-menu-panel__group><a class=wp2-menu-panel__parent href=/categories/><strong>探索</strong><span aria-hidden=true>&rarr;</span></a><div class=wp2-menu-panel__children><a href=/tags/><span>标签</span><b aria-hidden=true>&rarr;</b></a><a href=/categories/><span>分类</span><b aria-hidden=true>&rarr;</b></a></div></section><section class="wp2-menu-panel__group is-single"><a class=wp2-menu-panel__parent href=/about/><strong>关于</strong><span aria-hidden=true>&rarr;</span></a><p>了解梦兽编程、联系渠道与站点说明。</p></section></nav></div><div class=wp2-menu-panel__utility aria-label=站点工具><span class=wp2-menu-panel__utility-label>实用工具</span>
-<a class=wp2-menu-panel__utility-search href=/search/>搜索</a><a href=/en/>English</a>
-<button type=button data-theme-toggle data-theme-light-label=主题：浅色 data-theme-dark-label=主题：深色 data-theme-light-action=切换至深色 data-theme-dark-action=切换至浅色 aria-pressed=false><span data-theme-toggle-label>主题：浅色</span></button></div></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
-<meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/posts/><span itemprop=name>Posts</span></a>
-<meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>78 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/2026-10-14-xai-four-pack/><b>01</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-14-xai-four-pack/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.14 / 2 MIN</small>
-<strong>再见 Codex：15 刀拿下 Cursor + Grok + X 四件套，马斯克把比赛打完了</strong>
-<em>一位博主暂停了用了一年多的 Codex（烧掉近 100 亿 token），转投马斯克的 15 刀 xAI 全家桶：一次订阅，同时拿到 Cursor、Grok、Grok Bot、X 四件套，外加 OpenAI 自家旗舰模型随意切。这篇是视频口播稿，把这笔账、那个 megpie 转发的骚操作、以及它藏着的「模型不再被绑定」的信号一次讲透。</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-14-rust-flip-points/><b>02</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-14-rust-flip-points/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.14 / 2 MIN</small>
-<strong>LLM 写 Rust 的 3 个翻车点，第 3 个是你的错觉</strong>
-<em>让 LLM 生成 Rust，看着都对，跑起来才发现三个高频翻车点。我把这三个点在本机 2 核 EPYC + rustc 1.99.0 + -O 上各打一组数字：热路径 format! 分配税 113ms、无脑 .clone() 在 80MB 量级上多 60ms、而「迭代器链一定比手写循环慢」这条玄学，本机实测在 -O 下打平。第 3 个是 …</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-14-ts-rust/><b>03</b>
-<span class="wp2-list__image is-empty"></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.14 / 3 MIN</small>
-<strong>LLM 把 TypeScript 编译器搬进 Rust：烧了 42 万美元 token，比官方 tsc 7 快 4.35 倍</strong>
-<em>一周之内，TypeScript 编译器被 LLM 移植了至少 3 份。最狠的一份把它整包搬进了 Rust——作者说烧了 42 万美元的 token、写了 130 万行 Rust，OpenAI 系模型卡在 84% 兼容爬不出来，最后换 Opus 5.5 从头重写、10 小时出了个能用的 v0。我把这份 tsc-rs 的速度基准、钱的去向、以 …</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-14-sdd-three-layers/><b>04</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-14-sdd-three-layers/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.14 / 2 MIN</small>
-<strong>「spec 驱动开发」火了，但 90% 的人停在了第一层</strong>
-<em>spec-driven development 最近火到 GitHub 上一个工具包就 130K 星、AWS 拿它三周做了个 drug discovery agent。但这个词的定义还没定下来，第三方实测下来，市面上能找到的都停在最浅的一层——spec 用完就删。我把它的三个层级、模板到底怎么约束 LLM、以及「审 markdown 真的 …</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-14-apple-homeview/><b>05</b>
-<span class="wp2-list__image is-empty"></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.13 / 2 MIN</small>
-<strong>苹果 HomeView：主角不是那块 299 美元的屏幕</strong>
-<em>苹果首款带屏家庭中枢 HomeView 来了，299 美元、11 月 13 日发货。但它真正的看点不是那块 7 英寸屏幕，而是屏幕背后能认出全家的 Siri。我把价格、芯片、隐私设计和国内双轨 AI 都拆清楚了。</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-13-gemini-argon-remotion-4k-video/><b>06</b>
-<span class="wp2-list__image is-empty"></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.13 / 2 MIN</small>
-<strong>生成式 AI 做视频，不是「画像素」——Argon 用 16 小时写了一整个渲染器</strong>
-<em>一个灰测号让 Gemini Argon 搓一支 4K motion showreel，作者说只花了 16 小时。关键不在成片多炫，而在它怎么做出来的：没有 diffusion 视频模型，是写了 Three.js/WebGL/Remotion 代码、headless 浏览器逐帧渲染。我把视频拉下来实测，也把 Gemini 4 Argon 的 …</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-13-ai-selling-video-skill/><b>07</b>
-<span class="wp2-list__image is-empty"></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.13 / 1 MIN</small>
-<strong>把带货视频做成一条能复跑的流水线：AI 真人带货工作流，一条片不到 20 块</strong>
-<em>把带货视频的前期物料固化成一套规则：输入产品图，自动出主播三视图、分镜、A/B-roll 提示词，再交给 Vidu Q4 出片。我把整条链路的数字、坑、可复跑的做法都写清楚了，一条成片成本压到二十块以内。</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-12-wordcraft-clean-room-word-rust/><b>08</b>
-<span class="wp2-list__image is-empty"></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.12 / 3 MIN</small>
-<strong>WordCraft：clean-room 重做 Word 的纯 Rust 引擎，我本地实测 615 命令、97% 特性覆盖</strong>
-<em>WordCraft 用纯 Rust clean-room 重写 Microsoft Word，10-07 建仓，5 天 8,961 星。真正值钱的不是「又一个 Word」，而是它把整个 Word 拆成 615 个可命令化动作，同一套命令驱动 ribbon/CLI/MCP/agent。我本机 2 核 EPYC 编译跑通 4 条格式转换，实测 …</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-12-vibe-coding-production-reflection/><b>09</b>
-<span class="wp2-list__image is-empty"></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.12 / 2 MIN</small>
-<strong>Vibe Coding 一年，我摸索出的 6 条纪律：委托单元从一行代码长到多周项目</strong>
-<em>我把 coding agent 当正式同事用了 1 年多，停掉手写代码。委托单元一年走了四个阶段，从行到多周项目。这篇是 6 条踩出来的纪律：生产环境不会消失、AGENTS.md 慷慨建、反馈回路、Skill 挑着用、设计文档和计划文件、/goal 切大活。</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-12-safe-simd-feature-token/><b>10</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-12-safe-simd-feature-token/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.12 / 3 MIN</small>
-<strong>Safe SIMD 续集：kernel! 宏是怎么把 unsafe 收到 1 处的——feature token 拆解</strong>
-<em>9 月底 fearless_simd 1.0 那篇我报过「50 块 unsafe vs 官方 0」。这篇补它没展开的机制：kernel! 宏靠「CPU feature token」+ 泛型 f32x8，把 unsafe 收进 1 处可审计点，让你写 a+b 不用管底下是 AVX2 还是 NEON。Shnatsel（rustc 核心成员）亲 …</em>
-</span><i>↗</i></a></div><nav class=wp2-list__pagination aria-label=Pagination><span>1 / 8</span><a href=/posts/page/2/>NEXT →</a></nav></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
-<a href=/posts/>文章</a>
-<a href=/tutorials/>教程</a></section><section><p class=wp2-footer__label>专题</p><a href=/ai/>AI</a>
-<a href=/languages/>编程语言</a>
-<a href=/infrastructure/>基础设施</a></section><section><p class=wp2-footer__label>联系</p><a href=/about/>关于梦兽</a>
-<a href=/contact/>联系我们</a>
-<a href=/privacy/>隐私政策</a>
-<a href=/tools/>工具精选</a>
-<a href=/tags/>标签索引</a></section><section><p class=wp2-footer__label>订阅</p><a href=/search/>搜索文章</a>
-<a href=/categories/>分类</a>
-<span>© 2026 梦兽编程</span></section></div><div class=wp2-footer__bar><span>由代码与好奇心驱动</span>
-<span>V.2026.10 / 系统正常</span></div><div class=wp2-footer__wordmark>梦兽编程</div></footer><script src="/js/theme.js?v=wp2-nav-20260820" defer></script><script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script></body></html>
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092"
+     crossorigin="anonymous"></script><meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-62VF26DEY6');
+</script>
+<meta property="og:url" content="https://rexai.top/posts/">
+  <meta property="og:site_name" content="梦兽编程">
+  <meta property="og:title" content="文章">
+  <meta property="og:description" content="博客文章">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+
+<meta name="twitter:card" content="summary">
+
+<meta name="twitter:title" content="文章">
+<meta name="twitter:description" content="博客文章">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "梦兽编程",
+  "url": "https:\/\/rexai.top\/about/",
+  "sameAs": [
+    "https:\/\/github.com\/rexai",
+    "https://rexai.top/"
+  ],
+  "affiliation": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/"
+  },
+  "knowsAbout": ["Rust", "AI Agent", "LLM", "Coding Agent", "Terminal UI", "System Programming"],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/","name":"Posts"},"position":2}]
+}
+</script>
+
+</head><body class="site-body"><header class="wp2-header">
+  <a class="wp2-header__brand" href="/" aria-label="梦兽编程">
+    <img class="wp2-header__brand-logo" src="/images/brand/nav-logo-32.png" alt="" width="32" height="32">
+    梦兽编程<sup>™</sup>
+  </a>
+
+  <nav class="wp2-header__links" aria-label="主导航"><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/products/">产品</a>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tutorials/">教程</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tutorials">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 教程 菜单</span>
+        </button>
+        <div id="wp2-submenu-tutorials" class="wp2-header__submenu" aria-label="教程" hidden><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/ai/">AI</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-ai">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 AI 菜单</span>
+        </button>
+        <div id="wp2-submenu-ai" class="wp2-header__submenu" aria-label="AI" hidden><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/languages/">开发</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-dev">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 开发 菜单</span>
+        </button>
+        <div id="wp2-submenu-dev" class="wp2-header__submenu" aria-label="开发" hidden><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tools/rexai-tool-directory/">工具</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tools">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 工具 菜单</span>
+        </button>
+        <div id="wp2-submenu-tools" class="wp2-header__submenu" aria-label="工具" hidden><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/categories/">探索</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-explore">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 探索 菜单</span>
+        </button>
+        <div id="wp2-submenu-explore" class="wp2-header__submenu" aria-label="探索" hidden><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/about/">关于</a>
+      </div>
+  </nav>
+
+  <div class="wp2-header__spacer"></div>
+  <a class="wp2-header__cta" href="/tools/cc-codex-portal/">AI 套装 <span aria-hidden="true">&rarr;</span></a>
+  <button class="wp2-header__menu" type="button" aria-expanded="false" aria-controls="wp2-mobile-menu" data-wp2-menu data-open-label="打开菜单" data-close-label="关闭菜单">
+    <span class="wp2-header__menu-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="wp2-header__menu-label" data-wp2-menu-label>打开菜单</span>
+  </button>
+</header>
+
+<div id="wp2-mobile-menu" class="wp2-menu-panel" hidden>
+  <div class="wp2-menu-panel__frame">
+    <div class="wp2-menu-panel__directory">
+    <div class="wp2-menu-panel__meta"><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div>
+    <nav class="wp2-menu-panel__grid" aria-label="全站导航"><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/products/"><strong>产品</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>自研产品、服务与项目入口。</p>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tutorials/"><strong>教程</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/ai/"><strong>AI</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/languages/"><strong>开发</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tools/rexai-tool-directory/"><strong>工具</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/categories/"><strong>探索</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/about/"><strong>关于</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>了解梦兽编程、联系渠道与站点说明。</p>
+        </section>
+    </nav>
+    </div>
+    <div class="wp2-menu-panel__utility" aria-label="站点工具">
+      <span class="wp2-menu-panel__utility-label">实用工具</span>
+      <a class="wp2-menu-panel__utility-search" href="/search/">搜索</a><a href="/en/">English</a>
+      <button type="button" data-theme-toggle data-theme-light-label="主题：浅色" data-theme-dark-label="主题：深色" data-theme-light-action="切换至深色" data-theme-dark-action="切换至浅色" aria-pressed="false"><span data-theme-toggle-label>主题：浅色</span></button>
+    </div>
+  </div>
+</div>
+
+
+  <main id="main-content" class="glass-main"><section class="wp2-list">
+  <header class="wp2-content-head">
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://rexai.top/"><span itemprop="name">梦兽编程</span></a>
+      <meta itemprop="position" content="1">
+    </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/"><span itemprop="name">Posts</span></a>
+        <meta itemprop="position" content="2">
+      </li>
+  </ol>
+</nav>
+
+    <p>[ SECTION / POSTS ]</p>
+    <h1>文章</h1><div>博客文章</div>
+    <span>80 篇内容</span>
+  </header>
+
+  <div class="wp2-list__rows"><a class="wp2-list__row" href="/posts/2026-10-15-solidcraft-mcp-cad/">
+        <b>01</b>
+        <span class="wp2-list__image"><img data-wp2-card-image src="https://rexai.top/images/posts/2026-10-15-solidcraft-mcp-cad/cover.jpg" alt="" loading="lazy"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.15 / 2 MIN</small>
+          <strong>SolidCraft：纯 Rust 参数化 CAD，AI agent 直接驱动建模——8 天 2400 星</strong>
+          <em>10-07 建仓、8 天 2400 星：SolidCraft 是纯 Rust 写的开源参数化 CAD，几何内核 clean-room、零 GPL 依赖，桌面（egui+wgpu）、网页（wasm）、MCP server 三端通。我本机把 headless 建模链路拉通：369 条命令、40×30×20 盒子端到端建出且与解析解一致、MCP …</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-15-rust-borrow-unsound/">
+        <b>02</b>
+        <span class="wp2-list__image"><img data-wp2-card-image src="https://rexai.top/images/posts/2026-10-15-rust-borrow-unsound/cover.jpg" alt="" loading="lazy"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.15 / 3 MIN</small>
+          <strong>Rust 借用检查器的 11 年洞：一个恶意 Drop，把「安全」代码变成 use-after-scope</strong>
+          <em>rust#164250：一个 struct + Drop 组合就能绕过 lifetime 要求，代码编译通过、运行时却是 use-after-scope。这个洞埋了 11 年。我在本机 1.99 和 nightly 1.101 复现了它，用 Miri 钉死了 UB 定性，把「bound 查了一次但赋值不再查」的漏洞路径和修复 PR 的堵法 …</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-14-xai-four-pack/">
+        <b>03</b>
+        <span class="wp2-list__image"><img data-wp2-card-image src="https://rexai.top/images/posts/2026-10-14-xai-four-pack/cover.jpg" alt="" loading="lazy"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.14 / 2 MIN</small>
+          <strong>再见 Codex：15 刀拿下 Cursor &#43; Grok &#43; X 四件套，马斯克把比赛打完了</strong>
+          <em>一位博主暂停了用了一年多的 Codex（烧掉近 100 亿 token），转投马斯克的 15 刀 xAI 全家桶：一次订阅，同时拿到 Cursor、Grok、Grok Bot、X 四件套，外加 OpenAI 自家旗舰模型随意切。这篇是视频口播稿，把这笔账、那个 megpie 转发的骚操作、以及它藏着的「模型不再被绑定」的信号一次讲透。</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-14-rust-flip-points/">
+        <b>04</b>
+        <span class="wp2-list__image"><img data-wp2-card-image src="https://rexai.top/images/posts/2026-10-14-rust-flip-points/cover.jpg" alt="" loading="lazy"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.14 / 2 MIN</small>
+          <strong>LLM 写 Rust 的 3 个翻车点，第 3 个是你的错觉</strong>
+          <em>让 LLM 生成 Rust，看着都对，跑起来才发现三个高频翻车点。我把这三个点在本机 2 核 EPYC + rustc 1.99.0 + -O 上各打一组数字：热路径 format! 分配税 113ms、无脑 .clone() 在 80MB 量级上多 60ms、而「迭代器链一定比手写循环慢」这条玄学，本机实测在 -O 下打平。第 3 个是 …</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-14-ts-rust/">
+        <b>05</b>
+        <span class="wp2-list__image is-empty"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.14 / 3 MIN</small>
+          <strong>LLM 把 TypeScript 编译器搬进 Rust：烧了 42 万美元 token，比官方 tsc 7 快 4.35 倍</strong>
+          <em>一周之内，TypeScript 编译器被 LLM 移植了至少 3 份。最狠的一份把它整包搬进了 Rust——作者说烧了 42 万美元的 token、写了 130 万行 Rust，OpenAI 系模型卡在 84% 兼容爬不出来，最后换 Opus 5.5 从头重写、10 小时出了个能用的 v0。我把这份 tsc-rs 的速度基准、钱的去向、以 …</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-14-sdd-three-layers/">
+        <b>06</b>
+        <span class="wp2-list__image"><img data-wp2-card-image src="https://rexai.top/images/posts/2026-10-14-sdd-three-layers/cover.jpg" alt="" loading="lazy"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.14 / 2 MIN</small>
+          <strong>「spec 驱动开发」火了，但 90% 的人停在了第一层</strong>
+          <em>spec-driven development 最近火到 GitHub 上一个工具包就 130K 星、AWS 拿它三周做了个 drug discovery agent。但这个词的定义还没定下来，第三方实测下来，市面上能找到的都停在最浅的一层——spec 用完就删。我把它的三个层级、模板到底怎么约束 LLM、以及「审 markdown 真的 …</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-14-apple-homeview/">
+        <b>07</b>
+        <span class="wp2-list__image is-empty"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.13 / 2 MIN</small>
+          <strong>苹果 HomeView：主角不是那块 299 美元的屏幕</strong>
+          <em>苹果首款带屏家庭中枢 HomeView 来了，299 美元、11 月 13 日发货。但它真正的看点不是那块 7 英寸屏幕，而是屏幕背后能认出全家的 Siri。我把价格、芯片、隐私设计和国内双轨 AI 都拆清楚了。</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-13-gemini-argon-remotion-4k-video/">
+        <b>08</b>
+        <span class="wp2-list__image is-empty"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.13 / 2 MIN</small>
+          <strong>生成式 AI 做视频，不是「画像素」——Argon 用 16 小时写了一整个渲染器</strong>
+          <em>一个灰测号让 Gemini Argon 搓一支 4K motion showreel，作者说只花了 16 小时。关键不在成片多炫，而在它怎么做出来的：没有 diffusion 视频模型，是写了 Three.js/WebGL/Remotion 代码、headless 浏览器逐帧渲染。我把视频拉下来实测，也把 Gemini 4 Argon 的 …</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-13-ai-selling-video-skill/">
+        <b>09</b>
+        <span class="wp2-list__image is-empty"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.13 / 1 MIN</small>
+          <strong>把带货视频做成一条能复跑的流水线：AI 真人带货工作流，一条片不到 20 块</strong>
+          <em>把带货视频的前期物料固化成一套规则：输入产品图，自动出主播三视图、分镜、A/B-roll 提示词，再交给 Vidu Q4 出片。我把整条链路的数字、坑、可复跑的做法都写清楚了，一条成片成本压到二十块以内。</em>
+        </span>
+        <i>↗</i>
+      </a><a class="wp2-list__row" href="/posts/2026-10-12-wordcraft-clean-room-word-rust/">
+        <b>10</b>
+        <span class="wp2-list__image is-empty"></span>
+        <span class="wp2-list__copy">
+          <small>POSTS / 2026.10.12 / 3 MIN</small>
+          <strong>WordCraft：clean-room 重做 Word 的纯 Rust 引擎，我本地实测 615 命令、97% 特性覆盖</strong>
+          <em>WordCraft 用纯 Rust clean-room 重写 Microsoft Word，10-07 建仓，5 天 8,961 星。真正值钱的不是「又一个 Word」，而是它把整个 Word 拆成 615 个可命令化动作，同一套命令驱动 ribbon/CLI/MCP/agent。我本机 2 核 EPYC 编译跑通 4 条格式转换，实测 …</em>
+        </span>
+        <i>↗</i>
+      </a>
+  </div>
+  <nav class="wp2-list__pagination" aria-label="Pagination">
+    <span>1 / 8</span><a href="/posts/page/2/">NEXT →</a>
+  </nav>
+</section>
+  </main><footer class="wp2-footer">
+  <div class="wp2-footer__grid">
+    <section>
+      <p class="wp2-footer__label">站点地图</p>
+      <a href="/">首页</a>
+      <a href="/posts/">文章</a>
+      <a href="/tutorials/">教程</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">专题</p>
+      <a href="/ai/">AI</a>
+      <a href="/languages/">编程语言</a>
+      <a href="/infrastructure/">基础设施</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">联系</p>
+      <a href="/about/">关于梦兽</a>
+      <a href="/contact/">联系我们</a>
+      <a href="/privacy/">隐私政策</a>
+      <a href="/tools/">工具精选</a>
+      <a href="/tags/">标签索引</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">订阅</p>
+      <a href="/search/">搜索文章</a>
+      <a href="/categories/">分类</a>
+      <span>© 2026 梦兽编程</span>
+    </section>
+  </div>
+  <div class="wp2-footer__bar">
+    <span>由代码与好奇心驱动</span>
+    <span>V.2026.10 / 系统正常</span>
+  </div>
+  <div class="wp2-footer__wordmark">梦兽编程</div>
+</footer>
+
+
+  <script src="/js/theme.js?v=wp2-nav-20260820" defer></script>
+  <script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script>
+</body>
+</html>

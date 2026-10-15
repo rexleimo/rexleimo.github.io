@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr" class="js">
+<head><meta charset="utf-8">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="robots" content="index, follow">
+  <title>SolidCraft：纯 Rust 参数化 CAD，AI agent 直接驱动建模——8 天 2400 星 | 梦兽编程</title>
+  <meta name="keywords" content="SolidCraft, Rust, CAD, 参数化建模, MCP, egui, wgpu, B-rep">
+  <meta name="description" content="10-07 建仓、8 天 2400 星：SolidCraft 是纯 Rust 写的开源参数化 CAD，几何内核 clean-room、零 GPL 依赖，桌面（egui&#43;wgpu）、网页（wasm）、MCP server 三端通。我本机把 headless 建模链路拉通：369 条命令、40×30×20 盒子端到端建出且与解析解一致、MCP 握手可用。">
+  <meta name="author" content="梦兽编程">
+  <link rel="canonical" href="https://rexai.top/posts/2026-10-15-solidcraft-mcp-cad/">
+  <meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+  <meta name="impact-site-verification" value="6a4c88bc-bba3-418e-9e49-d15d52bb3231">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp"><script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pref-theme');
+        var isDark = false;
+        if (t === 'dark' || (!t && isDark)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link crossorigin="anonymous" href="/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css" integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as="style">
+  <link rel="icon" href="https://rexai.top/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://rexai.top/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://rexai.top/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="https://rexai.top/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="msapplication-TileColor" content="#0a0f1d">
+  <link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-15-solidcraft-mcp-cad/">
+
+  <noscript>
+      <style>
+          #theme-toggle,
+          .top-link {
+              display: none;
+          }
+      </style>
+  </noscript>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('pref-theme');
+      var root = document.documentElement;
+      if (t === 'light') { root.classList.remove('dark'); root.setAttribute('data-theme', 'light'); }
+      else { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); }
+    } catch (e) {}
+  })();
+</script><script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092"
+     crossorigin="anonymous"></script><meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-62VF26DEY6');
+</script>
+<meta property="og:url" content="https://rexai.top/posts/2026-10-15-solidcraft-mcp-cad/">
+  <meta property="og:site_name" content="梦兽编程">
+  <meta property="og:title" content="SolidCraft：纯 Rust 参数化 CAD，AI agent 直接驱动建模——8 天 2400 星">
+  <meta property="og:description" content="10-07 建仓、8 天 2400 星：SolidCraft 是纯 Rust 写的开源参数化 CAD，几何内核 clean-room、零 GPL 依赖，桌面（egui&#43;wgpu）、网页（wasm）、MCP server 三端通。我本机把 headless 建模链路拉通：369 条命令、40×30×20 盒子端到端建出且与解析解一致、MCP 握手可用。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-10-15T09:00:00+08:00">
+    <meta property="article:modified_time" content="2026-10-15T09:00:00+08:00">
+    <meta property="article:author" content="梦兽编程">
+    <meta property="article:tag" content="Rust">
+    <meta property="article:tag" content="CAD">
+    <meta property="article:tag" content="MCP">
+    <meta property="article:tag" content="AI编程">
+    <meta property="article:tag" content="桌面工具">
+    <meta property="og:image" content="https://rexai.top/images/posts/2026-10-15-solidcraft-mcp-cad/cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rexai.top/images/posts/2026-10-15-solidcraft-mcp-cad/cover.jpg">
+
+<meta name="twitter:title" content="SolidCraft：纯 Rust 参数化 CAD，AI agent 直接驱动建模——8 天 2400 星">
+<meta name="twitter:description" content="10-07 建仓、8 天 2400 星：SolidCraft 是纯 Rust 写的开源参数化 CAD，几何内核 clean-room、零 GPL 依赖，桌面（egui&#43;wgpu）、网页（wasm）、MCP server 三端通。我本机把 headless 建模链路拉通：369 条命令、40×30×20 盒子端到端建出且与解析解一致、MCP 握手可用。">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "梦兽编程",
+  "url": "https:\/\/rexai.top\/about/",
+  "sameAs": [
+    "https:\/\/github.com\/rexai",
+    "https://rexai.top/"
+  ],
+  "affiliation": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/"
+  },
+  "knowsAbout": ["Rust", "AI Agent", "LLM", "Coding Agent", "Terminal UI", "System Programming"],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-15-solidcraft-mcp-cad\/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/","name":"Posts"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/2026-10-15-solidcraft-mcp-cad/","name":"2026 10 15 Solidcraft Mcp Cad"},"position":3}]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "SolidCraft：纯 Rust 参数化 CAD，AI agent 直接驱动建模——8 天 2400 星",
+  "description": "10-07 建仓、8 天 2400 星：SolidCraft 是纯 Rust 写的开源参数化 CAD，几何内核 clean-room、零 GPL 依赖，桌面（egui\u002bwgpu）、网页（wasm）、MCP server 三端通。我本机把 headless 建模链路拉通：369 条命令、40×30×20 盒子端到端建出且 …",
+  "inLanguage": "zh-cn",
+  "datePublished": "2026-10-15T09:00:00\u002b08:00",
+  "dateModified": "2026-10-15T09:00:00\u002b08:00",
+  "author": {
+    "@type": "Person",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/about/",
+    "sameAs": ["https:\/\/github.com\/rexai","https://rexai.top/"]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https:\/\/rexai.top\/icon-512.png",
+      "width": "512",
+      "height": "512"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-15-solidcraft-mcp-cad\/"
+  },
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".post-content h1", ".post-content h2"]
+  },
+  "wordCount": "368",
+  "keywords": ["Rust", "CAD", "MCP", "AI编程", "桌面工具"],
+  "image": "https:\/\/rexai.top\/images\/posts\/2026-10-15-solidcraft-mcp-cad\/cover.jpg",
+  "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-15-solidcraft-mcp-cad\/cover.jpg",
+  "articleSection": "posts",
+  "articleBody": "一个 10 月 7 号建仓的项目，到 15 号拿了 2429 个 star。一周多一点，2400 星——放开源世界不算罕见，但它是 CAD，而且是纯 Rust 写的 CAD，这个组合本身就值得停下来看一眼。\nSolidCraft 做三端：桌面（egui \u002b wgpu）、浏览器（wasm32）、MCP server。最后这个端是它跟其他「Rust 写的 XX 工具」拉开距离的地方：AI agent 可以直接驱动它建模，不用人点鼠标。\n我把 headless 链路在本机拉通了一遍，实测结果全在文里。\n它是什么：一台 clean-room CAD 先钉定义。SolidCraft 是一个参数化 3D CAD 应用：你在 sketch 上画几何、下约束（约束求解器算位置），然后跑参数化特征时间线（拉伸、倒角、抽壳…），改一个尺寸，模型自动重建。\n它的技术路线有两个反直觉的点。\n第一，内核是 clean-room 的。CAD 领域的公开几何内核基本都在 GPL 或者干脆闭源（OpenCASCADE 是 LGPL 但整套工具链纠缠很深）。SolidCraft 选了 Apache-2.0 的 truck 建模内核做 B-rep，配 spade 的约束 Delaunay \u002b Ruppert 加密做曲面剖分。仓库纪律写得极死：GPL\/LGPL\/AGPL 的代码「连读都不许」，图标全是自己代码画的，资产必须登记 ATTRIBUTION.md。FreeCAD 只在 oracle 测试里以独立程序身份出现——用它的公开 Python API 算参考值，代码零链接。\n第二，「永远不崩」是被写进 CI 的。所有库 crate unsafe_code = \u0026#34;forbid\u0026#34;；生产 crate 根文件 #![deny(clippy::unwrap_used, expect_used, panic, …)]；所有对外数字（命令参数、设计文件、控制通道输入）按敌对输入处理，get() 不是 [i]；每条命令在 Session::execute 外面还套了 catch_unwind 兜底，崩了就把设计和复现命令写进 crash 报告，solidcraft-cli crashes replay 可以直接重放。CAD 是「用户把设计文件托付给它」的软件，崩一次丢的是整个工程——这个优先级高于一切功能开发。\n",
+  "about": [{"@type": "Thing", "name": "Rust"}, {"@type": "Thing", "name": "CAD"}, {"@type": "Thing", "name": "MCP"}, {"@type": "Thing", "name": "AI编程"}, {"@type": "Thing", "name": "桌面工具"}],
+  "isAccessibleForFree": "True",
+  "timeRequired": "PT4M",
+  "copyrightYear": "2026",
+  "educationalLevel": "intermediate",
+  "learningResourceType": "tutorial"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"纯 Rust 的开源参数化 3D CAD（Apache-2.0）：约束求解 sketch、参数化特征时间线、B-rep 内核。clean-room 路线——不读/不抄 GPL 代码，几何内核用 Apache-2.0 的 truck 建模库，FreeCAD 只作为外部参考程序（oracle）通过公开 scripting API 算对照值，不是依赖。"},"name":"SolidCraft 是什么，和 FreeCAD 什么关系？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"`solidcraft-cli mcp` 是 stdio 式 MCP server，Claude Code 里 `claude mcp add solidcraft -- solidcraft-cli mcp` 就能挂上。命令集是 Fusion 风格（sketch.create → sketch.rectangle → solid.extrude…），仓库自带案例：一辆 SELENE 火星车，3323 个时间线步骤，全程由 MCP 驱动、零 UI 点击。"},"name":"AI 建模具体怎么用？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"官方定位「early but usable for simple parts」：76 个公开参考件里 75 个与解析解或 FreeCAD 计算值对齐（体积/面积/质心/包围盒），另 1 个是已跟踪 bug。我本机实测 headless 链路通（box 端到端 24000mm³ 与解析解一致），GUI/渲染/wasm 未跑。"},"name":"成熟度到什么程度？"}]
+}
+</script>
+
+</head><body class="site-body"><header class="wp2-header">
+  <a class="wp2-header__brand" href="/" aria-label="梦兽编程">
+    <img class="wp2-header__brand-logo" src="/images/brand/nav-logo-32.png" alt="" width="32" height="32">
+    梦兽编程<sup>™</sup>
+  </a>
+
+  <nav class="wp2-header__links" aria-label="主导航"><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/products/">产品</a>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tutorials/">教程</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tutorials">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 教程 菜单</span>
+        </button>
+        <div id="wp2-submenu-tutorials" class="wp2-header__submenu" aria-label="教程" hidden><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/ai/">AI</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-ai">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 AI 菜单</span>
+        </button>
+        <div id="wp2-submenu-ai" class="wp2-header__submenu" aria-label="AI" hidden><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/languages/">开发</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-dev">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 开发 菜单</span>
+        </button>
+        <div id="wp2-submenu-dev" class="wp2-header__submenu" aria-label="开发" hidden><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tools/rexai-tool-directory/">工具</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tools">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 工具 菜单</span>
+        </button>
+        <div id="wp2-submenu-tools" class="wp2-header__submenu" aria-label="工具" hidden><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/categories/">探索</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-explore">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 探索 菜单</span>
+        </button>
+        <div id="wp2-submenu-explore" class="wp2-header__submenu" aria-label="探索" hidden><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/about/">关于</a>
+      </div>
+  </nav>
+
+  <div class="wp2-header__spacer"></div>
+  <a class="wp2-header__cta" href="/tools/cc-codex-portal/">AI 套装 <span aria-hidden="true">&rarr;</span></a>
+  <button class="wp2-header__menu" type="button" aria-expanded="false" aria-controls="wp2-mobile-menu" data-wp2-menu data-open-label="打开菜单" data-close-label="关闭菜单">
+    <span class="wp2-header__menu-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="wp2-header__menu-label" data-wp2-menu-label>打开菜单</span>
+  </button>
+</header>
+
+<div id="wp2-mobile-menu" class="wp2-menu-panel" hidden>
+  <div class="wp2-menu-panel__frame">
+    <div class="wp2-menu-panel__directory">
+    <div class="wp2-menu-panel__meta"><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div>
+    <nav class="wp2-menu-panel__grid" aria-label="全站导航"><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/products/"><strong>产品</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>自研产品、服务与项目入口。</p>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tutorials/"><strong>教程</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/ai/"><strong>AI</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/languages/"><strong>开发</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tools/rexai-tool-directory/"><strong>工具</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/categories/"><strong>探索</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/about/"><strong>关于</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>了解梦兽编程、联系渠道与站点说明。</p>
+        </section>
+    </nav>
+    </div>
+    <div class="wp2-menu-panel__utility" aria-label="站点工具">
+      <span class="wp2-menu-panel__utility-label">实用工具</span>
+      <a class="wp2-menu-panel__utility-search" href="/search/">搜索</a><a href="/en/">English</a>
+      <button type="button" data-theme-toggle data-theme-light-label="主题：浅色" data-theme-dark-label="主题：深色" data-theme-light-action="切换至深色" data-theme-dark-action="切换至浅色" aria-pressed="false"><span data-theme-toggle-label>主题：浅色</span></button>
+    </div>
+  </div>
+</div>
+<div class="reading-progress-bar" id="readingProgress" aria-hidden="true"></div>
+
+  <main id="main-content" class="glass-main"><article class="post-single wp2-article">
+
+  <header class="page-head">
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://rexai.top/"><span itemprop="name">梦兽编程</span></a>
+      <meta itemprop="position" content="1">
+    </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/"><span itemprop="name">Posts</span></a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/2026-10-15-solidcraft-mcp-cad/"><span itemprop="name">2026 10 15 Solidcraft Mcp Cad</span></a>
+        <meta itemprop="position" content="3">
+      </li>
+  </ol>
+</nav>
+
+    <h1 class="post-title entry-hint-parent">
+      SolidCraft：纯 Rust 参数化 CAD，AI agent 直接驱动建模——8 天 2400 星
+    </h1><p class="post-description">10-07 建仓、8 天 2400 星：SolidCraft 是纯 Rust 写的开源参数化 CAD，几何内核 clean-room、零 GPL 依赖，桌面（egui&#43;wgpu）、网页（wasm）、MCP server 三端通。我本机把 headless 建模链路拉通：369 条命令、40×30×20 盒子端到端建出且与解析解一致、MCP 握手可用。</p>
+    <div class="post-meta"><span title='2026-10-15 09:00:00 +0800 +0800'>October 15, 2026</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;368 words&nbsp;·&nbsp;梦兽编程<span class="waline-pageview-count" data-path="/posts/2026-10-15-solidcraft-mcp-cad/" style="margin-left: 0.5rem;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+  </svg>
+  <span class="waline-pageview-number" id="waline-pv-34747c1a20869dd7e6b1a43b582d99b46c431e190f03fc2664105f4ab811256d" data-path="/posts/2026-10-15-solidcraft-mcp-cad/">-</span>
+</span>&nbsp;|&nbsp;<span class="rex-translations">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+    <span class="rex-translations__links"></span>
+  </span>
+    </div>
+  </header>
+  <figure class="entry-cover wp2-article-cover">
+    <img src="https://rexai.top/images/posts/2026-10-15-solidcraft-mcp-cad/cover.jpg" alt="SolidCraft：纯 Rust 参数化 CAD，AI agent 直接驱动建模——8 天 2400 星" fetchpriority="high" onerror="this.closest('.entry-cover').remove()">
+  </figure>
+
+  <div class="post-layout has-toc">
+    <div class="post-main">
+      <div class="post-content"><p>一个 10 月 7 号建仓的项目，到 15 号拿了 2429 个 star。一周多一点，2400 星——放开源世界不算罕见，但它是 CAD，而且是纯 Rust 写的 CAD，这个组合本身就值得停下来看一眼。</p>
+<p>SolidCraft 做三端：桌面（egui + wgpu）、浏览器（wasm32）、MCP server。最后这个端是它跟其他「Rust 写的 XX 工具」拉开距离的地方：AI agent 可以直接驱动它建模，不用人点鼠标。</p>
+<p>我把 headless 链路在本机拉通了一遍，实测结果全在文里。</p>
+<h2 id="它是什么一台-clean-room-cad">它是什么：一台 clean-room CAD<a hidden class="anchor" aria-hidden="true" href="#它是什么一台-clean-room-cad">#</a></h2>
+<p>先钉定义。SolidCraft 是一个参数化 3D CAD 应用：你在 sketch 上画几何、下约束（约束求解器算位置），然后跑参数化特征时间线（拉伸、倒角、抽壳…），改一个尺寸，模型自动重建。</p>
+<p>它的技术路线有两个反直觉的点。</p>
+<p>第一，内核是 clean-room 的。CAD 领域的公开几何内核基本都在 GPL 或者干脆闭源（OpenCASCADE 是 LGPL 但整套工具链纠缠很深）。SolidCraft 选了 Apache-2.0 的 truck 建模内核做 B-rep，配 spade 的约束 Delaunay + Ruppert 加密做曲面剖分。仓库纪律写得极死：GPL/LGPL/AGPL 的代码「连读都不许」，图标全是自己代码画的，资产必须登记 ATTRIBUTION.md。FreeCAD 只在 oracle 测试里以独立程序身份出现——用它的公开 Python API 算参考值，代码零链接。</p>
+<p>第二，「永远不崩」是被写进 CI 的。所有库 crate <code>unsafe_code = &quot;forbid&quot;</code>；生产 crate 根文件 <code>#![deny(clippy::unwrap_used, expect_used, panic, …)]</code>；所有对外数字（命令参数、设计文件、控制通道输入）按敌对输入处理，<code>get()</code> 不是 <code>[i]</code>；每条命令在 <code>Session::execute</code> 外面还套了 <code>catch_unwind</code> 兜底，崩了就把设计和复现命令写进 crash 报告，<code>solidcraft-cli crashes replay</code> 可以直接重放。CAD 是「用户把设计文件托付给它」的软件，崩一次丢的是整个工程——这个优先级高于一切功能开发。</p>
+<h2 id="为什么ai-建模值得你多看一眼">为什么「AI 建模」值得你多看一眼<a hidden class="anchor" aria-hidden="true" href="#为什么ai-建模值得你多看一眼">#</a></h2>
+<p><code>solidcraft-cli mcp</code> 是一个 stdio 式 MCP server，讲 JSON-RPC。Claude Code 里一行挂上：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>claude mcp add solidcraft -- solidcraft-cli mcp
+</span></span></code></pre></div><p>它暴露的命令集是 Fusion 风格：<code>sketch.create {plane: XY}</code> → <code>sketch.rectangle.two_point {p0, p1}</code> → <code>sketch.finish</code> → <code>solid.extrude {distance}</code>，改尺寸走 <code>Parameters</code>，模型重建全自动。</p>
+<p>仓库里已经有一个现成案例：@0xlillith 用 MCP 驱动建了一辆叫 SELENE 的科学火星车，3323 个时间线步骤，零 UI 点击，重放 9 倍速不报错。这是「agent 当工程师而不是画家」在 CAD 领域的第一个完整样本——不是画个图给你看，是产出一个可再编辑的参数化工程。</p>
+<p>为什么 agent 能驱动它？核心设计是「一切皆命令」：工具栏、对话框、CLI、脚本、控制通道、MCP，全部落到同一套 <code>CommandSpec</code>（id + label + params JSON + enabled 规则）。agent 不需要模拟点 UI，直接跑 JSON 命令，确定性可重放。</p>
+<h2 id="我本机实测了什么可复现">我本机实测了什么（可复现）<a hidden class="anchor" aria-hidden="true" href="#我本机实测了什么可复现">#</a></h2>
+<p>环境：2 核 EPYC，Linux。命令都在 <code>data/solidcraft</code> 下，全链路：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --depth <span style="color:#bd93f9">1</span> https://github.com/bherbruck/solidcraft.git
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">cd</span> solidcraft
+</span></span><span style="display:flex;"><span>cargo check -p solidcraft-mcp     <span style="color:#6272a4"># 2m12s 过</span>
+</span></span><span style="display:flex;"><span>cargo build -p solidcraft-cli     <span style="color:#6272a4"># 524MB debug 二进制</span>
+</span></span><span style="display:flex;"><span>./target/debug/solidcraft-cli commands
+</span></span><span style="display:flex;"><span>./target/debug/solidcraft-cli run tests/oracle/01-box/recipe.json
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">printf</span> <span style="color:#f1fa8c">&#39;%s\n&#39;</span> <span style="color:#f1fa8c">&#39;{&#34;jsonrpc&#34;:&#34;2.0&#34;,&#34;id&#34;:1,&#34;method&#34;:&#34;initialize&#34;,…}&#39;</span> | ./target/debug/solidcraft-cli mcp
+</span></span></code></pre></div><ol>
+<li><code>commands</code> 列出 369 条命令：SOLID 84、SKETCH 86、SURFACE 18、SHEET METAL 9、PLASTIC 6、RENDER 2，其余 163 条无面板归属</li>
+<li>box recipe 端到端：40×30×20mm 盒子，volume 24000mm³、area 5200mm²、6 面 12 边 8 顶点、质心 [20,15,10]，与 expected.json 的解析值（V=abc，A=2(ab+bc+ca)）<strong>完全一致</strong></li>
+<li>MCP <code>initialize</code> 握手返回 capabilities + 建模指引（&ldquo;Model like in Fusion… Units are millimetres and degrees, Z is up&rdquo;），stdio 协议可用</li>
+<li><code>cargo check -p solidcraft-mcp</code> 全 workspace 10 个 crate 通过，2m12s</li>
+</ol>
+<p>实测边界（没跑的部分，我不吹）：GUI 渲染（egui+wgpu，需 Xvfb + GPU，本机只验了命令链路）、wasm 网页版、76 件完整 oracle 套件（官方 75/76，我没全量重放）、<code>cargo xtask ci</code> 全量质量门。</p>
+<h2 id="它值得进你工具链的时机">它值得进你工具链的时机<a hidden class="anchor" aria-hidden="true" href="#它值得进你工具链的时机">#</a></h2>
+<p>给三句判断。</p>
+<p>第一，当实验品它现在是「early but usable for simple parts」：画简单零件、拉伸、倒角、抽壳够用，复杂装配还别指望。官方把 76 件参考件的 75/76 对齐率摆出来，就是在替你划边界。</p>
+<p>第二，真正值得收藏的是它的设计纪律：「一切皆命令」+「永不崩」+「UI 可换」三条合起来，就是一个给 agent 时代的软件架构模板——桌面工具做薄，能力全走命令，agent 走 MCP，人走 UI，两者共享同一套语义。</p>
+<p>第三，Rust 做桌面工程工具这条路线，继 rust-analyzer、Fluent 家族之后又多了一个 2400 星样本，而且它证明的不是「Rust 能写 GUI」，是「Rust 能写一台带几何内核的重工程软件还不崩」。</p>
+<p><strong>参考</strong>：bherbruck/solidcraft（README、Cargo.toml、docs/oracle.md、crates 结构）；AGENTS.md（never-crash 纪律与 clean-room 约束）；HN 讨论（item 50064840，140 分 51 评，10-13）。</p>
+<p><strong>诚实声明</strong>：本机 2 核 EPYC，实测 = <code>cargo check -p solidcraft-mcp</code> 通过 + <code>solidcraft-cli</code> headless 命令链路（commands/box recipe/MCP 握手）；2429★/242 forks 为 10-15 时点 GitHub API 读数；「8 天 2400 星」按 10-07 建仓计；SELENE 3323 步与 75/76 oracle 为仓库自述，我未全量复放。</p>
+<p><strong>商务合作</strong> | 内容合作、技术文章定制、Rust 团队咨询与代码审计，请发邮件至 <strong><a href="mailto:rexaitop@qq.com">rexaitop@qq.com</a>
+</strong>（主题：【商务合作】+ 一句话需求），或公众号「全栈之巅-梦兽编程」私信。1-3 个工作日内回复。</p>
+<p>你拿 agent 干过什么「画外」的重活？我对三种方向有兴趣，评论区对一下：</p>
+<ul>
+<li><strong>A 方向</strong>：MCP 驱动的 parametric 工作流（SolidCraft/类似工具建过真零件的贴个案例）</li>
+<li><strong>B 方向</strong>：clean-room 内核选型（truck vs OpenCASCADE vs Jupyter 式自建），可以出一篇内核对比</li>
+<li><strong>C 方向</strong>：「一切皆命令」架构在自己项目里的落地，怎么给现有工具补一条 agent 通道</li>
+</ul>
+<p>转给那个**「AI 就只能写写脚本」的同事**——它让 AI 直接开了一台 CAD。微信搜索「<strong>梦兽编程</strong>」。</p>
+
+
+      </div>
+<section class="post-content post-faq" aria-labelledby="post-faq-heading">
+  <h2 id="post-faq-heading">常见问题</h2>
+  <section class="post-faq__item">
+    <h3>SolidCraft 是什么，和 FreeCAD 什么关系？</h3>
+    <p>纯 Rust 的开源参数化 3D CAD（Apache-2.0）：约束求解 sketch、参数化特征时间线、B-rep 内核。clean-room 路线——不读/不抄 GPL 代码，几何内核用 Apache-2.0 的 truck 建模库，FreeCAD 只作为外部参考程序（oracle）通过公开 scripting API 算对照值，不是依赖。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>AI 建模具体怎么用？</h3>
+    <p>`solidcraft-cli mcp` 是 stdio 式 MCP server，Claude Code 里 `claude mcp add solidcraft -- solidcraft-cli mcp` 就能挂上。命令集是 Fusion 风格（sketch.create → sketch.rectangle → solid.extrude…），仓库自带案例：一辆 SELENE 火星车，3323 个时间线步骤，全程由 MCP 驱动、零 UI 点击。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>成熟度到什么程度？</h3>
+    <p>官方定位「early but usable for simple parts」：76 个公开参考件里 75 个与解析解或 FreeCAD 计算值对齐（体积/面积/质心/包围盒），另 1 个是已跟踪 bug。我本机实测 headless 链路通（box 端到端 24000mm³ 与解析解一致），GUI/渲染/wasm 未跑。</p>
+  </section>
+</section>
+
+<section class="post-actions" aria-label="post actions">
+  <div class="post-actions__group">
+    <div class="post-actions__item">
+      <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="winbbryz" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff"></script>
+    </div>
+  </div>
+</section>
+
+<aside class="related-articles" aria-label="相关文章">
+  <h3>📚 相关文章</h3>
+  <ul>
+    <li>
+      <a href="/posts/2026-10-14-ts-rust/">LLM 把 TypeScript 编译器搬进 Rust：烧了 42 万美元 token，比官方 tsc 7 快 4.35 倍</a>
+      <small> — 一周之内，TypeScript 编译器被 LLM 移植了至少 3 份。最狠的一份把它整包搬进了 Rust——作者说烧了 42 万美元的 token、写了 130 …</small>
+    </li>
+    <li>
+      <a href="/posts/2026-10-14-rust-flip-points/">LLM 写 Rust 的 3 个翻车点，第 3 个是你的错觉</a>
+      <small> — 让 LLM 生成 Rust，看着都对，跑起来才发现三个高频翻车点。我把这三个点在本机 2 核 EPYC + rustc 1.99.0 + -O 上各打一组数字： …</small>
+    </li>
+    <li>
+      <a href="/posts/2026-10-12-wordcraft-clean-room-word-rust/">WordCraft：clean-room 重做 Word 的纯 Rust 引擎，我本地实测 615 命令、97% 特性覆盖</a>
+      <small> — WordCraft 用纯 Rust clean-room 重写 Microsoft Word，10-07 建仓，5 天 8,961 星。真正值钱的不是「又一个 …</small>
+    </li>
+  </ul>
+</aside>
+
+
+      <footer class="post-footer">
+        <ul class="post-tags"><li><a href="/tags/rust/">#Rust</a></li><li><a href="/tags/cad/">#CAD</a></li><li><a href="/tags/mcp/">#MCP</a></li><li><a href="/tags/ai%E7%BC%96%E7%A8%8B/">#AI编程</a></li><li><a href="/tags/%E6%A1%8C%E9%9D%A2%E5%B7%A5%E5%85%B7/">#桌面工具</a></li>
+        </ul>
+      </footer>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css" />
+
+
+<div id="waline-container" style="margin-top: 3rem;"></div>
+
+
+<script type="module">
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script>
+
+<style>
+#waline-container {
+  background: var(--rex-bg);
+  padding: var(--rex-space-5);
+  border-radius: var(--rex-radius-xl);
+  border: 1px solid var(--rex-border);
+}
+@media screen and (max-width: 768px) {
+  #waline-container {
+    padding: var(--rex-space-4);
+  }
+}
+.wl-editor {
+  border-radius: var(--rex-radius-lg);
+}
+.wl-btn {
+  border-radius: var(--rex-radius-lg);
+  transition: all 0.3s ease;
+}
+.wl-btn:hover {
+  transform: translateY(-1px);
+}
+.wl-reaction {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rex-border);
+}
+.wl-reaction-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.wl-reaction-img {
+  transition: transform 0.2s ease;
+}
+.wl-reaction-img:hover {
+  transform: scale(1.2);
+}
+.wl-card {
+  border: 1px solid var(--rex-border);
+  border-radius: var(--rex-radius-lg);
+  background: var(--rex-bg);
+}
+.wl-card:hover {
+  border-color: var(--rex-border-bold);
+}
+</style>
+    </div>
+    <aside class="toc-col wp2-floating-toc" data-wp2-toc>
+      <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
+        <span>目录</span><i aria-hidden="true">＋</i>
+      </button>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%ae%83%e6%98%af%e4%bb%80%e4%b9%88%e4%b8%80%e5%8f%b0-clean-room-cad" aria-label="它是什么：一台 clean-room CAD">它是什么：一台 clean-room CAD</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88ai-%e5%bb%ba%e6%a8%a1%e5%80%bc%e5%be%97%e4%bd%a0%e5%a4%9a%e7%9c%8b%e4%b8%80%e7%9c%bc" aria-label="为什么「AI 建模」值得你多看一眼">为什么「AI 建模」值得你多看一眼</a></li>
+                <li>
+                    <a href="#%e6%88%91%e6%9c%ac%e6%9c%ba%e5%ae%9e%e6%b5%8b%e4%ba%86%e4%bb%80%e4%b9%88%e5%8f%af%e5%a4%8d%e7%8e%b0" aria-label="我本机实测了什么（可复现）">我本机实测了什么（可复现）</a></li>
+                <li>
+                    <a href="#%e5%ae%83%e5%80%bc%e5%be%97%e8%bf%9b%e4%bd%a0%e5%b7%a5%e5%85%b7%e9%93%be%e7%9a%84%e6%97%b6%e6%9c%ba" aria-label="它值得进你工具链的时机">它值得进你工具链的时机</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+      </div>
+    </aside>
+  </div>
+</article>
+  </main><footer class="wp2-footer">
+  <div class="wp2-footer__grid">
+    <section>
+      <p class="wp2-footer__label">站点地图</p>
+      <a href="/">首页</a>
+      <a href="/posts/">文章</a>
+      <a href="/tutorials/">教程</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">专题</p>
+      <a href="/ai/">AI</a>
+      <a href="/languages/">编程语言</a>
+      <a href="/infrastructure/">基础设施</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">联系</p>
+      <a href="/about/">关于梦兽</a>
+      <a href="/contact/">联系我们</a>
+      <a href="/privacy/">隐私政策</a>
+      <a href="/tools/">工具精选</a>
+      <a href="/tags/">标签索引</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">订阅</p>
+      <a href="/search/">搜索文章</a>
+      <a href="/categories/">分类</a>
+      <span>© 2026 梦兽编程</span>
+    </section>
+  </div>
+  <div class="wp2-footer__bar">
+    <span>由代码与好奇心驱动</span>
+    <span>V.2026.10 / 系统正常</span>
+  </div>
+  <div class="wp2-footer__wordmark">梦兽编程</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" aria-hidden="true" tabindex="-1">
+  <svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48">
+    <circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+  <script src="/js/theme.js?v=wp2-nav-20260820" defer></script>
+  <script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script>
+  <script>
+    (function(){ var b=document.getElementById('backToTop'),r=b?b.querySelector('.back-to-top__ring-progress'):null; if(!b)return; window.addEventListener('scroll',function(){var s=document.documentElement.scrollTop||document.body.scrollTop;if(s>400){b.classList.add('is-visible');b.setAttribute('aria-hidden','false');b.removeAttribute('tabindex');if(r){var max=document.documentElement.scrollHeight-window.innerHeight;r.style.strokeDashoffset=125.6*(1-s/max);}}else{b.classList.remove('is-visible');b.setAttribute('aria-hidden','true');b.setAttribute('tabindex','-1');}},{passive:true}); b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});}); })();
+  </script>
+</body>
+</html>

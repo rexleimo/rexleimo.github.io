@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr" class="js">
+<head><meta charset="utf-8">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="robots" content="index, follow">
+  <title>Rust 借用检查器的 11 年洞：一个恶意 Drop，把「安全」代码变成 use-after-scope | 梦兽编程</title>
+  <meta name="keywords" content="Rust, 借用检查器, unsound, 生命周期, Drop, rustc, use-after-scope, Miri">
+  <meta name="description" content="rust#164250：一个 struct &#43; Drop 组合就能绕过 lifetime 要求，代码编译通过、运行时却是 use-after-scope。这个洞埋了 11 年。我在本机 1.99 和 nightly 1.101 复现了它，用 Miri 钉死了 UB 定性，把「bound 查了一次但赋值不再查」的漏洞路径和修复 PR 的堵法拆清楚。">
+  <meta name="author" content="梦兽编程">
+  <link rel="canonical" href="https://rexai.top/posts/2026-10-15-rust-borrow-unsound/">
+  <meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+  <meta name="impact-site-verification" value="6a4c88bc-bba3-418e-9e49-d15d52bb3231">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp"><script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pref-theme');
+        var isDark = false;
+        if (t === 'dark' || (!t && isDark)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link crossorigin="anonymous" href="/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css" integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as="style">
+  <link rel="icon" href="https://rexai.top/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://rexai.top/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://rexai.top/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="https://rexai.top/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="msapplication-TileColor" content="#0a0f1d">
+  <link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-15-rust-borrow-unsound/">
+
+  <noscript>
+      <style>
+          #theme-toggle,
+          .top-link {
+              display: none;
+          }
+      </style>
+  </noscript>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('pref-theme');
+      var root = document.documentElement;
+      if (t === 'light') { root.classList.remove('dark'); root.setAttribute('data-theme', 'light'); }
+      else { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); }
+    } catch (e) {}
+  })();
+</script><script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092"
+     crossorigin="anonymous"></script><meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-62VF26DEY6');
+</script>
+<meta property="og:url" content="https://rexai.top/posts/2026-10-15-rust-borrow-unsound/">
+  <meta property="og:site_name" content="梦兽编程">
+  <meta property="og:title" content="Rust 借用检查器的 11 年洞：一个恶意 Drop，把「安全」代码变成 use-after-scope">
+  <meta property="og:description" content="rust#164250：一个 struct &#43; Drop 组合就能绕过 lifetime 要求，代码编译通过、运行时却是 use-after-scope。这个洞埋了 11 年。我在本机 1.99 和 nightly 1.101 复现了它，用 Miri 钉死了 UB 定性，把「bound 查了一次但赋值不再查」的漏洞路径和修复 PR 的堵法拆清楚。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-10-15T09:00:00+08:00">
+    <meta property="article:modified_time" content="2026-10-15T09:00:00+08:00">
+    <meta property="article:author" content="梦兽编程">
+    <meta property="article:tag" content="Rust">
+    <meta property="article:tag" content="编译器">
+    <meta property="article:tag" content="内存安全">
+    <meta property="article:tag" content="生命周期">
+    <meta property="article:tag" content="正确性">
+    <meta property="og:image" content="https://rexai.top/images/posts/2026-10-15-rust-borrow-unsound/cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rexai.top/images/posts/2026-10-15-rust-borrow-unsound/cover.jpg">
+
+<meta name="twitter:title" content="Rust 借用检查器的 11 年洞：一个恶意 Drop，把「安全」代码变成 use-after-scope">
+<meta name="twitter:description" content="rust#164250：一个 struct &#43; Drop 组合就能绕过 lifetime 要求，代码编译通过、运行时却是 use-after-scope。这个洞埋了 11 年。我在本机 1.99 和 nightly 1.101 复现了它，用 Miri 钉死了 UB 定性，把「bound 查了一次但赋值不再查」的漏洞路径和修复 PR 的堵法拆清楚。">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "梦兽编程",
+  "url": "https:\/\/rexai.top\/about/",
+  "sameAs": [
+    "https:\/\/github.com\/rexai",
+    "https://rexai.top/"
+  ],
+  "affiliation": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/"
+  },
+  "knowsAbout": ["Rust", "AI Agent", "LLM", "Coding Agent", "Terminal UI", "System Programming"],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-15-rust-borrow-unsound\/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/","name":"Posts"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/2026-10-15-rust-borrow-unsound/","name":"2026 10 15 Rust Borrow Unsound"},"position":3}]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Rust 借用检查器的 11 年洞：一个恶意 Drop，把「安全」代码变成 use-after-scope",
+  "description": "rust#164250：一个 struct \u002b Drop 组合就能绕过 lifetime 要求，代码编译通过、运行时却是 use-after-scope。这个洞埋了 11 年。我在本机 1.99 和 nightly 1.101 复现了它，用 Miri 钉死了 UB 定性，把「bound 查了一次但赋值不再查」的漏洞路径 …",
+  "inLanguage": "zh-cn",
+  "datePublished": "2026-10-15T09:00:00\u002b08:00",
+  "dateModified": "2026-10-15T09:00:00\u002b08:00",
+  "author": {
+    "@type": "Person",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/about/",
+    "sameAs": ["https:\/\/github.com\/rexai","https://rexai.top/"]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https:\/\/rexai.top\/icon-512.png",
+      "width": "512",
+      "height": "512"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-15-rust-borrow-unsound\/"
+  },
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".post-content h1", ".post-content h2"]
+  },
+  "wordCount": "481",
+  "keywords": ["Rust", "编译器", "内存安全", "生命周期", "正确性"],
+  "image": "https:\/\/rexai.top\/images\/posts\/2026-10-15-rust-borrow-unsound\/cover.jpg",
+  "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-15-rust-borrow-unsound\/cover.jpg",
+  "articleSection": "posts",
+  "articleBody": "这周 Rust 圈最热的一篇帖子，不是一个新特性，是一个 11 年的老洞。\nrust#164250，10-13 提出：一个小小的 struct 加一个 Drop 实现，就能让一段「编译通过」的代码，实际上在读已经被销毁的内存。issue 提出当天先被打了 P-critical，几个小时后降成 P-high；HN 那边 742 分、425 条评论，满屏都是 “what the hell”。\n我在本机 1.99.0 和 nightly 1.101.0 上都复现了它，又用 Miri 把 UB 的定性钉死。这篇把三件事讲清楚：洞在哪个边界、11 年是怎么算的、修复打算怎么堵。\n一段「编译过了」的程序 先放最小示例，就是 issue 的原版（我原样保留，一行没改）：\nuse std::sync::Mutex; static KEPT: Mutex\u0026lt;Vec\u0026lt;Box\u0026lt;dyn std::any::Any \u002b Send\u0026gt;\u0026gt;\u0026gt; = Mutex::new(Vec::new()); struct Q\u0026lt;T: \u0026#39;static \u002b Send\u0026gt;(Option\u0026lt;T\u0026gt;); impl\u0026lt;T: \u0026#39;static \u002b Send\u0026gt; Drop for Q\u0026lt;T\u0026gt; { fn drop(\u0026amp;mut self) { if let Some(t) = self.0.take() { KEPT.lock().unwrap().push(Box::new(t)); } } } fn main() { { let l = String::from(\u0026#34;hello world, this is long enough\u0026#34;); let mut q = Q(None); q.0 = Some(\u0026amp;l); } let _z = String::from(\u0026#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\u0026#34;); let k = KEPT.lock().unwrap(); println!(\u0026#34;{}\u0026#34;, k[0].downcast_ref::\u0026lt;\u0026amp;\u0026#39;static String\u0026gt;().unwrap()); } 程序的本意很直白：Q 包了一个 Option，要求里面装的东西是 ‘static 的；q 析构时把值「抬升」进一个全局 static，之后还能读。\n",
+  "about": [{"@type": "Thing", "name": "Rust"}, {"@type": "Thing", "name": "编译器"}, {"@type": "Thing", "name": "内存安全"}, {"@type": "Thing", "name": "生命周期"}, {"@type": "Thing", "name": "正确性"}],
+  "isAccessibleForFree": "True",
+  "timeRequired": "PT5M",
+  "copyrightYear": "2026",
+  "educationalLevel": "intermediate",
+  "learningResourceType": "tutorial"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Q\u003cT: 'static + Send\u003e 的 T: 'static 只在类型检查/实例化时强制一次；q.0 = Some(\u0026l) 这类协变字段赋值只走子类型检查，短生命周期 \u0026l 能塞进去；Drop 再把值抬进 static，指针被当成 'static 引用冻结。三段合起来，读已出作用域的栈变量。"},"name":"这个 bug 到底不健全在哪？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"大概率不会。lcnr 在 issue 里注明：利用它需要一个「故意写坏的 Drop 实现」，11 年没被撞到说明不容易误触发。它是安全边界问题，不是「随机炸」问题——但 Rust 的卖点是「永不 UB」，不是「很难命中」。"},"name":"我的程序会随机段错误吗？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"修复 PR #164277（require MIR local types to be well-formed）截至 2026-10-15 仍 open，issue 也未关闭。当前 stable 1.99 与 nightly 1.101.0 都能复现。合入前的行为口径：这类代码能编译、能跑、跑出来是 UB。"},"name":"修复好了吗，要等哪个版本？"}]
+}
+</script>
+
+</head><body class="site-body"><header class="wp2-header">
+  <a class="wp2-header__brand" href="/" aria-label="梦兽编程">
+    <img class="wp2-header__brand-logo" src="/images/brand/nav-logo-32.png" alt="" width="32" height="32">
+    梦兽编程<sup>™</sup>
+  </a>
+
+  <nav class="wp2-header__links" aria-label="主导航"><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/products/">产品</a>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tutorials/">教程</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tutorials">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 教程 菜单</span>
+        </button>
+        <div id="wp2-submenu-tutorials" class="wp2-header__submenu" aria-label="教程" hidden><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/ai/">AI</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-ai">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 AI 菜单</span>
+        </button>
+        <div id="wp2-submenu-ai" class="wp2-header__submenu" aria-label="AI" hidden><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/languages/">开发</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-dev">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 开发 菜单</span>
+        </button>
+        <div id="wp2-submenu-dev" class="wp2-header__submenu" aria-label="开发" hidden><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tools/rexai-tool-directory/">工具</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tools">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 工具 菜单</span>
+        </button>
+        <div id="wp2-submenu-tools" class="wp2-header__submenu" aria-label="工具" hidden><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/categories/">探索</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-explore">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 探索 菜单</span>
+        </button>
+        <div id="wp2-submenu-explore" class="wp2-header__submenu" aria-label="探索" hidden><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/about/">关于</a>
+      </div>
+  </nav>
+
+  <div class="wp2-header__spacer"></div>
+  <a class="wp2-header__cta" href="/tools/cc-codex-portal/">AI 套装 <span aria-hidden="true">&rarr;</span></a>
+  <button class="wp2-header__menu" type="button" aria-expanded="false" aria-controls="wp2-mobile-menu" data-wp2-menu data-open-label="打开菜单" data-close-label="关闭菜单">
+    <span class="wp2-header__menu-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="wp2-header__menu-label" data-wp2-menu-label>打开菜单</span>
+  </button>
+</header>
+
+<div id="wp2-mobile-menu" class="wp2-menu-panel" hidden>
+  <div class="wp2-menu-panel__frame">
+    <div class="wp2-menu-panel__directory">
+    <div class="wp2-menu-panel__meta"><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div>
+    <nav class="wp2-menu-panel__grid" aria-label="全站导航"><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/products/"><strong>产品</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>自研产品、服务与项目入口。</p>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tutorials/"><strong>教程</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/ai/"><strong>AI</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/languages/"><strong>开发</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tools/rexai-tool-directory/"><strong>工具</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/categories/"><strong>探索</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/about/"><strong>关于</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>了解梦兽编程、联系渠道与站点说明。</p>
+        </section>
+    </nav>
+    </div>
+    <div class="wp2-menu-panel__utility" aria-label="站点工具">
+      <span class="wp2-menu-panel__utility-label">实用工具</span>
+      <a class="wp2-menu-panel__utility-search" href="/search/">搜索</a><a href="/en/">English</a>
+      <button type="button" data-theme-toggle data-theme-light-label="主题：浅色" data-theme-dark-label="主题：深色" data-theme-light-action="切换至深色" data-theme-dark-action="切换至浅色" aria-pressed="false"><span data-theme-toggle-label>主题：浅色</span></button>
+    </div>
+  </div>
+</div>
+<div class="reading-progress-bar" id="readingProgress" aria-hidden="true"></div>
+
+  <main id="main-content" class="glass-main"><article class="post-single wp2-article">
+
+  <header class="page-head">
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://rexai.top/"><span itemprop="name">梦兽编程</span></a>
+      <meta itemprop="position" content="1">
+    </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/"><span itemprop="name">Posts</span></a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/2026-10-15-rust-borrow-unsound/"><span itemprop="name">2026 10 15 Rust Borrow Unsound</span></a>
+        <meta itemprop="position" content="3">
+      </li>
+  </ol>
+</nav>
+
+    <h1 class="post-title entry-hint-parent">
+      Rust 借用检查器的 11 年洞：一个恶意 Drop，把「安全」代码变成 use-after-scope
+    </h1><p class="post-description">rust#164250：一个 struct &#43; Drop 组合就能绕过 lifetime 要求，代码编译通过、运行时却是 use-after-scope。这个洞埋了 11 年。我在本机 1.99 和 nightly 1.101 复现了它，用 Miri 钉死了 UB 定性，把「bound 查了一次但赋值不再查」的漏洞路径和修复 PR 的堵法拆清楚。</p>
+    <div class="post-meta"><span title='2026-10-15 09:00:00 +0800 +0800'>October 15, 2026</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;481 words&nbsp;·&nbsp;梦兽编程<span class="waline-pageview-count" data-path="/posts/2026-10-15-rust-borrow-unsound/" style="margin-left: 0.5rem;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+  </svg>
+  <span class="waline-pageview-number" id="waline-pv-db069f7f732fcf006181a37f707d05f77a53bdf773d29a866e489aac6c7ab4f7" data-path="/posts/2026-10-15-rust-borrow-unsound/">-</span>
+</span>&nbsp;|&nbsp;<span class="rex-translations">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+    <span class="rex-translations__links"></span>
+  </span>
+    </div>
+  </header>
+  <figure class="entry-cover wp2-article-cover">
+    <img src="https://rexai.top/images/posts/2026-10-15-rust-borrow-unsound/cover.jpg" alt="Rust 借用检查器的 11 年洞：一个恶意 Drop，把「安全」代码变成 use-after-scope" fetchpriority="high" onerror="this.closest('.entry-cover').remove()">
+  </figure>
+
+  <div class="post-layout has-toc">
+    <div class="post-main">
+      <div class="post-content"><p>这周 Rust 圈最热的一篇帖子，不是一个新特性，是一个 11 年的老洞。</p>
+<p>rust#164250，10-13 提出：一个小小的 struct 加一个 Drop 实现，就能让一段「编译通过」的代码，实际上在读已经被销毁的内存。issue 提出当天先被打了 P-critical，几个小时后降成 P-high；HN 那边 742 分、425 条评论，满屏都是 &ldquo;what the hell&rdquo;。</p>
+<p>我在本机 1.99.0 和 nightly 1.101.0 上都复现了它，又用 Miri 把 UB 的定性钉死。这篇把三件事讲清楚：洞在哪个边界、11 年是怎么算的、修复打算怎么堵。</p>
+<h2 id="一段编译过了的程序">一段「编译过了」的程序<a hidden class="anchor" aria-hidden="true" href="#一段编译过了的程序">#</a></h2>
+<p>先放最小示例，就是 issue 的原版（我原样保留，一行没改）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#ff79c6">use</span> std::sync::Mutex;
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">static</span> KEPT: <span style="color:#50fa7b">Mutex</span><span style="color:#ff79c6">&lt;</span><span style="color:#8be9fd;font-style:italic">Vec</span><span style="color:#ff79c6">&lt;</span><span style="color:#8be9fd;font-style:italic">Box</span><span style="color:#ff79c6">&lt;</span><span style="color:#ff79c6">dyn</span> std::any::Any <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">Send</span><span style="color:#ff79c6">&gt;&gt;&gt;</span> <span style="color:#ff79c6">=</span> Mutex::new(<span style="color:#8be9fd;font-style:italic">Vec</span>::new());
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">struct</span> <span style="color:#50fa7b">Q</span><span style="color:#ff79c6">&lt;</span>T: <span style="color:#8be9fd;font-style:italic">&#39;static</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">Send</span><span style="color:#ff79c6">&gt;</span>(<span style="color:#8be9fd;font-style:italic">Option</span><span style="color:#ff79c6">&lt;</span>T<span style="color:#ff79c6">&gt;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">impl</span><span style="color:#ff79c6">&lt;</span>T: <span style="color:#8be9fd;font-style:italic">&#39;static</span> <span style="color:#ff79c6">+</span> <span style="color:#8be9fd;font-style:italic">Send</span><span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd;font-style:italic">Drop</span> <span style="color:#ff79c6">for</span> Q<span style="color:#ff79c6">&lt;</span>T<span style="color:#ff79c6">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">drop</span>(<span style="color:#ff79c6">&amp;</span><span style="color:#ff79c6">mut</span> <span style="font-style:italic">self</span>) { <span style="color:#ff79c6">if</span> <span style="color:#8be9fd;font-style:italic">let</span> <span style="color:#8be9fd;font-style:italic">Some</span>(t) <span style="color:#ff79c6">=</span> <span style="font-style:italic">self</span>.<span style="color:#bd93f9">0.</span>take() { KEPT.lock().unwrap().push(<span style="color:#8be9fd;font-style:italic">Box</span>::new(t)); } }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">let</span> l <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">String</span>::from(<span style="color:#f1fa8c">&#34;hello world, this is long enough&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#8be9fd;font-style:italic">let</span> <span style="color:#ff79c6">mut</span> q <span style="color:#ff79c6">=</span> Q(<span style="color:#8be9fd;font-style:italic">None</span>);
+</span></span><span style="display:flex;"><span>        q.<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">Some</span>(<span style="color:#ff79c6">&amp;</span>l);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">let</span> _z <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">String</span>::from(<span style="color:#f1fa8c">&#34;XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#8be9fd;font-style:italic">let</span> k <span style="color:#ff79c6">=</span> KEPT.lock().unwrap();
+</span></span><span style="display:flex;"><span>    <span style="color:#50fa7b">println!</span>(<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">{}</span><span style="color:#f1fa8c">&#34;</span>, k[<span style="color:#bd93f9">0</span>].downcast_ref::<span style="color:#ff79c6">&lt;&amp;</span><span style="color:#8be9fd;font-style:italic">&#39;static</span> <span style="color:#8be9fd;font-style:italic">String</span><span style="color:#ff79c6">&gt;</span>().unwrap());
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>程序的本意很直白：Q 包了一个 Option，要求里面装的东西是 &lsquo;static 的；q 析构时把值「抬升」进一个全局 static，之后还能读。</p>
+<p>然后看 main：l 是一个局部 String，作用域一结束栈帧就没了。可 <code>q.0 = Some(&amp;l)</code> 把 <code>&amp;l</code> 塞了进来——它的生命周期根本到不了 &lsquo;static。等程序打印 k[0]，那个指针实际指着 l 曾经所在的栈位置，而那块内存已经被 <code>_z</code> 复用了。所以程序打印出来的不是 &ldquo;hello world&rdquo;，是一串 X。</p>
+<p>Rust 应该拒掉它。<code>q.0 = Some(&amp;l)</code> 违反了 T: &lsquo;static 的要求，这一行就该报错。</p>
+<p>但我在 rustc 1.99.0（2026-09-28）上编译，零警告零错误，运行打印 XXXX。issue 作者测的下限是 stable 至少一路到 1.85.0 都能复现。</p>
+<h2 id="11-年这个数字怎么来的">11 年这个数字怎么来的<a hidden class="anchor" aria-hidden="true" href="#11-年这个数字怎么来的">#</a></h2>
+<p>「11 年」出自 issue 讨论本身。作者 jsnell 贴了一个自己更简化的变体：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#ff79c6">struct</span> <span style="color:#50fa7b">MyType</span>(<span style="color:#ff79c6">&amp;</span><span style="color:#50fa7b">&#39;c</span> <span style="color:#ff79c6">mut</span> <span style="color:#ff79c6">&amp;</span><span style="color:#50fa7b">&#39;a</span> <span style="color:#8be9fd">str</span>, <span style="color:#ff79c6">&amp;</span><span style="color:#50fa7b">&#39;b</span> <span style="color:#8be9fd">str</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">impl</span> <span style="color:#8be9fd;font-style:italic">Drop</span> <span style="color:#ff79c6">for</span> MyType {
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">fn</span> <span style="color:#50fa7b">drop</span>(<span style="color:#ff79c6">&amp;</span><span style="color:#ff79c6">mut</span> <span style="font-style:italic">self</span>) { <span style="color:#ff79c6">*</span><span style="font-style:italic">self</span>.<span style="color:#bd93f9">0</span> <span style="color:#ff79c6">=</span> <span style="font-style:italic">self</span>.<span style="color:#bd93f9">1</span>; }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>他的原话：这一版「compiles ever since rust 1.4.0 (2015)」。lcnr（rustc 维护者）在评论里确认：&ldquo;unsound since 1.4 🤣&quot;。Rust 1.4.0 是 2015 年 9 月发布的正式版本，2015 到 2026，正好 11 年。</p>
+<p>这里有个边界我得钉死，别让它被标题带走：我用现代 Rust 语法（显式生命周期泛型参数）把这个 MyType 变体重写后，1.99 反而拒编了，报 E0495。也就是说，「11 年」指的是这类洞的底层语义——协变字段赋值——从 1.4 起就在；这些年编译器把一些外围路径堵上了，但作者的主例（KEPT static 那版）在 1.99 和 nightly 1.101.0（2026-10-12，e9bbadf68）上依然完整可复现，修复 PR 还没合。</p>
+<h2 id="洞具体打在哪个边界">洞具体打在哪个边界<a hidden class="anchor" aria-hidden="true" href="#洞具体打在哪个边界">#</a></h2>
+<p>这个 bug 卡在三个机制的交界上，拆开看其实不复杂。</p>
+<p>第一层，bound 只查一次。<code>Q&lt;T: 'static + Send&gt;</code> 的 T: &lsquo;static 在类型检查和实例化时被强制，但之后不是「每来一次字段赋值都要重新验一遍」。</p>
+<p>第二层，协变让短生命周期溜进来。字段类型 Option<T> 对 T 是协变的。<code>q.0 = Some(&amp;l)</code> 走的是字段赋值路径，编译器做的是协变子类型检查：<code>&amp;'short String</code> 可以装进一个「要求更长生命周期」的位置吗？可以——因为 &amp; 本身是协变的，短引用向上抬就行。这一步把短生命周期塞了进去，但 struct 还以为自己装的是 Option&lt;&amp;&amp;&lsquo;static str&gt; 那类东西。</p>
+<p>第三层，Drop 把错误焊死。<code>drop()</code> 把值 take 出来推进 global static，之后所有读取都经过 <code>downcast_ref::&lt;&amp;'static String&gt;()</code>。那个栈指针从此被当成一个 &lsquo;static 引用冻结住了，等外层作用域再去读它，就是 use-after-scope。</p>
+<p>一句话串起来：bound 在构造时查了一次，值却在 drop 时换了，两个时点错位；协变在中间递了一个短生命周期。三段各自「看起来都对」，合起来就是 UB。</p>
+<p>我本机补了两条实证，都钉进正文里：</p>
+<ol>
+<li>1.99.0 主例复现：编译零警告，运行打印 XXXX（栈上悬垂读）</li>
+<li>nightly Miri 定性：<code>Undefined Behavior: constructing invalid value of type &amp;std::string::String: encountered a dangling reference (use-after-free)</code>，报错点在 fmt 打印时解引用那个悬垂引用</li>
+</ol>
+<h2 id="修复打算怎么堵">修复打算怎么堵<a hidden class="anchor" aria-hidden="true" href="#修复打算怎么堵">#</a></h2>
+<p>修复 PR 是 #164277，标题很直白：require MIR local types to be well-formed，作者 Li-Zheng-Rong，body 只有一行：&ldquo;Fixes rust-lang/rust#164250, sound again :)&quot;。</p>
+<p>思路是把检查点后移：类型检查阶段之外，在 MIR 层再要求一遍——每个 local 的类型必须 well-formed，也就是 bound 在运行时表示上真的成立。字段赋值绕过 bound 的那条路径，会在 MIR 这道口被拦住。</p>
+<p>截至 2026-10-15，这个 PR 还是 open，issue 也没关。lcnr 在 issue 里补了一段官方说明值得抄进你的理解里：Types Team 正在做下一代 trait solver 和 region constraint 重构，修掉所有 type system unsoundness 是明面上的大目标；这个 bug 被定 P-high 而不是 P-critical，理由就是「11 年都没被撞到，说明它没那么容易命中」，而且利用它「需要一个故意写坏的 Drop」。</p>
+<p>「不容易误触发」不等于「安全」。Rust 卖的是「永不 UB」，不是「很难撞」。这两句话的区别，就是这篇文章的全部意义。</p>
+<h2 id="它在整个-rust-里是什么位置">它在整个 Rust 里是什么位置<a hidden class="anchor" aria-hidden="true" href="#它在整个-rust-里是什么位置">#</a></h2>
+<p>HN 评论里我摘了三条有分量的。</p>
+<p>weinzierl 说：现在 rust 仓库里挂了 100 多个 unsound 标签的 issue，这个不是孤例；新一代 trait solver 会解锁其中一批修复，但不一定包括这个。</p>
+<p>fnord77 点出了编译程序的税：发现这种 bug 之后你没法像 VM 那样「换个 runtime」，得把所有下游重编译一遍。这是「内存安全语言」附带的成本项。</p>
+<p>lambdaone 说了句带讽刺意味的乐观话：AI 这种 bug 猎手反而可能把 Rust 往「完全可靠」推得更近——能找出 11 年洞的，未必只是人肉 code review。</p>
+<p>还有一条是 vintcent-uden 那种反应，代表大多数人的第一感受：标题看着像「只有编译器维护者才懂的偏门 bug」，结果最小示例短到你在日常代码里随时可能写出来。</p>
+<p>对普通使用者的实际含义，我能给的就三条：</p>
+<ol>
+<li>「编译通过 = 安全」这句口号，精确版本是「编译通过 = 在已知规则下安全」；规则本身有洞，洞在修</li>
+<li>你的代码里如果有「struct 装引用 + Drop 抬升进 static」这种形状，对照 issue 里列的变体自查一遍，成本很低</li>
+<li>关注 #164277 的合入状态，合入前这类代码的口径是：能编、能跑、是 UB</li>
+</ol>
+<p><strong>参考</strong>：rust-lang/rust#164250（issue 全文、jsnell/lcnr 讨论、官方 P-high 说明）；PR #164277（修复方案）；HN 讨论（item 50069499，742 分 425 评）；Godbolt asan 版 rust.godbolt.org/z/83MvfbKde。</p>
+<p><strong>诚实声明</strong>：本机 2 核 EPYC，rustc 1.99.0（stable）与 nightly 1.101.0（e9bbadf68，2026-10-12）实测复现主例，Miri 定性 use-after-free；「1.4.0 起可编」与「stable 至少到 1.85.0 可复现」为 issue 作者自述，我未回溯 1.85 之前各版本；MyType 变体在现代语法下 1.99 拒编（E0495），文中已标注此边界；修复 PR 状态以 10-15 时点为准，合入后本文数字需回写。</p>
+<p><strong>商务合作</strong> | 内容合作、技术文章定制、Rust 团队咨询与代码审计，请发邮件至 <strong><a href="mailto:rexaitop@qq.com">rexaitop@qq.com</a>
+</strong>（主题：【商务合作】+ 一句话需求），或公众号「全栈之巅-梦兽编程」私信。1-3 个工作日内回复。</p>
+<p>你踩过这类「形状看着无害、实际上是 UB」的代码吗？我列了三档可以聊：</p>
+<ul>
+<li><strong>A 档</strong>：Drop 里抬引用进 static/global 的形状（本文主例），评论区贴你的代码我帮你对一遍</li>
+<li><strong>B 档</strong>：「100+ unsound issue 该先修哪 10 个」，可以出一篇按 P 级 × 命中概率排序的盘点</li>
+<li><strong>C 档</strong>：下一代 trait solver / region constraint 重构到底动了什么，等 #164277 系一串 PR 合完我做全解</li>
+</ul>
+<p>转给那个<strong>坚信「编译过就安全」的同事</strong>——它只用了 22 行代码。微信搜索「<strong>梦兽编程</strong>」。</p>
+
+
+      </div>
+<section class="post-content post-faq" aria-labelledby="post-faq-heading">
+  <h2 id="post-faq-heading">常见问题</h2>
+  <section class="post-faq__item">
+    <h3>这个 bug 到底不健全在哪？</h3>
+    <p>Q&lt;T: &#39;static &#43; Send&gt; 的 T: &#39;static 只在类型检查/实例化时强制一次；q.0 = Some(&amp;l) 这类协变字段赋值只走子类型检查，短生命周期 &amp;l 能塞进去；Drop 再把值抬进 static，指针被当成 &#39;static 引用冻结。三段合起来，读已出作用域的栈变量。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>我的程序会随机段错误吗？</h3>
+    <p>大概率不会。lcnr 在 issue 里注明：利用它需要一个「故意写坏的 Drop 实现」，11 年没被撞到说明不容易误触发。它是安全边界问题，不是「随机炸」问题——但 Rust 的卖点是「永不 UB」，不是「很难命中」。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>修复好了吗，要等哪个版本？</h3>
+    <p>修复 PR #164277（require MIR local types to be well-formed）截至 2026-10-15 仍 open，issue 也未关闭。当前 stable 1.99 与 nightly 1.101.0 都能复现。合入前的行为口径：这类代码能编译、能跑、跑出来是 UB。</p>
+  </section>
+</section>
+
+<section class="post-actions" aria-label="post actions">
+  <div class="post-actions__group">
+    <div class="post-actions__item">
+      <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="winbbryz" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff"></script>
+    </div>
+  </div>
+</section>
+
+<aside class="related-articles" aria-label="相关文章">
+  <h3>📚 相关文章</h3>
+  <ul>
+    <li>
+      <a href="/posts/2026-10-14-ts-rust/">LLM 把 TypeScript 编译器搬进 Rust：烧了 42 万美元 token，比官方 tsc 7 快 4.35 倍</a>
+      <small> — 一周之内，TypeScript 编译器被 LLM 移植了至少 3 份。最狠的一份把它整包搬进了 Rust——作者说烧了 42 万美元的 token、写了 130 …</small>
+    </li>
+    <li>
+      <a href="/posts/2026-10-12-eurydice-rust-to-c/">Eurydice：把 Rust 编译成「人类可读的 C」——反向移植到底图什么</a>
+      <small> — 大家往 Rust 里跑，Eurydice 反着来——把 Rust 代码编译成干净的 C 源码（不是机器码）。它出自 Inria + 微软的 Aeneas 形式化 …</small>
+    </li>
+    <li>
+      <a href="/posts/2026-10-05-mold-rust-linker-speedup/">Mold 3.0 把链接器重写成 Rust：我复现了官方那句&#34;损坏输入会 segfault&#34;，还找到了 C&#43;&#43; 源码里那行越界读</a>
+      <small> — rui314 10 月 5 日放出 mold 3.0.0——mold 官方首个 Rust 版。HN 的通用心智是&#34;Rust 重写 = 更快 + 更安全&#34;。我本机 …</small>
+    </li>
+    <li>
+      <a href="/posts/2026-10-01-giflib-rs-ai-rewrite/">Google 让 AI 把 C 库翻译成 Rust：3000 万张 GIF 验证之后，它在一个 CVE 公布前就免疫了</a>
+      <small> — Google 安全团队用 Gemini 把 3000 行的 C 图像库 giflib 重写成 Rust，业务逻辑 0 行 unsafe。验证不是跑一遍测试 …</small>
+    </li>
+  </ul>
+</aside>
+
+
+      <footer class="post-footer">
+        <ul class="post-tags"><li><a href="/tags/rust/">#Rust</a></li><li><a href="/tags/%E7%BC%96%E8%AF%91%E5%99%A8/">#编译器</a></li><li><a href="/tags/%E5%86%85%E5%AD%98%E5%AE%89%E5%85%A8/">#内存安全</a></li><li><a href="/tags/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/">#生命周期</a></li><li><a href="/tags/%E6%AD%A3%E7%A1%AE%E6%80%A7/">#正确性</a></li>
+        </ul>
+      </footer>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css" />
+
+
+<div id="waline-container" style="margin-top: 3rem;"></div>
+
+
+<script type="module">
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script>
+
+<style>
+#waline-container {
+  background: var(--rex-bg);
+  padding: var(--rex-space-5);
+  border-radius: var(--rex-radius-xl);
+  border: 1px solid var(--rex-border);
+}
+@media screen and (max-width: 768px) {
+  #waline-container {
+    padding: var(--rex-space-4);
+  }
+}
+.wl-editor {
+  border-radius: var(--rex-radius-lg);
+}
+.wl-btn {
+  border-radius: var(--rex-radius-lg);
+  transition: all 0.3s ease;
+}
+.wl-btn:hover {
+  transform: translateY(-1px);
+}
+.wl-reaction {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rex-border);
+}
+.wl-reaction-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.wl-reaction-img {
+  transition: transform 0.2s ease;
+}
+.wl-reaction-img:hover {
+  transform: scale(1.2);
+}
+.wl-card {
+  border: 1px solid var(--rex-border);
+  border-radius: var(--rex-radius-lg);
+  background: var(--rex-bg);
+}
+.wl-card:hover {
+  border-color: var(--rex-border-bold);
+}
+</style>
+    </div>
+    <aside class="toc-col wp2-floating-toc" data-wp2-toc>
+      <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
+        <span>目录</span><i aria-hidden="true">＋</i>
+      </button>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%80%e6%ae%b5%e7%bc%96%e8%af%91%e8%bf%87%e4%ba%86%e7%9a%84%e7%a8%8b%e5%ba%8f" aria-label="一段「编译过了」的程序">一段「编译过了」的程序</a></li>
+                <li>
+                    <a href="#11-%e5%b9%b4%e8%bf%99%e4%b8%aa%e6%95%b0%e5%ad%97%e6%80%8e%e4%b9%88%e6%9d%a5%e7%9a%84" aria-label="11 年这个数字怎么来的">11 年这个数字怎么来的</a></li>
+                <li>
+                    <a href="#%e6%b4%9e%e5%85%b7%e4%bd%93%e6%89%93%e5%9c%a8%e5%93%aa%e4%b8%aa%e8%be%b9%e7%95%8c" aria-label="洞具体打在哪个边界">洞具体打在哪个边界</a></li>
+                <li>
+                    <a href="#%e4%bf%ae%e5%a4%8d%e6%89%93%e7%ae%97%e6%80%8e%e4%b9%88%e5%a0%b5" aria-label="修复打算怎么堵">修复打算怎么堵</a></li>
+                <li>
+                    <a href="#%e5%ae%83%e5%9c%a8%e6%95%b4%e4%b8%aa-rust-%e9%87%8c%e6%98%af%e4%bb%80%e4%b9%88%e4%bd%8d%e7%bd%ae" aria-label="它在整个 Rust 里是什么位置">它在整个 Rust 里是什么位置</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+      </div>
+    </aside>
+  </div>
+</article>
+  </main><footer class="wp2-footer">
+  <div class="wp2-footer__grid">
+    <section>
+      <p class="wp2-footer__label">站点地图</p>
+      <a href="/">首页</a>
+      <a href="/posts/">文章</a>
+      <a href="/tutorials/">教程</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">专题</p>
+      <a href="/ai/">AI</a>
+      <a href="/languages/">编程语言</a>
+      <a href="/infrastructure/">基础设施</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">联系</p>
+      <a href="/about/">关于梦兽</a>
+      <a href="/contact/">联系我们</a>
+      <a href="/privacy/">隐私政策</a>
+      <a href="/tools/">工具精选</a>
+      <a href="/tags/">标签索引</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">订阅</p>
+      <a href="/search/">搜索文章</a>
+      <a href="/categories/">分类</a>
+      <span>© 2026 梦兽编程</span>
+    </section>
+  </div>
+  <div class="wp2-footer__bar">
+    <span>由代码与好奇心驱动</span>
+    <span>V.2026.10 / 系统正常</span>
+  </div>
+  <div class="wp2-footer__wordmark">梦兽编程</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" aria-hidden="true" tabindex="-1">
+  <svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48">
+    <circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+  <script src="/js/theme.js?v=wp2-nav-20260820" defer></script>
+  <script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script>
+  <script>
+    (function(){ var b=document.getElementById('backToTop'),r=b?b.querySelector('.back-to-top__ring-progress'):null; if(!b)return; window.addEventListener('scroll',function(){var s=document.documentElement.scrollTop||document.body.scrollTop;if(s>400){b.classList.add('is-visible');b.setAttribute('aria-hidden','false');b.removeAttribute('tabindex');if(r){var max=document.documentElement.scrollHeight-window.innerHeight;r.style.strokeDashoffset=125.6*(1-s/max);}}else{b.classList.remove('is-visible');b.setAttribute('aria-hidden','true');b.setAttribute('tabindex','-1');}},{passive:true}); b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});}); })();
+  </script>
+</body>
+</html>
