@@ -185,6 +185,24 @@
 .lp-model__badge { display: inline-block; font-size: .7rem; font-weight: 500; padding: 2px 9px; border-radius: 100px; margin-bottom: 8px; background: var(--lp-accent-wash); color: var(--lp-accent-ink); }
 .lp-model__name { font-size: .9rem; font-weight: 600; color: var(--lp-text); margin-bottom: 4px; }
 .lp-model__desc { font-size: .78rem; color: var(--lp-text-soft); line-height: 1.45; }
+.lp-model__rate { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--lp-border); font-size: .72rem; }
+.lp-model__rate span { color: var(--lp-text-soft); }
+.lp-model__rate b { color: var(--lp-accent-ink); font-size: .82rem; font-weight: 700; }
+
+/* ── 模型归属查询 ── */
+.lp-resolver { max-width: 720px; margin: 0 auto; }
+.lp-resolver__row { display: flex; gap: 10px; align-items: stretch; }
+.lp-resolver__input { flex: 1; min-width: 0; padding: .8rem 1rem; border: 1px solid var(--lp-border-strong); border-radius: var(--lp-radius-sm); background: var(--lp-surface); color: var(--lp-text); font-size: .95rem; font-family: inherit; transition: border-color .2s ease; }
+.lp-resolver__input:focus { outline: none; border-color: var(--lp-accent); }
+.lp-resolver__btn { flex: none; padding: .8rem 1.4rem; }
+.lp-resolver__out { margin-top: 14px; padding: 16px 18px; border: 1px solid var(--lp-border); border-radius: var(--lp-radius-sm); background: var(--lp-surface); }
+.lp-resolver__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.lp-resolver__head b { font-size: 1.05rem; font-weight: 700; color: var(--lp-text); }
+.lp-resolver__rate { color: var(--lp-accent-ink); font-size: 1.15rem; font-weight: 700; }
+.lp-resolver__per { margin: 0 0 4px; font-size: .88rem; color: var(--lp-text-soft); }
+.lp-resolver__per b { color: var(--lp-text); font-weight: 700; }
+.lp-resolver__why { margin: 0; font-size: .76rem; color: var(--lp-text-soft); opacity: .85; }
+.lp-resolver__hint { margin: 12px 0 0; font-size: .78rem; color: var(--lp-text-soft); text-align: center; }
 
 /* ── FAQ ── */
 .lp-faq { max-width: 720px; margin: 0 auto; }
