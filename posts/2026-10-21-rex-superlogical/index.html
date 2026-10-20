@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr" class="js">
+<head><meta charset="utf-8">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="robots" content="index, follow">
+  <title>Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面 | 梦兽编程</title>
+  <meta name="keywords" content="Rex, Superlogical, 终端, Ghostty, Hashimoto">
+  <meta name="description" content="Mitchell Hashimoto 的新公司 Superlogical 放了第一个产品：终端复用器 Rex，基于从 Ghostty 提取的 libghostty，复用器即终端本体，持久会话/远程/程序活动状态是头牌，macOS 公测 10-05 开放。">
+  <meta name="author" content="梦兽编程">
+  <link rel="canonical" href="https://rexai.top/posts/2026-10-21-rex-superlogical/">
+  <meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+  <meta name="impact-site-verification" value="6a4c88bc-bba3-418e-9e49-d15d52bb3231">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp"><script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pref-theme');
+        var isDark = false;
+        if (t === 'dark' || (!t && isDark)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link crossorigin="anonymous" href="/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css" integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as="style">
+  <link rel="icon" href="https://rexai.top/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://rexai.top/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://rexai.top/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="https://rexai.top/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="msapplication-TileColor" content="#0a0f1d">
+  <link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-21-rex-superlogical/"><link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-21-rex-superlogical/">
+
+  <noscript>
+      <style>
+          #theme-toggle,
+          .top-link {
+              display: none;
+          }
+      </style>
+  </noscript>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('pref-theme');
+      var root = document.documentElement;
+      if (t === 'light') { root.classList.remove('dark'); root.setAttribute('data-theme', 'light'); }
+      else { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); }
+    } catch (e) {}
+  })();
+</script><script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092"
+     crossorigin="anonymous"></script><meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-62VF26DEY6');
+</script>
+<meta property="og:url" content="https://rexai.top/posts/2026-10-21-rex-superlogical/">
+  <meta property="og:site_name" content="梦兽编程">
+  <meta property="og:title" content="Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面">
+  <meta property="og:description" content="Mitchell Hashimoto 的新公司 Superlogical 放了第一个产品：终端复用器 Rex，基于从 Ghostty 提取的 libghostty，复用器即终端本体，持久会话/远程/程序活动状态是头牌，macOS 公测 10-05 开放。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-10-20T09:00:00+08:00">
+    <meta property="article:modified_time" content="2026-10-20T09:00:00+08:00">
+    <meta property="article:author" content="梦兽编程">
+    <meta property="article:tag" content="终端">
+    <meta property="article:tag" content="开源">
+    <meta property="article:tag" content="工具">
+    <meta property="og:image" content="https://rexai.top/images/posts/2026-10-21-rex-superlogical/cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rexai.top/images/posts/2026-10-21-rex-superlogical/cover.jpg">
+
+<meta name="twitter:title" content="Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面">
+<meta name="twitter:description" content="Mitchell Hashimoto 的新公司 Superlogical 放了第一个产品：终端复用器 Rex，基于从 Ghostty 提取的 libghostty，复用器即终端本体，持久会话/远程/程序活动状态是头牌，macOS 公测 10-05 开放。">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "梦兽编程",
+  "url": "https:\/\/rexai.top\/about/",
+  "sameAs": [
+    "https:\/\/github.com\/rexai",
+    "https://rexai.top/"
+  ],
+  "affiliation": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/"
+  },
+  "knowsAbout": ["Rust", "AI Agent", "LLM", "Coding Agent", "Terminal UI", "System Programming"],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-21-rex-superlogical\/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/","name":"Posts"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/2026-10-21-rex-superlogical/","name":"2026 10 21 Rex Superlogical"},"position":3}]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面",
+  "description": "Mitchell Hashimoto 的新公司 Superlogical 放了第一个产品：终端复用器 Rex，基于从 Ghostty 提取的 libghostty，复用器即终端本体，持久会话\/远程\/程序活动状态是头牌，macOS 公测 10-05 开放。",
+  "inLanguage": "zh-cn",
+  "datePublished": "2026-10-20T09:00:00\u002b08:00",
+  "dateModified": "2026-10-20T09:00:00\u002b08:00",
+  "author": {
+    "@type": "Person",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/about/",
+    "sameAs": ["https:\/\/github.com\/rexai","https://rexai.top/"]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https:\/\/rexai.top\/icon-512.png",
+      "width": "512",
+      "height": "512"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-21-rex-superlogical\/"
+  },
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".post-content h1", ".post-content h2"]
+  },
+  "wordCount": "256",
+  "keywords": ["终端", "开源", "工具"],
+  "image": "https:\/\/rexai.top\/images\/posts\/2026-10-21-rex-superlogical\/cover.jpg",
+  "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-21-rex-superlogical\/cover.jpg",
+  "articleSection": "posts",
+  "articleBody": "Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面 Mitchell Hashimoto 又开了一家公司，叫 Superlogical，7 月 29 日宣布，10 月 5 日把第一个产品开放了公测。产品名 Rex，一个终端复用器。一个刚把 Ghostty 捐给非营利组织、嘴上说着再也不做商业项目的人，又下场做了个终端公司——这事本身比产品值得先说两句。\n为什么\u0026#34;又\u0026#34;做终端 Hashimoto 自己讲的路径很清楚：Ghostty 是 2023 年离开 HashiCorp 后\u0026#34;以为会扔掉的个人项目\u0026#34;，最后长成了日活数百万、一打核心维护者、近 50 名本地化成员的社区项目，2025 年整体捐给联邦认证的非营利组织，法律上绑死公益属性，“永远不会商业化”。\n但写终端这十几年，他越来越关心的是终端外面那一圈问题：终端用法为什么比历史上任何时候都普及？agent 时代终端 IO 的模式在往哪走？tmux 之于快终端是什么关系？这些问题他自己写着写着写不进 Ghostty（非营利项目的边界在那），就成了 Superlogical 的全部立项理由。Rex 只是入口，他原话：复用器\u0026#34;不是整个愿景\u0026#34;。\nRex 在解决什么 现有复用器的结构是：你开一个快终端（Ghostty\/Kitty\/Alacritty），在里面跑 tmux\/zellij，复用器再模拟一个慢终端。Hashimoto 给的自估数字是：现代终端的 IO 路径比复用器内嵌的模拟器快一到两个数量级，于是你得到的是\u0026#34;快终端里的慢体验\u0026#34;——scrollback 卡顿、选择行为怪异、滚动丢帧，全是内层模拟器的锅。\nRex 的架构主张反过来：复用器就当那个终端。它基于 libghostty（Ghostty 团队提取出的 MIT 终端库，Vercel 的 Turborepo 等已经在用它），外层原生，持久会话、远程连接、程序活动状态是主打功能。官方定位是\u0026#34;drop-in replacement for whichever terminal you use today\u0026#34;：关掉 App 会话还在，换设备接回来，远程开发直接连。另配一个 CLI 做自动化和 hook（Hashimoto 在 X 上专门秀了这个 CLI）。\n",
+  "about": [{"@type": "Thing", "name": "终端"}, {"@type": "Thing", "name": "开源"}, {"@type": "Thing", "name": "工具"}],
+  "isAccessibleForFree": "True",
+  "timeRequired": "PT4M",
+  "copyrightYear": "2026",
+  "educationalLevel": "intermediate",
+  "learningResourceType": "tutorial"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"不是。Rex 是终端复用器（tmux/zellij 的同类），但它自己就是一个终端应用——开箱即带终端，会话、分屏、持久化一体。Ghostty 保持非营利，路线不变。"},"name":"Rex 是 Ghostty 的替代品吗？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"macOS 公测中（2026-10-05 开放），注册 newsletter 拿 beta 通道，Linux 还没说排期。"},"name":"现在能用吗？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"tmux 跑在你已有的终端里，是内层软件；Rex 的外层就是终端本身，基于 libghostty（从 Ghostty 提取的 MIT 库），原生支持 scrollback/选择/滚动，不经过慢复用器的 IO 路径。"},"name":"和 tmux 什么区别？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Mitchell Hashimoto（Ghostty 作者、HashiCorp 联合创始人），Jack Pearkes（HashiCorp 第一号员工、前 VP Eng），Alasdair Monk（Poolside/Vercel/HashiCorp/Heroku），Hector Simpson（设计）。"},"name":"Superlogical 团队都是谁？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"官方说法：从终端复用器起步，愿景是跨本地开发、远程接入、coding agent、后台任务的持久会话层，支持共享终端和多人协作。"},"name":"以后会做什么？"}]
+}
+</script>
+
+</head><body class="site-body"><header class="wp2-header">
+  <a class="wp2-header__brand" href="/" aria-label="梦兽编程">
+    <img class="wp2-header__brand-logo" src="/images/brand/nav-logo-32.png" alt="" width="32" height="32">
+    梦兽编程<sup>™</sup>
+  </a>
+
+  <nav class="wp2-header__links" aria-label="主导航"><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/products/">产品</a>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tutorials/">教程</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tutorials">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 教程 菜单</span>
+        </button>
+        <div id="wp2-submenu-tutorials" class="wp2-header__submenu" aria-label="教程" hidden><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/ai/">AI</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-ai">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 AI 菜单</span>
+        </button>
+        <div id="wp2-submenu-ai" class="wp2-header__submenu" aria-label="AI" hidden><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/languages/">开发</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-dev">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 开发 菜单</span>
+        </button>
+        <div id="wp2-submenu-dev" class="wp2-header__submenu" aria-label="开发" hidden><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tools/rexai-tool-directory/">工具</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tools">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 工具 菜单</span>
+        </button>
+        <div id="wp2-submenu-tools" class="wp2-header__submenu" aria-label="工具" hidden><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/categories/">探索</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-explore">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 探索 菜单</span>
+        </button>
+        <div id="wp2-submenu-explore" class="wp2-header__submenu" aria-label="探索" hidden><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/about/">关于</a>
+      </div>
+  </nav>
+
+  <div class="wp2-header__spacer"></div>
+  <a class="wp2-header__cta" href="/tools/cc-codex-portal/">AI 套装 <span aria-hidden="true">&rarr;</span></a>
+  <button class="wp2-header__menu" type="button" aria-expanded="false" aria-controls="wp2-mobile-menu" data-wp2-menu data-open-label="打开菜单" data-close-label="关闭菜单">
+    <span class="wp2-header__menu-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="wp2-header__menu-label" data-wp2-menu-label>打开菜单</span>
+  </button>
+</header>
+
+<div id="wp2-mobile-menu" class="wp2-menu-panel" hidden>
+  <div class="wp2-menu-panel__frame">
+    <div class="wp2-menu-panel__directory">
+    <div class="wp2-menu-panel__meta"><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div>
+    <nav class="wp2-menu-panel__grid" aria-label="全站导航"><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/products/"><strong>产品</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>自研产品、服务与项目入口。</p>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tutorials/"><strong>教程</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/ai/"><strong>AI</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/languages/"><strong>开发</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tools/rexai-tool-directory/"><strong>工具</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/categories/"><strong>探索</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/about/"><strong>关于</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>了解梦兽编程、联系渠道与站点说明。</p>
+        </section>
+    </nav>
+    </div>
+    <div class="wp2-menu-panel__utility" aria-label="站点工具">
+      <span class="wp2-menu-panel__utility-label">实用工具</span>
+      <a class="wp2-menu-panel__utility-search" href="/search/">搜索</a><a href="/en/">English</a>
+      <button type="button" data-theme-toggle data-theme-light-label="主题：浅色" data-theme-dark-label="主题：深色" data-theme-light-action="切换至深色" data-theme-dark-action="切换至浅色" aria-pressed="false"><span data-theme-toggle-label>主题：浅色</span></button>
+    </div>
+  </div>
+</div>
+<div class="reading-progress-bar" id="readingProgress" aria-hidden="true"></div>
+
+  <main id="main-content" class="glass-main"><article class="post-single wp2-article">
+
+  <header class="page-head">
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://rexai.top/"><span itemprop="name">梦兽编程</span></a>
+      <meta itemprop="position" content="1">
+    </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/"><span itemprop="name">Posts</span></a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/2026-10-21-rex-superlogical/"><span itemprop="name">2026 10 21 Rex Superlogical</span></a>
+        <meta itemprop="position" content="3">
+      </li>
+  </ol>
+</nav>
+
+    <h1 class="post-title entry-hint-parent">
+      Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面
+    </h1><p class="post-description">Mitchell Hashimoto 的新公司 Superlogical 放了第一个产品：终端复用器 Rex，基于从 Ghostty 提取的 libghostty，复用器即终端本体，持久会话/远程/程序活动状态是头牌，macOS 公测 10-05 开放。</p>
+    <div class="post-meta"><span title='2026-10-20 09:00:00 +0800 +0800'>October 20, 2026</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;256 words&nbsp;·&nbsp;梦兽编程<span class="waline-pageview-count" data-path="/posts/2026-10-21-rex-superlogical/" style="margin-left: 0.5rem;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+  </svg>
+  <span class="waline-pageview-number" id="waline-pv-de68141172a9091f340f2ffa0692b8c488b8e924de7097cb5a9a7229568158fd" data-path="/posts/2026-10-21-rex-superlogical/">-</span>
+</span>&nbsp;|&nbsp;<span class="rex-translations">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+    <span class="rex-translations__links"><a href="https://rexai.top/en/posts/2026-10-21-rex-superlogical/" class="rex-translations__link">English</a></span>
+  </span>
+    </div>
+  </header>
+  <figure class="entry-cover wp2-article-cover">
+    <img src="https://rexai.top/images/posts/2026-10-21-rex-superlogical/cover.jpg" alt="Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面" fetchpriority="high" onerror="this.closest('.entry-cover').remove()">
+  </figure>
+
+  <div class="post-layout has-toc">
+    <div class="post-main">
+      <div class="post-content"><p>Mitchell Hashimoto 又开了一家公司，叫 Superlogical，7 月 29 日宣布，10 月 5 日把第一个产品开放了公测。产品名 Rex，一个终端复用器。一个刚把 Ghostty 捐给非营利组织、嘴上说着再也不做商业项目的人，又下场做了个终端公司——这事本身比产品值得先说两句。</p>
+<h2 id="为什么又做终端">为什么&quot;又&quot;做终端<a hidden class="anchor" aria-hidden="true" href="#为什么又做终端">#</a></h2>
+<p>Hashimoto 自己讲的路径很清楚：Ghostty 是 2023 年离开 HashiCorp 后&quot;以为会扔掉的个人项目&quot;，最后长成了日活数百万、一打核心维护者、近 50 名本地化成员的社区项目，2025 年整体捐给联邦认证的非营利组织，法律上绑死公益属性，&ldquo;永远不会商业化&rdquo;。</p>
+<p>但写终端这十几年，他越来越关心的是<strong>终端外面那一圈问题</strong>：终端用法为什么比历史上任何时候都普及？agent 时代终端 IO 的模式在往哪走？tmux 之于快终端是什么关系？这些问题他自己写着写着写不进 Ghostty（非营利项目的边界在那），就成了 Superlogical 的全部立项理由。Rex 只是入口，他原话：复用器&quot;不是整个愿景&quot;。</p>
+<h2 id="rex-在解决什么">Rex 在解决什么<a hidden class="anchor" aria-hidden="true" href="#rex-在解决什么">#</a></h2>
+<p>现有复用器的结构是：你开一个快终端（Ghostty/Kitty/Alacritty），在里面跑 tmux/zellij，复用器再模拟一个慢终端。Hashimoto 给的自估数字是：现代终端的 IO 路径比复用器内嵌的模拟器快一到两个数量级，于是你得到的是&quot;快终端里的慢体验&quot;——scrollback 卡顿、选择行为怪异、滚动丢帧，全是内层模拟器的锅。</p>
+<p>Rex 的架构主张反过来：<strong>复用器就当那个终端</strong>。它基于 libghostty（Ghostty 团队提取出的 MIT 终端库，Vercel 的 Turborepo 等已经在用它），外层原生，持久会话、远程连接、程序活动状态是主打功能。官方定位是&quot;drop-in replacement for whichever terminal you use today&quot;：关掉 App 会话还在，换设备接回来，远程开发直接连。另配一个 CLI 做自动化和 hook（Hashimoto 在 X 上专门秀了这个 CLI）。</p>
+<p><img alt="Superlogical 官方 Rex 截图：顶栏是会话标签（rex-snake / Stress-test / Bun / fish 四个并行），左上 AI 审查摘要，左下 Git 交互面板，右侧跑着的 TUI 程序——一个窗口内的多流复用" loading="lazy" src="/images/posts/2026-10-21-rex-superlogical/fig-1.jpg"></p>
+<p>这张官方截图把 Rex 的主张摊开在了一张图里：顶栏一排会话标签，每个标签是一个可远程的终端（Mac Studio 上的 rex-snake、Bun、fish 并行开着）；左上跑着代码审查的 agent 会话，左下是内嵌的 Git 交互面板（Stage/Commit/Stash 快捷键），右侧直接跑着贪吃蛇 TUI。tmux 的同类截图是黑底绿字的格子，Rex 卖的是&quot;这个层本身就是一个应用&quot;。</p>
+<p>对 agent 工作流这是实打实的需求：跑着长任务的终端挂了、网络断了，会话能保下来、状态能看见、重连能接上——tmux 半吊子在做的事，Rex 把它当第一特性设计。</p>
+<p><strong>CLI 这层是公测期最值得玩的部分</strong>。Hashimoto 自己发推专门展示了配套 CLI：把 Rex 当自动化入口，hook 进 CI、给 coding agent 开任务、从脚本读程序活动状态。tmux 的 CLI 是 <code>tmux send-keys</code> 那套二十年老接口，Rex 直接把&quot;程序活动状态&quot;做成一等公民——一个 agent 在会话里跑到第几步、卡在哪个审批，脚本可查。公测文档里 CLI 和远程连接是并列的头牌功能，不是事后补丁。</p>
+<h2 id="值得警惕的地方">值得警惕的地方<a hidden class="anchor" aria-hidden="true" href="#值得警惕的地方">#</a></h2>
+<p>三个点。</p>
+<p><strong>它还不是一个可迁移的工具链</strong>。公测只有 macOS，Linux 排期没给。tmux 最大的资产不是功能而是&quot;哪台机器都有&quot;，Rex 短期内抢不了这块，它的真实竞争对手是 zellij 和&quot;给 Ghostty 配 tmux&quot;的现有习惯。</p>
+<p><strong>公司形态和产品承诺之间存在张力</strong>。Ghostty 捐非营利是信用的来源，Superlogical 是商业公司。Hashimoto 在个人声明里特意写了&quot;Ghostty 保持非营利，使命、治理、许可证、路线图都不变&quot;，把两条线切开——但 libghostty 从 Ghostty 提取、Rex 的商业产品长在 libghostty 上，这条依赖链以后怎么治理，值得盯。</p>
+<p><strong>&ldquo;持久会话层&quot;的野心大于今天的复用器</strong>。跨设备、agent 后台任务、多人共享终端、incident response——每一项都踩在 VPC/远程开发/协作工具的成熟地盘上，这不是终端项目能自己收场的。Superlogical 真正的赌注是终端在 agent 时代的基础设施位置，Rex 只是先手棋。团队 4 人（Hashimoto、Pearkes、Monk、Simpson），全是有终端或基础设施产品背景的人，配置是为&quot;窄深&quot;设计的。</p>
+<h2 id="四行总结">四行总结<a hidden class="anchor" aria-hidden="true" href="#四行总结">#</a></h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>Rex</th>
+        <th>tmux/zellij</th>
+        <th>判定</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>架构</td>
+        <td>复用器=终端本体（libghostty）</td>
+        <td>快终端里的内层模拟器</td>
+        <td>IO 路径原生，快 1-2 个数量级</td>
+      </tr>
+      <tr>
+        <td>会话</td>
+        <td>持久/跨设备/远程</td>
+        <td>本机会话为主</td>
+        <td>agent 长任务场景赢</td>
+      </tr>
+      <tr>
+        <td>可用性</td>
+        <td>macOS 公测（10-05）</td>
+        <td>全平台、十年惯性</td>
+        <td>迁移成本是它自己的最大阻力</td>
+      </tr>
+      <tr>
+        <td>依赖</td>
+        <td>libghostty（MIT，Ghostty 提取）</td>
+        <td>无</td>
+        <td>治理方式待定，商业/公益依赖链要盯</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<h2 id="faq">FAQ<a hidden class="anchor" aria-hidden="true" href="#faq">#</a></h2>
+<p><strong>Ghostty 以后没人管了？</strong> 没。Ghostty 捐给非营利、约 12 名核心维护者持续开发，Hashimoto 仍在其中；Superlogical 的声明明确 Ghostty 的许可证、路线图不变。</p>
+<p><strong>Linux 用户呢？</strong> 公测阶段只有 macOS。libghostty 是跨平台的，架构上能落 Linux，但官方没给日期，现在装只能用 Mac。</p>
+<p><strong>和 tmux 能共存吗？</strong> 可以。Rex 定位是替代&quot;终端+复用器&quot;整条链路，不影响你继续在任何终端里跑 tmux；反过来 Rex 的会话持久化也兼容在 Rex 里跑 tmux 的老习惯。</p>
+<p><strong>beta 怎么进？</strong> Superlogical 官网注册 newsletter，公测资格从 10-05 开始发。团队在招工程和设计岗位（jobs 页挂着）。</p>
+<p><strong>值得现在就切吗？</strong> macOS 重度终端用户+agent 长任务多，进 beta 玩玩，会话持久化这条值得亲手验。生产主力机，等 Linux 版和第一个正式版再动。</p>
+<h2 id="结尾">结尾<a hidden class="anchor" aria-hidden="true" href="#结尾">#</a></h2>
+<p>tmux 用了 20 年证明复用层是刚需，但它的形态还停在&quot;跑在终端里的 shell 脚本&rdquo;。Rex 赌的是这个层该原生长进终端里，并且是 agent 时代的基础设施。10 月 5 日公测才刚开始，产品判断先放一放，值得跟进的是它把&quot;持久会话&quot;做成第一特性之后的生态动作。</p>
+<p>你在终端里跑长任务被断过几次？tmux 的 scrollback 你忍了多少年？评论区聊。转给那个还在服务器上 <code>tmux attach</code> 摸黑的同事。</p>
+<p>微信搜索「梦兽编程」。</p>
+<p><strong>出处</strong>：mitchellh.com/writing/superlogical（个人声明，2026-07）、superlogical.com（10-05 public testing 公告）、developersdigest.tech 与 bitdoze.com 的 Rex 条目（2026-10）、libghostty.tip.ghostty.org（MIT 终端库，Vercel 下游使用清单）。正文插图：superlogical.com 官方 Rex 产品截图（rex-screenshot@2x.webp，2026-10-05 public testing 更新页）。</p>
+
+
+      </div>
+<section class="post-content post-faq" aria-labelledby="post-faq-heading">
+  <h2 id="post-faq-heading">常见问题</h2>
+  <section class="post-faq__item">
+    <h3>Rex 是 Ghostty 的替代品吗？</h3>
+    <p>不是。Rex 是终端复用器（tmux/zellij 的同类），但它自己就是一个终端应用——开箱即带终端，会话、分屏、持久化一体。Ghostty 保持非营利，路线不变。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>现在能用吗？</h3>
+    <p>macOS 公测中（2026-10-05 开放），注册 newsletter 拿 beta 通道，Linux 还没说排期。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>和 tmux 什么区别？</h3>
+    <p>tmux 跑在你已有的终端里，是内层软件；Rex 的外层就是终端本身，基于 libghostty（从 Ghostty 提取的 MIT 库），原生支持 scrollback/选择/滚动，不经过慢复用器的 IO 路径。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>Superlogical 团队都是谁？</h3>
+    <p>Mitchell Hashimoto（Ghostty 作者、HashiCorp 联合创始人），Jack Pearkes（HashiCorp 第一号员工、前 VP Eng），Alasdair Monk（Poolside/Vercel/HashiCorp/Heroku），Hector Simpson（设计）。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>以后会做什么？</h3>
+    <p>官方说法：从终端复用器起步，愿景是跨本地开发、远程接入、coding agent、后台任务的持久会话层，支持共享终端和多人协作。</p>
+  </section>
+</section>
+
+<section class="post-actions" aria-label="post actions">
+  <div class="post-actions__group">
+    <div class="post-actions__item">
+      <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="winbbryz" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff"></script>
+    </div>
+  </div>
+</section>
+
+
+
+      <footer class="post-footer">
+        <ul class="post-tags"><li><a href="/tags/%E7%BB%88%E7%AB%AF/">#终端</a></li><li><a href="/tags/%E5%BC%80%E6%BA%90/">#开源</a></li><li><a href="/tags/%E5%B7%A5%E5%85%B7/">#工具</a></li>
+        </ul>
+      </footer>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css" />
+
+
+<div id="waline-container" style="margin-top: 3rem;"></div>
+
+
+<script type="module">
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script>
+
+<style>
+#waline-container {
+  background: var(--rex-bg);
+  padding: var(--rex-space-5);
+  border-radius: var(--rex-radius-xl);
+  border: 1px solid var(--rex-border);
+}
+@media screen and (max-width: 768px) {
+  #waline-container {
+    padding: var(--rex-space-4);
+  }
+}
+.wl-editor {
+  border-radius: var(--rex-radius-lg);
+}
+.wl-btn {
+  border-radius: var(--rex-radius-lg);
+  transition: all 0.3s ease;
+}
+.wl-btn:hover {
+  transform: translateY(-1px);
+}
+.wl-reaction {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rex-border);
+}
+.wl-reaction-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.wl-reaction-img {
+  transition: transform 0.2s ease;
+}
+.wl-reaction-img:hover {
+  transform: scale(1.2);
+}
+.wl-card {
+  border: 1px solid var(--rex-border);
+  border-radius: var(--rex-radius-lg);
+  background: var(--rex-bg);
+}
+.wl-card:hover {
+  border-color: var(--rex-border-bold);
+}
+</style>
+    </div>
+    <aside class="toc-col wp2-floating-toc" data-wp2-toc>
+      <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
+        <span>目录</span><i aria-hidden="true">＋</i>
+      </button>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#ghostty-%e4%b9%8b%e7%88%b6%e7%9a%84%e6%96%b0%e7%bb%88%e7%ab%af-rex%e5%a4%8d%e7%94%a8%e5%99%a8%e4%b8%8d%e8%af%a5%e5%b5%8c%e5%9c%a8%e5%bf%ab%e7%bb%88%e7%ab%af%e9%87%8c%e9%9d%a2" aria-label="Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面">Ghostty 之父的新终端 Rex：复用器不该嵌在快终端里面</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%88%e5%81%9a%e7%bb%88%e7%ab%af" aria-label="为什么&quot;又&quot;做终端">为什么&quot;又&quot;做终端</a></li>
+                <li>
+                    <a href="#rex-%e5%9c%a8%e8%a7%a3%e5%86%b3%e4%bb%80%e4%b9%88" aria-label="Rex 在解决什么">Rex 在解决什么</a></li>
+                <li>
+                    <a href="#%e5%80%bc%e5%be%97%e8%ad%a6%e6%83%95%e7%9a%84%e5%9c%b0%e6%96%b9" aria-label="值得警惕的地方">值得警惕的地方</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e8%a1%8c%e6%80%bb%e7%bb%93" aria-label="四行总结">四行总结</a></li>
+                <li>
+                    <a href="#faq" aria-label="FAQ">FAQ</a></li>
+                <li>
+                    <a href="#%e7%bb%93%e5%b0%be" aria-label="结尾">结尾</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+      </div>
+    </aside>
+  </div>
+</article>
+  </main><footer class="wp2-footer">
+  <div class="wp2-footer__grid">
+    <section>
+      <p class="wp2-footer__label">站点地图</p>
+      <a href="/">首页</a>
+      <a href="/posts/">文章</a>
+      <a href="/tutorials/">教程</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">专题</p>
+      <a href="/ai/">AI</a>
+      <a href="/languages/">编程语言</a>
+      <a href="/infrastructure/">基础设施</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">联系</p>
+      <a href="/about/">关于梦兽</a>
+      <a href="/contact/">联系我们</a>
+      <a href="/privacy/">隐私政策</a>
+      <a href="/tools/">工具精选</a>
+      <a href="/tags/">标签索引</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">订阅</p>
+      <a href="/search/">搜索文章</a>
+      <a href="/categories/">分类</a>
+      <span>© 2026 梦兽编程</span>
+    </section>
+  </div>
+  <div class="wp2-footer__bar">
+    <span>由代码与好奇心驱动</span>
+    <span>V.2026.10 / 系统正常</span>
+  </div>
+  <div class="wp2-footer__wordmark">梦兽编程</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" aria-hidden="true" tabindex="-1">
+  <svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48">
+    <circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+  <script src="/js/theme.js?v=wp2-nav-20260820" defer></script>
+  <script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script>
+  <script>
+    (function(){ var b=document.getElementById('backToTop'),r=b?b.querySelector('.back-to-top__ring-progress'):null; if(!b)return; window.addEventListener('scroll',function(){var s=document.documentElement.scrollTop||document.body.scrollTop;if(s>400){b.classList.add('is-visible');b.setAttribute('aria-hidden','false');b.removeAttribute('tabindex');if(r){var max=document.documentElement.scrollHeight-window.innerHeight;r.style.strokeDashoffset=125.6*(1-s/max);}}else{b.classList.remove('is-visible');b.setAttribute('aria-hidden','true');b.setAttribute('tabindex','-1');}},{passive:true}); b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});}); })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr" class="js">
+<head><meta charset="utf-8">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="robots" content="index, follow">
+  <title>Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距 | 梦兽编程</title>
+  <meta name="keywords" content="Exa, AI搜索, API, benchmark">
+  <meta name="description" content="Exa 10-19 发 3.0：八榜自报全第一，但 BrowseComp 领先 Perplexity 只有 0.3 分。真正改成本曲线的是 Dynamic Highlights（省 95% 上下文 token）&#43; Exa Lite $4/1000 请求；Artificial Analysis 独立评 80 分并列第一。">
+  <meta name="author" content="梦兽编程">
+  <link rel="canonical" href="https://rexai.top/posts/2026-10-21-exa-30/">
+  <meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+  <meta name="impact-site-verification" value="6a4c88bc-bba3-418e-9e49-d15d52bb3231">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp"><script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pref-theme');
+        var isDark = false;
+        if (t === 'dark' || (!t && isDark)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link crossorigin="anonymous" href="/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css" integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as="style">
+  <link rel="icon" href="https://rexai.top/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://rexai.top/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://rexai.top/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="https://rexai.top/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="msapplication-TileColor" content="#0a0f1d">
+  <link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-21-exa-30/"><link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-21-exa-30/">
+
+  <noscript>
+      <style>
+          #theme-toggle,
+          .top-link {
+              display: none;
+          }
+      </style>
+  </noscript>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('pref-theme');
+      var root = document.documentElement;
+      if (t === 'light') { root.classList.remove('dark'); root.setAttribute('data-theme', 'light'); }
+      else { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); }
+    } catch (e) {}
+  })();
+</script><script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092"
+     crossorigin="anonymous"></script><meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-62VF26DEY6');
+</script>
+<meta property="og:url" content="https://rexai.top/posts/2026-10-21-exa-30/">
+  <meta property="og:site_name" content="梦兽编程">
+  <meta property="og:title" content="Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距">
+  <meta property="og:description" content="Exa 10-19 发 3.0：八榜自报全第一，但 BrowseComp 领先 Perplexity 只有 0.3 分。真正改成本曲线的是 Dynamic Highlights（省 95% 上下文 token）&#43; Exa Lite $4/1000 请求；Artificial Analysis 独立评 80 分并列第一。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-10-20T09:00:00+08:00">
+    <meta property="article:modified_time" content="2026-10-20T09:00:00+08:00">
+    <meta property="article:author" content="梦兽编程">
+    <meta property="article:tag" content="AI 搜索">
+    <meta property="article:tag" content="API">
+    <meta property="article:tag" content="Agent">
+    <meta property="og:image" content="https://rexai.top/images/posts/2026-10-21-exa-30/cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rexai.top/images/posts/2026-10-21-exa-30/cover.jpg">
+
+<meta name="twitter:title" content="Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距">
+<meta name="twitter:description" content="Exa 10-19 发 3.0：八榜自报全第一，但 BrowseComp 领先 Perplexity 只有 0.3 分。真正改成本曲线的是 Dynamic Highlights（省 95% 上下文 token）&#43; Exa Lite $4/1000 请求；Artificial Analysis 独立评 80 分并列第一。">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "梦兽编程",
+  "url": "https:\/\/rexai.top\/about/",
+  "sameAs": [
+    "https:\/\/github.com\/rexai",
+    "https://rexai.top/"
+  ],
+  "affiliation": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/"
+  },
+  "knowsAbout": ["Rust", "AI Agent", "LLM", "Coding Agent", "Terminal UI", "System Programming"],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-21-exa-30\/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/","name":"Posts"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/2026-10-21-exa-30/","name":"2026 10 21 Exa 30"},"position":3}]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距",
+  "description": "Exa 10-19 发 3.0：八榜自报全第一，但 BrowseComp 领先 Perplexity 只有 0.3 分。真正改成本曲线的是 Dynamic Highlights（省 95% 上下文 token）\u002b Exa Lite $4\/1000 请求；Artificial Analysis 独立评 80 分并列第一。",
+  "inLanguage": "zh-cn",
+  "datePublished": "2026-10-20T09:00:00\u002b08:00",
+  "dateModified": "2026-10-20T09:00:00\u002b08:00",
+  "author": {
+    "@type": "Person",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/about/",
+    "sameAs": ["https:\/\/github.com\/rexai","https://rexai.top/"]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https:\/\/rexai.top\/icon-512.png",
+      "width": "512",
+      "height": "512"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-21-exa-30\/"
+  },
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".post-content h1", ".post-content h2"]
+  },
+  "wordCount": "373",
+  "keywords": ["AI 搜索", "API", "agent"],
+  "image": "https:\/\/rexai.top\/images\/posts\/2026-10-21-exa-30\/cover.jpg",
+  "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-21-exa-30\/cover.jpg",
+  "articleSection": "posts",
+  "articleBody": "Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距 Exa 10 月 18 日发了 3.0，官方通稿的原话是\u0026#34;我们在每个测试的 benchmark 上都排第一\u0026#34;。八个榜：BrowseComp 91.8、DSQA 88.2、WideSearch 56.1、ATLAS 42.0、WebCode 75.5、FinSearchComp 68.0，外加 Company\/People FindAll 两个垂直检索。对手是它自己点名的 Perplexity、Brave Search、Parallel。\n先说结论：这是把\u0026#34;agent 用的搜索\u0026#34;当军备竞赛打了一轮，但最值钱的信号藏在 91.8 那个数字的旁边——BrowseComp 上 Exa 3.0 领先 Perplexity 只有 0.3 分。八榜全第一的标题下，主榜是贴着对手跑的。\n进步从哪来：没有新算法叙事 官方把 3.0 的收益全归到三件堆料的事：最大的 embedding 模型（更多算力、更多数据训出来的）、数百亿新文档（商品、本地商家、航班、体育、天气这些以前搜索 API 不认真覆盖的垂直面）、Dynamic Highlights 转 GA。\n没有新架构，没有新训练技巧，通稿里最硬的一句承认是\u0026#34;我们不是在声称一个聪明的新技术，我们是在检索精度这个真正决定胜负的地方上堆输了全场的算力与数据\u0026#34;。这对用户是好消息：检索质量的提升来自索引和 embedding 规模，不是调参玄学，后续版本还可能有得抢。\nExa 跑自己的 crawler 和 index，不包 Google\/Bing，官方说法是 2T URL、服务 100B 页面，托管 API 延迟可配 450ms~1s。\n",
+  "about": [{"@type": "Thing", "name": "AI 搜索"}, {"@type": "Thing", "name": "API"}, {"@type": "Thing", "name": "agent"}],
+  "isAccessibleForFree": "True",
+  "timeRequired": "PT4M",
+  "copyrightYear": "2026",
+  "educationalLevel": "intermediate",
+  "learningResourceType": "tutorial"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"Exa 自己。8 个榜（BrowseComp/DSQA/WideSearch/ATLAS/WebCode/FinSearchComp 等）全部自报，对手（Perplexity/Brave/Parallel）是 Exa 点名选的。第三方交叉：Dev.to 维度评分 8.7 vs Perplexity 6.8，独立 500 query 评测 64.8% vs 60.1%。"},"name":"benchmark 是谁跑的？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"官方说法：训了它史上最大的 embedding 模型（更多算力+更多数据）+ 数百亿新文档（商品/本地商家/航班/体育/天气）+ Dynamic Highlights GA。没有新算法叙事，就是堆料堆数据。"},"name":"进步从哪来？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"从网页里抽相关片段替代整页文本，自报比全页省 95% token 且答案质量不降。对搜多轮的 agent 循环，上下文 token 才是预算大头，这条如果外部复现，成本曲线直接改写。"},"name":"Dynamic Highlights 是什么？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"$4/1000 请求，主打高并发 agent 场景。另有 Exa Auto 每查询多烧算力换质量，延迟可配 450ms~1s（deep 档 4-15s）。"},"name":"Exa Lite 贵不贵？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"不能，也没打算。Exa 跑自己的 crawler+index（声称 2T URL、服务 100B 页面），产品定位是给 agent 的结构化检索 API，不是给人看排序页。"},"name":"能替代 Google/Bing 吗？"}]
+}
+</script>
+
+</head><body class="site-body"><header class="wp2-header">
+  <a class="wp2-header__brand" href="/" aria-label="梦兽编程">
+    <img class="wp2-header__brand-logo" src="/images/brand/nav-logo-32.png" alt="" width="32" height="32">
+    梦兽编程<sup>™</sup>
+  </a>
+
+  <nav class="wp2-header__links" aria-label="主导航"><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/products/">产品</a>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tutorials/">教程</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tutorials">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 教程 菜单</span>
+        </button>
+        <div id="wp2-submenu-tutorials" class="wp2-header__submenu" aria-label="教程" hidden><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/ai/">AI</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-ai">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 AI 菜单</span>
+        </button>
+        <div id="wp2-submenu-ai" class="wp2-header__submenu" aria-label="AI" hidden><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/languages/">开发</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-dev">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 开发 菜单</span>
+        </button>
+        <div id="wp2-submenu-dev" class="wp2-header__submenu" aria-label="开发" hidden><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tools/rexai-tool-directory/">工具</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tools">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 工具 菜单</span>
+        </button>
+        <div id="wp2-submenu-tools" class="wp2-header__submenu" aria-label="工具" hidden><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/categories/">探索</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-explore">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 探索 菜单</span>
+        </button>
+        <div id="wp2-submenu-explore" class="wp2-header__submenu" aria-label="探索" hidden><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/about/">关于</a>
+      </div>
+  </nav>
+
+  <div class="wp2-header__spacer"></div>
+  <a class="wp2-header__cta" href="/tools/cc-codex-portal/">AI 套装 <span aria-hidden="true">&rarr;</span></a>
+  <button class="wp2-header__menu" type="button" aria-expanded="false" aria-controls="wp2-mobile-menu" data-wp2-menu data-open-label="打开菜单" data-close-label="关闭菜单">
+    <span class="wp2-header__menu-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="wp2-header__menu-label" data-wp2-menu-label>打开菜单</span>
+  </button>
+</header>
+
+<div id="wp2-mobile-menu" class="wp2-menu-panel" hidden>
+  <div class="wp2-menu-panel__frame">
+    <div class="wp2-menu-panel__directory">
+    <div class="wp2-menu-panel__meta"><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div>
+    <nav class="wp2-menu-panel__grid" aria-label="全站导航"><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/products/"><strong>产品</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>自研产品、服务与项目入口。</p>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tutorials/"><strong>教程</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/ai/"><strong>AI</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/languages/"><strong>开发</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tools/rexai-tool-directory/"><strong>工具</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/categories/"><strong>探索</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/about/"><strong>关于</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>了解梦兽编程、联系渠道与站点说明。</p>
+        </section>
+    </nav>
+    </div>
+    <div class="wp2-menu-panel__utility" aria-label="站点工具">
+      <span class="wp2-menu-panel__utility-label">实用工具</span>
+      <a class="wp2-menu-panel__utility-search" href="/search/">搜索</a><a href="/en/">English</a>
+      <button type="button" data-theme-toggle data-theme-light-label="主题：浅色" data-theme-dark-label="主题：深色" data-theme-light-action="切换至深色" data-theme-dark-action="切换至浅色" aria-pressed="false"><span data-theme-toggle-label>主题：浅色</span></button>
+    </div>
+  </div>
+</div>
+<div class="reading-progress-bar" id="readingProgress" aria-hidden="true"></div>
+
+  <main id="main-content" class="glass-main"><article class="post-single wp2-article">
+
+  <header class="page-head">
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://rexai.top/"><span itemprop="name">梦兽编程</span></a>
+      <meta itemprop="position" content="1">
+    </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/"><span itemprop="name">Posts</span></a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/2026-10-21-exa-30/"><span itemprop="name">2026 10 21 Exa 30</span></a>
+        <meta itemprop="position" content="3">
+      </li>
+  </ol>
+</nav>
+
+    <h1 class="post-title entry-hint-parent">
+      Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距
+    </h1><p class="post-description">Exa 10-19 发 3.0：八榜自报全第一，但 BrowseComp 领先 Perplexity 只有 0.3 分。真正改成本曲线的是 Dynamic Highlights（省 95% 上下文 token）&#43; Exa Lite $4/1000 请求；Artificial Analysis 独立评 80 分并列第一。</p>
+    <div class="post-meta"><span title='2026-10-20 09:00:00 +0800 +0800'>October 20, 2026</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;373 words&nbsp;·&nbsp;梦兽编程<span class="waline-pageview-count" data-path="/posts/2026-10-21-exa-30/" style="margin-left: 0.5rem;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+  </svg>
+  <span class="waline-pageview-number" id="waline-pv-e5ccee256510ba33caf7354972ef97774365919ab81b27ba694ad9a259763c32" data-path="/posts/2026-10-21-exa-30/">-</span>
+</span>&nbsp;|&nbsp;<span class="rex-translations">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+    <span class="rex-translations__links"><a href="https://rexai.top/en/posts/2026-10-21-exa-30/" class="rex-translations__link">English</a></span>
+  </span>
+    </div>
+  </header>
+  <figure class="entry-cover wp2-article-cover">
+    <img src="https://rexai.top/images/posts/2026-10-21-exa-30/cover.jpg" alt="Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距" fetchpriority="high" onerror="this.closest('.entry-cover').remove()">
+  </figure>
+
+  <div class="post-layout has-toc">
+    <div class="post-main">
+      <div class="post-content"><p>Exa 10 月 18 日发了 3.0，官方通稿的原话是&quot;我们在每个测试的 benchmark 上都排第一&quot;。八个榜：BrowseComp 91.8、DSQA 88.2、WideSearch 56.1、ATLAS 42.0、WebCode 75.5、FinSearchComp 68.0，外加 Company/People FindAll 两个垂直检索。对手是它自己点名的 Perplexity、Brave Search、Parallel。</p>
+<p>先说结论：这是把&quot;agent 用的搜索&quot;当军备竞赛打了一轮，但<strong>最值钱的信号藏在 91.8 那个数字的旁边</strong>——BrowseComp 上 Exa 3.0 领先 Perplexity 只有 0.3 分。八榜全第一的标题下，主榜是贴着对手跑的。</p>
+<p><img alt="Exa 官方博客八榜对比表：Exa 3.0 一列蓝框高亮，对 Perplexity / Brave / Parallel，8 行里 7 行居首（Exa 自报，2026-10 评测）" loading="lazy" src="/images/posts/2026-10-21-exa-30/fig-1.jpg"></p>
+<h2 id="进步从哪来没有新算法叙事">进步从哪来：没有新算法叙事<a hidden class="anchor" aria-hidden="true" href="#进步从哪来没有新算法叙事">#</a></h2>
+<p>官方把 3.0 的收益全归到三件堆料的事：最大的 embedding 模型（更多算力、更多数据训出来的）、数百亿新文档（商品、本地商家、航班、体育、天气这些以前搜索 API 不认真覆盖的垂直面）、Dynamic Highlights 转 GA。</p>
+<p>没有新架构，没有新训练技巧，通稿里最硬的一句承认是&quot;我们不是在声称一个聪明的新技术，我们是在检索精度这个真正决定胜负的地方上堆输了全场的算力与数据&quot;。这对用户是好消息：检索质量的提升来自索引和 embedding 规模，不是调参玄学，后续版本还可能有得抢。</p>
+<p>Exa 跑自己的 crawler 和 index，不包 Google/Bing，官方说法是 2T URL、服务 100B 页面，托管 API 延迟可配 450ms~1s。</p>
+<h2 id="最该看的数字是-03">最该看的数字是 0.3<a hidden class="anchor" aria-hidden="true" href="#最该看的数字是-03">#</a></h2>
+<p>自报榜的水分先放一边（毕竟对手是 Exa 自己选的，榜也是它自己定义的），把第三方交叉摆进来：Artificial Analysis 的独立 Search Index（统一用同一个 agent 模型 + 开源 Stirrup harness 测 29 家产品），Exa 3.0 Auto 档加 Dynamic Highlights 打 80 分，和 Perplexity 并列第一；Lite 档 79。Dev.to 开发者社区 20 个 agent 搜索维度的评分，Exa 8.7，Perplexity 6.8，Tavily/Serper/Brave 挤在中间；一个独立的 500 query 评测，Exa 准确率 64.8% 对 Perplexity 60.1%。</p>
+<p>两套外部数字都确认 Exa 领先，但领先幅度（并列第一、0.3 和 4.7 个点）跟&quot;八榜全第一&quot;的标题完全不是一个量级。Artificial Analysis 还顺手记录了 Exa 自己的表没有的东西：Auto 档每任务 token 从 29.9 万降到 15.7 万（-47%），成本从 $0.083 降到 $0.066（-21%），Lite 档 $0.044——Dynamic Highlights 的收益是落在成本曲线上，不只在质量表里。Exa 自己的 ATLAS 42.0 也是八个榜里最弱的一项（领先优势最大的反而在这里，42.0 vs 37.2）——主检索榜贴身、弱项榜拉开，这个形状说明 3.0 的提升偏&quot;全面垫高&quot;而不是&quot;单点突破&quot;。</p>
+<p>我的判断：Exa 3.0 的真实地位是<strong>把 agent 搜索的质量基线又抬了一截，但没有拉开代差</strong>。选型别只看它家榜，拿自己的 query 集对 Perplexity/Tavily 跑一轮 20 个维度的维度分（Dev.to 那套方法就行），领先 5 个点以内等于没有领先。</p>
+<h2 id="真正改成本曲线的dynamic-highlights--4">真正改成本曲线的：Dynamic Highlights + $4<a hidden class="anchor" aria-hidden="true" href="#真正改成本曲线的dynamic-highlights--4">#</a></h2>
+<p>这版里比&quot;全第一&quot;值钱的是两条定价与产品动作。</p>
+<p><strong>Dynamic Highlights</strong> 从网页里只抽相关片段，自报比喂整页省 95% token 且答案质量不降。搜多轮的 agent 循环里，预算大头不是 API 调用次数是上下文 token，这条如果外部复现，等于把 agent 搜索的单轮成本砍掉一大截。95% 是 Exa 自报，第三方评测 64.8% 的准确率里没有单独拆出 Highligths 的贡献——这是下一个该被社区复现的点。</p>
+<p><strong>Exa Lite 定价 $4/1000 请求</strong>，配合 Auto 档（每查询多烧算力）形成明确的两档。高并发 agent 场景的账是算得过来的：1000 次请求 $4，按 Dynamic Highlights 的 token 节省量级，搜索侧可以压到整个 agent 预算的个位数百分比。这是 Exa 从&quot;研究者玩具&quot;往&quot;可规模化基建&quot;走的一步，50 万+开发者、5000 家公司的接入清单（Cursor、Cognition、HubSpot、OpenRouter、monday.com）就是这一步的底盘。</p>
+<h2 id="四行总结">四行总结<a hidden class="anchor" aria-hidden="true" href="#四行总结">#</a></h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>项</th>
+        <th>Exa 3.0 数字</th>
+        <th>来源</th>
+        <th>判定</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>BrowseComp</td>
+        <td>91.8（领先 Perplexity 0.3）</td>
+        <td>自报</td>
+        <td>主榜贴身，非代差</td>
+      </tr>
+      <tr>
+        <td>独立 500 query 准确率</td>
+        <td>64.8% vs 60.1%</td>
+        <td>第三方</td>
+        <td>确认领先，幅度 4.7</td>
+      </tr>
+      <tr>
+        <td>Dynamic Highlights</td>
+        <td>省 95% 上下文 token</td>
+        <td>自报，待复现</td>
+        <td>agent 成本曲线的真变量</td>
+      </tr>
+      <tr>
+        <td>Exa Lite</td>
+        <td>$4 / 1000 请求</td>
+        <td>官方定价</td>
+        <td>高并发可规模化</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<h2 id="faq">FAQ<a hidden class="anchor" aria-hidden="true" href="#faq">#</a></h2>
+<p><strong>八个榜全是自己跑的？</strong> 是。Exa 选对手、定榜、出分一条龙。外部参照只有 Dev.to 维度评分（8.7 vs 6.8）和那个 500 query 评测（64.8 vs 60.1），两个都比官方标题保守。</p>
+<p><strong>我该怎么选型？</strong> 先算你的场景是&quot;搜得多&quot;还是&quot;搜得准&quot;。高频检索 agent 循环上 Lite + Dynamic Highlights 先跑起来，成本占位；关键决策链上拿自家 query 集把 Exa/Perplexity/Tavily 三家跑同一套维度分，5 个点以内不分高下。</p>
+<p><strong>95% token 节省可信吗？</strong> 机制上可信（抽取替代全文），幅度是 Exa 自报。等第三方评测把 Highlights 单独拆开再信数字，现在按&quot;成本会明显降&quot;记，不按 95% 记账。</p>
+<p><strong>能给我的产品直接接吗？</strong> API 是标准 REST，支持 <code>output_schema</code> 结构化输出和 LLM 摘要。延迟分五档：instant ~250ms / fast ~450ms / auto ~1s / deep-lite 4s / deep 4-15s，按你的交互性选档。</p>
+<p><strong>Exa 和 Google 什么关系？</strong> 没有包它的索引，Exa 自建 crawler + 2T URL 索引。定位差异也清楚：Google 排序给&quot;人&quot;看，Exa 的结构化结果给&quot;另一个软件&quot;用，用户是 agent。</p>
+<h2 id="结尾">结尾<a hidden class="anchor" aria-hidden="true" href="#结尾">#</a></h2>
+<p>&ldquo;八榜全第一&quot;是通稿标题，贴出 0.3 分才知道真实的领先幅度。Exa 3.0 真正改牌的信号是两条产品动作：Highlights 把上下文成本砍到官方自报的 5%，Lite 把搜索侧变成可规模化的预算项。agent 搜索的第一阶段价格战，从这两个数字算。</p>
+<p>你的 agent 检索现在用的什么方案，一次循环烧多少上下文 token？评论区报个数。转给那个还在给 agent 塞整页文本的同事。</p>
+<p>微信搜索「梦兽编程」。</p>
+<p><strong>出处</strong>：Exa 官方博客 exa.ai/blog/exa-3（2026-10-19，八榜数字、Exa Lite / Dynamic Highlights 定价原文与官方基准表图）、exa.ai/docs/changelog、docs.exa.ai 搜索 API 参考（五档延迟与 output_schema）、Artificial Analysis Search Index（独立评测：Auto+Highlights 80 分与 Perplexity 并列第一，Lite 79；每任务 token -47%、成本 -21%）、startupfortune.com 与 aidailypost.com 的 Exa 3.0 报道（500 query 独立评测 64.8 vs 60.1、Dev.to 20 维度 8.7 vs 6.8）。</p>
+
+
+      </div>
+<section class="post-content post-faq" aria-labelledby="post-faq-heading">
+  <h2 id="post-faq-heading">常见问题</h2>
+  <section class="post-faq__item">
+    <h3>benchmark 是谁跑的？</h3>
+    <p>Exa 自己。8 个榜（BrowseComp/DSQA/WideSearch/ATLAS/WebCode/FinSearchComp 等）全部自报，对手（Perplexity/Brave/Parallel）是 Exa 点名选的。第三方交叉：Dev.to 维度评分 8.7 vs Perplexity 6.8，独立 500 query 评测 64.8% vs 60.1%。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>进步从哪来？</h3>
+    <p>官方说法：训了它史上最大的 embedding 模型（更多算力&#43;更多数据）&#43; 数百亿新文档（商品/本地商家/航班/体育/天气）&#43; Dynamic Highlights GA。没有新算法叙事，就是堆料堆数据。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>Dynamic Highlights 是什么？</h3>
+    <p>从网页里抽相关片段替代整页文本，自报比全页省 95% token 且答案质量不降。对搜多轮的 agent 循环，上下文 token 才是预算大头，这条如果外部复现，成本曲线直接改写。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>Exa Lite 贵不贵？</h3>
+    <p>$4/1000 请求，主打高并发 agent 场景。另有 Exa Auto 每查询多烧算力换质量，延迟可配 450ms~1s（deep 档 4-15s）。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>能替代 Google/Bing 吗？</h3>
+    <p>不能，也没打算。Exa 跑自己的 crawler&#43;index（声称 2T URL、服务 100B 页面），产品定位是给 agent 的结构化检索 API，不是给人看排序页。</p>
+  </section>
+</section>
+
+<section class="post-actions" aria-label="post actions">
+  <div class="post-actions__group">
+    <div class="post-actions__item">
+      <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="winbbryz" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff"></script>
+    </div>
+  </div>
+</section>
+
+
+
+      <footer class="post-footer">
+        <ul class="post-tags"><li><a href="/tags/ai-%E6%90%9C%E7%B4%A2/">#AI 搜索</a></li><li><a href="/tags/api/">#API</a></li><li><a href="/tags/agent/">#Agent</a></li>
+        </ul>
+      </footer>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css" />
+
+
+<div id="waline-container" style="margin-top: 3rem;"></div>
+
+
+<script type="module">
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script>
+
+<style>
+#waline-container {
+  background: var(--rex-bg);
+  padding: var(--rex-space-5);
+  border-radius: var(--rex-radius-xl);
+  border: 1px solid var(--rex-border);
+}
+@media screen and (max-width: 768px) {
+  #waline-container {
+    padding: var(--rex-space-4);
+  }
+}
+.wl-editor {
+  border-radius: var(--rex-radius-lg);
+}
+.wl-btn {
+  border-radius: var(--rex-radius-lg);
+  transition: all 0.3s ease;
+}
+.wl-btn:hover {
+  transform: translateY(-1px);
+}
+.wl-reaction {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rex-border);
+}
+.wl-reaction-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.wl-reaction-img {
+  transition: transform 0.2s ease;
+}
+.wl-reaction-img:hover {
+  transform: scale(1.2);
+}
+.wl-card {
+  border: 1px solid var(--rex-border);
+  border-radius: var(--rex-radius-lg);
+  background: var(--rex-bg);
+}
+.wl-card:hover {
+  border-color: var(--rex-border-bold);
+}
+</style>
+    </div>
+    <aside class="toc-col wp2-floating-toc" data-wp2-toc>
+      <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
+        <span>目录</span><i aria-hidden="true">＋</i>
+      </button>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#exa-30-%e5%85%ab%e4%b8%aa-benchmark-%e5%85%a8%e7%ac%ac%e4%b8%80918-%e5%88%86%e9%87%8c%e6%9c%80%e8%af%a5%e7%9c%8b%e7%9a%84%e6%98%af%e9%82%a3%e4%b8%aa-03-%e7%9a%84%e5%b7%ae%e8%b7%9d" aria-label="Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距">Exa 3.0 八个 benchmark 全第一：91.8 分里最该看的是那个 0.3 的差距</a><ul>
+                        
+                <li>
+                    <a href="#%e8%bf%9b%e6%ad%a5%e4%bb%8e%e5%93%aa%e6%9d%a5%e6%b2%a1%e6%9c%89%e6%96%b0%e7%ae%97%e6%b3%95%e5%8f%99%e4%ba%8b" aria-label="进步从哪来：没有新算法叙事">进步从哪来：没有新算法叙事</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e8%af%a5%e7%9c%8b%e7%9a%84%e6%95%b0%e5%ad%97%e6%98%af-03" aria-label="最该看的数字是 0.3">最该看的数字是 0.3</a></li>
+                <li>
+                    <a href="#%e7%9c%9f%e6%ad%a3%e6%94%b9%e6%88%90%e6%9c%ac%e6%9b%b2%e7%ba%bf%e7%9a%84dynamic-highlights--4" aria-label="真正改成本曲线的：Dynamic Highlights &#43; $4">真正改成本曲线的：Dynamic Highlights + $4</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e8%a1%8c%e6%80%bb%e7%bb%93" aria-label="四行总结">四行总结</a></li>
+                <li>
+                    <a href="#faq" aria-label="FAQ">FAQ</a></li>
+                <li>
+                    <a href="#%e7%bb%93%e5%b0%be" aria-label="结尾">结尾</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+      </div>
+    </aside>
+  </div>
+</article>
+  </main><footer class="wp2-footer">
+  <div class="wp2-footer__grid">
+    <section>
+      <p class="wp2-footer__label">站点地图</p>
+      <a href="/">首页</a>
+      <a href="/posts/">文章</a>
+      <a href="/tutorials/">教程</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">专题</p>
+      <a href="/ai/">AI</a>
+      <a href="/languages/">编程语言</a>
+      <a href="/infrastructure/">基础设施</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">联系</p>
+      <a href="/about/">关于梦兽</a>
+      <a href="/contact/">联系我们</a>
+      <a href="/privacy/">隐私政策</a>
+      <a href="/tools/">工具精选</a>
+      <a href="/tags/">标签索引</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">订阅</p>
+      <a href="/search/">搜索文章</a>
+      <a href="/categories/">分类</a>
+      <span>© 2026 梦兽编程</span>
+    </section>
+  </div>
+  <div class="wp2-footer__bar">
+    <span>由代码与好奇心驱动</span>
+    <span>V.2026.10 / 系统正常</span>
+  </div>
+  <div class="wp2-footer__wordmark">梦兽编程</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" aria-hidden="true" tabindex="-1">
+  <svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48">
+    <circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+  <script src="/js/theme.js?v=wp2-nav-20260820" defer></script>
+  <script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script>
+  <script>
+    (function(){ var b=document.getElementById('backToTop'),r=b?b.querySelector('.back-to-top__ring-progress'):null; if(!b)return; window.addEventListener('scroll',function(){var s=document.documentElement.scrollTop||document.body.scrollTop;if(s>400){b.classList.add('is-visible');b.setAttribute('aria-hidden','false');b.removeAttribute('tabindex');if(r){var max=document.documentElement.scrollHeight-window.innerHeight;r.style.strokeDashoffset=125.6*(1-s/max);}}else{b.classList.remove('is-visible');b.setAttribute('aria-hidden','true');b.setAttribute('tabindex','-1');}},{passive:true}); b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});}); })();
+  </script>
+</body>
+</html>

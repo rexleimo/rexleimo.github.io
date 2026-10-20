@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr" class="js">
+<head><meta charset="utf-8">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="robots" content="index, follow">
+  <title>DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式 | 梦兽编程</title>
+  <meta name="keywords" content="dsh, DeepSeek-Harness, agent, 输入预测, 插件">
+  <meta name="description" content="dsh（DeepSeek Harness）的社区插件把输入框从哑的变成会猜你想发的：AI 答完一轮，浅色幽灵文字替你写好下一句，Tab 填入草稿。512 token 预算 &#43; 本地 zsh-autosuggestions 双轨，凭据脱敏，官方核心一行没动。">
+  <meta name="author" content="梦兽编程">
+  <link rel="canonical" href="https://rexai.top/posts/2026-10-21-dsh-guess-you-want/">
+  <meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+  <meta name="impact-site-verification" value="6a4c88bc-bba3-418e-9e49-d15d52bb3231">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp"><script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pref-theme');
+        var isDark = false;
+        if (t === 'dark' || (!t && isDark)) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    })();
+  </script>
+  <link crossorigin="anonymous" href="/assets/css/stylesheet.1295b7050b087afe28f01db87f36c3c7161605b0ac35e6683c7dad5d8d9c8c17.css" integrity="sha256-EpW3BQsIev4o8B24fzbDxxYWBbCsNeZoPH2tXY2cjBc=" rel="preload stylesheet" as="style">
+  <link rel="icon" href="https://rexai.top/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://rexai.top/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://rexai.top/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="https://rexai.top/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0f1d">
+  <meta name="msapplication-TileColor" content="#0a0f1d">
+  <link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-21-dsh-guess-you-want/"><link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-21-dsh-guess-you-want/">
+
+  <noscript>
+      <style>
+          #theme-toggle,
+          .top-link {
+              display: none;
+          }
+      </style>
+  </noscript>
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem('pref-theme');
+      var root = document.documentElement;
+      if (t === 'light') { root.classList.remove('dark'); root.setAttribute('data-theme', 'light'); }
+      else { root.classList.add('dark'); root.setAttribute('data-theme', 'dark'); }
+    } catch (e) {}
+  })();
+</script><script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5845143993074092"
+     crossorigin="anonymous"></script><meta name="msvalidate.01" content="DFC221DBAE81D3FE5D692A4C8F3670CF">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-62VF26DEY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-62VF26DEY6');
+</script>
+<meta property="og:url" content="https://rexai.top/posts/2026-10-21-dsh-guess-you-want/">
+  <meta property="og:site_name" content="梦兽编程">
+  <meta property="og:title" content="DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式">
+  <meta property="og:description" content="dsh（DeepSeek Harness）的社区插件把输入框从哑的变成会猜你想发的：AI 答完一轮，浅色幽灵文字替你写好下一句，Tab 填入草稿。512 token 预算 &#43; 本地 zsh-autosuggestions 双轨，凭据脱敏，官方核心一行没动。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2026-10-20T09:00:00+08:00">
+    <meta property="article:modified_time" content="2026-10-20T09:00:00+08:00">
+    <meta property="article:author" content="梦兽编程">
+    <meta property="article:tag" content="Agent">
+    <meta property="article:tag" content="DeepSeek">
+    <meta property="article:tag" content="工具">
+    <meta property="article:tag" content="实测">
+    <meta property="og:image" content="https://rexai.top/images/posts/2026-10-21-dsh-guess-you-want/cover.jpg">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rexai.top/images/posts/2026-10-21-dsh-guess-you-want/cover.jpg">
+
+<meta name="twitter:title" content="DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式">
+<meta name="twitter:description" content="dsh（DeepSeek Harness）的社区插件把输入框从哑的变成会猜你想发的：AI 答完一轮，浅色幽灵文字替你写好下一句，Tab 填入草稿。512 token 预算 &#43; 本地 zsh-autosuggestions 双轨，凭据脱敏，官方核心一行没动。">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "梦兽编程",
+  "url": "https:\/\/rexai.top\/about/",
+  "sameAs": [
+    "https:\/\/github.com\/rexai",
+    "https://rexai.top/"
+  ],
+  "affiliation": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/"
+  },
+  "knowsAbout": ["Rust", "AI Agent", "LLM", "Coding Agent", "Terminal UI", "System Programming"],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-21-dsh-guess-you-want\/"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{"@type":"ListItem","item":{"@id":"https://rexai.top/","name":"梦兽编程"},"position":1},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/","name":"Posts"},"position":2},{"@type":"ListItem","item":{"@id":"https://rexai.top/posts/2026-10-21-dsh-guess-you-want/","name":"2026 10 21 Dsh Guess You Want"},"position":3}]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式",
+  "description": "dsh（DeepSeek Harness）的社区插件把输入框从哑的变成会猜你想发的：AI 答完一轮，浅色幽灵文字替你写好下一句，Tab 填入草稿。512 token 预算 \u002b 本地 zsh-autosuggestions 双轨，凭据脱敏，官方核心一行没动。",
+  "inLanguage": "zh-cn",
+  "datePublished": "2026-10-20T09:00:00\u002b08:00",
+  "dateModified": "2026-10-20T09:00:00\u002b08:00",
+  "author": {
+    "@type": "Person",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/about/",
+    "sameAs": ["https:\/\/github.com\/rexai","https://rexai.top/"]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "梦兽编程",
+    "url": "https:\/\/rexai.top\/",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https:\/\/rexai.top\/icon-512.png",
+      "width": "512",
+      "height": "512"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https:\/\/rexai.top\/posts\/2026-10-21-dsh-guess-you-want\/"
+  },
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".post-content h1", ".post-content h2"]
+  },
+  "wordCount": "371",
+  "keywords": ["agent", "DeepSeek", "工具", "实测"],
+  "image": "https:\/\/rexai.top\/images\/posts\/2026-10-21-dsh-guess-you-want\/cover.jpg",
+  "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-21-dsh-guess-you-want\/cover.jpg",
+  "articleSection": "posts",
+  "articleBody": "DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式 Claude Code、Codex、Cursor，这帮每天替你写代码的 agent 有一个共同点：输入框全是哑的。你打，它等，它不猜。DeepSeek Harness（dsh）这边的社区把这层皮掀开了——AI 答完一轮，输入框里浮出灰色幽灵文字，把你下一句可能想发的话摆在那，按 Tab 直接填进草稿。功能叫\u0026#34;猜你想发\u0026#34;，实现全部是社区 Web 插件，一行官方代码没动。\n这篇说三件事。第一，这个功能到底是什么、怎么做到的：一次有界的辅助 LLM 调用加一套本地历史补全，成本 512 token 起步。第二，为什么值得看：它暴露了 agent harness 正在往\u0026#34;全栈接管人机对话\u0026#34;的方向走，输入框是最后一块没人接管的界面。第三，为什么这事发生在 dsh 而不是别的框架上：everything-is-a-plugin 的架构让第三方能用纯 JS 浮层做掉，官方只提供钩子。\n先看它长什么样 dsh-suggest-prompt 的效果是这样的：每个 agent 回合以 completed 结束，插件在 turn\/end 事件上挂了一次辅助 LLM 调用，把最近一轮的用户输入和助手最终回答打标签丢进去，模型按\u0026#34;以用户口吻预测下一条提示词\u0026#34;的系统指令返回一句话，Web 端把它渲染成输入框内的浅色幽灵占位文字，光标后面淡灰色，按 Tab（可改成 Alt\u002bSlash 等任意录制键）填入草稿。回复语言跟随会话——最后一条用户消息含 CJK 就预测简体中文，否则 English。\n没被采纳也不亏。删回空草稿时已持久化的建议直接重新显示，不发新请求；输入任何字符幽灵文字立刻让位，不会跟你抢键；输入法组字期间整个拦截机制静默。模型回复为空或被判为\u0026#34;元文本、评价套话、助手口吻\u0026#34;时静默跳过，不报错、不写事件。\ndsh-prompt-history 在同一批需求上做了更完整的一层：↑\/↓ 历史走 bash 的 history-search-backward 语义（前缀搜索、pending-line 还原），Ctrl\u002bR 反向搜索，选区上方浮\u0026#34;复制\/引用\/侧聊追问\u0026#34;工具条，右键直接粘贴，还能在右栏并行开第二条 agent 线程。12KB 的客户端 bundle，全走浏览器本地，纯 UI 行为不产生会话事件。\n成本账：512 token 买什么 把这笔账拆开看，这是整件事最有意思的地方。\n",
+  "about": [{"@type": "Thing", "name": "agent"}, {"@type": "Thing", "name": "DeepSeek"}, {"@type": "Thing", "name": "工具"}, {"@type": "Thing", "name": "实测"}],
+  "isAccessibleForFree": "True",
+  "timeRequired": "PT4M",
+  "copyrightYear": "2026",
+  "educationalLevel": "intermediate",
+  "learningResourceType": "tutorial"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"不是。dsh 本体（deepseek-ai/deepseek-harness）不带输入预测，功能全部来自社区 Web 插件：dsh-suggest-ghost、dsh-prompt-history、dsh-suggest-prompt、dsh-input-assist 这批。官方提供的是插件装载点和 turn/end 事件钩子。"},"name":"这功能是 dsh 官方的吗？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"按 dsh-suggest-prompt 的实现，转录在发送前做凭据形状脱敏；默认只喂最近 1 轮的用户输入 + 助手最终回答，中间工具调用一律不发，预算约 512 token。"},"name":"预测会不会把我的凭据发给模型？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"有。前缀补全走纯本地历史（zsh-autosuggestions 风格：最近度\u003e会话内频次\u003e跨会话热度），零网络请求。LLM 那半是「下一句整句预测」，可以单独在插件设置里关掉。"},"name":"不开 LLM 有没有用？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"不会。采纳只填入输入框草稿，可改可弃（Esc），Enter 才真正作为你的消息发出。"},"name":"Tab 采纳之后会不会直接发出去？"},{"@type":"Question","acceptedAnswer":{"@type":"Answer","text":"官方赌的是插件分发而不是运行时性能：npm 的零配置发布+依赖解析，101 个社区插件实测 11 个 npm 直装、81 个 GitHub 源码装、4 个需额外运行时、3 个装不上。Agent 的主成本在模型推理往返，不在 harness 语言。"},"name":"为什么 dsh 用 TypeScript 写？"}]
+}
+</script>
+
+</head><body class="site-body"><header class="wp2-header">
+  <a class="wp2-header__brand" href="/" aria-label="梦兽编程">
+    <img class="wp2-header__brand-logo" src="/images/brand/nav-logo-32.png" alt="" width="32" height="32">
+    梦兽编程<sup>™</sup>
+  </a>
+
+  <nav class="wp2-header__links" aria-label="主导航"><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/products/">产品</a>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tutorials/">教程</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tutorials">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 教程 菜单</span>
+        </button>
+        <div id="wp2-submenu-tutorials" class="wp2-header__submenu" aria-label="教程" hidden><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/ai/">AI</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-ai">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 AI 菜单</span>
+        </button>
+        <div id="wp2-submenu-ai" class="wp2-header__submenu" aria-label="AI" hidden><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/languages/">开发</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-dev">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 开发 菜单</span>
+        </button>
+        <div id="wp2-submenu-dev" class="wp2-header__submenu" aria-label="开发" hidden><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/tools/rexai-tool-directory/">工具</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-tools">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 工具 菜单</span>
+        </button>
+        <div id="wp2-submenu-tools" class="wp2-header__submenu" aria-label="工具" hidden><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item has-children" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/categories/">探索</a>
+        <button class="wp2-header__submenu-toggle" type="button" data-wp2-submenu-toggle aria-expanded="false" aria-controls="wp2-submenu-explore">
+          <span aria-hidden="true">&#9662;</span>
+          <span class="wp2-visually-hidden">展开 探索 菜单</span>
+        </button>
+        <div id="wp2-submenu-explore" class="wp2-header__submenu" aria-label="探索" hidden><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+        </div>
+      </div><div class="wp2-header__nav-item" data-wp2-nav-item>
+        <a class="wp2-header__nav-link" href="/about/">关于</a>
+      </div>
+  </nav>
+
+  <div class="wp2-header__spacer"></div>
+  <a class="wp2-header__cta" href="/tools/cc-codex-portal/">AI 套装 <span aria-hidden="true">&rarr;</span></a>
+  <button class="wp2-header__menu" type="button" aria-expanded="false" aria-controls="wp2-mobile-menu" data-wp2-menu data-open-label="打开菜单" data-close-label="关闭菜单">
+    <span class="wp2-header__menu-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="wp2-header__menu-label" data-wp2-menu-label>打开菜单</span>
+  </button>
+</header>
+
+<div id="wp2-mobile-menu" class="wp2-menu-panel" hidden>
+  <div class="wp2-menu-panel__frame">
+    <div class="wp2-menu-panel__directory">
+    <div class="wp2-menu-panel__meta"><span>[ SITE_DIRECTORY / 2026 ]</span><span>选择一个方向开始</span></div>
+    <nav class="wp2-menu-panel__grid" aria-label="全站导航"><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/products/"><strong>产品</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>自研产品、服务与项目入口。</p>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tutorials/"><strong>教程</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tutorials/smart-contracts/"><span>智能合约</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk/"><span>Go ADK</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/go-adk-2/"><span>Go ADK 2.0</span><b aria-hidden="true">&rarr;</b></a><a href="/tutorials/herdr/"><span>Herdr</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/ai/"><strong>AI</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/ai/claude-code/"><span>Claude Code</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/codex/"><span>Codex</span><b aria-hidden="true">&rarr;</b></a><a href="/ai/llm/"><span>LLM</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/languages/"><strong>开发</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/languages/rust/"><span>Rust</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/go/"><span>Go</span><b aria-hidden="true">&rarr;</b></a><a href="/languages/python/"><span>Python</span><b aria-hidden="true">&rarr;</b></a><a href="/frontend/"><span>前端</span><b aria-hidden="true">&rarr;</b></a><a href="/infrastructure/"><span>基础设施</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/tools/rexai-tool-directory/"><strong>工具</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tools/rexai-tool-directory/"><span>AI 工具导航</span><b aria-hidden="true">&rarr;</b></a><a href="https://tool.rexai.top/" target="_blank" rel="noopener"><span>Rex 工具集</span><b aria-hidden="true">&nearr;</b><span class="wp2-visually-hidden">（在新标签页打开）</span></a><a href="/marketing/"><span>VPN网络链</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group">
+          <a class="wp2-menu-panel__parent" href="/categories/"><strong>探索</strong><span aria-hidden="true">&rarr;</span></a>
+          <div class="wp2-menu-panel__children"><a href="/tags/"><span>标签</span><b aria-hidden="true">&rarr;</b></a><a href="/categories/"><span>分类</span><b aria-hidden="true">&rarr;</b></a>
+          </div>
+        </section><section class="wp2-menu-panel__group is-single">
+          <a class="wp2-menu-panel__parent" href="/about/"><strong>关于</strong><span aria-hidden="true">&rarr;</span></a>
+            <p>了解梦兽编程、联系渠道与站点说明。</p>
+        </section>
+    </nav>
+    </div>
+    <div class="wp2-menu-panel__utility" aria-label="站点工具">
+      <span class="wp2-menu-panel__utility-label">实用工具</span>
+      <a class="wp2-menu-panel__utility-search" href="/search/">搜索</a><a href="/en/">English</a>
+      <button type="button" data-theme-toggle data-theme-light-label="主题：浅色" data-theme-dark-label="主题：深色" data-theme-light-action="切换至深色" data-theme-dark-action="切换至浅色" aria-pressed="false"><span data-theme-toggle-label>主题：浅色</span></button>
+    </div>
+  </div>
+</div>
+<div class="reading-progress-bar" id="readingProgress" aria-hidden="true"></div>
+
+  <main id="main-content" class="glass-main"><article class="post-single wp2-article">
+
+  <header class="page-head">
+<nav aria-label="breadcrumb" class="breadcrumb-nav">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="https://rexai.top/"><span itemprop="name">梦兽编程</span></a>
+      <meta itemprop="position" content="1">
+    </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/"><span itemprop="name">Posts</span></a>
+        <meta itemprop="position" content="2">
+      </li>
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="https://rexai.top/posts/2026-10-21-dsh-guess-you-want/"><span itemprop="name">2026 10 21 Dsh Guess You Want</span></a>
+        <meta itemprop="position" content="3">
+      </li>
+  </ol>
+</nav>
+
+    <h1 class="post-title entry-hint-parent">
+      DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式
+    </h1><p class="post-description">dsh（DeepSeek Harness）的社区插件把输入框从哑的变成会猜你想发的：AI 答完一轮，浅色幽灵文字替你写好下一句，Tab 填入草稿。512 token 预算 &#43; 本地 zsh-autosuggestions 双轨，凭据脱敏，官方核心一行没动。</p>
+    <div class="post-meta"><span title='2026-10-20 09:00:00 +0800 +0800'>October 20, 2026</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;371 words&nbsp;·&nbsp;梦兽编程<span class="waline-pageview-count" data-path="/posts/2026-10-21-dsh-guess-you-want/" style="margin-left: 0.5rem;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+  </svg>
+  <span class="waline-pageview-number" id="waline-pv-2f4cdb3ffc35bc3b0cd4a3555d2d417fd566e963b2f25237580969b740352b2b" data-path="/posts/2026-10-21-dsh-guess-you-want/">-</span>
+</span>&nbsp;|&nbsp;<span class="rex-translations">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:2px;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+    <span class="rex-translations__links"><a href="https://rexai.top/en/posts/2026-10-21-dsh-guess-you-want/" class="rex-translations__link">English</a></span>
+  </span>
+    </div>
+  </header>
+  <figure class="entry-cover wp2-article-cover">
+    <img src="https://rexai.top/images/posts/2026-10-21-dsh-guess-you-want/cover.jpg" alt="DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式" fetchpriority="high" onerror="this.closest('.entry-cover').remove()">
+  </figure>
+
+  <div class="post-layout has-toc">
+    <div class="post-main">
+      <div class="post-content"><p>Claude Code、Codex、Cursor，这帮每天替你写代码的 agent 有一个共同点：输入框全是哑的。你打，它等，它不猜。DeepSeek Harness（dsh）这边的社区把这层皮掀开了——AI 答完一轮，输入框里浮出灰色幽灵文字，把你下一句可能想发的话摆在那，按 Tab 直接填进草稿。功能叫&quot;猜你想发&quot;，实现全部是社区 Web 插件，一行官方代码没动。</p>
+<p>这篇说三件事。第一，这个功能到底是什么、怎么做到的：一次有界的辅助 LLM 调用加一套本地历史补全，成本 512 token 起步。第二，为什么值得看：它暴露了 agent harness 正在往&quot;全栈接管人机对话&quot;的方向走，输入框是最后一块没人接管的界面。第三，为什么这事发生在 dsh 而不是别的框架上：everything-is-a-plugin 的架构让第三方能用纯 JS 浮层做掉，官方只提供钩子。</p>
+<h2 id="先看它长什么样">先看它长什么样<a hidden class="anchor" aria-hidden="true" href="#先看它长什么样">#</a></h2>
+<p>dsh-suggest-prompt 的效果是这样的：每个 agent 回合以 completed 结束，插件在 turn/end 事件上挂了一次辅助 LLM 调用，把<strong>最近一轮的用户输入和助手最终回答</strong>打标签丢进去，模型按&quot;以用户口吻预测下一条提示词&quot;的系统指令返回一句话，Web 端把它渲染成输入框内的浅色幽灵占位文字，光标后面淡灰色，按 Tab（可改成 Alt+Slash 等任意录制键）填入草稿。回复语言跟随会话——最后一条用户消息含 CJK 就预测简体中文，否则 English。</p>
+<p>没被采纳也不亏。删回空草稿时已持久化的建议直接重新显示，不发新请求；输入任何字符幽灵文字立刻让位，不会跟你抢键；输入法组字期间整个拦截机制静默。模型回复为空或被判为&quot;元文本、评价套话、助手口吻&quot;时静默跳过，不报错、不写事件。</p>
+<p><img alt="dsh-suggest-prompt 官方截图：AI 答完一轮后，输入框里浮出浅色建议条，Tab 填入草稿" loading="lazy" src="/images/posts/2026-10-21-dsh-guess-you-want/fig-1.jpg"></p>
+<p>dsh-prompt-history 在同一批需求上做了更完整的一层：↑/↓ 历史走 bash 的 history-search-backward 语义（前缀搜索、pending-line 还原），Ctrl+R 反向搜索，选区上方浮&quot;复制/引用/侧聊追问&quot;工具条，右键直接粘贴，还能在右栏并行开第二条 agent 线程。12KB 的客户端 bundle，全走浏览器本地，纯 UI 行为不产生会话事件。</p>
+<h2 id="成本账512-token-买什么">成本账：512 token 买什么<a hidden class="anchor" aria-hidden="true" href="#成本账512-token-买什么">#</a></h2>
+<p>把这笔账拆开看，这是整件事最有意思的地方。</p>
+<p><strong>默认不开思考</strong>。辅助请求带 <code>reasoningEffort: off</code>（DeepSeek 序列化为 <code>thinking: disabled</code>），不为&quot;猜一句话&quot;烧推理预算；模型不支持该参数就自动去掉字段重试一次，拒绝发生在任何网络 IO 之前，几乎零额外开销。</p>
+<p><strong>只喂最后一轮</strong>。<code>maxRecentTurns</code> 默认 1，中间的工具调用和推理过程一律不进建议模型。转录有 <code>maxTranscriptChars</code> 预算约束，建议本身有可见字符上限，整个调用有字节/令牌/超时三道闸。</p>
+<p><strong>不占主请求</strong>。主 agent 的 token 消耗一分不变，预测是每回合至多一次的并行辅助调用，且缓存命中（同一段上下文）时不重复请求。</p>
+<p><img alt="dsh-suggest-prompt 设置卡片：每轮 LLM 预测的 token 预算与超时都可配，关掉 LLM 即零网络" loading="lazy" src="/images/posts/2026-10-21-dsh-guess-you-want/fig-2.jpg"></p>
+<p>我的判断：这 512 token 买的不是&quot;帮你打字&quot;，是<strong>把&quot;你想问什么&quot;这个决策成本压到接近零</strong>。agent 工作流里最贵的从来不是 token 是意图切换——AI 刚跑完一个重构，你要想起&quot;哦对了还要跑一遍测试&quot;，这个起手的心理成本比敲那行字的键盘成本高三百倍。幽灵文字替你记着，Tab 一下，意图不落地就走不了。</p>
+<h2 id="本地那半没网也能猜">本地那半：没网也能猜<a hidden class="anchor" aria-hidden="true" href="#本地那半没网也能猜">#</a></h2>
+<p>别把&quot;猜你想发&quot;等同于&quot;每回都调模型&quot;。dsh-suggest-ghost 的设计是双轨：草稿为空时走 LLM 整句预测；一旦你开始打字，立刻切换成 <strong>zsh-autosuggestions 风格的前缀补全</strong>，纯本地，按对话历史排序——最近程度第一、会话内频次第二、跨会话热度第三，匹配时忽略大小写、空白和全角半角标点差异。</p>
+<p>这就是 zsh 那个&quot;灰字补全&quot;在 agent 输入框里的移植。你的提示词历史里有过&quot;修复那个 500&quot;，这次再打&quot;修复那个&quot;，灰色部分自动续上。历史源是会话自身消息记录（user/steering 节点），刷新后还在，跨会话记忆默认关（开了上限 200 条存浏览器本地）。</p>
+<p>双轨的价值在成本曲线：高频重复场景（&ldquo;跑一遍测试&quot;之类）靠本地历史命中，零 token；真正的新意图才落到 LLM 预测。设计是对的。还有一层容易被忽略：前缀补全的排序权重是&quot;最近程度&gt;会话内频次&gt;跨会话热度&rdquo;，这三档的优先级就是使用习惯的数学表达——你上周反复打的那句排在三天前偶尔用过的上面，比简单按总次数排序更贴实际。</p>
+<h2 id="为什么是插件不是官方功能">为什么是插件，不是官方功能<a hidden class="anchor" aria-hidden="true" href="#为什么是插件不是官方功能">#</a></h2>
+<p>dsh 本体的输入框是 Lexical 的 contenteditable 宿主，官方提供 <code>conversation.input.overlay</code> 槽位和 <code>inputActions.setDraft</code> API，不提供预测逻辑。插件全在 DOM 浮层上做完，不碰核心。</p>
+<p>这不是 dsh 独有的取舍，是它的架构立场：everything-is-a-plugin。官方赌对了钩子的粒度——turn/end、input.overlay、appendPluginRecord，刚好够第三方把&quot;输入层&quot;整层拿走重写，而核心 agent 循环一行不动。dsh-suggest-prompt 写日志用的是 ignorable 插件记录（<code>plugin:suggest-prompt/suggested</code>），不认识的读者保留并跳过，会话永远可冷读——在缺这个 API 的老版本上插件干脆保持完全休眠，宁可空着不写私有事件，因为私有事件写进日志会让整个会话冷读时直接被拒。</p>
+<p>这个细节比功能本身更能说明问题：社区插件的纪律性已经高到要兼容会话格式的兼容性约束了。</p>
+<h2 id="typescript-之争生态赢了性能">TypeScript 之争：生态赢了性能<a hidden class="anchor" aria-hidden="true" href="#typescript-之争生态赢了性能">#</a></h2>
+<p>dsh 从 8 月 13 日开源起，HN 上最常见的吐槽是&quot;为什么是 TypeScript&quot;。约 219 个包、45 万行 TS、pnpm monorepo——在讲究性的 agent harness 里确实扎眼。</p>
+<p>官方社区给出的回答我认为是站得住的：这不是运行时选择，是<strong>分发选择</strong>。dsh 的整个论点是&quot;一切皆插件&quot;，插件必须能轻松安装、解析依赖、即时发布。npm 在&quot;运行时装随机包&quot;这件事上没有任何对手——Rust 有 crates.io，Go 有 modules，Python 有 PyPI，但没有一个具备 JS 生态那种零配置发布+庞大存量+热装习惯的组合。101 个社区插件的实测分割说明问题：11 个 npm 干净直装，81 个以裸 GitHub 仓库形式存在（<code>dsh plugin add github:owner/repo</code> 直接装），4 个需要 Web/TUI 运行时，3 个装不上。81/10 的裸 GitHub 占比之所以能跑，就因为 <code>dsh add</code> 是 Node 安装机制上的一层薄封装——你在 Rust 或 Go 里复现不了这一点，除非先造一个 npm 的等价物。</p>
+<p>性能反驳忽略了一件事：agent 里主导成本是模型推理的跨网络往返，&ldquo;决定下一步&quot;发生在模型内部，不在 Node 进程里。Node 更慢的那部分（冷启动、JSON 解析、字符串处理）相对秒级模型往返是可忽略项。选 Rust 加速那 1%，却给 99% 的插件分发加摩擦——对一个赌社区生态的框架，这是错的取舍。</p>
+<p>我同意这个判断。唯一要留个心眼的是 81 个裸 GitHub 仓库的质量下限：没有 npm 的发布流程约束，插件坏在 <code>ERR_PNPM_FETCH_404</code> 或 CJS/ESM 不匹配上是常态，官方排错指南把这些都收录了，但用户侧的脏活还是用户自己的。</p>
+<h2 id="四行总结">四行总结<a hidden class="anchor" aria-hidden="true" href="#四行总结">#</a></h2>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>场景</th>
+        <th>做法</th>
+        <th>成本</th>
+        <th>判定</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>重复提示词</td>
+        <td>本地前缀补全（zsh-autosuggestions 移植）</td>
+        <td>0 token</td>
+        <td>高频场景主力，正确</td>
+      </tr>
+      <tr>
+        <td>新意图</td>
+        <td>每回合一次 LLM 整句预测，512 token 预算</td>
+        <td>每回合 ≤1 次</td>
+        <td>买的是意图切换成本，值</td>
+      </tr>
+      <tr>
+        <td>凭据安全</td>
+        <td>转录发送前脱敏，只喂最近 1 轮</td>
+        <td>—</td>
+        <td>默认关 LLM 即零网络，边界清晰</td>
+      </tr>
+      <tr>
+        <td>采纳</td>
+        <td>Tab 填草稿，Enter 才发出</td>
+        <td>—</td>
+        <td>不打扰，不对，Esc 即弃</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<h2 id="faq">FAQ<a hidden class="anchor" aria-hidden="true" href="#faq">#</a></h2>
+<p><strong>这是 dsh 官方功能吗？</strong> 不是，全是社区 Web 插件（suggest-ghost / prompt-history / suggest-prompt / input-assist 这批）。官方提供插件装载点、turn/end 钩子和输入框 overlay API，功能逻辑一行没写。</p>
+<p><strong>预测会不会把我 API key 发给模型？</strong> 按 suggest-prompt 的实现，转录在发送前做凭据形状脱敏，且只喂最近一轮的用户输入+助手最终回答，工具调用中间态不进。想彻底零网络，插件设置里把 LLM 建议关掉，只留本地前缀补全。</p>
+<p><strong>和 Claude Code 的补全比呢？</strong> 方向一致（灰字 + Tab 采纳就是直接对齐 Claude Code 行为），但 Claude Code 是官方内置，dsh 这版是插件层。差别在装载方式：dsh 一行 <code>dsh plugin add</code> 装好，不用等官方排期，也不受官方版本节奏约束——代价是质量下限靠社区自律。</p>
+<p><strong>装不上怎么办？</strong> 前置是 dsh ≥ 0.2.0-rc.2（0.2.0 改了会话投影和 Web 客户端模块表契约，老版插件按休眠处理）。安装 <code>dsh plugin --profile web add dsh-suggest-ghost</code> 之后重启 <code>dsh web</code>，Ctrl+Shift+R 强刷页面，无需配置即生效。</p>
+<p><strong>值得为这个专门用 dsh 吗？</strong> 如果你已经在跑 dsh 工作流，装一个插件的事，白捡。如果没在用 dsh，单独为输入预测迁移不值得——它解决的是&quot;高频 agent 对话&quot;场景的效率，不是通用工具需求。</p>
+<h2 id="结尾">结尾<a hidden class="anchor" aria-hidden="true" href="#结尾">#</a></h2>
+<p>输入框是 agent 工具的最后一块界面。模型能写代码、能跑测试、能连 MCP，唯独&quot;你下一句想发什么&quot;一直是纯靠人。dsh 社区用一批 12KB 的 Web 插件把这层堵上了，而且没碰官方核心一行代码——钩子给得够细，第三方就能把整个输入体验重写。</p>
+<p>512 个 token 的预算买的是意图不落地就走不了，这笔账我认为是划算的。</p>
+<p>你是哪种用法：纯本地补全够用，还是 LLM 整句预测离不开？dsh 之外你给哪个 agent 开过这类&quot;猜你想发&rdquo;？评论区聊，攒够一批实测我出续篇。转给那个还在给 agent 手动打起手式指令的同事。</p>
+<p>微信搜索「梦兽编程」。</p>
+<p><strong>出处</strong>：dsh-suggest-prompt（github.com/studyzy/dsh-suggest-prompt，MIT）、dsh-suggest-ghost（github.com/WuJiaoJue/dsh-suggest-ghost，0.5.0，dshfind 收录 2026-10-20）、dsh-prompt-history（Xiaofei-fei，12KB 客户端 bundle）、dsh-composer-history（PerryLink 0.5.3，Apache-2.0，官方 discussions #4135）、dsh-input-assist（官方 discussions #6313）、deepseek-ai/deepseek-harness（2026-08-13 开源，MIT，~219 包 / 45 万行 TS）、dshbase《为什么是 TypeScript：101 个插件实测》（2026-08-14）。正文插图：dsh-suggest-prompt 官方功能截图与设置卡（github.com/studyzy/dsh-suggest-prompt assets，MIT）。</p>
+
+
+      </div>
+<section class="post-content post-faq" aria-labelledby="post-faq-heading">
+  <h2 id="post-faq-heading">常见问题</h2>
+  <section class="post-faq__item">
+    <h3>这功能是 dsh 官方的吗？</h3>
+    <p>不是。dsh 本体（deepseek-ai/deepseek-harness）不带输入预测，功能全部来自社区 Web 插件：dsh-suggest-ghost、dsh-prompt-history、dsh-suggest-prompt、dsh-input-assist 这批。官方提供的是插件装载点和 turn/end 事件钩子。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>预测会不会把我的凭据发给模型？</h3>
+    <p>按 dsh-suggest-prompt 的实现，转录在发送前做凭据形状脱敏；默认只喂最近 1 轮的用户输入 &#43; 助手最终回答，中间工具调用一律不发，预算约 512 token。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>不开 LLM 有没有用？</h3>
+    <p>有。前缀补全走纯本地历史（zsh-autosuggestions 风格：最近度&gt;会话内频次&gt;跨会话热度），零网络请求。LLM 那半是「下一句整句预测」，可以单独在插件设置里关掉。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>Tab 采纳之后会不会直接发出去？</h3>
+    <p>不会。采纳只填入输入框草稿，可改可弃（Esc），Enter 才真正作为你的消息发出。</p>
+  </section>
+  <section class="post-faq__item">
+    <h3>为什么 dsh 用 TypeScript 写？</h3>
+    <p>官方赌的是插件分发而不是运行时性能：npm 的零配置发布&#43;依赖解析，101 个社区插件实测 11 个 npm 直装、81 个 GitHub 源码装、4 个需额外运行时、3 个装不上。Agent 的主成本在模型推理往返，不在 harness 语言。</p>
+  </section>
+</section>
+
+<section class="post-actions" aria-label="post actions">
+  <div class="post-actions__group">
+    <div class="post-actions__item">
+      <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="winbbryz" data-color="#FFDD00" data-emoji="" data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff"></script>
+    </div>
+  </div>
+</section>
+
+<aside class="related-articles" aria-label="相关文章">
+  <h3>📚 相关文章</h3>
+  <ul>
+    <li>
+      <a href="/posts/2026-10-20-harness2-aios-jobbench-34pp/">Google 扔了个 11.9k star 的 Harness²：工位比脑子值钱，AIOS 把它放上记分台，&#43;34.7pp</a>
+      <small> — Harness² 是 Google Cloud AI Research 的递归 agent 框架：模型冻住，递归改的是工位（prompt、护栏、记忆、工具指导 …</small>
+    </li>
+    <li>
+      <a href="/posts/2026-10-17-deepseek-v41-flash-1017/">DeepSeek V4 半年复盘：今天 1017 更新，小模型正在吃掉旗舰</a>
+      <small> — DeepSeek 今天更新 V4.1-Flash-1017：强化学习 self-feedback 做端到端项目、开源放 …</small>
+    </li>
+  </ul>
+</aside>
+
+
+      <footer class="post-footer">
+        <ul class="post-tags"><li><a href="/tags/agent/">#Agent</a></li><li><a href="/tags/deepseek/">#DeepSeek</a></li><li><a href="/tags/%E5%B7%A5%E5%85%B7/">#工具</a></li><li><a href="/tags/%E5%AE%9E%E6%B5%8B/">#实测</a></li>
+        </ul>
+      </footer>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.css" />
+
+
+<div id="waline-container" style="margin-top: 3rem;"></div>
+
+
+<script type="module">
+  import { init, pageviewCount } from 'https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.js';
+
+  init({
+    el: '#waline-container',
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    lang: 'zh-CN',
+    emoji: ["//cdn.jsdelivr.net/npm/@waline/emojis@1.4.0/weibo"],
+    requiredMeta: ["nick"],
+    pageSize:  10 ,
+    wordLimit:  0 ,
+    dark: 'auto',
+    path: window.location.pathname,
+    locale: {
+      placeholder: '欢迎留言交流，分享您的想法...',
+    },
+    reaction: true,
+    search: false,
+    imageUploader: false,
+    highlighter: false,
+  });
+
+  pageviewCount({
+    serverURL: 'https:\/\/waline-rex.vercel.app\/',
+    path: window.location.pathname,
+    update: false,
+  });
+</script>
+
+<style>
+#waline-container {
+  background: var(--rex-bg);
+  padding: var(--rex-space-5);
+  border-radius: var(--rex-radius-xl);
+  border: 1px solid var(--rex-border);
+}
+@media screen and (max-width: 768px) {
+  #waline-container {
+    padding: var(--rex-space-4);
+  }
+}
+.wl-editor {
+  border-radius: var(--rex-radius-lg);
+}
+.wl-btn {
+  border-radius: var(--rex-radius-lg);
+  transition: all 0.3s ease;
+}
+.wl-btn:hover {
+  transform: translateY(-1px);
+}
+.wl-reaction {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rex-border);
+}
+.wl-reaction-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.wl-reaction-img {
+  transition: transform 0.2s ease;
+}
+.wl-reaction-img:hover {
+  transform: scale(1.2);
+}
+.wl-card {
+  border: 1px solid var(--rex-border);
+  border-radius: var(--rex-radius-lg);
+  background: var(--rex-bg);
+}
+.wl-card:hover {
+  border-color: var(--rex-border-bold);
+}
+</style>
+    </div>
+    <aside class="toc-col wp2-floating-toc" data-wp2-toc>
+      <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
+        <span>目录</span><i aria-hidden="true">＋</i>
+      </button>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#deepseek-harness-%e7%9a%84%e8%be%93%e5%85%a5%e6%a1%86%e5%bc%80%e5%a7%8b%e7%8c%9c%e4%bd%a0%e6%83%b3%e5%8f%91512-%e4%b8%aa-token-%e6%8d%a2%e6%8e%89%e4%bd%a0%e6%af%8f%e6%ac%a1%e7%9a%84%e8%b5%b7%e6%89%8b%e5%bc%8f" aria-label="DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式">DeepSeek Harness 的输入框开始猜你想发：512 个 token 换掉你每次的起手式</a><ul>
+                        
+                <li>
+                    <a href="#%e5%85%88%e7%9c%8b%e5%ae%83%e9%95%bf%e4%bb%80%e4%b9%88%e6%a0%b7" aria-label="先看它长什么样">先看它长什么样</a></li>
+                <li>
+                    <a href="#%e6%88%90%e6%9c%ac%e8%b4%a6512-token-%e4%b9%b0%e4%bb%80%e4%b9%88" aria-label="成本账：512 token 买什么">成本账：512 token 买什么</a></li>
+                <li>
+                    <a href="#%e6%9c%ac%e5%9c%b0%e9%82%a3%e5%8d%8a%e6%b2%a1%e7%bd%91%e4%b9%9f%e8%83%bd%e7%8c%9c" aria-label="本地那半：没网也能猜">本地那半：没网也能猜</a></li>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e6%98%af%e6%8f%92%e4%bb%b6%e4%b8%8d%e6%98%af%e5%ae%98%e6%96%b9%e5%8a%9f%e8%83%bd" aria-label="为什么是插件，不是官方功能">为什么是插件，不是官方功能</a></li>
+                <li>
+                    <a href="#typescript-%e4%b9%8b%e4%ba%89%e7%94%9f%e6%80%81%e8%b5%a2%e4%ba%86%e6%80%a7%e8%83%bd" aria-label="TypeScript 之争：生态赢了性能">TypeScript 之争：生态赢了性能</a></li>
+                <li>
+                    <a href="#%e5%9b%9b%e8%a1%8c%e6%80%bb%e7%bb%93" aria-label="四行总结">四行总结</a></li>
+                <li>
+                    <a href="#faq" aria-label="FAQ">FAQ</a></li>
+                <li>
+                    <a href="#%e7%bb%93%e5%b0%be" aria-label="结尾">结尾</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+      </div>
+    </aside>
+  </div>
+</article>
+  </main><footer class="wp2-footer">
+  <div class="wp2-footer__grid">
+    <section>
+      <p class="wp2-footer__label">站点地图</p>
+      <a href="/">首页</a>
+      <a href="/posts/">文章</a>
+      <a href="/tutorials/">教程</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">专题</p>
+      <a href="/ai/">AI</a>
+      <a href="/languages/">编程语言</a>
+      <a href="/infrastructure/">基础设施</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">联系</p>
+      <a href="/about/">关于梦兽</a>
+      <a href="/contact/">联系我们</a>
+      <a href="/privacy/">隐私政策</a>
+      <a href="/tools/">工具精选</a>
+      <a href="/tags/">标签索引</a>
+    </section>
+    <section>
+      <p class="wp2-footer__label">订阅</p>
+      <a href="/search/">搜索文章</a>
+      <a href="/categories/">分类</a>
+      <span>© 2026 梦兽编程</span>
+    </section>
+  </div>
+  <div class="wp2-footer__bar">
+    <span>由代码与好奇心驱动</span>
+    <span>V.2026.10 / 系统正常</span>
+  </div>
+  <div class="wp2-footer__wordmark">梦兽编程</div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" aria-hidden="true" tabindex="-1">
+  <svg class="back-to-top__ring" width="48" height="48" viewBox="0 0 48 48">
+    <circle class="back-to-top__ring-bg" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2"/>
+    <circle class="back-to-top__ring-progress" cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <svg class="back-to-top__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"/>
+  </svg>
+</button>
+  <script src="/js/theme.js?v=wp2-nav-20260820" defer></script>
+  <script src="/js/wp2-shell.js?v=wp2-nav-20260820" defer></script>
+  <script>
+    (function(){ var b=document.getElementById('backToTop'),r=b?b.querySelector('.back-to-top__ring-progress'):null; if(!b)return; window.addEventListener('scroll',function(){var s=document.documentElement.scrollTop||document.body.scrollTop;if(s>400){b.classList.add('is-visible');b.setAttribute('aria-hidden','false');b.removeAttribute('tabindex');if(r){var max=document.documentElement.scrollHeight-window.innerHeight;r.style.strokeDashoffset=125.6*(1-s/max);}}else{b.classList.remove('is-visible');b.setAttribute('aria-hidden','true');b.setAttribute('tabindex','-1');}},{passive:true}); b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});}); })();
+  </script>
+</body>
+</html>
