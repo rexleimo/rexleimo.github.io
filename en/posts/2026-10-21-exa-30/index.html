@@ -151,15 +151,15 @@
     "@type": "SpeakableSpecification",
     "cssSelector": [".post-content h1", ".post-content h2"]
   },
-  "wordCount": "1139",
+  "wordCount": "105",
   "keywords": ["AI search", "API", "agent"],
   "image": "https:\/\/rexai.top\/images\/posts\/2026-10-21-exa-30\/cover.jpg",
   "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-21-exa-30\/cover.jpg",
   "articleSection": "posts",
-  "articleBody": "Exa 3.0 Tops Eight Benchmarks: The Number to Actually Watch Is the 0.3 Margin Exa released 3.0 on 10-18\/19. The official post’s own words: “we rank first on every benchmark we tested.” Eight boards: BrowseComp 91.8, DSQA 88.2, WideSearch 56.1, ATLAS 42.0, WebCode 75.5, FinSearchComp 68.0, plus Company\/People FindAll for vertical retrieval. The named rivals are Perplexity, Brave Search, and Parallel — picked by Exa.\nBottom line first: this is an agent-search arms-race round, but the most valuable signal hides next to that 91.8 — on BrowseComp, Exa 3.0 leads Perplexity by just 0.3 points. Under the “first on all eight” headline, the main board is running right against its rival.\n",
+  "articleBody": " Archived on the forum: the full article, data tables, and community discussion live on the Dream Beast LLM Community (BBS). This page keeps only a summary.\nRead the full version \u002b join the discussion on the BBS: t\/46 External link TL;DR: Exa shipped 3.0 on 10-19: first place on all eight self-reported benchmarks, but the BrowseComp lead over Perplexity is 0.3 points. What actually changes the cost curve is Dynamic Highlights (95% fewer context tokens) plus Exa Lite at $4\/1000 requests; independent scoring puts Exa at 80, tied for first.\n",
   "about": [{"@type": "Thing", "name": "AI search"}, {"@type": "Thing", "name": "API"}, {"@type": "Thing", "name": "agent"}],
   "isAccessibleForFree": "True",
-  "timeRequired": "PT8M",
+  "timeRequired": "PT3M",
   "copyrightYear": "2026",
   "educationalLevel": "intermediate",
   "learningResourceType": "tutorial"
@@ -299,7 +299,7 @@
     <h1 class="post-title entry-hint-parent">
       Exa 3.0 Tops Eight Benchmarks: The Number to Actually Watch Is the 0.3 Margin
     </h1><p class="post-description">Exa shipped 3.0 on 10-19: first place on all eight self-reported benchmarks, but the BrowseComp lead over Perplexity is 0.3 points. What actually changes the cost curve is Dynamic Highlights (95% fewer context tokens) plus Exa Lite at $4/1000 requests; independent scoring puts Exa at 80, tied for first.</p>
-    <div class="post-meta"><span title='2026-10-20 09:00:00 +0800 +0800'>October 20, 2026</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;1139 words&nbsp;·&nbsp;Dreambeast<span class="waline-pageview-count" data-path="/en/posts/2026-10-21-exa-30/" style="margin-left: 0.5rem;">
+    <div class="post-meta"><span title='2026-10-20 09:00:00 +0800 +0800'>October 20, 2026</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;105 words&nbsp;·&nbsp;Dreambeast<span class="waline-pageview-count" data-path="/en/posts/2026-10-21-exa-30/" style="margin-left: 0.5rem;">
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
     <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
     <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
@@ -321,70 +321,13 @@
 
   <div class="post-layout has-toc">
     <div class="post-main">
-      <div class="post-content"><p>Exa released 3.0 on 10-18/19. The official post&rsquo;s own words: &ldquo;we rank first on every benchmark we tested.&rdquo; Eight boards: BrowseComp 91.8, DSQA 88.2, WideSearch 56.1, ATLAS 42.0, WebCode 75.5, FinSearchComp 68.0, plus Company/People FindAll for vertical retrieval. The named rivals are Perplexity, Brave Search, and Parallel — picked by Exa.</p>
-<p>Bottom line first: this is an agent-search arms-race round, but <strong>the most valuable signal hides next to that 91.8</strong> — on BrowseComp, Exa 3.0 leads Perplexity by just 0.3 points. Under the &ldquo;first on all eight&rdquo; headline, the main board is running right against its rival.</p>
-<p><img alt="Exa&rsquo;s official eight-board comparison table: Exa 3.0 highlighted in a blue column against Perplexity / Brave / Parallel; 7 of 8 rows lead (self-reported, October 2026 evaluation)" loading="lazy" src="/images/posts/2026-10-21-exa-30/fig-1.jpg"></p>
-<h2 id="where-the-improvement-came-from-no-new-architecture-story">Where the improvement came from: no new-architecture story<a hidden class="anchor" aria-hidden="true" href="#where-the-improvement-came-from-no-new-architecture-story">#</a></h2>
-<p>Exa attributes all of 3.0&rsquo;s gains to three acts of scale: its largest embedding model yet (more compute, more data), billions of new documents (products, local businesses, flights, sports, weather — verticals search APIs historically ignored), and Dynamic Highlights going generally available.</p>
-<p>No new architecture, no new training trick. The hardest sentence in the post is an admission: &ldquo;we&rsquo;re not claiming a clever new technique — we&rsquo;re claiming we out-spent and out-scaled the field on the thing that actually moves retrieval accuracy.&rdquo; That&rsquo;s good news for users: retrieval-quality gains come from index and embedding scale, not tuning sorcery, and there&rsquo;s room for further rounds.</p>
-<p>Exa runs its own crawler and index, no Google/Bing wrapping; officially 2T URLs tracked, 100B pages served, hosted-API latency configurable from 450ms to 1s.</p>
-<h2 id="the-number-to-actually-watch-is-03">The number to actually watch is 0.3<a hidden class="anchor" aria-hidden="true" href="#the-number-to-actually-watch-is-03">#</a></h2>
-<p>Parked the self-reported water for a moment (Exa picked the rivals, defined the boards, and ran them), here are the independent cross-checks: Artificial Analysis&rsquo;s independent Search Index (same agent model plus the open-source Stirrup harness across 29 products) scores Exa 3.0&rsquo;s Auto tier with Dynamic Highlights at 80, <strong>tied with Perplexity for first</strong>; Lite tier scores 79. Dev.to&rsquo;s community scoring across 20 agent-search dimensions: Exa 8.7, Perplexity 6.8, with Tavily/Serper/Brave squeezed between. An independent 500-query evaluation: Exa 64.8% accuracy versus Perplexity&rsquo;s 60.1%.</p>
-<p>Both external data sets confirm Exa leads, but the margins (a tie, 0.3, and 4.7 points) are not the same order as the &ldquo;first on all eight&rdquo; headline. Artificial Analysis also recorded things Exa&rsquo;s own table doesn&rsquo;t have: Auto tier per-task tokens down from 299k to 157k (−47%), cost from $0.083 to $0.066 (−21%), Lite at $0.044 — Dynamic Highlights&rsquo; payoff lands on the cost curve, not just the quality table. Exa&rsquo;s own ATLAS 42.0 is also the weakest of the eight boards (yet the biggest margin is here, 42.0 vs 37.2) — the main retrieval boards hug, the weak board stretches; the shape says 3.0&rsquo;s improvement is &ldquo;raising the floor across the board,&rdquo; not &ldquo;a single breakthrough.&rdquo;</p>
-<p>My judgment: Exa 3.0&rsquo;s real position is <strong>lifting the quality baseline for agent search, without opening a generational gap</strong>. Don&rsquo;t select on its own boards alone — run your own query set against Perplexity/Tavily on the same 20-dimension spread (the Dev.to method works), and a lead under 5 points is effectively no lead.</p>
-<h2 id="what-actually-changes-the-cost-curve-dynamic-highlights--4">What actually changes the cost curve: Dynamic Highlights + $4<a hidden class="anchor" aria-hidden="true" href="#what-actually-changes-the-cost-curve-dynamic-highlights--4">#</a></h2>
-<p>The two product moves matter more than &ldquo;first place.&rdquo;</p>
-<p><strong>Dynamic Highlights</strong> extracts the relevant snippet instead of feeding the whole page; self-reported 95% token savings with answer quality held or improved. In a multi-round agent loop, the budget hog is context tokens, not API call count. If this holds outside Exa&rsquo;s own testing, it shaves a big slice off per-round agent-search cost. The 95% is Exa&rsquo;s number; the independent 64.8% accuracy doesn&rsquo;t separately isolate the Highlights contribution — that&rsquo;s the next thing the community should reproduce.</p>
-<p><strong>Exa Lite at $4 per 1,000 requests</strong>, paired with an Auto tier ($7, more compute per query) into two clear tiers. For high-volume agent scenarios the math works: $4 per 1,000 calls, and Dynamic Highlights&rsquo; token savings put the search side into single digits of the total agent budget. This is Exa&rsquo;s step from &ldquo;researcher&rsquo;s toy&rdquo; to &ldquo;scalable infrastructure&rdquo;; the 500,000+ developer, 5,000-company customer list (Cursor, Cognition, HubSpot, OpenRouter, monday.com) is the base that step stands on.</p>
-<h2 id="four-line-summary">Four-line summary<a hidden class="anchor" aria-hidden="true" href="#four-line-summary">#</a></h2>
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Exa 3.0 number</th>
-        <th>Source</th>
-        <th>Verdict</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>BrowseComp</td>
-        <td>91.8 (0.3 ahead of Perplexity)</td>
-        <td>Self-reported</td>
-        <td>Main board hugs, not a generational gap</td>
-      </tr>
-      <tr>
-        <td>Independent 500-query accuracy</td>
-        <td>64.8% vs 60.1%</td>
-        <td>Third party</td>
-        <td>Lead confirmed, 4.7 points wide</td>
-      </tr>
-      <tr>
-        <td>Dynamic Highlights</td>
-        <td>95% fewer context tokens</td>
-        <td>Self-reported, unreproduced</td>
-        <td>The real variable on the agent cost curve</td>
-      </tr>
-      <tr>
-        <td>Exa Lite</td>
-        <td>$4 / 1,000 requests</td>
-        <td>Official pricing</td>
-        <td>Scalable for high volume</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2 id="faq">FAQ<a hidden class="anchor" aria-hidden="true" href="#faq">#</a></h2>
-<p><strong>All eight boards self-run?</strong> Yes. Exa picks the rivals, defines the boards, and reports the numbers in one pass. The only external references are Dev.to&rsquo;s dimension scoring (8.7 vs 6.8), Artificial Analysis (Auto+Highlights 80, tied first; Lite 79), and the 500-query evaluation (64.8 vs 60.1) — all more conservative than the official headline.</p>
-<p><strong>How should I choose?</strong> First decide whether your scenario is &ldquo;search a lot&rdquo; or &ldquo;search accurately.&rdquo; For high-frequency retrieval agent loops, run Lite + Dynamic Highlights first to hold the cost position; on decision-critical chains, run Exa/Perplexity/Tavily on the same query set with the same dimension spread — under 5 points, it&rsquo;s a wash.</p>
-<p><strong>Is the 95% token saving credible?</strong> Mechanically credible (extraction vs full text); the magnitude is Exa&rsquo;s own number. Wait for a third party to isolate Highlights before trusting the figure; for now, book it as &ldquo;cost will drop noticeably,&rdquo; not as 95%.</p>
-<p><strong>Can I wire it straight into my product?</strong> Standard REST API, with <code>output_schema</code> structured outputs and LLM summaries. Five latency tiers: instant ~250ms / fast ~450ms / auto ~1s / deep-lite 4s / deep 4-15s — pick the tier by interactivity.</p>
-<p><strong>What&rsquo;s Exa&rsquo;s relationship to Google?</strong> It doesn&rsquo;t wrap Google&rsquo;s index; Exa runs its own crawler plus a 2T-URL index. The positioning difference is clear: Google ranks for &ldquo;a person,&rdquo; Exa&rsquo;s structured results are for &ldquo;another piece of software,&rdquo; and the user is the agent.</p>
-<h2 id="the-close">The close<a hidden class="anchor" aria-hidden="true" href="#the-close">#</a></h2>
-<p>&ldquo;First on all eight&rdquo; is a press-release headline; lay out the 0.3 and the real lead width is visible. The two moves that genuinely change Exa 3.0&rsquo;s cards: Highlights cut context cost to a self-reported 5%, and Lite turns the search side into a budgetable line item. The first price war in agent search is calculated from those two numbers.</p>
-<p>What&rsquo;s your agent retrieval running on today, and how much context does one loop burn? Post a number in the comments. Send this to the colleague still stuffing full pages into the agent.</p>
-<p><strong>Sources</strong>: Exa official blog exa.ai/blog/exa-3 (2026-10-19, eight-board numbers, Exa Lite / Dynamic Highlights pricing and the official benchmark table), exa.ai/docs/changelog, docs.exa.ai search API reference (five latency tiers and output_schema), Artificial Analysis Search Index (independent evaluation: Auto+Highlights 80 tied for first with Perplexity, Lite 79; per-task tokens −47%, cost −21%), startupfortune.com and aidailypost.com Exa 3.0 coverage (500-query independent evaluation 64.8 vs 60.1; Dev.to 20-dimension 8.7 vs 6.8).</p>
+      <div class="post-content"><blockquote>
+<p><strong>Archived on the forum</strong>: the full article, data tables, and community discussion live on the Dream Beast LLM Community (BBS). This page keeps only a summary.</p>
+</blockquote>
+<p><strong>Read the full version + join the discussion on the BBS</strong>: <a href="https://bbs.rexai.top/t/46" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="t/46 (External link)">t/46 <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</p>
+<p><strong>TL;DR</strong>: Exa shipped 3.0 on 10-19: first place on all eight self-reported benchmarks, but the BrowseComp lead over Perplexity is 0.3 points. What actually changes the cost curve is Dynamic Highlights (95% fewer context tokens) plus Exa Lite at $4/1000 requests; independent scoring puts Exa at 80, tied for first.</p>
+<p>For details, reproducible numbers, and ongoing discussion, the BBS post is the source of truth.</p>
 
 
       </div>
@@ -512,35 +455,7 @@
       <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
         <span>CONTENTS</span><i aria-hidden="true">＋</i>
       </button>
-      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
-        </summary>
-
-        <div class="inner"><ul>
-                <li>
-                    <a href="#exa-30-tops-eight-benchmarks-the-number-to-actually-watch-is-the-03-margin" aria-label="Exa 3.0 Tops Eight Benchmarks: The Number to Actually Watch Is the 0.3 Margin">Exa 3.0 Tops Eight Benchmarks: The Number to Actually Watch Is the 0.3 Margin</a><ul>
-                        
-                <li>
-                    <a href="#where-the-improvement-came-from-no-new-architecture-story" aria-label="Where the improvement came from: no new-architecture story">Where the improvement came from: no new-architecture story</a></li>
-                <li>
-                    <a href="#the-number-to-actually-watch-is-03" aria-label="The number to actually watch is 0.3">The number to actually watch is 0.3</a></li>
-                <li>
-                    <a href="#what-actually-changes-the-cost-curve-dynamic-highlights--4" aria-label="What actually changes the cost curve: Dynamic Highlights &#43; $4">What actually changes the cost curve: Dynamic Highlights + $4</a></li>
-                <li>
-                    <a href="#four-line-summary" aria-label="Four-line summary">Four-line summary</a></li>
-                <li>
-                    <a href="#faq" aria-label="FAQ">FAQ</a></li>
-                <li>
-                    <a href="#the-close" aria-label="The close">The close</a>
-                </li>
-            </ul>
-            </li>
-            </ul>
-        </div>
-    </details>
-</div>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel>
 
       </div>
     </aside>

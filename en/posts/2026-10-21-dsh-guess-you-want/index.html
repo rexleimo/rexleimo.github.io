@@ -152,15 +152,15 @@
     "@type": "SpeakableSpecification",
     "cssSelector": [".post-content h1", ".post-content h2"]
   },
-  "wordCount": "1753",
+  "wordCount": "99",
   "keywords": ["agent", "DeepSeek", "tools", "hands-on"],
   "image": "https:\/\/rexai.top\/images\/posts\/2026-10-21-dsh-guess-you-want\/cover.jpg",
   "thumbnailUrl": "https:\/\/rexai.top\/images\/posts\/2026-10-21-dsh-guess-you-want\/cover.jpg",
   "articleSection": "posts",
-  "articleBody": "dsh’s Composer Started Guessing What You’ll Say: 512 Tokens Buys Your Opening Move Claude Code, Codex, Cursor: the agents you feed instructions to all have one thing in common. Their composers are dumb. You type, they wait, they don’t guess. The community around DeepSeek Harness (dsh) has pried that open. After each AI turn, gray ghost text appears in the composer with what you’re about to say next; Tab drops it into the draft. The feature is called “guess what you’ll say,” and every bit of it is community web plugins. Not one line of official code was touched.\n",
+  "articleBody": " Archived on the forum: the full article, data tables, and community discussion live on the Dream Beast LLM Community (BBS). This page keeps only a summary.\nRead the full version \u002b join the discussion on the BBS: t\/44 External link TL;DR: DeepSeek Harness’s community plugins give the dsh composer a ‘guess what you’ll say’ layer: after each agent turn, ghost text drafts your next prompt and Tab adopts it. Bounded 512-token LLM calls plus local zsh-style prefix completion, with redaction and no core changes.\n",
   "about": [{"@type": "Thing", "name": "agent"}, {"@type": "Thing", "name": "DeepSeek"}, {"@type": "Thing", "name": "tools"}, {"@type": "Thing", "name": "hands-on"}],
   "isAccessibleForFree": "True",
-  "timeRequired": "PT11M",
+  "timeRequired": "PT3M",
   "copyrightYear": "2026",
   "educationalLevel": "intermediate",
   "learningResourceType": "tutorial"
@@ -300,7 +300,7 @@
     <h1 class="post-title entry-hint-parent">
       dsh&#39;s Composer Started Guessing What You&#39;ll Say: 512 Tokens Buys Your Opening Move
     </h1><p class="post-description">DeepSeek Harness&#39;s community plugins give the dsh composer a &#39;guess what you&#39;ll say&#39; layer: after each agent turn, ghost text drafts your next prompt and Tab adopts it. Bounded 512-token LLM calls plus local zsh-style prefix completion, with redaction and no core changes.</p>
-    <div class="post-meta"><span title='2026-10-20 09:00:00 +0800 +0800'>October 20, 2026</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;1753 words&nbsp;·&nbsp;Dreambeast<span class="waline-pageview-count" data-path="/en/posts/2026-10-21-dsh-guess-you-want/" style="margin-left: 0.5rem;">
+    <div class="post-meta"><span title='2026-10-20 09:00:00 +0800 +0800'>October 20, 2026</span>&nbsp;·&nbsp;1 min&nbsp;·&nbsp;99 words&nbsp;·&nbsp;Dreambeast<span class="waline-pageview-count" data-path="/en/posts/2026-10-21-dsh-guess-you-want/" style="margin-left: 0.5rem;">
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="vertical-align: -0.125em; margin-right: 0.25rem;">
     <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
     <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
@@ -322,83 +322,13 @@
 
   <div class="post-layout has-toc">
     <div class="post-main">
-      <div class="post-content"><p>Claude Code, Codex, Cursor: the agents you feed instructions to all have one thing in common. Their composers are dumb. You type, they wait, they don&rsquo;t guess. The community around DeepSeek Harness (dsh) has pried that open. After each AI turn, gray ghost text appears in the composer with what you&rsquo;re about to say next; Tab drops it into the draft. The feature is called &ldquo;guess what you&rsquo;ll say,&rdquo; and every bit of it is community web plugins. Not one line of official code was touched.</p>
-<p>Three things to say about it. First, what it is and how it works: one bounded auxiliary LLM call plus a local history-completion layer, with the bill starting at 512 tokens. Second, why it matters: it exposes where agent harnesses are heading, full ownership of the human-machine dialogue, and the composer was the last unclaimed interface. Third, why this happened on dsh instead of elsewhere: everything-is-a-plugin architecture lets third parties rebuild the input layer in pure DOM overlays while the core just supplies hooks.</p>
-<h2 id="what-it-looks-like">What it looks like<a hidden class="anchor" aria-hidden="true" href="#what-it-looks-like">#</a></h2>
-<p>dsh-suggest-prompt works like this. Each agent turn ends in <code>completed</code>, and the plugin hangs one auxiliary LLM call off the <code>turn/end</code> event. It takes <strong>the last user turn and the assistant&rsquo;s final answer</strong>, tags them, and the model follows a system prompt that says &ldquo;predict the next prompt in the user&rsquo;s voice.&rdquo; The web side renders the result as a light-colored ghost placeholder in the composer; Tab (recordable to any key) fills the draft. Reply language follows the session: CJK in the last user message means Simplified Chinese, otherwise English.</p>
-<p>Unadopted is not wasted. Delete back to an empty draft and the persisted suggestion reappears without a new request; type anything and the ghost text steps aside immediately; the whole interception stays silent during IME composition. Empty model replies, meta-text, evaluative filler, assistant-voice phrasing: silently skipped, no error, no event written.</p>
-<p><img alt="dsh-suggest-prompt official screenshot: after the AI finishes, a light suggestion bar floats in the composer; Tab fills the draft" loading="lazy" src="/images/posts/2026-10-21-dsh-guess-you-want/fig-1.jpg"></p>
-<p>dsh-prompt-history does the fuller job on the same requirements: up/down history with bash history-search-backward semantics (prefix search, pending-line restore), Ctrl+R reverse search, a copy/quote/side-chat toolbar above selections, right-click paste, and a second parallel agent thread in the right pane. 12KB client bundle, entirely browser-local, pure UI behavior with zero session events.</p>
-<h2 id="the-cost-ledger-what-512-tokens-buys">The cost ledger: what 512 tokens buys<a hidden class="anchor" aria-hidden="true" href="#the-cost-ledger-what-512-tokens-buys">#</a></h2>
-<p>Broken down, this is the most interesting part of the whole thing.</p>
-<p><strong>No thinking by default.</strong> The auxiliary call carries <code>reasoningEffort: off</code> (serialized as <code>thinking: disabled</code> on DeepSeek) so a single predicted sentence doesn&rsquo;t burn inference budget; models that reject the field are retried once without it, and the rejection happens before any network I/O, so it costs almost nothing.</p>
-<p><strong>Last turn only.</strong> <code>maxRecentTurns</code> defaults to 1; intermediate tool calls and reasoning never reach the suggestion model. The transcript has a <code>maxTranscriptChars</code> budget, the suggestion has a visible-character cap, and the whole call has three gates: bytes, tokens, timeout.</p>
-<p><strong>No charge to the main request.</strong> The main agent&rsquo;s token bill is untouched. Prediction is at most one parallel auxiliary call per turn, and cache hits on the same context skip the request entirely.</p>
-<p><img alt="dsh-suggest-prompt settings card: per-turn LLM prediction budget and timeouts are all configurable; off means zero network" loading="lazy" src="/images/posts/2026-10-21-dsh-guess-you-want/fig-2.jpg"></p>
-<p>My judgment: those 512 tokens don&rsquo;t buy &ldquo;typing for you.&rdquo; They buy <strong>driving the cost of deciding what to ask down to near zero.</strong> The most expensive part of an agent workflow is never tokens, it&rsquo;s intent switching. The AI just finished a refactor, and you have to remember &ldquo;oh, run the tests&rdquo; — that opening move costs a hundred times more than the keystrokes. Ghost text remembers it for you, Tab once, and the intent lands.</p>
-<h2 id="the-local-half-it-guesses-offline">The local half: it guesses offline<a hidden class="anchor" aria-hidden="true" href="#the-local-half-it-guesses-offline">#</a></h2>
-<p>Don&rsquo;t equate &ldquo;guess what you&rsquo;ll say&rdquo; with &ldquo;a model call every turn.&rdquo; dsh-suggest-ghost is two-track: when the draft is empty, LLM whole-sentence prediction; the moment you start typing, it switches to <strong>zsh-autosuggestions-style prefix completion</strong>, purely local, ranked by conversation history — recency first, in-session frequency second, cross-session heat third, matching case-insensitively and ignoring whitespace and fullwidth/halfwidth punctuation differences.</p>
-<p>That&rsquo;s zsh&rsquo;s gray completion, ported into an agent composer. You had &ldquo;fix that 500&rdquo; in your prompt history; this time you type &ldquo;fix that&rdquo; and the gray part completes it. History source is the session&rsquo;s own message records (user/steering nodes), it survives reloads, cross-session memory is off by default (200-entry browser-local cap when on).</p>
-<p>The value of two-track shows up in the cost curve: high-frequency repeat scenarios (&ldquo;run the tests&rdquo;) hit local history at zero tokens; genuinely new intent falls to LLM prediction. That&rsquo;s the right design. One easily missed layer: the prefix-completion ranking is &ldquo;recency &gt; in-session frequency &gt; cross-session heat,&rdquo; which is the mathematical expression of usage habit. A phrase you hammered last week outranks a one-off from three days ago — closer to reality than raw total-count sorting.</p>
-<h2 id="why-a-plugin-not-an-official-feature">Why a plugin, not an official feature<a hidden class="anchor" aria-hidden="true" href="#why-a-plugin-not-an-official-feature">#</a></h2>
-<p>dsh&rsquo;s own composer is a Lexical contenteditable host. Official provides the <code>conversation.input.overlay</code> slot and the <code>inputActions.setDraft</code> API, but no prediction logic. The plugin does everything in DOM overlays without touching the core.</p>
-<p>This isn&rsquo;t a dsh-specific compromise, it&rsquo;s its architectural stance: everything is a plugin. The official hooks land at exactly the right granularity — turn/end, input.overlay, appendPluginRecord — enough for a third party to take the whole input layer and rebuild it while the agent core stays untouched. dsh-suggest-prompt writes its log entries as ignorable plugin records (<code>plugin:suggest-prompt/suggested</code>); readers who don&rsquo;t know the type retain and skip it, and the session always cold-reads. On older harness versions lacking the record API, the plugin stays fully dormant — it would rather be empty than write private event types, because a private event written into the log makes the whole session unreadable on cold read.</p>
-<p>That detail says more than the feature: community plugin discipline is already high enough to respect session-format compatibility constraints.</p>
-<h2 id="the-typescript-argument-ecosystem-beat-performance">The TypeScript argument: ecosystem beat performance<a hidden class="anchor" aria-hidden="true" href="#the-typescript-argument-ecosystem-beat-performance">#</a></h2>
-<p>Since the 08-13 open-source drop, the most common HN complaint is &ldquo;why TypeScript.&rdquo; Roughly 219 packages, 450k lines of TS, pnpm monorepo — conspicuous in an agent harness crowd that cares about speed.</p>
-<p>The official community&rsquo;s answer, which I think holds: this isn&rsquo;t a runtime choice, it&rsquo;s a <strong>distribution choice</strong>. dsh&rsquo;s whole thesis is &ldquo;everything is a plugin,&rdquo; so plugins must install easily, resolve dependencies, and ship instantly. npm has no rival on &ldquo;install a random package at runtime&rdquo; — Rust has crates.io, Go has modules, Python has PyPI, but none of them combine JS&rsquo;s zero-config publishing, existing ecosystem, and hot-install habit. The 101-plugin field test makes the point: 11 install cleanly from npm, 81 exist as bare GitHub repos (<code>dsh plugin add github:owner/repo</code> just works), 4 need extra runtimes, 3 won&rsquo;t install. The reason the 81/10 bare-GitHub share works at all is that <code>dsh add</code> is a thin wrapper over Node&rsquo;s install machinery — you can&rsquo;t reproduce that in Rust or Go without first building an npm equivalent.</p>
-<p>The performance counterargument ignores where the time actually goes: in an agent harness, the dominant cost is the model round trip across the network. Deciding the next step happens inside the model, not in the Node process. Node&rsquo;s slow parts (cold start, JSON parsing, string handling) are noise against second-scale model round trips. Picking Rust speeds up the 1% while adding friction to the 99% of plugin distribution — the wrong trade for a framework betting on community ecosystem.</p>
-<p>I agree with that judgment. One caveat: with 81 bare GitHub repos, the quality floor is whatever the community holds. Plugin breakage shows up as <code>ERR_PNPM_FETCH_404</code> or CJS/ESM mismatches; the official troubleshooting guide covers both, but users still carry their own share of the dirty work.</p>
-<h2 id="four-line-summary">Four-line summary<a hidden class="anchor" aria-hidden="true" href="#four-line-summary">#</a></h2>
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <tr>
-        <th>Scenario</th>
-        <th>Approach</th>
-        <th>Cost</th>
-        <th>Verdict</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Repeated prompts</td>
-        <td>Local prefix completion (zsh-autosuggestions port)</td>
-        <td>0 tokens</td>
-        <td>Workhorse for high-frequency scenarios, correct</td>
-      </tr>
-      <tr>
-        <td>New intent</td>
-        <td>One LLM whole-sentence prediction per turn, 512-token budget</td>
-        <td>≤1 call/turn</td>
-        <td>Buys intent-switching cost, worth it</td>
-      </tr>
-      <tr>
-        <td>Credential safety</td>
-        <td>Transcript redacted before send, last turn only</td>
-        <td>—</td>
-        <td>LLM off = zero network, clear boundary</td>
-      </tr>
-      <tr>
-        <td>Adoption</td>
-        <td>Tab fills draft, Enter sends</td>
-        <td>—</td>
-        <td>Non-intrusive, Esc discards</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2 id="faq">FAQ<a hidden class="anchor" aria-hidden="true" href="#faq">#</a></h2>
-<p><strong>Official dsh feature?</strong> No — community web plugins (the suggest-ghost / prompt-history / suggest-prompt / input-assist family). Official provides plugin mount points, turn/end hooks, and the composer overlay API; it wrote none of the logic.</p>
-<p><strong>Will prediction leak my API key?</strong> Per suggest-prompt&rsquo;s implementation, the transcript is credential-redacted before send, and only the last user turn plus the assistant&rsquo;s final answer is sent, with tool-call intermediates excluded. For zero network, switch off the LLM suggestion in plugin settings and keep local prefix completion only.</p>
-<p><strong>Versus Claude Code&rsquo;s completion?</strong> Same direction (gray text + Tab to adopt is deliberately matching Claude Code&rsquo;s behavior), but where Claude Code ships it built-in, this version is a plugin layer. Difference is in installation: one <code>dsh plugin add</code> line, no waiting on the official roadmap or release cadence — at the cost of a quality floor that community self-discipline has to hold.</p>
-<p><strong>Won&rsquo;t install?</strong> Prerequisite is dsh ≥ 0.2.0-rc.2 (0.2.0 changed the session projection and web client module contracts; older versions stay dormant by design). Install with <code>dsh plugin --profile web add dsh-suggest-ghost</code>, restart <code>dsh web</code>, Ctrl+Shift+R to hard-refresh the page; it works with no configuration.</p>
-<p><strong>Worth moving to dsh just for this?</strong> If you already run dsh workflows, it&rsquo;s one plugin install, free. If you don&rsquo;t, migrating just for input prediction is not worth it — it solves efficiency in high-frequency agent dialogue, not a general-purpose tool need.</p>
-<h2 id="the-close">The close<a hidden class="anchor" aria-hidden="true" href="#the-close">#</a></h2>
-<p>The composer is the last interface of agent tooling. The model writes code, runs tests, connects to MCP — the only thing still left purely to humans is &ldquo;what are you going to say next.&rdquo; The dsh community plugged that gap with a batch of 12KB web plugins without touching a line of official core: the hooks were fine-grained enough that a third party could rebuild the entire input experience.</p>
-<p>A 512-token budget buying intent that can&rsquo;t evaporate: I&rsquo;d call that a fair deal.</p>
-<p>Which way do you run it: local completion alone, or LLM whole-sentence prediction is essential? Have you enabled a &ldquo;guess what you&rsquo;ll say&rdquo; layer on an agent besides dsh? Talk in the comments; enough field reports and I&rsquo;ll write a follow-up. Send this to the colleague who still types every opening instruction by hand.</p>
-<p><strong>Sources</strong>: dsh-suggest-prompt (github.com/studyzy/dsh-suggest-prompt, MIT), dsh-suggest-ghost (github.com/WuJiaoJue/dsh-suggest-ghost, v0.5.0, dshfind index 2026-10-20), dsh-prompt-history (Xiaofei-fei, 12KB client bundle), dsh-composer-history (PerryLink 0.5.3, Apache-2.0, official discussion #4135), dsh-input-assist (official discussion #6313), deepseek-ai/deepseek-harness (open-sourced 2026-08-13, MIT, ~219 packages / 450k lines of TS), dshbase &ldquo;Why TypeScript: 101 plugin field test&rdquo; (2026-08-14). Inline figures: dsh-suggest-prompt official screenshots (github.com/studyzy/dsh-suggest-prompt assets, MIT).</p>
+      <div class="post-content"><blockquote>
+<p><strong>Archived on the forum</strong>: the full article, data tables, and community discussion live on the Dream Beast LLM Community (BBS). This page keeps only a summary.</p>
+</blockquote>
+<p><strong>Read the full version + join the discussion on the BBS</strong>: <a href="https://bbs.rexai.top/t/44" target="_blank" rel="noopener noreferrer" class="apple-ext" aria-label="t/44 (External link)">t/44 <span class="apple-ext__badge" aria-hidden="true">External link</span></a>
+</p>
+<p><strong>TL;DR</strong>: DeepSeek Harness&rsquo;s community plugins give the dsh composer a &lsquo;guess what you&rsquo;ll say&rsquo; layer: after each agent turn, ghost text drafts your next prompt and Tab adopts it. Bounded 512-token LLM calls plus local zsh-style prefix completion, with redaction and no core changes.</p>
+<p>For details, reproducible numbers, and ongoing discussion, the BBS post is the source of truth.</p>
 
 
       </div>
@@ -526,39 +456,7 @@
       <button class="wp2-floating-toc__toggle" type="button" aria-expanded="false" aria-controls="wp2-article-toc" data-wp2-toc-toggle>
         <span>CONTENTS</span><i aria-hidden="true">＋</i>
       </button>
-      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel><div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
-        </summary>
-
-        <div class="inner"><ul>
-                <li>
-                    <a href="#dshs-composer-started-guessing-what-youll-say-512-tokens-buys-your-opening-move" aria-label="dsh&rsquo;s Composer Started Guessing What You&rsquo;ll Say: 512 Tokens Buys Your Opening Move">dsh&rsquo;s Composer Started Guessing What You&rsquo;ll Say: 512 Tokens Buys Your Opening Move</a><ul>
-                        
-                <li>
-                    <a href="#what-it-looks-like" aria-label="What it looks like">What it looks like</a></li>
-                <li>
-                    <a href="#the-cost-ledger-what-512-tokens-buys" aria-label="The cost ledger: what 512 tokens buys">The cost ledger: what 512 tokens buys</a></li>
-                <li>
-                    <a href="#the-local-half-it-guesses-offline" aria-label="The local half: it guesses offline">The local half: it guesses offline</a></li>
-                <li>
-                    <a href="#why-a-plugin-not-an-official-feature" aria-label="Why a plugin, not an official feature">Why a plugin, not an official feature</a></li>
-                <li>
-                    <a href="#the-typescript-argument-ecosystem-beat-performance" aria-label="The TypeScript argument: ecosystem beat performance">The TypeScript argument: ecosystem beat performance</a></li>
-                <li>
-                    <a href="#four-line-summary" aria-label="Four-line summary">Four-line summary</a></li>
-                <li>
-                    <a href="#faq" aria-label="FAQ">FAQ</a></li>
-                <li>
-                    <a href="#the-close" aria-label="The close">The close</a>
-                </li>
-            </ul>
-            </li>
-            </ul>
-        </div>
-    </details>
-</div>
+      <div id="wp2-article-toc" class="wp2-floating-toc__panel" hidden data-wp2-toc-panel>
 
       </div>
     </aside>
