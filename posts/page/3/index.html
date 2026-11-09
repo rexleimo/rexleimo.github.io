@@ -27,65 +27,65 @@
 <a class=wp2-menu-panel__utility-search href=/search/>搜索</a><a href=/en/>English</a>
 <button type=button data-theme-toggle data-theme-light-label=主题：浅色 data-theme-dark-label=主题：深色 data-theme-light-action=切换至深色 data-theme-dark-action=切换至浅色 aria-pressed=false><span data-theme-toggle-label>主题：浅色</span></button></div></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/posts/><span itemprop=name>Posts</span></a>
-<meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>171 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/systemd-rust-1026/><b>01</b>
+<meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>172 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/tsrs-recheck-1026/><b>01</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/tsrs-recheck-1026/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>POSTS / 2026.10.26 / 1 MIN</small>
+<strong>tsrs 的「8 倍」被第三方打回 3 倍：官方那组数字挑了最有利场景</strong>
+<em>Cloudflare 官方说 tsrs 比 TS 7.0 快 8 倍。第三方把官方 benchmark 按项目拆开：8x 只落在 MUI/t3code，VS Code 和 webpack 才 3.8~4.0x，最公平对照归到 ~3x。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/posts/systemd-rust-1026/><b>02</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/systemd-rust-1026/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.26 / 2 MIN</small>
 <strong>systemd 官方支持 Rust：5,144 行不动老 C，先塞一个 32KB 的叶子模块</strong>
 <em>systemd 把 Rust 支持合进主干，改动 5,144 行跨 54 文件。它不是重写，是「只准塞新叶子」：Rust 只做新增组件、老 C 一行不动，构建仍走 Meson、Cargo 彻底不进。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/rust-sync-prims-1026/><b>02</b>
+</a><a class=wp2-list__row href=/posts/rust-sync-prims-1026/><b>03</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/rust-sync-prims-1026/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.26 / 1 MIN</small>
 <strong>Mutex、RwLock、mpsc：选错同步原语比不选还伤</strong>
 <em>写多读少用 Mutex，读远超写才升 RwLock，纯单向交接才切 mpsc。三条判断线各配一个会出问题的反例，一段代码在本机 rustc 1.99.0 跑通。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/litebox-syscall-sandbox/wx-body/><b>03</b>
+</a><a class=wp2-list__row href=/posts/litebox-syscall-sandbox/wx-body/><b>04</b>
 <span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.25 / 3 MIN</small>
 <strong>微软开源了个 Rust 系统调用沙箱，我把 8 个 UnixBench 关进去跑了一遍</strong>
 <em>LiteBox 纯 Rust 系统调用级沙箱，本机拉仓编译 8 项 UnixBench 关进去跑：纯计算损耗 0.6%~1.0%，I/O 那几格是环境差别当更快，fork 类 N/A。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-24-proa-36x-final/><b>04</b>
+</a><a class=wp2-list__row href=/posts/2026-10-24-proa-36x-final/><b>05</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-24-proa-36x-final/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.24 / 3 MIN</small>
 <strong>Proa 官方号称比 React 快 36 倍：我在 2 核机器上复跑了 7 个渲染器，结论一半成立</strong>
 <em>Proa 官方 10-21 scoreboard 写着比 React 快 36.3 倍。我把官方 7 渲染器基准仓拉到 2 核 EPYC 上复跑：36 倍只在 25KB 小页面上成立，1000 行大表格离 memcpy 地板还有 23.5 倍距离，Askama/Sailfish 反超的格子也复现了。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-24-nvidia-openshell-sandbox/><b>05</b>
+</a><a class=wp2-list__row href=/posts/2026-10-24-nvidia-openshell-sandbox/><b>06</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-24-nvidia-openshell-sandbox/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.24 / 3 MIN</small>
 <strong>NVIDIA 用 Rust 给 AI agent 造了个「越权就抓现行」的沙箱：OpenShell 拆解，安全承诺能形式化验证到这种程度</strong>
 <em>NVIDIA 开源 agent 运行时 OpenShell：Rust 写的 28 crate 全家桶，Landlock + seccomp + SMT 形式化验证三层拦截 agent 越权。本机把 CLI 和 gateway 全编译跑通，默认策略自动套、越权序列实跑、单 exec 全链路 278ms，数字全在文末。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-24-flint-40b-coding-model/wx-body/><b>06</b>
+</a><a class=wp2-list__row href=/posts/2026-10-24-flint-40b-coding-model/wx-body/><b>07</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-24-flint-40b-coding-model/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.24 / 1 MIN</small>
 <strong>Flint 40B：40B 总参、2.5B 激活的「小」编程模型，本地跑不花一分钱</strong>
 <em>Apache 2.0 免费开源、改完能商用，在自己电脑上跑不花 API 钱。Recursive 出的 Flint：机制、三条免费路径、四个坑，一条捋清。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-23-pi-cached-compaction-prompt-cache/><b>07</b>
+</a><a class=wp2-list__row href=/posts/2026-10-23-pi-cached-compaction-prompt-cache/><b>08</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-23-pi-cached-compaction-prompt-cache/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.23 / 2 MIN</small>
 <strong>Pi 的 /compact 把 prompt cache 打碎了：这个扩展 99% 读缓存，667k 会话省 86%</strong>
 <em>Pi 内置 compaction 会换 system prompt、丢 tools、压平消息，provider 的 prefix cache 全 miss，全价计费。Nico Bailon 的 pi-cached-compaction 三样原样保留、只追加一条摘要指令，667k-token Opus 会话 99% 读缓存、$0.19 对 …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-23-pi-agent-plugins/><b>08</b>
+</a><a class=wp2-list__row href=/posts/2026-10-23-pi-agent-plugins/><b>09</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-23-pi-agent-plugins/fig-1.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.23 / 2 MIN</small>
 <strong>Pi 插件 5 个拆完：为什么极简 Agent 长出 5000+ 包</strong>
 <em>Pi 官方包目录下载量前 5 的插件逐个拆：subagents、web-access、billion-context、mcp-adapter、mcp-extension，装之前先看什么、各解决什么问题</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-opencode-credentials-leaked/><b>09</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-opencode-credentials-leaked/><b>10</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-22-opencode-credentials-leaked/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 1 MIN</small>
 <strong>OpenCode 被黑：第三方模型 key 可能已泄露，先换 key 再查账</strong>
 <em>OpenCode 官方 10-17 发帖：正在退役的 legacy 系统遭未授权访问，Console 里存的第三方 API key（OpenAI/Anthropic）可能已暴露。官方三步：换 key、改引用、翻用量。真正被黑的不是 CLI 编码 agent，是托管推理网关 OpenCode Console。</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-rustc-path-hash-collision/><b>10</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-22-rustc-path-hash-collision/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.22 / 2 MIN</small>
-<strong>rustc 静默喂错源码：两个路径哈希一撞，B 模块编译的其实是 A 文件</strong>
-<em>rustc 用路径哈希认源文件，而 Rust 的 Path 哈希忽略分隔符，两个目录名对得上就会撞车。撞车后编译器把第一个文件的内容静默喂给第二个，全程无警告。我在 rustc 1.99.0 上复现了两个版本，把机制和风险讲清楚。</em>
 </span><i>↗</i></a></div><nav class=wp2-list__pagination aria-label=Pagination><a href=/posts/page/2/>← PREV</a>
 <span>3 / 18</span><a href=/posts/page/4/>NEXT →</a></nav></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
 <a href=/posts/>文章</a>
