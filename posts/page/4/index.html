@@ -27,65 +27,65 @@
 <a class=wp2-menu-panel__utility-search href=/search/>搜索</a><a href=/en/>English</a>
 <button type=button data-theme-toggle data-theme-light-label=主题：浅色 data-theme-dark-label=主题：深色 data-theme-light-action=切换至深色 data-theme-dark-action=切换至浅色 aria-pressed=false><span data-theme-toggle-label>主题：浅色</span></button></div></div></div><main id=main-content class=glass-main><section class=wp2-list><header class=wp2-content-head><nav aria-label=breadcrumb class=breadcrumb-nav><ol itemscope itemtype=https://schema.org/BreadcrumbList><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/><span itemprop=name>梦兽编程</span></a>
 <meta itemprop=position content="1"></li><li itemprop=itemListElement itemscope itemtype=https://schema.org/ListItem><a itemprop=item href=https://rexai.top/posts/><span itemprop=name>Posts</span></a>
-<meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>175 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/2026-10-23-pi-cached-compaction-prompt-cache/><b>01</b>
+<meta itemprop=position content="2"></li></ol></nav><p>[ SECTION / POSTS ]</p><h1>文章</h1><div>博客文章</div><span>176 篇内容</span></header><div class=wp2-list__rows><a class=wp2-list__row href=/posts/2026-10-24-flint-40b-coding-model/wx-body/><b>01</b>
+<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-24-flint-40b-coding-model/cover.jpg alt loading=lazy></span>
+<span class=wp2-list__copy><small>POSTS / 2026.10.24 / 1 MIN</small>
+<strong>Flint 40B：40B 总参、2.5B 激活的「小」编程模型，本地跑不花一分钱</strong>
+<em>Apache 2.0 免费开源、改完能商用，在自己电脑上跑不花 API 钱。Recursive 出的 Flint：机制、三条免费路径、四个坑，一条捋清。</em>
+</span><i>↗</i>
+</a><a class=wp2-list__row href=/posts/2026-10-23-pi-cached-compaction-prompt-cache/><b>02</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-23-pi-cached-compaction-prompt-cache/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.23 / 2 MIN</small>
 <strong>Pi 的 /compact 把 prompt cache 打碎了：这个扩展 99% 读缓存，667k 会话省 86%</strong>
 <em>Pi 内置 compaction 会换 system prompt、丢 tools、压平消息，provider 的 prefix cache 全 miss，全价计费。Nico Bailon 的 pi-cached-compaction 三样原样保留、只追加一条摘要指令，667k-token Opus 会话 99% 读缓存、$0.19 对 …</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-23-pi-agent-plugins/><b>02</b>
+</a><a class=wp2-list__row href=/posts/2026-10-23-pi-agent-plugins/><b>03</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-23-pi-agent-plugins/fig-1.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.23 / 2 MIN</small>
 <strong>Pi 插件 5 个拆完：为什么极简 Agent 长出 5000+ 包</strong>
 <em>Pi 官方包目录下载量前 5 的插件逐个拆：subagents、web-access、billion-context、mcp-adapter、mcp-extension，装之前先看什么、各解决什么问题</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-opencode-credentials-leaked/><b>03</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-opencode-credentials-leaked/><b>04</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-22-opencode-credentials-leaked/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 1 MIN</small>
 <strong>OpenCode 被黑：第三方模型 key 可能已泄露，先换 key 再查账</strong>
 <em>OpenCode 官方 10-17 发帖：正在退役的 legacy 系统遭未授权访问，Console 里存的第三方 API key（OpenAI/Anthropic）可能已暴露。官方三步：换 key、改引用、翻用量。真正被黑的不是 CLI 编码 agent，是托管推理网关 OpenCode Console。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-rustc-path-hash-collision/><b>04</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-rustc-path-hash-collision/><b>05</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-22-rustc-path-hash-collision/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 2 MIN</small>
 <strong>rustc 静默喂错源码：两个路径哈希一撞，B 模块编译的其实是 A 文件</strong>
 <em>rustc 用路径哈希认源文件，而 Rust 的 Path 哈希忽略分隔符，两个目录名对得上就会撞车。撞车后编译器把第一个文件的内容静默喂给第二个，全程无警告。我在 rustc 1.99.0 上复现了两个版本，把机制和风险讲清楚。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-rust-off-rails-ai-web-stack/><b>05</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-rust-off-rails-ai-web-stack/><b>06</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-22-rust-off-rails-ai-web-stack/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 2 MIN</small>
 <strong>Rust off Rails：一个 0 行框架代码的 Web 栈，给 AI 写代码用的</strong>
 <em>Rust off Rails 发 60 个 Markdown 文件、0 行框架代码：约定写在散文里，agent 照着写全部代码。Axum + SeaORM + htmx 的选型我拆了一遍，HN 104 条里的两条高赞也引了。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-google-rust-style-guide/><b>06</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-google-rust-style-guide/><b>07</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-22-google-rust-style-guide/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 2 MIN</small>
 <strong>Google 官方 Rust 风格指南发布：63 条规则，5 条 Chrome 专属——glob import 和 Rc/Arc 都进黑名单了</strong>
 <em>Google style guide 站点（C++/Java/Go 那套）第一次把 Rust 排进官方序列：63 条规则、16 大类，Chrome 专属 5 条——禁 glob import、避开 Rc/Arc、Chrome 里不用 async。我把最有争议的 8 条拆了，并对照了微软自己的规范。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-netwasm-csharp-rust-wasm-size/><b>07</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-netwasm-csharp-rust-wasm-size/><b>08</b>
 <span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-22-netwasm-csharp-rust-wasm-size/cover.jpg alt loading=lazy></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 1 MIN</small>
 <strong>C# 在 Wasm 体积上反超 Rust：47,895 对 53,635 字节，但对照条件要拆开看</strong>
 <em>NetWasm 把 C# 编译到 47,895 字节的独立 WASI 组件，比 Rust 的 53,635 小 10.7%。我把仓库数字、对照条件差异和 HN 104 条评论里的三个争议点拆了一遍。</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-mistral-large4-voxtral3/><b>08</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-mistral-large4-voxtral3/><b>09</b>
 <span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 2 MIN</small>
 <strong>Mistral 一天两发：1T 参数 le Chonk 开预览，语音 agent 管道也一起给了</strong>
 <em>Mistral 两天两发：1T 旗舰 le Chonk 开预览，Voxtral 3 把语音 agent 整条管道一起给了</em>
 </span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-22-emudhra-ca-compromise/><b>09</b>
+</a><a class=wp2-list__row href=/posts/2026-10-22-emudhra-ca-compromise/><b>10</b>
 <span class="wp2-list__image is-empty"></span>
 <span class=wp2-list__copy><small>POSTS / 2026.10.22 / 2 MIN</small>
 <strong>eMudhra 8 张中间 CA 被破，私钥值小到个位数，我把该升级谁捋了一遍</strong>
 <em>印度 CA eMudhra 8 张中间证书私钥被破，值小到 4。浏览器修了不等于全网修了，Go/VPN/代码签名才是真雷区</em>
-</span><i>↗</i>
-</a><a class=wp2-list__row href=/posts/2026-10-21-fakedata-llm-citation/><b>10</b>
-<span class=wp2-list__image><img data-wp2-card-image src=https://rexai.top/images/posts/2026-10-21-fakedata-llm-citation/cover.jpg alt loading=lazy></span>
-<span class=wp2-list__copy><small>POSTS / 2026.10.21 / 2 MIN</small>
-<strong>5 万条假数据上线 7 个月，Google 失忆了、ChatGPT 还在引用——我读完心里咯噔一下</strong>
-<em>peec.ai 的公开实验：一个全新域名用 GPT-4.1 一天批量生成 5 万条编造的统计数字，总成本约 50 美元。7 个月后 Google 把它按死，ChatGPT 却一次都没停——还把它的外链堆到 330 多个域、假数字被一篇论文和一家银行研报引用。我把这条 citation laundering 链路拆开，说说为什么挂源是这条链 …</em>
 </span><i>↗</i></a></div><nav class=wp2-list__pagination aria-label=Pagination><a href=/posts/page/3/>← PREV</a>
 <span>4 / 18</span><a href=/posts/page/5/>NEXT →</a></nav></section></main><footer class=wp2-footer><div class=wp2-footer__grid><section><p class=wp2-footer__label>站点地图</p><a href=/>首页</a>
 <a href=/posts/>文章</a>

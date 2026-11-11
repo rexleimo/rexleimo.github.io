@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1140 820" width="1140" height="820" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arr-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arr-emerald" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1140" height="820" fill="url(#bgGrad)" rx="16"/>
+
+  <!-- Top Headline -->
+  <text x="50" y="45" fill="#f8fafc" font-size="24" font-weight="800">大白话搞懂 Agent：多机器人 (Bot) 背后是怎么开小会替用户打工的？</text>
+  <text x="50" y="74" fill="#94a3b8" font-size="14">用户不再充当各系统之间的搬砖工：拆解三家 Bot 团队在后台的交流机制、分工协作与真实边界</text>
+
+  <!-- Top User Banner -->
+  <g transform="translate(50, 95)">
+    <rect width="1040" height="60" rx="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <circle cx="45" cy="30" r="18" fill="#3b82f6"/>
+    <text x="45" y="36" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle">👤</text>
+    <text x="75" y="27" fill="#f8fafc" font-size="15" font-weight="700">用户需求输入（一句话甩出需求，再也不用自己当搬运工）</text>
+    <text x="75" y="47" fill="#94a3b8" font-size="12">传统方式：用户自己查文档 ➔ 自己找报错 ➔ 自己找客服 ➔ 累得半死。现代 Agent：把任务甩给主 Bot，剩下的事由 Bot 之间开会搞定！</text>
+  </g>
+
+  <!-- ================= Column 1: DeepSeek Support Agent ================= -->
+  <g transform="translate(50, 175)">
+    <rect width="330" height="615" rx="12" fill="#0f172a" stroke="#0284c7" stroke-width="2"/>
+    <rect width="330" height="45" rx="12" fill="#0369a1" fill-opacity="0.3"/>
+    <text x="165" y="28" fill="#38bdf8" font-size="16" font-weight="700" text-anchor="middle">DeepSeek Support Agent</text>
+    <text x="165" y="62" fill="#7dd3fc" font-size="12" font-weight="600" text-anchor="middle">【办事大厅型 Bot 班组】</text>
+
+    <!-- Master Bot -->
+    <rect x="20" y="80" width="290" height="70" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="35" y="104" fill="#38bdf8" font-size="13" font-weight="700">🤖 大堂经理 Bot（主接待）</text>
+    <text x="35" y="125" fill="#cbd5e1" font-size="11.5">• 听取用户投诉/报错，辨别问题类型</text>
+    <text x="35" y="141" fill="#94a3b8" font-size="11">• 坚决执行公司规则，把活派发给后台小弟</text>
+
+    <!-- Arrow -->
+    <line x1="165" y1="150" x2="165" y2="175" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+    <!-- Sub-Bots Box -->
+    <rect x="15" y="175" width="300" height="245" rx="8" fill="#0c4a6e" fill-opacity="0.2" stroke="#0284c7" stroke-dasharray="4 2"/>
+    <text x="30" y="198" fill="#7dd3fc" font-size="12" font-weight="700">内部专员 Bot 之间互相开会协作：</text>
+
+    <!-- Sub-Bot 1 -->
+    <rect x="25" y="210" width="280" height="58" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="230" fill="#e0f2fe" font-size="12" font-weight="600">🤖 资料员 Bot (查知识库)</text>
+    <text x="35" y="247" fill="#94a3b8" font-size="10.5">“我查了官方文档，错误代码 429 是并发超标”</text>
+    <text x="35" y="260" fill="#38bdf8" font-size="10">利用 KV-Cache，几厘钱搞定海量文档</text>
+
+    <!-- Sub-Bot 2 -->
+    <rect x="25" y="278" width="280" height="58" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="298" fill="#e0f2fe" font-size="12" font-weight="600">🤖 诊断专员 Bot (查线上系统)</text>
+    <text x="35" y="315" fill="#94a3b8" font-size="10.5">“刚核实了用户的 TraceID，机房并没有宕机”</text>
+    <text x="35" y="328" fill="#86efac" font-size="10">只读权限，绝不擅自修改生产服务器</text>
+
+    <!-- Sub-Bot 3 -->
+    <rect x="25" y="346" width="280" height="60" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="366" fill="#e0f2fe" font-size="12" font-weight="600">🤖 工单专员 Bot (办手续)</text>
+    <text x="35" y="383" fill="#94a3b8" font-size="10.5">“用户问题复杂，我已自动给工程师立项工单”</text>
+    <text x="35" y="396" fill="#cbd5e1" font-size="10">对接内部 JIRA / 飞书系统</text>
+
+    <!-- Result -->
+    <line x1="165" y1="420" x2="165" y2="445" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr-blue)"/>
+    <rect x="20" y="445" width="290" height="55" rx="8" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="35" y="468" fill="#38bdf8" font-size="12" font-weight="700">🎯 交给用户的最终结果</text>
+    <text x="35" y="488" fill="#e2e8f0" font-size="11">准确无误的诊断分析 + 售后工单号</text>
+
+    <!-- Bottom summary box -->
+    <rect x="20" y="515" width="290" height="85" rx="8" fill="#082f49" stroke="#0284c7"/>
+    <text x="30" y="538" fill="#38bdf8" font-size="12" font-weight="700">💡 适合怎么选？</text>
+    <text x="30" y="558" fill="#e0f2fe" font-size="11">• 适合：企业内部流程、售后技术客服、IT运维</text>
+    <text x="30" y="575" fill="#94a3b8" font-size="10.5">• 特点：Bot 只准办公司规定业务，稳妥不胡扯</text>
+    <text x="30" y="590" fill="#94a3b8" font-size="10.5">• 代价：不会写爬虫，不会自由探索</text>
+  </g>
+
+  <!-- ================= Column 2: OpenManus ================= -->
+  <g transform="translate(405, 175)">
+    <rect width="330" height="615" rx="12" fill="#0f172a" stroke="#8b5cf6" stroke-width="2"/>
+    <rect width="330" height="45" rx="12" fill="#6d28d9" fill-opacity="0.3"/>
+    <text x="165" y="28" fill="#c084fc" font-size="16" font-weight="700" text-anchor="middle">OpenManus (开源自主体)</text>
+    <text x="165" y="62" fill="#d8b4fe" font-size="12" font-weight="600" text-anchor="middle">【外包全能小分队】</text>
+
+    <!-- Master Bot -->
+    <rect x="20" y="80" width="290" height="70" rx="8" fill="#1e293b" stroke="#c084fc"/>
+    <text x="35" y="104" fill="#c084fc" font-size="13" font-weight="700">🤖 项目总监 Bot (Planner)</text>
+    <text x="35" y="125" fill="#cbd5e1" font-size="11.5">• 接收开放难题：“帮我抓竞品行情做成表格”</text>
+    <text x="35" y="141" fill="#94a3b8" font-size="11">• 拆解步骤，给手下的工具 Bot 分派任务</text>
+
+    <!-- Arrow -->
+    <line x1="165" y1="150" x2="165" y2="175" stroke="#c084fc" stroke-width="2" marker-end="url(#arr-purple)"/>
+
+    <!-- Sub-Bots Box -->
+    <rect x="15" y="175" width="300" height="245" rx="8" fill="#4c1d95" fill-opacity="0.2" stroke="#a855f7" stroke-dasharray="4 2"/>
+    <text x="30" y="198" fill="#d8b4fe" font-size="12" font-weight="700">小弟 Bot 之间开小会、自愈试错：</text>
+
+    <!-- Sub-Bot 1 -->
+    <rect x="25" y="210" width="280" height="58" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="230" fill="#f3e8ff" font-size="12" font-weight="600">🤖 浏览器 Bot (Playwright)</text>
+    <text x="35" y="247" fill="#f43f5e" font-size="10.5">“抓取失败！页面弹出了 Cloudflare 验证码！”</text>
+    <text x="35" y="260" fill="#cbd5e1" font-size="10">把错误日志直接扔给旁边的程序员 Bot</text>
+
+    <!-- Sub-Bot 2 -->
+    <rect x="25" y="278" width="280" height="58" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="298" fill="#f3e8ff" font-size="12" font-weight="600">🤖 程序员 Bot (Python 沙盒)</text>
+    <text x="35" y="315" fill="#a855f7" font-size="10.5">“别慌！我现写一段绕过脚本重新执行试试”</text>
+    <text x="35" y="328" fill="#e9d5ff" font-size="10">自写代码、自己跑报错、自己看日志自愈</text>
+
+    <!-- Sub-Bot 3 -->
+    <rect x="25" y="346" width="280" height="60" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="366" fill="#f3e8ff" font-size="12" font-weight="600">🤖 报告质检 Bot</text>
+    <text x="35" y="383" fill="#cbd5e1" font-size="10.5">“数据已抓齐，我用 Pandas 导出排版好的 Excel”</text>
+    <text x="35" y="396" fill="#cbd5e1" font-size="10">确认文件生成，结束沙盒生命周期</text>
+
+    <!-- Result -->
+    <line x1="165" y1="420" x2="165" y2="445" stroke="#c084fc" stroke-width="2" marker-end="url(#arr-purple)"/>
+    <rect x="20" y="445" width="290" height="55" rx="8" fill="#1e293b" stroke="#c084fc"/>
+    <text x="35" y="468" fill="#c084fc" font-size="12" font-weight="700">🎯 交给用户的最终结果</text>
+    <text x="35" y="488" fill="#e2e8f0" font-size="11">一个做好的 Excel 文件 + 完整探索过程记录</text>
+
+    <!-- Bottom summary box -->
+    <rect x="20" y="515" width="290" height="85" rx="8" fill="#3b0764" stroke="#8b5cf6"/>
+    <text x="30" y="538" fill="#c084fc" font-size="12" font-weight="700">💡 适合怎么选？</text>
+    <text x="30" y="558" fill="#f3e8ff" font-size="11">• 适合：未知任务探索、自动化爬虫、研报整理</text>
+    <text x="30" y="575" fill="#fda4af" font-size="10.5">• 特点：给配各种武器自己折腾，直到搞定</text>
+    <text x="30" y="590" fill="#fda4af" font-size="10.5">• 代价：消耗很多 Token，耗时几分钟</text>
+  </g>
+
+  <!-- ================= Column 3: Grok Bot ================= -->
+  <g transform="translate(760, 175)">
+    <rect width="330" height="615" rx="12" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <rect width="330" height="45" rx="12" fill="#047857" fill-opacity="0.3"/>
+    <text x="165" y="28" fill="#34d399" font-size="16" font-weight="700" text-anchor="middle">Grok Bot (xAI 社交中枢)</text>
+    <text x="165" y="62" fill="#a7f3d0" font-size="12" font-weight="600" text-anchor="middle">【八卦百晓生兼一线记者】</text>
+
+    <!-- Master Bot -->
+    <rect x="20" y="80" width="290" height="70" rx="8" fill="#1e293b" stroke="#34d399"/>
+    <text x="35" y="104" fill="#34d399" font-size="13" font-weight="700">🤖 超级个体 Bot (Grok-3)</text>
+    <text x="35" y="125" fill="#cbd5e1" font-size="11.5">• 并非团队开慢会，而是「一个人连通全球」</text>
+    <text x="35" y="141" fill="#94a3b8" font-size="11">• 风格犀利、幽默、未经过度规训的调侃腔调</text>
+
+    <!-- Arrow -->
+    <line x1="165" y1="150" x2="165" y2="175" stroke="#34d399" stroke-width="2" marker-end="url(#arr-emerald)"/>
+
+    <!-- Direct Pipe Box -->
+    <rect x="15" y="175" width="300" height="245" rx="8" fill="#064e3b" fill-opacity="0.2" stroke="#059669" stroke-dasharray="4 2"/>
+    <text x="30" y="198" fill="#a7f3d0" font-size="12" font-weight="700">背后插着全世界最快的数据光缆：</text>
+
+    <!-- Feature 1 -->
+    <rect x="25" y="210" width="280" height="58" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="230" fill="#d1fae5" font-size="12" font-weight="600">🌐 实时 X (Twitter) 推文直连</text>
+    <text x="35" y="247" fill="#6ee7b7" font-size="10.5">“突发新闻刚出 3 秒，我已读了全网现场帖子”</text>
+    <text x="35" y="260" fill="#94a3b8" font-size="10">跳过二手搜索引擎，直接从数据库抓现场</text>
+
+    <!-- Feature 2 -->
+    <rect x="25" y="278" width="280" height="58" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="298" fill="#d1fae5" font-size="12" font-weight="600">🎨 原生 Flux 生图 + 视觉识别</text>
+    <text x="35" y="315" fill="#a7f3d0" font-size="10.5">“用户发了一张梗图，我一眼看懂并配图回怼”</text>
+    <text x="35" y="328" fill="#94a3b8" font-size="10">文字 + 图像一体化极速回复</text>
+
+    <!-- Feature 3 -->
+    <rect x="25" y="346" width="280" height="60" rx="6" fill="#1e293b" stroke="#334155"/>
+    <text x="35" y="366" fill="#d1fae5" font-size="12" font-weight="600">⚡ 极速流式打字机</text>
+    <text x="35" y="383" fill="#cbd5e1" font-size="10.5">“秒级反应，直接在原帖下方参与社交互动”</text>
+    <text x="35" y="396" fill="#cbd5e1" font-size="10">注重实时互动体感，而非企业审批流程</text>
+
+    <!-- Result -->
+    <line x1="165" y1="420" x2="165" y2="445" stroke="#34d399" stroke-width="2" marker-end="url(#arr-emerald)"/>
+    <rect x="20" y="445" width="290" height="55" rx="8" fill="#1e293b" stroke="#34d399"/>
+    <text x="35" y="468" fill="#34d399" font-size="12" font-weight="700">🎯 交给用户的最终结果</text>
+    <text x="35" y="488" fill="#e2e8f0" font-size="11">极具幽默感的实时热点评析 + 即时配图</text>
+
+    <!-- Bottom summary box -->
+    <rect x="20" y="515" width="290" height="85" rx="8" fill="#064e3b" stroke="#10b981"/>
+    <text x="30" y="538" fill="#34d399" font-size="12" font-weight="700">💡 适合怎么选？</text>
+    <text x="30" y="558" fill="#d1fae5" font-size="11">• 适合：突发舆情追踪、炒币看盘、社交互动</text>
+    <text x="30" y="575" fill="#fef08a" font-size="10.5">• 特点：全世界信息更新最快、嘴最毒幽默</text>
+    <text x="30" y="590" fill="#94a3b8" font-size="10.5">• 代价：绑死在 X 平台，私有业务无法接入</text>
+  </g>
+</svg>
